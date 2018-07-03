@@ -10,7 +10,7 @@ const app = express();
 
 app.use(helmet());
 app.use(bodyParser.json());
-app.use(morgan(config.env === 'dev' ? 'dev' : 'combined'));
+app.use(morgan(config.env === 'development' ? 'dev' : 'combined'));
 app.use(cors());
 
 app.use('/health', health);
