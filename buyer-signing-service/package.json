@@ -1,0 +1,36 @@
+{
+  "name": "buyer-signing-service",
+  "version": "1.0.0",
+  "description": "Buyer Signing Service",
+  "author": "Wibson Development Team",
+  "main": "src/app.js",
+  "scripts": {
+    "build": "babel src -d dist",
+    "start": "NODE_ENV=dev babel-node src/server.js",
+    "test": "NODE_ENV=test mocha --require babel-polyfill --require babel-register --recursive test/ --exit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "helmet": "^3.12.1",
+    "level": "^4.0.0",
+    "morgan": "^1.9.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.12.0",
+    "mocha": "^5.2.0",
+    "sinon": "^6.1.0",
+    "supertest": "^3.1.0"
+  }
+}

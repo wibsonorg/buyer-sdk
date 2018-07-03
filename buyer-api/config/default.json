@@ -1,4 +1,4 @@
 {
   "port": 9000,
-  "signignServiceUrl": "http://localhost:9001"
+  "signignServiceUrl": ""
 }

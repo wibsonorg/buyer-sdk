@@ -10,7 +10,7 @@ router.get('/', async (_req, res) => {
 
 router.get('/deep', async (_req, res) => {
   try {
-    await requestPromise.get(config.signignServiceUrl, { timeout: 1000 });
+    await requestPromise.get(`${config.signignServiceUrl}/health`, { timeout: 1000 });
     res.json({ status: 'OK' });
   } catch (error) {
     res.status(500).json({ message: 'Signing Service not responding' });
