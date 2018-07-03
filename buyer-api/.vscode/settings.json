@@ -1,10 +1,11 @@
 {
-  "editor.rulers": [80],
+  "editor.rulers": [
+    80
+  ],
   "editor.tabCompletion": true,
   "editor.tabSize": 2,
   "editor.trimAutoWhitespace": true,
   "editor.formatOnSave": true,
-
   "files.exclude": {
     "**/.DS_Store": true,
     "**/.git": true,
@@ -14,5 +15,7 @@
     "dist*": true
   },
   "files.insertFinalNewline": true,
-  "files.trimTrailingWhitespace": true
+  "files.trimTrailingWhitespace": true,
+  "eslint.run": "onSave",
+  "eslint.autoFixOnSave": "on"
 }
