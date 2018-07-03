@@ -9,10 +9,6 @@ import fs from 'fs';
 import config from '../config';
 import { health } from './routes';
 
-const ls = dir =>
-  fs.readdirSync(dir)
-    .reduce((accumulator, file) => [...accumulator, `src/routes/${file}`], []);
-
 const app = express();
 
 app.use(helmet());
@@ -23,7 +19,13 @@ if (config.env !== 'test') {
 app.use(cors());
 
 app.use('/health', health);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc({
+
+// Documentation
+const ls = dir =>
+  fs.readdirSync(dir)
+    .reduce((accumulator, file) => [...accumulator, `${dir}/${file}`], []);
+
+const swaggerSpec = swaggerJSDoc({
   swaggerDefinition: {
     info: {
       title: 'Buyer Signing Service',
@@ -31,6 +33,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc({
     },
   },
   apis: ls('src/routes'),
-})));
+});
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/api-docs.json', (_req, res) => res.json(swaggerSpec));
 
 export default app;
