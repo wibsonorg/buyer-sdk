@@ -30,7 +30,7 @@ describe('/health', () => {
 
       request(app)
         .get('/health/deep')
-        .expect(500, { message: 'Signing Service not responding' }, done);
+        .expect(500, { message: 'Signing Service not working as expected', error: '' }, done);
     });
 
     afterEach(() => {

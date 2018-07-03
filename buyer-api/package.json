@@ -20,7 +20,9 @@
     "level": "^4.0.0",
     "morgan": "^1.9.0",
     "request": "^2.87.0",
-    "request-promise-native": "^1.0.5"
+    "request-promise-native": "^1.0.5",
+    "swagger-jsdoc": "^1.9.7",
+    "swagger-ui-express": "^3.0.10"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
