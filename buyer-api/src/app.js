@@ -7,15 +7,17 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import config from '../config';
+import logger from './utils/logger';
 import { health } from './routes';
 
 const app = express();
 
 app.use(helmet());
 app.use(bodyParser.json());
-if (config.env !== 'test') {
-  app.use(morgan(config.env === 'development' ? 'dev' : 'combined'));
-}
+app.use(morgan('combined', {
+  stream: logger.stream,
+  skip: () => config.env === 'test',
+}));
 app.use(cors());
 
 app.use('/health', health);
