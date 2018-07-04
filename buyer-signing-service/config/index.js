@@ -6,4 +6,8 @@ export default {
   env: env.NODE_ENV,
   port: env.PORT,
   host: env.HOST,
+  log: {
+    error: env.ERROR_LOG,
+    combined: env.COMBINED_LOG,
+  },
 };
