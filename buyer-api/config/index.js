@@ -1,11 +1,14 @@
 require('dotenv').config();
 
+const { env } = process;
+
 export default {
-  env: process.env.NODE_ENV,
-  port: process.env.PORT,
-  buyerSigningServiceUrl: process.env.BUYER_SIGNING_SERVICE_URL,
+  env: env.NODE_ENV,
+  port: env.PORT,
+  host: env.HOST,
+  buyerSigningServiceUrl: env.BUYER_SIGNING_SERVICE_URL,
   log: {
-    error: process.env.ERROR_LOG,
-    combined: process.env.COMBINED_LOG,
+    error: env.ERROR_LOG,
+    combined: env.COMBINED_LOG,
   },
 };
