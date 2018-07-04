@@ -11,4 +11,7 @@ export default {
     error: env.ERROR_LOG,
     combined: env.COMBINED_LOG,
   },
+  web3: {
+    provider: env.WEB3_PROVIDER,
+  },
 };

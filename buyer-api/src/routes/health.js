@@ -1,6 +1,7 @@
 import express from 'express';
 import requestPromise from 'request-promise-native';
 import config from '../../config';
+import web3 from '../utils/web3';
 
 const router = express.Router();
 
@@ -41,10 +42,27 @@ router.get('/deep', async (_req, res) => {
       { timeout: 1000 },
     );
     res.json({ status: 'OK' });
-  } catch (error) {
+  } catch (err) {
     res.status(500).json({
       message: 'Signing Service not working as expected',
-      error: error.message,
+      error: err.message,
+    });
+  }
+});
+
+router.get('/balance/:address', async (req, res) => {
+  try {
+    const { address } = req.params;
+    const response = await web3.eth.getBalance(address);
+    const eth = response.toNumber();
+
+    res.json({
+      address,
+      balance: eth,
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
     });
   }
 });
