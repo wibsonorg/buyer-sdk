@@ -14,7 +14,7 @@ const app = express();
 
 app.use(helmet());
 app.use(bodyParser.json());
-app.use(morgan('combined', {
+app.use(morgan(config.logType || 'combined', {
   stream: logger.stream,
   skip: () => config.env === 'test',
 }));
