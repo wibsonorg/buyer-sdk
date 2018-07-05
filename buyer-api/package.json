@@ -6,12 +6,14 @@
   "main": "src/app.js",
   "scripts": {
     "build": "babel src -d dist",
+    "serve": "node dist/server.js",
     "start": "babel-node src/server.js",
-    "test": "NODE_ENV=test mocha --require babel-polyfill --require babel-register --recursive test/ --exit",
+    "test": "NODE_ENV=test mocha -r babel-register -r babel-polyfill --recursive test/ --exit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "dotenv": "^6.0.0",
@@ -29,7 +31,6 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
     "chai": "^4.1.2",

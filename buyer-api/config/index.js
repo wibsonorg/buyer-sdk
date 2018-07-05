@@ -1,17 +1,28 @@
+/* eslint-disable */
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 require('dotenv').config();
 
-const { env } = process;
+var _process = process,
+    env = _process.env;
 
-export default {
+
+var config = {
   env: env.NODE_ENV,
   port: env.PORT,
   host: env.HOST,
   buyerSigningServiceUrl: env.BUYER_SIGNING_SERVICE_URL,
   log: {
     error: env.ERROR_LOG,
-    combined: env.COMBINED_LOG,
+    combined: env.COMBINED_LOG
   },
   web3: {
-    provider: env.WEB3_PROVIDER,
-  },
+    provider: env.WEB3_PROVIDER
+  }
 };
+
+exports.default = config;
