@@ -52,7 +52,8 @@
       "text"
     ],
     "exclude": [
-      "src/utils"
+      "src/utils/logger.js",
+      "src/utils/storage.js"
     ]
   }
 }
