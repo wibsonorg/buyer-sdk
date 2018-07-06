@@ -1,9 +1,7 @@
 import express from 'express';
 import requestPromise from 'request-promise-native';
 import config from '../../config';
-import web3 from '../utils/web3';
-import { SampleRedisStore, SampleLevelStore } from '../utils/storage';
-import cache from '../utils/cache';
+import { web3, cache, SampleRedisStore, SampleLevelStore } from '../utils';
 
 const router = express.Router();
 
