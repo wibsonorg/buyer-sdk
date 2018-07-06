@@ -6,9 +6,9 @@ const redisCache = () =>
   redis.createClient(config.redis.socket, { prefix: 'cache' });
 
 const cache = apicache.options({
-  enabled: config.cache === 'enabled',
+  enabled: config.cache.enabled,
   debug: config.env !== 'production',
-  redisClient: redisCache,
+  redisClient: config.cache.adapter === 'redis' && redisCache(),
   statusCodes: {
     include: [200], // caches ONLY responses with a success/200 code)
   },
