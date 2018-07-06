@@ -69,7 +69,7 @@ router.get('/balance/:address', async (req, res) => {
 });
 
 router.get('/redis', async (req, res) => {
-  const redisStore = getRedisStore();
+  const redisStore = req.app.locals.getRedisStore();
   await redisStore.set('foo', 'bar');
   const bar = await redisStore.get('foo');
 
