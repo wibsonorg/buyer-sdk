@@ -3,6 +3,7 @@ import requestPromise from 'request-promise-native';
 import config from '../../config';
 import web3 from '../utils/web3';
 import { SampleRedisStore, SampleLevelStore } from '../utils/storage';
+import cache from '../utils/cache';
 
 const router = express.Router();
 
@@ -80,6 +81,10 @@ router.get('/level', async (req, res) => {
   const bar = await SampleLevelStore.db.get('foo');
 
   res.json({ foo: bar });
+});
+
+router.get('/cache', cache('5 minutes'), (req, res) => {
+  res.json({ timestamp: Date.now() });
 });
 
 export default router;
