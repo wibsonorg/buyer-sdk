@@ -16,10 +16,10 @@ const redisClient = namespace =>
   redis.createClient(config.redis.socket, { prefix: namespace });
 
 // TODO: Delete me, just for testing.
-const SampleRedisStore = redisClient('sample');
-const SampleLevelStore = new LevelDB('/tmp/sample_level');
+const getRedisStore = () => redisClient('sample');
+const getLevelStore = () => new LevelDB('/tmp/sample_level');
 
 export {
-  SampleRedisStore,
-  SampleLevelStore,
+  getRedisStore,
+  getLevelStore,
 };
