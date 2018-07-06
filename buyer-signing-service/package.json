@@ -48,7 +48,7 @@
       "text"
     ],
     "exclude": [
-      "src/utils"
+      "src/utils/logger.js"
     ]
   }
 }
