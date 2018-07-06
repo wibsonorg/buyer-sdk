@@ -2,7 +2,7 @@ import express from 'express';
 import requestPromise from 'request-promise-native';
 import config from '../../config';
 import web3 from '../utils/web3';
-import { getRedisStore, getLevelStore } from '../utils/storage';
+import { getLevelStore } from '../utils/storage';
 
 const router = express.Router();
 
