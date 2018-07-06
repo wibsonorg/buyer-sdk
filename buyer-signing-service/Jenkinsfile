@@ -75,7 +75,7 @@ tar -zcf ../artifacts/buyer-signing-service.tar.gz .'''
     }
 
     always {
-      publishHTML(allowMissing: true, alwaysLinkToLastBuild: false, keepAll: true, reportDir: '${workdir}/coverage', reportFiles: 'index.html', reportTitles: 'Test Coverage Report', reportName: 'Test Coverage Report')
+      publishHTML(allowMissing: true, alwaysLinkToLastBuild: false, keepAll: true, reportDir: "${workdir}/coverage", reportFiles: 'index.html', reportTitles: 'Test Coverage Report', reportName: 'Test Coverage Report')
 
     }
 
