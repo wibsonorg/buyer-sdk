@@ -8,8 +8,8 @@
     "build": "babel src -d dist",
     "serve": "node dist/server.js",
     "start": "babel-node src/server.js",
-    "test": "NODE_ENV=test mocha -r babel-register -r babel-polyfill --recursive test/ --exit",
-    "test:coverage": "NODE_ENV=test nyc mocha -r babel-register -r babel-polyfill --recursive test/ --exit",
+    "test": "mocha -r babel-register -r babel-polyfill --recursive test/ --exit",
+    "test:coverage": "nyc mocha -r babel-register -r babel-polyfill --recursive test/ --exit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
