@@ -8,13 +8,16 @@ import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import config from '../config';
 import logger from './utils/logger';
+import { getRedisStore } from './utils/storage';
+
 import { health } from './routes';
 
 const app = express();
+app.locals.getRedisStore = getRedisStore;
 
 app.use(helmet());
 app.use(bodyParser.json());
-app.use(morgan('combined', {
+app.use(morgan(config.logType || 'combined', {
   stream: logger.stream,
   skip: () => config.env === 'test',
 }));

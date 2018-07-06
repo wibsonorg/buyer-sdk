@@ -37,4 +37,20 @@ describe('/health', () => {
       requestPromise.get.restore();
     });
   });
+
+  describe('GET /redis', () => {
+    it('responds with an OK status', (done) => {
+      const getRedisStore = sinon.stub();
+      const memoryStorage = {};
+      getRedisStore.returns({
+        set: (k, v) => { memoryStorage[k] = v; },
+        get: k => memoryStorage[k],
+      });
+      app.locals.getRedisStore = getRedisStore;
+
+      request(app)
+        .get('/health/redis')
+        .expect(200, { foo: 'bar' }, done);
+    });
+  });
 });

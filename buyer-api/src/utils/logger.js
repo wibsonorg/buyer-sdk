@@ -1,18 +1,17 @@
 import winston from 'winston';
 import config from '../../config';
 
-const logger = winston.createLogger({
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.printf(info => `${info.level} ${info.message}`),
-      ),
-    }),
-    new winston.transports.File({ filename: config.log.error, level: 'error' }),
-    new winston.transports.File({ filename: config.log.combined }),
-  ],
-});
+const logger = winston.createLogger();
+
+if (config.env === 'production') {
+  logger.add(new winston.transports.Console());
+  logger.add(new winston.transports.File({ filename: config.log.combined }));
+  logger.add(new winston.transports.File({ filename: config.log.error, level: 'error' }));
+} else if (config.env === 'development') {
+  logger.add(new winston.transports.Console({ format: winston.format.simple() }));
+} else if (config.env === 'test') {
+  logger.add(new winston.transports.Console({ silent: true }));
+}
 
 module.exports = logger;
 module.exports.stream = {

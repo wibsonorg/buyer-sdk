@@ -46,6 +46,9 @@
     "reporter": [
       "html",
       "text"
+    ],
+    "exclude": [
+      "src/utils/logger.js"
     ]
   }
 }
