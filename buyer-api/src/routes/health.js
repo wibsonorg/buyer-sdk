@@ -1,7 +1,7 @@
 import express from 'express';
 import requestPromise from 'request-promise-native';
 import config from '../../config';
-import { web3, cache, SampleRedisStore, SampleLevelStore } from '../utils';
+import { web3, cache, getLevelStore } from '../utils';
 
 const router = express.Router();
 
@@ -68,15 +68,17 @@ router.get('/balance/:address', async (req, res) => {
 });
 
 router.get('/redis', async (req, res) => {
-  await SampleRedisStore.set('foo', 'bar');
-  const bar = await SampleRedisStore.get('foo');
+  const redisStore = req.app.locals.getRedisStore();
+  await redisStore.set('foo', 'bar');
+  const bar = await redisStore.get('foo');
 
   res.json({ foo: bar });
 });
 
 router.get('/level', async (req, res) => {
-  await SampleLevelStore.db.put('foo', 'bar');
-  const bar = await SampleLevelStore.db.get('foo');
+  const levelStore = getLevelStore();
+  await levelStore.db.put('foo', 'bar');
+  const bar = await levelStore.db.get('foo');
 
   res.json({ foo: bar });
 });

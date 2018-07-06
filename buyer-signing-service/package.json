@@ -8,7 +8,8 @@
     "build": "babel src -d dist",
     "serve": "node dist/server.js",
     "start": "babel-node src/server.js",
-    "test": "NODE_ENV=test mocha -r babel-register -r babel-polyfill --recursive test/ --exit",
+    "test": "mocha -r babel-register -r babel-polyfill --recursive test/ --exit",
+    "test:coverage": "nyc mocha -r babel-register -r babel-polyfill --recursive test/ --exit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -35,7 +36,19 @@
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0",
     "mocha": "^5.2.0",
+    "nyc": "12.0.2",
     "sinon": "^6.1.0",
     "supertest": "^3.1.0"
+  },
+  "nyc": {
+    "check-coverage": true,
+    "cache": false,
+    "reporter": [
+      "html",
+      "text"
+    ],
+    "exclude": [
+      "src/utils/logger.js"
+    ]
   }
 }

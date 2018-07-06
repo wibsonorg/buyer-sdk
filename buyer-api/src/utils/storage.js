@@ -18,10 +18,10 @@ const redisClient = ns =>
   asyncRedis.decorate(redis.createClient(redisSocket, { prefix: ns }));
 
 // TODO: Delete me, just for testing.
-const SampleRedisStore = redisClient('sample');
-const SampleLevelStore = new LevelDB('/tmp/sample_level');
+const getRedisStore = () => redisClient('sample');
+const getLevelStore = () => new LevelDB('/tmp/sample_level');
 
 export {
-  SampleRedisStore,
-  SampleLevelStore,
+  getRedisStore,
+  getLevelStore,
 };
