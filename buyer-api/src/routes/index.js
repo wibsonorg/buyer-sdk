@@ -8,5 +8,6 @@
  */
 
 import health from './health';
+import notaries from './notaries';
 
-export { health }; // eslint-disable-line import/prefer-default-export
+export { health, notaries };
