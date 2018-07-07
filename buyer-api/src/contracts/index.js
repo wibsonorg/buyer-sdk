@@ -1,12 +1,29 @@
 import TruffleContract from 'truffle-contract';
 
-import DataTokenContract from './abis/Wibcoin.json';
-import DataExchangeContract from './abis/DataExchange.json';
-import DataOrderContract from './abis/DataOrder.json';
+import DataTokenContract from './definitions/Wibcoin.json';
+import DataExchangeContract from './definitions/DataExchange.json';
+import DataOrderContract from './definitions/DataOrder.json';
 
-let dataTokenContractInstance = null;
-let dataExchangeContractInstance = null;
+let dataToken = null;
+let dataExchange = null;
 let dataOrderContract = null;
+
+/**
+ * @function getContract
+ * @param {Object} web3 the web3 object.
+ * @param {String} contractDefinition the contract definition in json format.
+ * @returns {Object} A representation of the contract configured with current web3 provider.
+ */
+const getContract = (web3, contractDefinition) => {
+  const contract = TruffleContract(contractDefinition);
+  contract.setProvider(web3.currentProvider);
+
+  // @TODO: Dirty hack to support web3@1.0.0 in truffle. Take it out when there is
+  // official support. @see {@link https://github.com/trufflesuite/truffle-contract/issues/56}
+  contract.currentProvider.sendAsync = () => contract.currentProvider.send(...arguments);
+
+  return contract;
+};
 
 /**
  * @async
@@ -19,42 +36,21 @@ let dataOrderContract = null;
  * the data exchange, and the configured data order truffle contract.
  */
 const getContracts = async (web3, dataTokenAddress, dataExchangeAddress) => {
-  if (dataTokenContractInstance && dataExchangeContractInstance && dataOrderContract) {
-    return {
-      dataTokenContractInstance,
-      dataExchangeContractInstance,
-      dataOrderContract,
-    };
+  if (!dataToken && dataTokenAddress) {
+    const dataTokenContract = getContract(web3, DataTokenContract);
+    dataToken = await dataTokenContract.at(dataTokenAddress);
   }
 
-  const dataTokenContract = TruffleContract(DataTokenContract);
-  const dataExchangeContract = TruffleContract(DataExchangeContract);
-  dataOrderContract = TruffleContract(DataOrderContract);
+  if (!dataExchange && dataExchangeAddress) {
+    const dataExchangeContract = getContract(web3, DataExchangeContract);
+    dataExchange = await dataExchangeContract.at(dataExchangeAddress);
+  }
 
-  dataTokenContract.setProvider(web3.currentProvider);
-  dataExchangeContract.setProvider(web3.currentProvider);
-  dataOrderContract.setProvider(web3.currentProvider);
-
-  // @TODO: Dirty hack to support web3@1.0.0 in truffle. Take it out when there is
-  // official support. @see {@link https://github.com/trufflesuite/truffle-contract/issues/56}
-  dataTokenContract.currentProvider.sendAsync = () =>
-    dataTokenContract.currentProvider.send(...arguments);
-
-  dataExchangeContract.currentProvider.sendAsync = () =>
-    dataExchangeContract.currentProvider.send(...arguments);
-
-  dataOrderContract.currentProvider.sendAsync = () =>
-    dataOrderContract.currentProvider.send(...arguments);
-  // ---
-
-  [dataTokenContractInstance, dataExchangeContractInstance] = await Promise.all([
-    dataTokenContract.at(dataTokenAddress),
-    dataExchangeContract.at(dataExchangeAddress),
-  ]);
+  dataOrderContract = dataOrderContract || getContract(web3, DataOrderContract);
 
   return {
-    dataTokenContractInstance,
-    dataExchangeContractInstance,
+    dataToken,
+    dataExchange,
     dataOrderContract,
   };
 };
