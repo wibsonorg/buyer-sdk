@@ -34,10 +34,10 @@ router.get('/', cache('1 day'), async (req, res) => {
 
 /**
  * @swagger
- * /notaries/:notaryAddress
+ * /notaries/:notaryAddress:
  *   get:
  *     description: Returns the notary's information registered in the Data Exchange
- *     paths:
+ *     parameters:
  *       - name: notaryAddress
  *         description: Notary's ethereum address
  *         required: true
@@ -47,6 +47,8 @@ router.get('/', cache('1 day'), async (req, res) => {
  *     responses:
  *       200:
  *         description: When the notary could be fetched correctly.
+ *       404:
+ *         description: When the notary is not registered in the Data Exchange.
  *       500:
  *         description: When the fetch failed.
  */
@@ -59,10 +61,12 @@ router.get('/:notaryAddress', cache('1 day'), async (req, res) => {
       return;
     }
 
-    const result = {
-      notaries: await getNotaryInfo(web3, notaryAddress),
-    };
-    res.json(result);
+    const result = await getNotaryInfo(web3, notaryAddress);
+    if (result.isRegistered) {
+      res.json(result);
+    } else {
+      res.status(404).send();
+    }
   } catch (err) {
     logger.error(err);
     const error = errorResponse(`Couldn't get notary information. Error: ${err.message}`);

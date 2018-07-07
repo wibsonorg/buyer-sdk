@@ -4,8 +4,17 @@ import { logger, redisClient } from '../utils';
 
 const dataExchangeAddress = config.contracts.addresses.dataExchange;
 
-const notaryCache = redisClient('cache.notary');
+const notaryCache = redisClient('cache.notary.');
 const notaryTTL = Number(config.contracts.cache.notaryTTL);
+
+/**
+ * @async
+ * @function addNotaryToCache
+ * @param {Object} notaryInfo the notary information to store in the cache
+ * @returns {Promise} Promise which resolves to redis result
+ */
+const addNotaryToCache = notaryInfo =>
+  notaryCache.set(notaryInfo[0], JSON.stringify(notaryInfo), 'EX', notaryTTL);
 
 /**
  * @async
@@ -22,9 +31,14 @@ const getNotaryInfo = async (web3, address) => {
   if (!notaryInfo) {
     logger.debug('Notary :: Cache Miss :: %s :: Fetching from blockchain...', address);
     notaryInfo = await dataExchange.getNotaryInfo(address);
-    await notaryCache.set(notaryInfo[0], notaryInfo, 'EX', notaryTTL);
+
+    if (notaryInfo[4]) {
+      // if notary is registered in Data Exchange
+      await addNotaryToCache(notaryInfo);
+    }
   } else {
     logger.debug('Notary :: Cache Hit :: %s', address);
+    notaryInfo = JSON.parse(notaryInfo);
   }
 
   return {
