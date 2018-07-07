@@ -16,6 +16,10 @@ var config = {
   port: env.PORT,
   host: env.HOST,
   buyerSigningServiceUrl: env.BUYER_SIGNING_SERVICE_URL,
+  cache: {
+    enabled: env.CACHE === 'enabled',
+    adapter: env.CACHE_ADAPTER
+  },
   logType: env.LOG_TYPE,
   log: {
     error: env.ERROR_LOG,

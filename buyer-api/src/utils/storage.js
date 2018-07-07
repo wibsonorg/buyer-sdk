@@ -1,4 +1,5 @@
-import redis from 'async-redis';
+import asyncRedis from 'async-redis';
+import redis from 'redis';
 import level from 'level';
 import config from '../../config';
 
@@ -12,8 +13,9 @@ class LevelDB {
   }
 }
 
-const redisClient = namespace =>
-  redis.createClient(config.redis.socket, { prefix: namespace });
+const redisSocket = config.redis.socket;
+const redisClient = ns =>
+  asyncRedis.decorate(redis.createClient(redisSocket, { prefix: ns }));
 
 // TODO: Delete me, just for testing.
 const getRedisStore = () => redisClient('sample');

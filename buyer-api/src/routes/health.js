@@ -1,8 +1,7 @@
 import express from 'express';
 import requestPromise from 'request-promise-native';
 import config from '../../config';
-import web3 from '../utils/web3';
-import { getLevelStore } from '../utils/storage';
+import { web3, cache, getLevelStore } from '../utils';
 
 const router = express.Router();
 
@@ -82,6 +81,10 @@ router.get('/level', async (req, res) => {
   const bar = await levelStore.db.get('foo');
 
   res.json({ foo: bar });
+});
+
+router.get('/cache', cache('5 minutes'), (req, res) => {
+  res.json({ timestamp: Date.now() });
 });
 
 export default router;
