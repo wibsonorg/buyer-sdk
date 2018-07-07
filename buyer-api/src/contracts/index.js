@@ -28,14 +28,14 @@ const getContract = (web3, contractDefinition) => {
 /**
  * @async
  * @function getContracts
- * @param {Object} web3 the web3 object
- * @param {String} dataTokenAddress the ethereum address to the data token used.
- * @param {String} dataExchangeAddress the ethereum address to the data exchange used.
+ * @param {Object} parameters.web3 the web3 object.
+ * @param {String} parameters.dataTokenAddress the ethereum address to the data token used.
+ * @param {String} parameters.dataExchangeAddress the ethereum address to the data exchange used.
  * @throws When truffle can not instantiate the contracts at the given addresses.
  * @returns {Promise} Promise which resolves to an instance of the data token and
  * the data exchange, and the configured data order truffle contract.
  */
-const getContracts = async (web3, dataTokenAddress, dataExchangeAddress) => {
+const getContracts = async ({ web3, dataTokenAddress, dataExchangeAddress }) => {
   if (!dataToken && dataTokenAddress) {
     const dataTokenContract = getContract(web3, DataTokenContract);
     dataToken = await dataTokenContract.at(dataTokenAddress);

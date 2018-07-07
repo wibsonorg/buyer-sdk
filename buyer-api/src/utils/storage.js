@@ -22,6 +22,7 @@ const getRedisStore = () => redisClient('sample');
 const getLevelStore = () => new LevelDB('/tmp/sample_level');
 
 export {
+  redisClient,
   getRedisStore,
   getLevelStore,
 };

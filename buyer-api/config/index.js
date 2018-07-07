@@ -16,6 +16,15 @@ var config = {
   port: env.PORT,
   host: env.HOST,
   buyerSigningServiceUrl: env.BUYER_SIGNING_SERVICE_URL,
+  contracts: {
+    addresses: {
+      dataToken: env.DATA_TOKEN_CONTRACT_ADDRESS,
+      dataExchange: env.DATA_EXCHANGE_CONTRACT_ADDRESS,
+    },
+    cache: {
+      notaryTTL: env.CONTRACTS_CACHE_NOTARY_TTL
+    }
+  },
   cache: {
     enabled: env.CACHE === 'enabled',
     adapter: env.CACHE_ADAPTER
