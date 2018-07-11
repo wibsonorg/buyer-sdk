@@ -1,5 +1,6 @@
 import express from 'express';
 import { createDataOrder } from '../facades';
+import { asyncError } from '../middlewares/error-handling';
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ const toString = (value) => {
  *         name: filters
  *         type: string
  *         description: Target audience of the order
- *         example: age:20,gender:male
+ *         example: { age: 20 }
  *       - in: body
  *         name: dataRequest
  *         type: string
@@ -64,7 +65,7 @@ const toString = (value) => {
  *       422:
  *         description: When the app is OK
  */
-router.post('/', async (req, res) => {
+router.post('/', asyncError(async (req, res) => {
   const {
     filters,
     dataRequest,
@@ -72,27 +73,25 @@ router.post('/', async (req, res) => {
     initialBudgetForAudits,
     termsAndConditions,
     buyerUrl,
-    buyerPublicKey,
     buyerAddress,
   } = req.body;
 
-  if (toString(buyerUrl).length === 0 || toString(buyerPublicKey).length === 0) {
+  if (toString(buyerUrl).length === 0) {
     // res.boom.badData(...)
     res.status(422).json({ status: 'unprocessable_entity' });
   } else {
-    const response = await createDataOrder(
-      buyerAddress,
+    const response = await createDataOrder({
       filters,
       dataRequest,
       price,
       initialBudgetForAudits,
       termsAndConditions,
-      buyerUrl,
-      buyerPublicKey,
-    );
+      buyerUrl, // WHERE IS THIS STORED?
+      buyerAddress,
+    });
 
     res.json(response);
   }
-});
+}));
 
 export default router;

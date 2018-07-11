@@ -7,6 +7,7 @@ import swaggerUi from 'swagger-ui-express';
 import config from '../config';
 import { logger, createRedisStore, createLevelStore } from './utils';
 import schema from './schema';
+import errorHandler from './middlewares/error-handling';
 
 import { health, notaries, dataOrders } from './routes';
 
@@ -30,5 +31,6 @@ app.use('/notaries', notaries);
 app.use('/data-orders', dataOrders);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
 app.get('/api-docs.json', (_req, res) => res.json(schema));
+app.use(errorHandler);
 
 module.exports = app;

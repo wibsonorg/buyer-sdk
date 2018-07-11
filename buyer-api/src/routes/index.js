@@ -8,7 +8,7 @@
  */
 
 import health from './health';
-import dataOrders from './dataOrders';
 import notaries from './notaries';
+import dataOrders from './dataOrders';
 
 export { health, notaries, dataOrders };

@@ -1,12 +1,17 @@
 import request from 'supertest';
 import { mockStorage, restoreMocks } from '../helpers';
+import web3 from '../../src/utils/web3';
 
 describe('/data-orders', () => {
   let app;
+  const [buyerAddress] = web3.eth.accounts;
 
   const dataOrder = {
-    buyerAddress: 'buyer address',
-    filters: 'age:20,gender:male',
+    buyerAddress,
+    filters: {
+      age: '30..35',
+      gender: 'male',
+    },
     dataRequest: 'data request',
     price: 20,
     initialBudgetForAudits: 10,
@@ -24,7 +29,7 @@ describe('/data-orders', () => {
     restoreMocks();
   });
 
-  describe.only('POST /', () => {
+  describe('POST /', () => {
     it('responds with an Unprocessable Entity status when buyerUrl is not present', (done) => {
       request(app)
         .post('/data-orders')
@@ -32,14 +37,9 @@ describe('/data-orders', () => {
         .expect(422, { status: 'unprocessable_entity' }, done);
     });
 
-    it('responds with an Unprocessable Entity status when buyerPublicKey is not present', (done) => {
-      request(app)
-        .post('/data-orders')
-        .send({ ...dataOrder, buyerUrl: 'https://buyer.example.com/data' })
-        .expect(422, { status: 'unprocessable_entity' }, done);
-    });
+    it('responds with an OK status', function (done) { // eslint-disable-line func-names
+      this.timeout(120 * 1000);
 
-    it('responds with an OK status', (done) => {
       request(app)
         .post('/data-orders')
         .send({

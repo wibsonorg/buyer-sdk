@@ -77,3 +77,6 @@ typings/
 
 # IDE related
 .vscode
+
+# Temporal files
+tmp/
