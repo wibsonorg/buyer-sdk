@@ -17,15 +17,6 @@ let dataOrderContract = null;
 const getContract = (web3, contractDefinition) => {
   const contract = TruffleContract(contractDefinition);
   contract.setProvider(web3.currentProvider);
-
-  // @TODO: Dirty hack to support web3@1.0.0 in truffle. Take it out when there is
-  // official support. @see {@link https://github.com/trufflesuite/truffle-contract/issues/56}
-  /* eslint-disable */
-  contract.currentProvider.sendAsync = function () {
-    return contract.currentProvider.send.apply(contract.currentProvider, arguments);
-  };
-  /* eslint-enable */
-
   return contract;
 };
 

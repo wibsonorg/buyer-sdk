@@ -1,4 +1,5 @@
 import express from 'express';
+import web3Utils from 'web3-utils';
 import { errorResponse, invalidAddressResponse } from '../responses';
 import { cache, logger, web3 } from '../utils';
 
@@ -56,7 +57,7 @@ router.get('/:notaryAddress', cache('1 day'), async (req, res) => {
   try {
     const { notaryAddress } = req.params;
 
-    if (!web3.utils.isAddress(notaryAddress)) {
+    if (!web3Utils.isAddress(notaryAddress)) {
       res.status(400).send(invalidAddressResponse('notaryAddress'));
       return;
     }
