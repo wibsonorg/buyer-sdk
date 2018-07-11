@@ -39,7 +39,7 @@ var config = {
   },
   redis: {
     socket: env.REDIS_SOCKET
-  }
+  },
 };
 
 exports.default = config;

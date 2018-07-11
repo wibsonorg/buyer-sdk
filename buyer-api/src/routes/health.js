@@ -1,7 +1,7 @@
 import express from 'express';
 import requestPromise from 'request-promise-native';
 import config from '../../config';
-import { web3, cache, getLevelStore } from '../utils';
+import { web3, cache } from '../utils';
 
 const router = express.Router();
 
@@ -68,19 +68,19 @@ router.get('/balance/:address', async (req, res) => {
 });
 
 router.get('/redis', async (req, res) => {
-  const redisStore = req.app.locals.getRedisStore();
-  await redisStore.set('foo', 'bar');
-  const bar = await redisStore.get('foo');
+  const { stores: { redis } } = req.app.locals;
+  await redis.set('foo', 'bar');
+  const bar = await redis.get('foo');
 
   res.json({ foo: bar });
 });
 
 router.get('/level', async (req, res) => {
-  const levelStore = getLevelStore();
-  await levelStore.db.put('foo', 'bar');
-  const bar = await levelStore.db.get('foo');
+  const { stores: { level } } = req.app.locals;
+  await level.put('foz', 'baz');
+  const baz = await level.get('foz');
 
-  res.json({ foo: bar });
+  res.json({ foz: baz });
 });
 
 router.get('/cache', cache('5 minutes'), (req, res) => {

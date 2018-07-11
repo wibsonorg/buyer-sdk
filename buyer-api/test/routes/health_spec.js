@@ -1,9 +1,22 @@
 import request from 'supertest';
 import requestPromise from 'request-promise-native';
 import sinon from 'sinon';
-import app from '../../src/app';
+import { mockStorage, restoreMocks } from '../helpers';
 
 describe('/health', () => {
+  let app;
+
+  beforeEach(function (done) { // eslint-disable-line func-names
+    this.timeout(5000);
+    mockStorage();
+    app = require('../../src/app'); // eslint-disable-line global-require
+    done();
+  });
+
+  afterEach(() => {
+    restoreMocks();
+  });
+
   describe('GET /', () => {
     it('responds with an OK status', (done) => {
       request(app)
@@ -40,17 +53,25 @@ describe('/health', () => {
 
   describe('GET /redis', () => {
     it('responds with an OK status', (done) => {
-      const getRedisStore = sinon.stub();
-      const memoryStorage = {};
-      getRedisStore.returns({
-        set: (k, v) => { memoryStorage[k] = v; },
-        get: k => memoryStorage[k],
-      });
-      app.locals.getRedisStore = getRedisStore;
-
       request(app)
         .get('/health/redis')
         .expect(200, { foo: 'bar' }, done);
+    });
+  });
+
+  describe('GET /level', () => {
+    it('responds with an OK status', (done) => {
+      request(app)
+        .get('/health/level')
+        .expect(200, { foz: 'baz' }, done);
+    });
+  });
+
+  describe('GET /cache', () => {
+    it('responds with an OK status', (done) => {
+      request(app)
+        .get('/health/cache')
+        .expect(200, done);
     });
   });
 });
