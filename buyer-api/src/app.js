@@ -3,13 +3,12 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import fs from 'fs';
 import config from '../config';
 import { logger, createRedisStore, createLevelStore } from './utils';
+import schema from './schema';
 
-import { health, notaries } from './routes';
+import { health, notaries, dataOrders } from './routes';
 
 const app = express();
 // TODO: To be removed
@@ -28,21 +27,8 @@ app.use(cors());
 
 app.use('/health', health);
 app.use('/notaries', notaries);
-
-// Documentation
-const ls = dir =>
-  fs.readdirSync(dir).reduce((accumulator, file) => [...accumulator, `${dir}/${file}`], []);
-
-const swaggerSpec = swaggerJSDoc({
-  swaggerDefinition: {
-    info: {
-      title: 'Buyer API',
-      version: '1.0.0',
-    },
-  },
-  apis: ls(`${__dirname}/routes`),
-});
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.get('/api-docs.json', (_req, res) => res.json(swaggerSpec));
+app.use('/data-orders', dataOrders);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
+app.get('/api-docs.json', (_req, res) => res.json(schema));
 
 module.exports = app;

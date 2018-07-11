@@ -8,6 +8,7 @@
  */
 
 import health from './health';
+import dataOrders from './dataOrders';
 import notaries from './notaries';
 
-export { health, notaries };
+export { health, notaries, dataOrders };
