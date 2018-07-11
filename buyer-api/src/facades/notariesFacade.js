@@ -1,10 +1,10 @@
 import config from '../../config';
 import getContracts from '../contracts';
-import { logger, redisClient } from '../utils';
+import { logger, createRedisStore } from '../utils';
 
 const dataExchangeAddress = config.contracts.addresses.dataExchange;
 
-const notaryCache = redisClient('cache.notary.');
+const notaryCache = createRedisStore('cache.notary.');
 const notaryTTL = Number(config.contracts.cache.notaryTTL);
 
 /**
