@@ -9,7 +9,7 @@ import fs from 'fs';
 import config from '../config';
 import { logger, createRedisStore, createLevelStore } from './utils';
 
-import { health } from './routes';
+import { health, notaries } from './routes';
 
 const app = express();
 // TODO: To be removed
@@ -27,11 +27,11 @@ app.use(morgan(config.logType || 'combined', {
 app.use(cors());
 
 app.use('/health', health);
+app.use('/notaries', notaries);
 
 // Documentation
 const ls = dir =>
-  fs.readdirSync(dir)
-    .reduce((accumulator, file) => [...accumulator, `${dir}/${file}`], []);
+  fs.readdirSync(dir).reduce((accumulator, file) => [...accumulator, `${dir}/${file}`], []);
 
 const swaggerSpec = swaggerJSDoc({
   swaggerDefinition: {
