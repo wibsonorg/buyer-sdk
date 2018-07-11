@@ -7,13 +7,16 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import config from '../config';
-import logger from './utils/logger';
-import { getRedisStore } from './utils/storage';
+import { logger, createRedisStore, createLevelStore } from './utils';
 
 import { health } from './routes';
 
 const app = express();
-app.locals.getRedisStore = getRedisStore;
+// TODO: To be removed
+app.locals.stores = {
+  redis: createRedisStore('sample'),
+  level: createLevelStore('/tmp/sample_level'),
+};
 
 app.use(helmet());
 app.use(bodyParser.json());
@@ -42,4 +45,4 @@ const swaggerSpec = swaggerJSDoc({
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get('/api-docs.json', (_req, res) => res.json(swaggerSpec));
 
-export default app;
+module.exports = app;
