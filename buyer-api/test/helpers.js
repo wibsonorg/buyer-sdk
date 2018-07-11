@@ -7,10 +7,8 @@ const level = createLevel();
 
 export const mockStorage = () =>
   td.replace('../src/utils/storage', {
-    // eslint-disable-next-line no-unused-vars
-    createRedisStore: ns => asyncRedis.decorate(redisMock.createClient()),
-    // eslint-disable-next-line no-unused-vars
-    createLevelStore: ns => level('test'),
+    createRedisStore: () => asyncRedis.decorate(redisMock.createClient()),
+    createLevelStore: () => level('test'),
   });
 
 export const restoreMocks = () => td.reset();
