@@ -1,5 +1,6 @@
 import express from 'express';
-import asyncError from '../../helpers';
+import { asyncError } from '../../helpers';
+import signNewOrderFacade from '../../facades/sign/newOrderFacade';
 
 const router = express.Router();
 
@@ -12,14 +13,14 @@ const router = express.Router();
  * @return {Array} Error messages
  */
 const validate = ({
-  nonce, // -> web3
-  gasPrice, // -> XXX
-  filters, // -> request
-  dataRequest, // -> request
-  price, // -> request
-  initialBudgetForAudits, // -> request
-  termsAndConditions, // -> Config
-  buyerURL, // -> Config
+  nonce,
+  gasPrice,
+  filters,
+  dataRequest,
+  price,
+  initialBudgetForAudits,
+  termsAndConditions,
+  buyerURL,
 }) => {
   const fields = {
     nonce: nonce && parseInt(nonce, 10),
@@ -117,7 +118,17 @@ router.post('/new-order', asyncError(async (req, res) => {
   if (errors.length > 0) {
     res.boom.badData('Validation failed', { validation: errors });
   } else {
-    res.json({ status: 'OK' });
+    const response = signNewOrderFacade({
+      nonce,
+      gasPrice,
+      transactionParameters,
+    });
+
+    if (response.success()) {
+      res.json({ signedTransaction: response.result() });
+    } else {
+      res.boom.badData('Operation validation failed', { validation: errors });
+    }
   }
 }));
 

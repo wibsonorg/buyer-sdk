@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '../../../src/app';
 
-describe.only('/sign', () => {
+describe('/sign', () => {
   const nonce = 0;
   const gasPrice = 10000;
   const filters = {

@@ -1,4 +1,5 @@
-const asyncError = fn => (req, res, next) =>
-  Promise.resolve(fn(req, res, next)).catch(next);
+import asyncError from './asyncError';
+import buyer from './buyer';
+import ethereum from './ethereum';
 
-export default asyncError;
+export { asyncError, buyer, ethereum };
