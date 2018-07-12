@@ -2,13 +2,14 @@ import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cors from 'cors';
+import boom from 'express-boom';
 import bodyParser from 'body-parser';
-import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import fs from 'fs';
 import config from '../config';
 import logger from './utils/logger';
-import { health } from './routes';
+import schema from './schema';
+import { health, sign } from './routes';
+import errorHandler from './middlewares/errorHandler';
 
 const app = express();
 
@@ -19,24 +20,13 @@ app.use(morgan(config.logType || 'combined', {
   skip: () => config.env === 'test',
 }));
 app.use(cors());
+app.use(boom());
 
 app.use('/health', health);
+app.use('/sign', sign.newOrder);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
+app.get('/api-docs.json', (_req, res) => res.json(schema));
 
-// Documentation
-const ls = dir =>
-  fs.readdirSync(dir)
-    .reduce((accumulator, file) => [...accumulator, `${dir}/${file}`], []);
-
-const swaggerSpec = swaggerJSDoc({
-  swaggerDefinition: {
-    info: {
-      title: 'Buyer Signing Service',
-      version: '1.0.0',
-    },
-  },
-  apis: ls('src/routes'),
-});
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.get('/api-docs.json', (_req, res) => res.json(swaggerSpec));
+app.use(errorHandler); // This MUST always go after any other app.use(...)
 
 export default app;

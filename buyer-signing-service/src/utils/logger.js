@@ -9,7 +9,7 @@ if (config.env === 'production') {
   logger.add(new winston.transports.File({ filename: config.log.error, level: 'error' }));
 } else if (config.env === 'development') {
   logger.add(new winston.transports.Console({ format: winston.format.simple() }));
-} else if (config.env === 'test') {
+} else {
   logger.add(new winston.transports.Console({ silent: true }));
 }
 

@@ -1,3 +1,4 @@
 import health from './health';
+import * as sign from './sign';
 
-export { health }; // eslint-disable-line import/prefer-default-export
+export { health, sign };
