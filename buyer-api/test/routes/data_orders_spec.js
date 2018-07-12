@@ -1,10 +1,19 @@
 import request from 'supertest';
+import config from '../../config';
 import { mockStorage, restoreMocks } from '../helpers';
 import web3 from '../../src/utils/web3';
+import getContracts from '../../src/contracts';
 
-describe('/data-orders', () => {
+describe.only('/data-orders', () => {
   let app;
+  let dataExchange;
+  let dataToken;
   const [buyerAddress] = web3.eth.accounts;
+
+  const {
+    dataExchange: dataExchangeAddress,
+    dataToken: dataTokenAddress,
+  } = config.contracts.addresses;
 
   const dataOrder = {
     buyerAddress,
@@ -18,11 +27,14 @@ describe('/data-orders', () => {
     termsAndConditions: 'DataOrder T&C',
   };
 
-  beforeEach(function (done) { // eslint-disable-line func-names
+  beforeEach(async function () { // eslint-disable-line func-names
     this.timeout(5000);
     mockStorage();
     app = require('../../src/app'); // eslint-disable-line global-require
-    done();
+    const contracts = await getContracts({ web3, dataExchangeAddress, dataTokenAddress });
+    dataExchange = contracts.dataExchange;
+    dataToken = contracts.dataToken;
+    await dataToken.approve(dataExchange.address, 3000, { from: buyerAddress });
   });
 
   afterEach(() => {
@@ -38,7 +50,7 @@ describe('/data-orders', () => {
     });
 
     it('responds with an OK status', function (done) { // eslint-disable-line func-names
-      this.timeout(120 * 1000);
+      this.timeout(60 * 1000);
 
       request(app)
         .post('/data-orders')
