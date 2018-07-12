@@ -1,5 +1,5 @@
 import asyncError from './asyncError';
-import buyer from './buyer';
-import ethereum from './ethereum';
+import * as buyer from './buyer';
+import { generateData, signTransaction } from './ethereum';
 
-export { asyncError, buyer, ethereum };
+export { asyncError, buyer, generateData, signTransaction };

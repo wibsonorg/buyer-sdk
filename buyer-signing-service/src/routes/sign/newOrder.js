@@ -80,8 +80,8 @@ const validate = ({
  *     type: object
  *     properties:
  *       filters:
- *         type: object
- *         description: Target audience of the order.
+ *         type: string
+ *         description: Hashed target audience.
  *         required: true
  *       dataRequest:
  *         type: string
@@ -118,9 +118,11 @@ router.post('/new-order', asyncError(async (req, res) => {
     });
 
     if (response.success()) {
-      res.json({ signedTransaction: response.result() });
+      res.json({ signedTransaction: response.result });
     } else {
-      res.boom.badData('Operation validation failed', { validation: errors });
+      res.boom.badData('Operation validation failed', {
+        validation: response.errors,
+      });
     }
   }
 }));

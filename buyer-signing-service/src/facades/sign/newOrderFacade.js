@@ -9,13 +9,19 @@ const {
   schema,
 } = getDataExchangeMethodSignature('newOrder');
 
+const {
+  getAddress,
+  getPublicKey,
+  getPrivateKey,
+} = buyer;
+
 /**
  * @returns {Array} Error messages
  */
-const validate = ({ nonce, gasPrice, transactionParameters }) => {
+const validate = ({ nonce, gasPrice, params }) => {
   let errors = [];
 
-  if (nonce === null || nonce === undefined) {
+  if (!nonce === null || nonce === undefined) {
     errors = ['Field \'nonce\' is required'];
   }
 
@@ -25,9 +31,10 @@ const validate = ({ nonce, gasPrice, transactionParameters }) => {
 
   return schema.reduce((accumulator, { name }) => {
     // TODO: type validation/coercion should also be done
-    const value = transactionParameters[name];
+    const value = params[name];
+
     if (value === null || value === undefined) {
-      return [...accumulator, `Field '${name}' is mandatory`];
+      return [...accumulator, `Field '${name}' is required`];
     }
 
     return accumulator;
@@ -43,13 +50,15 @@ const validate = ({ nonce, gasPrice, transactionParameters }) => {
  * @returns {Response} with the result of the operation
  */
 const newOrderFacade = ({ nonce, gasPrice, transactionParameters }) => {
-  const errors = validate({ nonce, gasPrice, transactionParameters });
+  const params = { ...transactionParameters, publicKey: getPublicKey() };
+  const errors = validate({ nonce, gasPrice, params });
+
   if (errors.length > 0) {
     return new Response(null, errors);
   }
 
   const rawTransaction = {
-    from: buyer.address,
+    from: getAddress(),
     to: config.contracts.addresses.dataExchange,
     value: 0,
     nonce,
@@ -58,11 +67,11 @@ const newOrderFacade = ({ nonce, gasPrice, transactionParameters }) => {
     data: generateData(
       functionSignature,
       parameterNames,
-      transactionParameters,
+      params,
     ),
   };
 
-  return new Response(signTransaction(rawTransaction, buyer.privateKey));
+  return new Response(signTransaction(rawTransaction, getPrivateKey()));
 };
 
 export default newOrderFacade;

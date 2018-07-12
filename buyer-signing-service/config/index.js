@@ -22,7 +22,6 @@ var config = {
   },
   contracts: {
     addresses: {
-      dataToken: env.DATA_TOKEN_CONTRACT_ADDRESS,
       dataExchange: env.DATA_EXCHANGE_CONTRACT_ADDRESS,
     },
   },

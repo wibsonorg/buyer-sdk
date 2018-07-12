@@ -1,7 +1,23 @@
 import EthCrypto from 'eth-crypto';
 import config from '../../config';
 
-const publicKey = EthCrypto.publicKeyByPrivateKey(config.buyer.privateKey);
-const address = EthCrypto.publicKey.toAddress(publicKey);
+let publicKey;
+let address;
 
-export default { publicKey, address };
+export const getPrivateKey = () => config.buyer.privateKey;
+
+export const getPublicKey = () => {
+  if (!publicKey) {
+    publicKey = EthCrypto.publicKeyByPrivateKey(getPrivateKey());
+  }
+
+  return publicKey;
+};
+
+export const getAddress = () => {
+  if (!address) {
+    address = EthCrypto.publicKey.toAddress(getPublicKey());
+  }
+
+  return address;
+};

@@ -1,10 +1,15 @@
 import EthUtil from 'ethereumjs-util';
 import EthCrypto from 'eth-crypto';
 
-export const generateData = (functionSignature, parameterNames, transactionParameters) => {
+export const generateData = (
+  functionSignature,
+  parameterNames,
+  transactionParameters,
+) => {
   const func = EthUtil.keccak256(functionSignature).slice(0, 4).toString('hex');
   const args = parameterNames.map((parameterName) => {
     const value = transactionParameters[parameterName];
+
     return EthUtil.setLengthLeft(value, 32).toString('hex');
   });
   const argsStr = args.join('');
