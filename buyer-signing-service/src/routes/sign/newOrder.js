@@ -5,8 +5,9 @@ import signNewOrderFacade from '../../facades/sign/newOrderFacade';
 const router = express.Router();
 
 /**
- * @TODO The schema is already defined in the swagger definition. Validation
- *       shoud be done using that definition.
+ * @TODO The schema is already defined in the swagger spec and also in the
+ *       imported contract definition. To have a robust validation, one of those
+ *       should be used.
  *
  * Checks that every field is present.
  *
@@ -42,14 +43,6 @@ const validate = ({
     return accumulator;
   }, []);
 };
-
-
-// * @param filters Target audience of the order.
-// * @param dataRequest Requested data type (Geolocation, Facebook, etc).
-// * @param price Price per added Data Response.
-// * @param initialBudgetForAudits The initial budget set for future audits.
-// * @param termsAndConditions Buyer's terms and conditions for the order.
-// * @param buyerURL Public URL of the buyer where the data must be sent.
 
 /**
  * @swagger
