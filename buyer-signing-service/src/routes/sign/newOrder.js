@@ -5,14 +5,8 @@ import signNewOrderFacade from '../../facades/sign/newOrderFacade';
 const router = express.Router();
 
 /**
- * @TODO The schema is already defined in the swagger spec and also in the
- *       imported contract definition. To have a robust validation, one of those
- *       should be used.
- *
  * Checks that every field is present.
  *
- * @param {Integer} parameters.nonce The number of transactions made by the
- *                  sender including this one.
  * @param {String} parameters.filters Hashed target audience.
  * @param {String} parameters.dataRequest Requested data type (Geolocation,
  *                 Facebook, etc).
@@ -25,8 +19,7 @@ const router = express.Router();
  *                 must be sent.
  * @returns {array} Error messages
  */
-const validate = ({
-  nonce,
+const validateNewOrderParameters = ({
   filters,
   dataRequest,
   price,
@@ -35,7 +28,6 @@ const validate = ({
   buyerURL,
 }) => {
   const fields = {
-    nonce: nonce && parseInt(nonce, 10),
     filters,
     dataRequest,
     price: price && parseInt(price, 10),
@@ -47,7 +39,7 @@ const validate = ({
 
   return Object.entries(fields).reduce((accumulator, [field, value]) => {
     if (value === null || value === undefined) {
-      return [...accumulator, `Field '${field}' is mandatory`];
+      return [...accumulator, `Field '${field}' is required`];
     }
 
     return accumulator;
@@ -55,10 +47,44 @@ const validate = ({
 };
 
 /**
+ * Checks that nonce and one of `newOrderParameters` or `newOrderPayload` are
+ * present.
+ *
+ * @param {Integer} parameters.nonce The number of transactions made by the
+ *                  sender including this one.
+ * @param {Object} parameters.newOrderParameters Parameters to be used in the
+ *                 transaction call.
+ * @param {String} parameters.newOrderPayload Data payload to be used instead of
+ *                 `newOrderParameters`
+ * @returns {array} Error messages
+ */
+const validate = ({ nonce, newOrderParameters, newOrderPayload }) => {
+  let errors = [];
+  if (newOrderParameters) {
+    errors = validateNewOrderParameters(newOrderParameters);
+  } else if (newOrderPayload === null || newOrderPayload === undefined) {
+    errors = [
+      ...errors,
+      'Field \'newOrderParameters\' or \'newOrderPayload\' must be provided',
+    ];
+  }
+
+  if (nonce === null || nonce === undefined) {
+    errors = [...errors, 'Field \'nonce\' is required'];
+  }
+
+  return errors;
+};
+
+/**
  * @swagger
  * /sign/new-order:
  *   post:
- *     description: Signs a DataExchange.newOrder transaction
+ *     description: |
+ *       ## Sign NewOrder Transaction
+ *       Receives DataExchange.newOrder parameters or a serialized payload and
+ *       responds with the serialized transaction ready to be sent to the
+ *       network.
  *     produces:
  *       - application/json
  *     parameters:
@@ -69,11 +95,15 @@ const validate = ({
  *           The number of transactions made by the sender including this one.
  *         required: true
  *       - in: body
- *         name: transactionParameters
+ *         name: newOrderParameters
  *         description: Parameters to be used in the transaction call.
- *         required: true
  *         schema:
  *           $ref: "#/definitions/NewOrderParameters"
+ *       - in: body
+ *         name: newOrderPayload
+ *         type: string
+ *         description: |
+ *           Data payload to be used instead of `newOrderParameters`.
  *     responses:
  *       200:
  *         description: When the signing performs successfully
@@ -110,19 +140,23 @@ const validate = ({
  *         required: true
  */
 router.post('/new-order', asyncError(async (req, res) => {
-  const { nonce, transactionParameters } = req.body;
-  const errors = validate({ nonce, ...transactionParameters });
+  const { nonce, newOrderParameters, newOrderPayload } = req.body;
+  const errors = validate({ nonce, newOrderParameters, newOrderPayload });
 
   if (errors.length > 0) {
     res.boom.badData('Validation failed', { validation: errors });
   } else {
-    const response = signNewOrderFacade({ nonce, transactionParameters });
+    const response = signNewOrderFacade({
+      nonce,
+      newOrderParameters,
+      newOrderPayload,
+    });
 
     if (response.success()) {
       res.json({ signedTransaction: response.result });
     } else {
-      res.boom.badData('Operation validation failed', {
-        validation: response.errors,
+      res.boom.badData('Operation failed', {
+        errors: response.errors,
       });
     }
   }

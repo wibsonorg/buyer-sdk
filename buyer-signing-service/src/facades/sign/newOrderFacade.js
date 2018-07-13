@@ -17,10 +17,10 @@ const {
 
 /**
  * @param {Integer} parameters.nonce Current transaction count + 1 of the sender
- * @param {Object} parameters.params Transaction parameters
+ * @param {Object} parameters.newOrderParameters New Order parameters
  * @returns {Array} Error messages
  */
-const validate = ({ nonce, params }) => {
+const validate = ({ nonce, newOrderParameters }) => {
   let errors = [];
 
   if (!nonce === null || nonce === undefined) {
@@ -29,7 +29,7 @@ const validate = ({ nonce, params }) => {
 
   return schema.reduce((accumulator, { name }) => {
     // TODO: type validation/coercion should also be done
-    const value = params[name];
+    const value = newOrderParameters[name];
 
     if (value === null || value === undefined) {
       return [...accumulator, `Field '${name}' is required`];
@@ -44,32 +44,41 @@ const validate = ({ nonce, params }) => {
  * the network.
  *
  * @param {Integer} parameters.nonce Current transaction count + 1 of the sender
- * @param {Object} parameters.transactionParameters
+ * @param {Object} parameters.newOrderParameters
+ * @param {String} parameters.newOrderPayload
  * @returns {Response} with the result of the operation
  */
-const newOrderFacade = ({ nonce, transactionParameters }) => {
-  const params = { ...transactionParameters, publicKey: getPublicKey() };
-  const errors = validate({ nonce, params });
+const newOrderFacade = ({ nonce, newOrderParameters, newOrderPayload }) => {
+  let data = newOrderPayload;
 
-  if (errors.length > 0) {
-    return new Response(null, errors);
+  if (newOrderParameters !== null) {
+    const params = { ...newOrderParameters, publicKey: getPublicKey() };
+    const errors = validate({ nonce, newOrderParameters: params });
+
+    if (errors.length > 0) {
+      return new Response(null, errors);
+    }
+
+    data = generateData(functionSignature, parameterNames, params);
   }
 
-  const rawTransaction = {
-    from: getAddress(),
-    to: config.contracts.dataExchange.address,
-    value: 0,
-    nonce,
-    gasLimit: config.contracts.dataExchange.newOrder.gasLimit,
-    chainId: config.contracts.chainId,
-    data: generateData(
-      functionSignature,
-      parameterNames,
-      params,
-    ),
-  };
+  try {
+    const rawTransaction = {
+      from: getAddress(),
+      to: config.contracts.dataExchange.address,
+      value: 0,
+      nonce: '0x0',
+      gasLimit: config.contracts.dataExchange.newOrder.gasLimit,
+      chainId: config.contracts.chainId,
+      data,
+    };
+    const result = signTransaction(rawTransaction, getPrivateKey());
 
-  return new Response(signTransaction(rawTransaction, getPrivateKey()));
+    return new Response(result);
+  } catch (error) {
+    console.log(error);
+    return new Response(null, [error]);
+  }
 };
 
 export default newOrderFacade;

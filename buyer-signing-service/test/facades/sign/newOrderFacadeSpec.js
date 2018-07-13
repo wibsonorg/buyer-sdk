@@ -11,7 +11,7 @@ describe('signNewOrderFacade', () => {
   const termsAndConditions = 'T&C';
   const buyerURL = 'https://buyer.com';
 
-  const transactionParameters = {
+  const newOrderParameters = {
     filters,
     dataRequest,
     price,
@@ -28,7 +28,7 @@ describe('signNewOrderFacade', () => {
   });
 
   it('responds with error if nonce is not present', () => {
-    const response = signNewOrderFacade({ transactionParameters });
+    const response = signNewOrderFacade({ newOrderParameters });
 
     expect(response.success()).to.eq(false);
     expect(response.errors.length).to.eq(1);
@@ -38,7 +38,7 @@ describe('signNewOrderFacade', () => {
   it('responds with error if filters is not present', () => {
     const response = signNewOrderFacade({
       nonce,
-      transactionParameters: {
+      newOrderParameters: {
         dataRequest,
         price,
         initialBudgetForAudits,
@@ -55,7 +55,7 @@ describe('signNewOrderFacade', () => {
   it('responds with error if dataRequest is not present', () => {
     const response = signNewOrderFacade({
       nonce,
-      transactionParameters: {
+      newOrderParameters: {
         filters,
         price,
         initialBudgetForAudits,
@@ -72,7 +72,7 @@ describe('signNewOrderFacade', () => {
   it('responds with error if price is not present', () => {
     const response = signNewOrderFacade({
       nonce,
-      transactionParameters: {
+      newOrderParameters: {
         filters,
         dataRequest,
         initialBudgetForAudits,
@@ -89,7 +89,7 @@ describe('signNewOrderFacade', () => {
   it('responds with error if initialBudgetForAudits is not present', () => {
     const response = signNewOrderFacade({
       nonce,
-      transactionParameters: {
+      newOrderParameters: {
         filters,
         dataRequest,
         price,
@@ -106,7 +106,7 @@ describe('signNewOrderFacade', () => {
   it('responds with error if termsAndConditions is not present', () => {
     const response = signNewOrderFacade({
       nonce,
-      transactionParameters: {
+      newOrderParameters: {
         filters,
         dataRequest,
         price,
@@ -123,7 +123,7 @@ describe('signNewOrderFacade', () => {
   it('responds with error if buyerURL is not present', () => {
     const response = signNewOrderFacade({
       nonce,
-      transactionParameters: {
+      newOrderParameters: {
         filters,
         dataRequest,
         price,
@@ -140,10 +140,13 @@ describe('signNewOrderFacade', () => {
   it('responds successfully', () => {
     const response = signNewOrderFacade({
       nonce,
-      transactionParameters,
+      newOrderParameters,
     });
 
     expect(response.success()).to.eq(true);
-    expect(response.result).to.eq('f901488082753082753094f3b435d66a6156622e1b3c1a974d25cdbf6032aa80b8e4e0ffe8e3000000000000000065794a685a3255694f69497a4d4334754d7a556966513d3d000000000000000000000000000000000067656f6c6f63616c697a6174696f6e0000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000054264300000000000000000000000000000068747470733a2f2f62757965722e636f6d6363646466613533663662653262393832323630643866396664313062323165824be5a0af00bc0bb0de1ee4049e4d170132b5e72fd1d407e21b0f1c24dbafceeb63157fa0380f004aca13fcd01213043d3f3f03442275b48189299282bae2c213c6525b91');
+    expect(response.result).to.eq('f90146808082753094f3b435d66a6156622e1b3c1a974d25cdbf6032aa80b8e4e0ffe8e3000000000000000065794a685a3255694f69497a4d4334754d7a556966513d3d000000000000000000000000000000000067656f6c6f63616c697a6174696f6e0000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000054264300000000000000000000000000000068747470733a2f2f62757965722e636f6d6363646466613533663662653262393832323630643866396664313062323165824be5a0e1b40d0eb49f35b7b31ac3c44748307fa91edbc6708121b2f75f1510ea12864aa061b6a53c21fe97ccae7957ff159f3d6d3061c2e2fc47c10fb18004e56e76b4af');
   });
+
+  it('responds with error when none of payload or parameters is present');
+  it('responds successfully when payload is present');
 });

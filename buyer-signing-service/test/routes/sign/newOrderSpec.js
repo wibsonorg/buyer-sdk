@@ -23,7 +23,7 @@ describe('/sign', () => {
       request(app)
         .post('/sign/new-order')
         .send({
-          transactionParameters: {
+          newOrderParameters: {
             filters,
             dataRequest,
             price,
@@ -37,7 +37,7 @@ describe('/sign', () => {
           error: 'Unprocessable Entity',
           message: 'Validation failed',
           validation: [
-            "Field 'nonce' is mandatory",
+            "Field 'nonce' is required",
           ],
         }, done);
     });
@@ -47,7 +47,7 @@ describe('/sign', () => {
         .post('/sign/new-order')
         .send({
           nonce,
-          transactionParameters: {
+          newOrderParameters: {
             dataRequest,
             price,
             initialBudgetForAudits,
@@ -60,7 +60,7 @@ describe('/sign', () => {
           error: 'Unprocessable Entity',
           message: 'Validation failed',
           validation: [
-            "Field 'filters' is mandatory",
+            "Field 'filters' is required",
           ],
         }, done);
     });
@@ -70,7 +70,7 @@ describe('/sign', () => {
         .post('/sign/new-order')
         .send({
           nonce,
-          transactionParameters: {
+          newOrderParameters: {
             filters,
             price,
             initialBudgetForAudits,
@@ -83,7 +83,7 @@ describe('/sign', () => {
           error: 'Unprocessable Entity',
           message: 'Validation failed',
           validation: [
-            "Field 'dataRequest' is mandatory",
+            "Field 'dataRequest' is required",
           ],
         }, done);
     });
@@ -93,7 +93,7 @@ describe('/sign', () => {
         .post('/sign/new-order')
         .send({
           nonce,
-          transactionParameters: {
+          newOrderParameters: {
             filters,
             dataRequest,
             initialBudgetForAudits,
@@ -106,7 +106,7 @@ describe('/sign', () => {
           error: 'Unprocessable Entity',
           message: 'Validation failed',
           validation: [
-            "Field 'price' is mandatory",
+            "Field 'price' is required",
           ],
         }, done);
     });
@@ -116,7 +116,7 @@ describe('/sign', () => {
         .post('/sign/new-order')
         .send({
           nonce,
-          transactionParameters: {
+          newOrderParameters: {
             filters,
             dataRequest,
             price,
@@ -129,7 +129,7 @@ describe('/sign', () => {
           error: 'Unprocessable Entity',
           message: 'Validation failed',
           validation: [
-            "Field 'initialBudgetForAudits' is mandatory",
+            "Field 'initialBudgetForAudits' is required",
           ],
         }, done);
     });
@@ -139,7 +139,7 @@ describe('/sign', () => {
         .post('/sign/new-order')
         .send({
           nonce,
-          transactionParameters: {
+          newOrderParameters: {
             filters,
             dataRequest,
             price,
@@ -152,7 +152,7 @@ describe('/sign', () => {
           error: 'Unprocessable Entity',
           message: 'Validation failed',
           validation: [
-            "Field 'termsAndConditions' is mandatory",
+            "Field 'termsAndConditions' is required",
           ],
         }, done);
     });
@@ -162,7 +162,7 @@ describe('/sign', () => {
         .post('/sign/new-order')
         .send({
           nonce,
-          transactionParameters: {
+          newOrderParameters: {
             filters,
             dataRequest,
             price,
@@ -175,7 +175,7 @@ describe('/sign', () => {
           error: 'Unprocessable Entity',
           message: 'Validation failed',
           validation: [
-            "Field 'buyerURL' is mandatory",
+            "Field 'buyerURL' is required",
           ],
         }, done);
     });
@@ -185,7 +185,7 @@ describe('/sign', () => {
         .post('/sign/new-order')
         .send({
           nonce,
-          transactionParameters: {
+          newOrderParameters: {
             filters,
             dataRequest,
             price,
@@ -194,7 +194,10 @@ describe('/sign', () => {
             buyerURL,
           },
         })
-        .expect(200, { signedTransaction: 'f901488082271082753094f3b435d66a6156622e1b3c1a974d25cdbf6032aa80b8e4e0ffe8e3000000000000000065794a685a3255694f69497a4d4334754d7a556966513d3d000000000000000000000000000000000067656f6c6f63616c697a6174696f6e0000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000054264300000000000000000000000000000068747470733a2f2f62757965722e636f6d6363646466613533663662653262393832323630643866396664313062323165824be6a0181c032bcf083fe05471adcd13879426f40dd5eff8815852c4f9cc204dbd0ceda042acabf89877f6d4d54f4c653d3bcfc5aad4881bd36e546540df098c5606f8ef' }, done);
+        .expect(200, { signedTransaction: 'f90146808082753094f3b435d66a6156622e1b3c1a974d25cdbf6032aa80b8e4e0ffe8e3000000000000000065794a685a3255694f69497a4d4334754d7a556966513d3d000000000000000000000000000000000067656f6c6f63616c697a6174696f6e0000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000054264300000000000000000000000000000068747470733a2f2f62757965722e636f6d6363646466613533663662653262393832323630643866396664313062323165824be5a0e1b40d0eb49f35b7b31ac3c44748307fa91edbc6708121b2f75f1510ea12864aa061b6a53c21fe97ccae7957ff159f3d6d3061c2e2fc47c10fb18004e56e76b4af' }, done);
     });
+
+    it('responds with error when none of payload or parameters is present');
+    it('responds successfully when payload is present');
   });
 });

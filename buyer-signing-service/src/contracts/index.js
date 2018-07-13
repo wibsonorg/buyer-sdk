@@ -31,5 +31,4 @@ const getDataExchangeMethodDefinition = (methodName) => {
   };
 };
 
-
 export default getDataExchangeMethodDefinition;
