@@ -21,12 +21,11 @@ var config = {
     combined: env.COMBINED_LOG
   },
   contracts: {
-    addresses: {
-      dataExchange: env.DATA_EXCHANGE_CONTRACT_ADDRESS,
+    chainId: env.CHAIN_ID,
+    dataExchange: {
+      address: env.DATA_EXCHANGE_CONTRACT_ADDRESS,
+      newOrder: { gasLimit: env.TX_NEW_ORDER_GAS_LIMIT }
     },
-  },
-  transactions: {
-    newOrder: { gasLimit: env.TX_NEW_ORDER_GAS_LIMIT }
   },
   buyer: {
     privateKey: env.BUYER_PRIVATE_KEY

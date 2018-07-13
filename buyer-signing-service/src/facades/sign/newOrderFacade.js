@@ -1,13 +1,13 @@
 import Response from '../Response';
 import { buyer, generateData, signTransaction } from '../../helpers';
-import getDataExchangeMethodSignature from '../../contracts';
+import getDataExchangeMethodDefinition from '../../contracts';
 import config from '../../../config';
 
 const {
   functionSignature,
   parameterNames,
   schema,
-} = getDataExchangeMethodSignature('newOrder');
+} = getDataExchangeMethodDefinition('newOrder');
 
 const {
   getAddress,
@@ -16,6 +16,10 @@ const {
 } = buyer;
 
 /**
+ * @param {Integer} parameters.nonce Current transaction count + 1 of the sender
+ * @param {Integer} parameters.gasPrice Gas price determined by the sender in
+ *                  wei (IS THIS OK?)
+ * @param {Object} parameters.params Transaction parameters
  * @returns {Array} Error messages
  */
 const validate = ({ nonce, gasPrice, params }) => {
@@ -42,11 +46,13 @@ const validate = ({ nonce, gasPrice, params }) => {
 };
 
 /**
- * Generates a signed transaction ready to be sent to the network.
+ * Generates a signed transaction for DataExchange.newOrder ready to be sent to
+ * the network.
  *
- * @param {integer} nonce Current transaction count + 1 of the sender
- * @param {integer} gasPrice Gas price determined by the sender in wei (IS THIS OK?)
- * @param {object} transactionParameters
+ * @param {Integer} parameters.nonce Current transaction count + 1 of the sender
+ * @param {Integer} parameters.gasPrice Gas price determined by the sender in
+ *                  wei (IS THIS OK?)
+ * @param {Object} parameters.transactionParameters
  * @returns {Response} with the result of the operation
  */
 const newOrderFacade = ({ nonce, gasPrice, transactionParameters }) => {
@@ -59,11 +65,12 @@ const newOrderFacade = ({ nonce, gasPrice, transactionParameters }) => {
 
   const rawTransaction = {
     from: getAddress(),
-    to: config.contracts.addresses.dataExchange,
+    to: config.contracts.dataExchange.address,
     value: 0,
     nonce,
     gasPrice,
-    gasLimit: config.transactions.newOrder.gasLimit,
+    gasLimit: config.contracts.dataExchange.newOrder.gasLimit,
+    chainId: config.contracts.chainId,
     data: generateData(
       functionSignature,
       parameterNames,

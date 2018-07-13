@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import config from '../../../config';
-import newOrderFacade from '../../../src/facades/sign/newOrderFacade';
+import signNewOrderFacade from '../../../src/facades/sign/newOrderFacade';
 
 describe('signNewOrderFacade', () => {
   const nonce = 0;
@@ -22,13 +22,14 @@ describe('signNewOrderFacade', () => {
   };
 
   beforeEach(() => {
-    config.contracts.addresses.dataExchange = '0xf3b435d66a6156622e1b3c1a974d25cdbf6032aa';
-    config.transactions.newOrder.gasLimit = 30000;
+    config.contracts.chainId = 9697;
+    config.contracts.dataExchange.address = '0xf3b435d66a6156622e1b3c1a974d25cdbf6032aa';
+    config.contracts.dataExchange.newOrder.gasLimit = 30000;
     config.buyer.privateKey = '0x74bd05949189ec1974b8fc366008dc853ca75d7dd5f32534d29d3f4260422b96';
   });
 
   it('responds with error if nonce is not present', () => {
-    const response = newOrderFacade({
+    const response = signNewOrderFacade({
       gasPrice,
       transactionParameters,
     });
@@ -39,7 +40,7 @@ describe('signNewOrderFacade', () => {
   });
 
   it('responds with error if gasPrice is not present', () => {
-    const response = newOrderFacade({
+    const response = signNewOrderFacade({
       nonce,
       transactionParameters,
     });
@@ -50,7 +51,7 @@ describe('signNewOrderFacade', () => {
   });
 
   it('responds with error if filters is not present', () => {
-    const response = newOrderFacade({
+    const response = signNewOrderFacade({
       nonce,
       gasPrice,
       transactionParameters: {
@@ -68,7 +69,7 @@ describe('signNewOrderFacade', () => {
   });
 
   it('responds with error if dataRequest is not present', () => {
-    const response = newOrderFacade({
+    const response = signNewOrderFacade({
       nonce,
       gasPrice,
       transactionParameters: {
@@ -86,7 +87,7 @@ describe('signNewOrderFacade', () => {
   });
 
   it('responds with error if price is not present', () => {
-    const response = newOrderFacade({
+    const response = signNewOrderFacade({
       nonce,
       gasPrice,
       transactionParameters: {
@@ -104,7 +105,7 @@ describe('signNewOrderFacade', () => {
   });
 
   it('responds with error if initialBudgetForAudits is not present', () => {
-    const response = newOrderFacade({
+    const response = signNewOrderFacade({
       nonce,
       gasPrice,
       transactionParameters: {
@@ -122,7 +123,7 @@ describe('signNewOrderFacade', () => {
   });
 
   it('responds with error if termsAndConditions is not present', () => {
-    const response = newOrderFacade({
+    const response = signNewOrderFacade({
       nonce,
       gasPrice,
       transactionParameters: {
@@ -140,7 +141,7 @@ describe('signNewOrderFacade', () => {
   });
 
   it('responds with error if buyerURL is not present', () => {
-    const response = newOrderFacade({
+    const response = signNewOrderFacade({
       nonce,
       gasPrice,
       transactionParameters: {
@@ -158,13 +159,13 @@ describe('signNewOrderFacade', () => {
   });
 
   it('responds successfully', () => {
-    const response = newOrderFacade({
+    const response = signNewOrderFacade({
       nonce,
       gasPrice,
       transactionParameters,
     });
 
     expect(response.success()).to.eq(true);
-    expect(response.result).to.eq('f901468082753082753094f3b435d66a6156622e1b3c1a974d25cdbf6032aa80b8e4e0ffe8e3000000000000000065794a685a3255694f69497a4d4334754d7a556966513d3d000000000000000000000000000000000067656f6c6f63616c697a6174696f6e0000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000054264300000000000000000000000000000068747470733a2f2f62757965722e636f6d63636464666135336636626532623938323236306438663966643130623231651ca0b7ebefa4a499bc8a3bbb12a9036d614af41f1f49c11be1f9dd8884db1ba7929ca06171309ce51598e583d8e10dc332ccc5c487011cb5ab8ba28d020b8018bd9db6');
+    expect(response.result).to.eq('f901488082753082753094f3b435d66a6156622e1b3c1a974d25cdbf6032aa80b8e4e0ffe8e3000000000000000065794a685a3255694f69497a4d4334754d7a556966513d3d000000000000000000000000000000000067656f6c6f63616c697a6174696f6e0000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000054264300000000000000000000000000000068747470733a2f2f62757965722e636f6d6363646466613533663662653262393832323630643866396664313062323165824be5a0af00bc0bb0de1ee4049e4d170132b5e72fd1d407e21b0f1c24dbafceeb63157fa0380f004aca13fcd01213043d3f3f03442275b48189299282bae2c213c6525b91');
   });
 });

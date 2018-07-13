@@ -11,7 +11,21 @@ const router = express.Router();
  *
  * Checks that every field is present.
  *
- * @return {Array} Error messages
+ * @param {Integer} parameters.nonce The number of transactions made by the
+ *                  sender including this one.
+ * @param {Integer} parameters.gasPrice Gas price determined by the sender in
+ *                  wei (IS THIS OK?).
+ * @param {String} parameters.filters Hashed target audience.
+ * @param {String} parameters.dataRequest Requested data type (Geolocation,
+ *                 Facebook, etc).
+ * @param {Integer} parameters.price Price per Data Response added.
+ * @param {String} parameters.initialBudgetForAudits The initial budget set for
+ *                 future audits.
+ * @param {String} parameters.termsAndConditions Buyer's terms and conditions
+ *                 for the order.
+ * @param {String} parameters.buyerURL Public URL of the buyer where the data
+ *                 must be sent.
+ * @returns {array} Error messages
  */
 const validate = ({
   nonce,
@@ -56,7 +70,7 @@ const validate = ({
  *         name: nonce
  *         type: integer
  *         description: |
- *           The number of transactions made by the sender prior to this one.
+ *           The number of transactions made by the sender including this one.
  *         required: true
  *       - in: body
  *         name: gasPrice
