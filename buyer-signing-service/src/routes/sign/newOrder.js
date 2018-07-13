@@ -13,8 +13,6 @@ const router = express.Router();
  *
  * @param {Integer} parameters.nonce The number of transactions made by the
  *                  sender including this one.
- * @param {Integer} parameters.gasPrice Gas price determined by the sender in
- *                  wei (IS THIS OK?).
  * @param {String} parameters.filters Hashed target audience.
  * @param {String} parameters.dataRequest Requested data type (Geolocation,
  *                 Facebook, etc).
@@ -29,7 +27,6 @@ const router = express.Router();
  */
 const validate = ({
   nonce,
-  gasPrice,
   filters,
   dataRequest,
   price,
@@ -39,7 +36,6 @@ const validate = ({
 }) => {
   const fields = {
     nonce: nonce && parseInt(nonce, 10),
-    gasPrice: gasPrice && parseInt(gasPrice, 10),
     filters,
     dataRequest,
     price: price && parseInt(price, 10),
@@ -71,11 +67,6 @@ const validate = ({
  *         type: integer
  *         description: |
  *           The number of transactions made by the sender including this one.
- *         required: true
- *       - in: body
- *         name: gasPrice
- *         type: integer
- *         description: Gas price determined by the sender in wei (IS THIS OK?).
  *         required: true
  *       - in: body
  *         name: transactionParameters
@@ -119,17 +110,13 @@ const validate = ({
  *         required: true
  */
 router.post('/new-order', asyncError(async (req, res) => {
-  const { nonce, gasPrice, transactionParameters } = req.body;
-  const errors = validate({ nonce, gasPrice, ...transactionParameters });
+  const { nonce, transactionParameters } = req.body;
+  const errors = validate({ nonce, ...transactionParameters });
 
   if (errors.length > 0) {
     res.boom.badData('Validation failed', { validation: errors });
   } else {
-    const response = signNewOrderFacade({
-      nonce,
-      gasPrice,
-      transactionParameters,
-    });
+    const response = signNewOrderFacade({ nonce, transactionParameters });
 
     if (response.success()) {
       res.json({ signedTransaction: response.result });

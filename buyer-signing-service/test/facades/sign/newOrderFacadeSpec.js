@@ -4,7 +4,6 @@ import signNewOrderFacade from '../../../src/facades/sign/newOrderFacade';
 
 describe('signNewOrderFacade', () => {
   const nonce = 0;
-  const gasPrice = 30000;
   const filters = 'eyJhZ2UiOiIzMC4uMzUifQ==';
   const dataRequest = 'geolocalization';
   const price = 20;
@@ -29,31 +28,16 @@ describe('signNewOrderFacade', () => {
   });
 
   it('responds with error if nonce is not present', () => {
-    const response = signNewOrderFacade({
-      gasPrice,
-      transactionParameters,
-    });
+    const response = signNewOrderFacade({ transactionParameters });
 
     expect(response.success()).to.eq(false);
     expect(response.errors.length).to.eq(1);
     expect(response.errors[0]).to.eq('Field \'nonce\' is required');
   });
 
-  it('responds with error if gasPrice is not present', () => {
-    const response = signNewOrderFacade({
-      nonce,
-      transactionParameters,
-    });
-
-    expect(response.success()).to.eq(false);
-    expect(response.errors.length).to.eq(1);
-    expect(response.errors[0]).to.eq('Field \'gasPrice\' is required');
-  });
-
   it('responds with error if filters is not present', () => {
     const response = signNewOrderFacade({
       nonce,
-      gasPrice,
       transactionParameters: {
         dataRequest,
         price,
@@ -71,7 +55,6 @@ describe('signNewOrderFacade', () => {
   it('responds with error if dataRequest is not present', () => {
     const response = signNewOrderFacade({
       nonce,
-      gasPrice,
       transactionParameters: {
         filters,
         price,
@@ -89,7 +72,6 @@ describe('signNewOrderFacade', () => {
   it('responds with error if price is not present', () => {
     const response = signNewOrderFacade({
       nonce,
-      gasPrice,
       transactionParameters: {
         filters,
         dataRequest,
@@ -107,7 +89,6 @@ describe('signNewOrderFacade', () => {
   it('responds with error if initialBudgetForAudits is not present', () => {
     const response = signNewOrderFacade({
       nonce,
-      gasPrice,
       transactionParameters: {
         filters,
         dataRequest,
@@ -125,7 +106,6 @@ describe('signNewOrderFacade', () => {
   it('responds with error if termsAndConditions is not present', () => {
     const response = signNewOrderFacade({
       nonce,
-      gasPrice,
       transactionParameters: {
         filters,
         dataRequest,
@@ -143,7 +123,6 @@ describe('signNewOrderFacade', () => {
   it('responds with error if buyerURL is not present', () => {
     const response = signNewOrderFacade({
       nonce,
-      gasPrice,
       transactionParameters: {
         filters,
         dataRequest,
@@ -161,7 +140,6 @@ describe('signNewOrderFacade', () => {
   it('responds successfully', () => {
     const response = signNewOrderFacade({
       nonce,
-      gasPrice,
       transactionParameters,
     });
 

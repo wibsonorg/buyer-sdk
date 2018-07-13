@@ -4,7 +4,6 @@ import app from '../../../src/app';
 
 describe('/sign', () => {
   const nonce = 0;
-  const gasPrice = 10000;
   const filters = 'eyJhZ2UiOiIzMC4uMzUifQ==';
   const dataRequest = 'geolocalization';
   const price = 20;
@@ -24,7 +23,6 @@ describe('/sign', () => {
       request(app)
         .post('/sign/new-order')
         .send({
-          gasPrice,
           transactionParameters: {
             filters,
             dataRequest,
@@ -44,36 +42,11 @@ describe('/sign', () => {
         }, done);
     });
 
-    it('responds with an Unprocessable Entity status when gasPrice is not present', (done) => {
-      request(app)
-        .post('/sign/new-order')
-        .send({
-          nonce,
-          transactionParameters: {
-            filters,
-            dataRequest,
-            price,
-            initialBudgetForAudits,
-            termsAndConditions,
-            buyerURL,
-          },
-        })
-        .expect(422, {
-          statusCode: 422,
-          error: 'Unprocessable Entity',
-          message: 'Validation failed',
-          validation: [
-            "Field 'gasPrice' is mandatory",
-          ],
-        }, done);
-    });
-
     it('responds with an Unprocessable Entity status when filters is not present', (done) => {
       request(app)
         .post('/sign/new-order')
         .send({
           nonce,
-          gasPrice,
           transactionParameters: {
             dataRequest,
             price,
@@ -97,7 +70,6 @@ describe('/sign', () => {
         .post('/sign/new-order')
         .send({
           nonce,
-          gasPrice,
           transactionParameters: {
             filters,
             price,
@@ -121,7 +93,6 @@ describe('/sign', () => {
         .post('/sign/new-order')
         .send({
           nonce,
-          gasPrice,
           transactionParameters: {
             filters,
             dataRequest,
@@ -145,7 +116,6 @@ describe('/sign', () => {
         .post('/sign/new-order')
         .send({
           nonce,
-          gasPrice,
           transactionParameters: {
             filters,
             dataRequest,
@@ -169,7 +139,6 @@ describe('/sign', () => {
         .post('/sign/new-order')
         .send({
           nonce,
-          gasPrice,
           transactionParameters: {
             filters,
             dataRequest,
@@ -193,7 +162,6 @@ describe('/sign', () => {
         .post('/sign/new-order')
         .send({
           nonce,
-          gasPrice,
           transactionParameters: {
             filters,
             dataRequest,
@@ -217,7 +185,6 @@ describe('/sign', () => {
         .post('/sign/new-order')
         .send({
           nonce,
-          gasPrice,
           transactionParameters: {
             filters,
             dataRequest,
