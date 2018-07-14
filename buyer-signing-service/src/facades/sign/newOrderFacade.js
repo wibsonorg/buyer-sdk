@@ -1,3 +1,5 @@
+import EthTx from 'ethereumjs-tx';
+import { Buffer } from 'safe-buffer';
 import Response from '../Response';
 import { buyer, generateData, signTransaction } from '../../helpers';
 import getDataExchangeMethodDefinition from '../../contracts';
@@ -73,6 +75,8 @@ const buildData = (newOrderParameters, newOrderPayload) => {
  * @returns {Response} with the result of the operation
  */
 const newOrderFacade = ({ nonce, newOrderParameters, newOrderPayload }) => {
+  console.log({ nonce, newOrderParameters, newOrderPayload });
+
   const newOrder = { ...newOrderParameters, publicKey: getPublicKey() };
 
   let errors = validatePresence({ nonce, newOrderParameters, newOrderPayload });
@@ -90,13 +94,19 @@ const newOrderFacade = ({ nonce, newOrderParameters, newOrderPayload }) => {
     const rawTransaction = {
       from: getAddress(),
       to: config.contracts.dataExchange.address,
-      value: 0,
-      nonce: '0x0',
-      gasLimit: config.contracts.dataExchange.newOrder.gasLimit,
-      chainId: config.contracts.chainId,
+      value: '0x00',
+      nonce: `0x${nonce.toString(16)}`,
+      gasLimit: `0x${(1000000).toString(16)}`,
+      // chainId: config.contracts.chainId,
       data,
     };
-    const result = signTransaction(rawTransaction, getPrivateKey());
+    console.log(rawTransaction);
+
+    // const result = signTransaction(rawTransaction, getPrivateKey());
+    const tx = new EthTx(rawTransaction);
+    tx.sign(Buffer.from(getPrivateKey(), 'hex'));
+
+    const result = tx.serialize().toString('hex');
 
     return new Response(result);
   } catch (error) {

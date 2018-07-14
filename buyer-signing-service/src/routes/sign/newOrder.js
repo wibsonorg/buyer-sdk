@@ -52,8 +52,8 @@ const validateNewOrderParameters = ({
  * Checks that `nonce` and one of `newOrderParameters` or `newOrderPayload` are
  * present.
  *
- * @param {Integer} parameters.nonce The number of transactions made by the
- *                  sender including this one.
+ * @param {Number} parameters.nonce The number of transactions made by the
+ *                 sender including this one.
  * @param {Object} parameters.newOrderParameters Parameters to be used in the
  *                 transaction call.
  * @param {String} parameters.newOrderPayload Data payload to be used instead of
