@@ -50,7 +50,7 @@ router.get('/deep', async (_req, res) => {
   }
 });
 
-router.get('/balance/:address', async (req, res) => {
+router.get('/:address/balance', async (req, res) => {
   try {
     const { address } = req.params;
     const response = await web3.eth.getBalance(address);
@@ -59,6 +59,22 @@ router.get('/balance/:address', async (req, res) => {
     res.json({
       address,
       balance: eth,
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+});
+
+router.get('/:address/tx-count', async (req, res) => {
+  try {
+    const { address } = req.params;
+    const txCount = await web3.eth.getTransactionCount(address);
+
+    res.json({
+      address,
+      txCount,
     });
   } catch (err) {
     res.status(500).json({

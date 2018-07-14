@@ -3,7 +3,7 @@ import { Buffer } from 'buffer';
 export const encodeJSON = (json) => {
   if (!json) return null;
 
-  const jsonStr = JSON.stringify(json);
+  return JSON.stringify(json);
   return Buffer.from(jsonStr).toString('base64');
 };
 

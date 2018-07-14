@@ -4,7 +4,7 @@ import { mockStorage, restoreMocks } from '../helpers';
 import web3 from '../../src/utils/web3';
 import getContracts from '../../src/contracts';
 
-describe.only('/data-orders', () => {
+describe('/data-orders', () => {
   let app;
   let dataExchange;
   let dataToken;

@@ -1,13 +1,48 @@
 import express from 'express';
 import { createDataOrder } from '../facades';
-import { asyncError } from '../middlewares/error-handling';
+import asyncError from '../helpers/asyncError';
 
 const router = express.Router();
 
-const toString = (value) => {
-  if (value === null || value === undefined) return '';
-  if (typeof value === 'string') return value;
-  if ('toString' in value) return value.toString();
+/**
+ * Checks that every field is present.
+ *
+ * @param {Object} parameters.filters Target audience.
+ * @param {String} parameters.dataRequest Requested data type (Geolocation,
+ *                 Facebook, etc).
+ * @param {Integer} parameters.price Price per Data Response added.
+ * @param {String} parameters.initialBudgetForAudits The initial budget set for
+ *                 future audits.
+ * @param {String} parameters.termsAndConditions Buyer's terms and conditions
+ *                 for the order.
+ * @param {String} parameters.buyerURL Public URL of the buyer where the data
+ *                 must be sent.
+ * @returns {array} Error messages
+ */
+const validate = ({
+  filters,
+  dataRequest,
+  price,
+  initialBudgetForAudits,
+  termsAndConditions,
+  buyerURL,
+}) => {
+  const fields = {
+    filters,
+    dataRequest,
+    price,
+    initialBudgetForAudits,
+    termsAndConditions,
+    buyerURL,
+  };
+
+  return Object.entries(fields).reduce((accumulator, [field, value]) => {
+    if (value === null || value === undefined) {
+      return [...accumulator, `Field '${field}' is mandatory`];
+    }
+
+    return accumulator;
+  }, []);
 };
 
 /**
@@ -19,44 +54,11 @@ const toString = (value) => {
  *       ## Buyer creates a DataOrder
  *     parameters:
  *       - in: body
- *         name: filters
- *         type: string
- *         description: Target audience of the order
- *         example: { age: 20 }
- *       - in: body
- *         name: dataRequest
- *         type: string
- *         description: Requested data type (Geolocation, Facebook, etc)
- *         example: Geolocalization (last 30 days)
- *       - in: body
- *         name: price
- *         type: integer
- *         description: Price per added Data Response
- *         example: 20
- *       - in: body
- *         name: initialBudgetForAudits
- *         type: integer
- *         description: The initial budget set for future audits
- *         example: 10
- *       - in: body
- *         name: termsAndConditions
- *         type: string
- *         description: The initial budget set for future audits
- *         example: Terms and Conditions
- *       - in: body
- *         name: buyerURL
- *         type: string
+ *         name: dataOrder
+ *         type: object
  *         required: true
- *         description: Public URL of the buyer where the data must be sent
- *         example: https://buyer.com/submit-your-data
- *       - in: body
- *         name: buyerPublicKey
- *         type: string
- *         required: true
- *         description: |
- *           Public Key of the buyer, which will be used to encrypt the data to
- *           be sent.
- *         example: public-key
+ *         schema:
+ *           $ref: "#/definitions/DataOrder"
  *     produces:
  *       - application/json
  *     responses:
@@ -64,31 +66,50 @@ const toString = (value) => {
  *         description: When the app is OK
  *       422:
  *         description: When the app is OK
+ *
+ * definitions:
+ *   DataOrder:
+ *     type: object
+ *     properties:
+ *       filters:
+ *         type: object
+ *         required: true
+ *         description: Target audience of the order
+ *         example: { age: 20 }
+ *       dataRequest:
+ *         type: string
+ *         required: true
+ *         description: Requested data type (Geolocation, Facebook, etc)
+ *         example: Geolocalization (last 30 days)
+ *       price:
+ *         type: integer
+ *         required: true
+ *         description: Price per added Data Response
+ *         example: 20
+ *       initialBudgetForAudits:
+ *         type: integer
+ *         required: true
+ *         description: The initial budget set for future audits
+ *         example: 10
+ *       termsAndConditions:
+ *         type: string
+ *         required: true
+ *         description: The initial budget set for future audits
+ *         example: Terms and Conditions
+ *       buyerURL:
+ *         type: string
+ *         required: true
+ *         description: Public URL of the buyer where the data must be sent
+ *         example: https://buyer.com/submit-your-data
  */
 router.post('/', asyncError(async (req, res) => {
-  const {
-    filters,
-    dataRequest,
-    price,
-    initialBudgetForAudits,
-    termsAndConditions,
-    buyerUrl,
-    buyerAddress,
-  } = req.body;
+  const { dataOrder } = req.body;
+  const errors = validate(dataOrder);
 
-  if (toString(buyerUrl).length === 0) {
-    // res.boom.badData(...)
-    res.status(422).json({ status: 'unprocessable_entity' });
+  if (errors.length > 0) {
+    res.boom.badData('Validation failed', { validation: errors });
   } else {
-    const response = await createDataOrder({
-      filters,
-      dataRequest,
-      price,
-      initialBudgetForAudits,
-      termsAndConditions,
-      buyerUrl, // WHERE IS THIS STORED?
-      buyerAddress,
-    });
+    const response = await createDataOrder(dataOrder);
 
     res.json(response);
   }
