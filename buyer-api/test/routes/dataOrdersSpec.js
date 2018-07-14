@@ -8,7 +8,7 @@ describe('/data-orders', () => {
   let app;
   let dataExchange;
   let dataToken;
-  const [buyerAddress] = web3.eth.accounts;
+  const buyerAddress = web3.eth.accounts[0];
 
   const {
     dataExchange: dataExchangeAddress,
@@ -42,13 +42,6 @@ describe('/data-orders', () => {
   });
 
   describe('POST /', () => {
-    it('responds with an Unprocessable Entity status when buyerUrl is not present', (done) => {
-      request(app)
-        .post('/data-orders')
-        .send({ ...dataOrder, buyerPublicKey: 'public-key' })
-        .expect(422, { status: 'unprocessable_entity' }, done);
-    });
-
     it('responds with an OK status', function (done) { // eslint-disable-line func-names
       this.timeout(60 * 1000);
 
@@ -56,8 +49,7 @@ describe('/data-orders', () => {
         .post('/data-orders')
         .send({
           ...dataOrder,
-          buyerUrl: 'https://buyer.example.com/data',
-          buyerPublicKey: 'public-key',
+          buyerURL: 'https://buyer.example.com/data',
         })
         .expect(200, done);
     });

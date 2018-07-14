@@ -50,5 +50,4 @@ const getContracts = async ({ web3, dataTokenAddress, dataExchangeAddress }) => 
   };
 };
 
-export { DataExchangeContract };
 export default getContracts;
