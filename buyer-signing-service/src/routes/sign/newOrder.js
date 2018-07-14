@@ -4,6 +4,8 @@ import signNewOrderFacade from '../../facades/sign/newOrderFacade';
 
 const router = express.Router();
 
+const isPresent = obj => obj !== null && obj !== undefined;
+
 /**
  * Checks that every field is present.
  *
@@ -38,7 +40,7 @@ const validateNewOrderParameters = ({
   };
 
   return Object.entries(fields).reduce((accumulator, [field, value]) => {
-    if (value === null || value === undefined) {
+    if (!isPresent(value)) {
       return [...accumulator, `Field '${field}' is required`];
     }
 
@@ -47,7 +49,7 @@ const validateNewOrderParameters = ({
 };
 
 /**
- * Checks that nonce and one of `newOrderParameters` or `newOrderPayload` are
+ * Checks that `nonce` and one of `newOrderParameters` or `newOrderPayload` are
  * present.
  *
  * @param {Integer} parameters.nonce The number of transactions made by the
@@ -60,17 +62,23 @@ const validateNewOrderParameters = ({
  */
 const validate = ({ nonce, newOrderParameters, newOrderPayload }) => {
   let errors = [];
-  if (newOrderParameters) {
-    errors = validateNewOrderParameters(newOrderParameters);
-  } else if (newOrderPayload === null || newOrderPayload === undefined) {
+
+  if (!isPresent(nonce)) {
+    errors = ['Field \'nonce\' is required'];
+  }
+
+  if (!isPresent(newOrderParameters) && !isPresent(newOrderPayload)) {
     errors = [
       ...errors,
       'Field \'newOrderParameters\' or \'newOrderPayload\' must be provided',
     ];
   }
 
-  if (nonce === null || nonce === undefined) {
-    errors = [...errors, 'Field \'nonce\' is required'];
+  if (isPresent(newOrderParameters)) {
+    errors = [
+      ...errors,
+      ...validateNewOrderParameters(newOrderParameters),
+    ];
   }
 
   return errors;

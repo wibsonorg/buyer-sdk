@@ -15,19 +15,10 @@ const {
   getPrivateKey,
 } = buyer;
 
-/**
- * @param {Integer} parameters.nonce Current transaction count + 1 of the sender
- * @param {Object} parameters.newOrderParameters New Order parameters
- * @returns {Array} Error messages
- */
-const validate = ({ nonce, newOrderParameters }) => {
-  let errors = [];
+const isPresent = obj => obj !== null && obj !== undefined;
 
-  if (!nonce === null || nonce === undefined) {
-    errors = ['Field \'nonce\' is required'];
-  }
-
-  return schema.reduce((accumulator, { name }) => {
+const validateNewOrderParameters = newOrderParameters =>
+  schema.reduce((accumulator, { name }) => {
     // TODO: type validation/coercion should also be done
     const value = newOrderParameters[name];
 
@@ -36,7 +27,40 @@ const validate = ({ nonce, newOrderParameters }) => {
     }
 
     return accumulator;
-  }, errors);
+  }, []);
+
+/**
+ * Checks that `nonce` and one of `newOrderParameters` or `newOrderPayload` are
+ * present.
+ *
+ * @param {Integer} parameters.nonce Current transaction count + 1 of the sender
+ * @param {Object} parameters.newOrderParameters New Order parameters
+ * @param {Object} parameters.newOrderPayload Order data payload
+ * @returns {Array} Error messages
+ */
+const validatePresence = ({ nonce, newOrderParameters, newOrderPayload }) => {
+  let errors = [];
+
+  if (!isPresent(nonce)) {
+    errors = ['Field \'nonce\' is required'];
+  }
+
+  if (!isPresent(newOrderParameters) && !isPresent(newOrderPayload)) {
+    errors = [
+      ...errors,
+      'Field \'newOrderParameters\' or \'newOrderPayload\' must be provided',
+    ];
+  }
+
+  return errors;
+};
+
+const buildData = (newOrderParameters, newOrderPayload) => {
+  if (isPresent(newOrderParameters)) {
+    return generateData(functionSignature, parameterNames, newOrderParameters);
+  }
+
+  return newOrderPayload;
 };
 
 /**
@@ -49,18 +73,18 @@ const validate = ({ nonce, newOrderParameters }) => {
  * @returns {Response} with the result of the operation
  */
 const newOrderFacade = ({ nonce, newOrderParameters, newOrderPayload }) => {
-  let data = newOrderPayload;
+  const newOrder = { ...newOrderParameters, publicKey: getPublicKey() };
 
-  if (newOrderParameters !== null) {
-    const params = { ...newOrderParameters, publicKey: getPublicKey() };
-    const errors = validate({ nonce, newOrderParameters: params });
-
-    if (errors.length > 0) {
-      return new Response(null, errors);
-    }
-
-    data = generateData(functionSignature, parameterNames, params);
+  let errors = validatePresence({ nonce, newOrderParameters, newOrderPayload });
+  if (isPresent(newOrderParameters)) {
+    errors = [...errors, ...validateNewOrderParameters(newOrder)];
   }
+
+  if (errors.length > 0) {
+    return new Response(null, errors);
+  }
+
+  const data = buildData(newOrder, newOrderPayload);
 
   try {
     const rawTransaction = {
