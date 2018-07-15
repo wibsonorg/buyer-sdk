@@ -96,7 +96,7 @@ const newOrderFacade = ({ nonce, newOrderParameters, newOrderPayload }) => {
       to: config.contracts.dataExchange.address,
       value: '0x00',
       nonce: `0x${nonce.toString(16)}`,
-      gasLimit: `0x${(1000000).toString(16)}`,
+      gasLimit: `0x${parseInt(config.contracts.dataExchange.newOrder.gasLimit, 10).toString(16)}`,
       // chainId: config.contracts.chainId,
       data,
     };
