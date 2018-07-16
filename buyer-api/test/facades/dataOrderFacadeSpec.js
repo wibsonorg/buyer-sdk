@@ -1,4 +1,7 @@
 import { expect } from 'chai';
+import sinon from 'sinon';
+import signingService from '../../src/services/signingService';
+import web3 from '../../src/utils/web3';
 import dataOrderFacade from '../../src/facades/dataOrderFacade';
 
 describe('dataOrderFacade', () => {
@@ -23,6 +26,23 @@ describe('dataOrderFacade', () => {
   it('responds with error if termsAndConditions is not present');
   it('responds with error if buyerURL is not present');
   it('responds successfully', async () => {
+    sinon.stub(signingService, 'getAccount')
+      .returns(Promise.resolve(JSON.stringify({
+        address: '0xaddress',
+        publicKey: '0xpublickey'
+      })));
+    sinon.stub(signingService, 'signNewOrder')
+      .returns(Promise.resolve(JSON.stringify({ signedTransaction: 'asdasd' })));
+
+    sinon.stub(web3.eth, 'getTransactionCount')
+      .returns(Promise.resolve(2));
+    sinon.stub(web3.eth, 'sendRawTransaction')
+      .returns(Promise.resolve('0xtxhash'));
+    sinon.stub(web3.eth, 'getTransactionReceipt')
+      .returns(Promise.resolve(JSON.stringify({
+        logs: [] // fails because of this
+      })));
+
     const response = await dataOrderFacade({
       filters,
       dataRequest,
@@ -33,5 +53,11 @@ describe('dataOrderFacade', () => {
     });
 
     expect(response.success()).to.eq(true);
+
+    signingService.getAccount.restore();
+    signingService.signNewOrder.restore();
+    web3.eth.getTransactionCount.restore();
+    web3.eth.sendRawTransaction.restore();
+    web3.eth.getTransactionReceipt.restore();
   });
 });
