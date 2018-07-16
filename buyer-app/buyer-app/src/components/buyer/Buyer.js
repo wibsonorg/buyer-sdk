@@ -6,9 +6,6 @@ import Select from "base-app-src/components/Select/Select";
 import SelectItem from "base-app-src/components/Select/SelectItem";
 import LoadingBar from "base-app-src/components/LoadingBar";
 
-import AppNotifications from "base-app-src/stateful-components/AppNotifications";
-import BalancePanel from "base-app-src/stateful-components/BalancePanel";
-
 import Config from "../../config";
 
 import cn from "classnames/bind";
@@ -20,21 +17,23 @@ import { connect } from "react-redux";
 import { Route, withRouter, Redirect } from "react-router-dom";
 
 import * as DataOrdersByAddress from "state/entities/dataOrdersByAddress/selectors";
-
 import * as DataOrdersAddresses from "state/entities/dataOrdersAddresses/selectors";
+import * as Account from "state/entities/account/selectors";
 
 import * as PollingActions from "state/entities/polling/actions";
 
 import * as DataOrdersAddressesActions from "state/entities/dataOrdersAddresses/actions";
+import { withNotaries } from "state/entities/notaries/hoc";
 
 import InfoPanel from "./headerPanels/InfoPanel";
 
+import AppNotifications from "../AppNotifications";
+import BalancePanel from "./BalancePanel";
 import OpenDataOrders from "./OpenDataOrders";
 import BoughtDataOrders from "./BoughtDataOrders";
 import FailedDataOrders from "./FailedDataOrders";
 import DataOrderCreate from "./DataOrderCreate";
 
-import { withNotaries } from "base-app-src/state/notaries/hoc";
 
 import R from "ramda";
 import queryString from 'query-string';
@@ -91,7 +90,8 @@ class Buyer extends React.Component {
       activeDataOrders,
       boughtDataOrders,
       closedDataOrders,
-      failedDataOrders
+      failedDataOrders,
+      account
     } = this.props;
 
     const aviableDataResponsesCount = R.compose(
@@ -125,7 +125,7 @@ class Buyer extends React.Component {
 
     return (
       <div>
-        <AppHeader userRole="buyer" panels={panels} />
+        <AppHeader userRole="buyer" account={account.address} panels={panels} />
         <LoadingBar loading={this.isLoading()} />
         <AppNotifications />
         <div className={cx("page-content")}>
@@ -188,7 +188,8 @@ const mapStateToProps = state => ({
   boughtDataOrders: DataOrdersByAddress.getBoughtDataOrders(state),
   closedDataOrders: DataOrdersByAddress.getClosedDataOrders(state),
   dataOrdersAddress: DataOrdersAddresses.getDataOrdersAddresses(state),
-  isFetching: DataOrdersByAddress.isFetching(state)
+  isFetching: DataOrdersByAddress.isFetching(state),
+  account: Account.getAccount(state)
 });
 
 const mapDispatchToProps = (dispatch, props) => ({

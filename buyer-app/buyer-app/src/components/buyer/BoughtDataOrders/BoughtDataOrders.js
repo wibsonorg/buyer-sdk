@@ -15,7 +15,7 @@ import NotariesDetail from "base-app-src/components/NotariesDetail";
 import RequestedDataDetail from "base-app-src/components/RequestedDataDetail";
 
 import * as OntologySelectors from "base-app-src/state/ontologies/selectors";
-import * as NotariesSelectors from "base-app-src/state/notaries/selectors";
+import * as NotariesSelectors from "state/entities/notaries/selectors";
 import * as CloseDataOrderActions from "state/entities/closeDataOrder/actions";
 
 import "./BoughtDataOrders.css";

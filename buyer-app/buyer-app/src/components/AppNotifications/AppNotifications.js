@@ -2,10 +2,10 @@ import React from "react";
 
 import { connect } from "react-redux";
 
-import Toast from "../../components/Toast";
+import Toast from "base-app-src/components/Toast";
 
-import * as NotificationsSelectors from "../../state/notifications/selectors";
-import * as NotificationsActions from "../../state/notifications/actions";
+import * as NotificationsSelectors from "state/entities/notifications/selectors";
+import * as NotificationsActions from "state/entities/notifications/actions";
 
 const mapStateToProps = state => {
   return {

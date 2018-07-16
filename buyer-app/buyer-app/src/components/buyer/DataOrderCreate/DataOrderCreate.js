@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 
 import * as OntologySelectors from "base-app-src/state/ontologies/selectors";
 
-import * as NotariesSelectors from "base-app-src/state/notaries/selectors";
+import * as NotariesSelectors from "state/entities/notaries/selectors";
 
 import * as DataOrdersActions from "state/entities/createDataOrder/actions";
 import * as DataOrdersSelectors from "state/entities/createDataOrder/selectors";

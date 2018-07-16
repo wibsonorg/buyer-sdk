@@ -3,7 +3,7 @@ import { HashRouter as Router } from "react-router-dom";
 
 import Buyer from "./buyer/Buyer";
 
-import { withBalancePolling } from "base-app-src/state/balance/hoc";
+import { withAccountPolling } from "state/entities/account/hoc";
 
 
 const MainPage = props => {
@@ -14,4 +14,4 @@ const MainPage = props => {
   );
 };
 
-export default withBalancePolling(MainPage);
+export default withAccountPolling(MainPage);

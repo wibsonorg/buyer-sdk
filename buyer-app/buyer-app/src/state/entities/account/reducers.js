@@ -6,7 +6,7 @@ const initialState = 0;
 
 export default createReducer(
   {
-    [Actions.updateTokenBalance]: (state, payload) => payload
+    [Actions.updateAccount]: (state, payload) => payload
   },
   initialState
 );

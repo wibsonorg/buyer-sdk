@@ -1,6 +1,6 @@
 import { put, takeLatest, all } from "redux-saga/effects";
 
-import * as NotificationActions from "base-app-src/state/notifications/actions";
+import * as NotificationActions from "state/entities/notifications/actions";
 
 import * as Actions from "./actions";
 

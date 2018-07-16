@@ -2,13 +2,13 @@ import { lifecycle, compose } from "recompose";
 import { connect } from "react-redux";
 import * as Actions from "./actions";
 
-const withBalancePolling = compose(
+const withAccountPolling = compose(
   connect(),
   lifecycle({
     componentWillMount() {
-      this.props.dispatch(Actions.startBalancePolling());
+      this.props.dispatch(Actions.startAccountPolling());
     }
   })
 );
 
-export { withBalancePolling };
+export { withAccountPolling };

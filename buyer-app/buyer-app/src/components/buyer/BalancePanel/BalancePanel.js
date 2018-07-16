@@ -10,7 +10,7 @@ import { withRouter } from "react-router";
 
 import { connect } from "react-redux";
 
-import * as BalanceSelectors from "../../state/balance/selectors";
+import * as AccountSelectors from "state/entities/account/selectors";
 
 
 import {
@@ -90,7 +90,7 @@ BalancePanel.propTypes = {
 };
 
 const mapStateToProps = state => {
-  return { balance: BalanceSelectors.getTokensBalance(state) };
+  return { balance: AccountSelectors.getTokensBalance(state) };
 };
 
 export default compose(withRouter, connect(mapStateToProps))(BalancePanel);

@@ -2,7 +2,7 @@ import { put, takeLatest, all, call } from "redux-saga/effects";
 
 import * as Actions from "./actions";
 
-import * as NotificationsActions from "base-app-src/state/notifications/actions";
+import * as NotificationsActions from "state/entities/notifications/actions";
 
 import * as DataOrdersHelpers from "lib/protocol-helpers/data-orders";
 import formatDate from 'date-fns/format'
