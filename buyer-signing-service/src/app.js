@@ -8,7 +8,7 @@ import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import config from '../config';
 import logger from './utils/logger';
-import { health } from './routes';
+import { data, health } from './routes';
 
 const app = express();
 
@@ -21,6 +21,7 @@ app.use(morgan(config.logType || 'combined', {
 app.use(cors());
 
 app.use('/health', health);
+app.use('/data', data);
 
 // Documentation
 const ls = dir =>
