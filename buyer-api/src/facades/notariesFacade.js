@@ -1,8 +1,5 @@
 import config from '../../config';
-import getContracts from '../contracts';
 import { logger, createRedisStore } from '../utils';
-
-const dataExchangeAddress = config.contracts.addresses.dataExchange;
 
 const notaryCache = createRedisStore('cache.notary.');
 const notaryTTL = Number(config.contracts.cache.notaryTTL);
@@ -20,17 +17,17 @@ const addNotaryToCache = notaryInfo =>
  * @async
  * @function getNotaryInfo
  * @param {Object} web3 the web3 object.
+ * @param {Object} dataExchange an instance of the DataExchange.
  * @param {String} address the notary's ethereum address.
  * @throws When can not connect to blockchain or cache is not set up correctly.
  * @returns {Promise} Promise which resolves to the notary's information.
  */
-const getNotaryInfo = async (web3, address) => {
+const getNotaryInfo = async (web3, dataExchange, address) => {
   let notaryInfo = await notaryCache.get(address);
 
   if (!notaryInfo) {
     logger.debug('Notary :: Cache Miss :: %s :: Fetching from blockchain...', address);
 
-    const { dataExchange } = await getContracts({ web3, dataExchangeAddress });
     notaryInfo = await dataExchange.getNotaryInfo(address);
 
     if (notaryInfo[4]) {
@@ -55,14 +52,14 @@ const getNotaryInfo = async (web3, address) => {
  * @async
  * @function getNotariesInfo
  * @param {Object} web3 the web3 object.
+ * @param {Object} dataExchange an instance of the DataExchange.
  * @throws When can not connect to blockchain or cache is not set up correctly.
  * @returns {Promise} Promise which resolves to the list with the notaries' information.
  */
-const getNotariesInfo = async (web3) => {
-  const { dataExchange } = await getContracts({ web3, dataExchangeAddress });
-
+const getNotariesInfo = async (web3, dataExchange) => {
   const notaryAddresses = await dataExchange.getAllowedNotaries();
-  const notaries = notaryAddresses.map(notaryAddress => getNotaryInfo(web3, notaryAddress));
+  const notaries = notaryAddresses.map(notaryAddress =>
+    getNotaryInfo(web3, dataExchange, notaryAddress));
 
   return Promise.all(notaries);
 };

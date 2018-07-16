@@ -1,4 +1,5 @@
 import express from 'express';
+import boom from 'express-boom';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cors from 'cors';
@@ -7,7 +8,15 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import config from '../config';
-import { logger, createRedisStore, createLevelStore } from './utils';
+import {
+  logger,
+  errorHandler,
+  createRedisStore,
+  createLevelStore,
+  wibcoin,
+  dataExchange,
+  DataOrderContract,
+} from './utils';
 
 import { health, notaries } from './routes';
 
@@ -18,6 +27,12 @@ app.locals.stores = {
   level: createLevelStore('/tmp/sample_level'),
 };
 
+app.locals.contracts = {
+  wibcoin,
+  dataExchange,
+  DataOrderContract,
+};
+
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(morgan(config.logType || 'combined', {
@@ -25,6 +40,7 @@ app.use(morgan(config.logType || 'combined', {
   skip: () => config.env === 'test',
 }));
 app.use(cors());
+app.use(boom());
 
 app.use('/health', health);
 app.use('/notaries', notaries);
@@ -44,5 +60,7 @@ const swaggerSpec = swaggerJSDoc({
 });
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get('/api-docs.json', (_req, res) => res.json(swaggerSpec));
+
+app.use(errorHandler); // This MUST always go after any other app.use(...)
 
 module.exports = app;
