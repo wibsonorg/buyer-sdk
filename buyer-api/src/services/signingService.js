@@ -16,7 +16,10 @@ const timeout = 1000;
 
 const getHealth = () => client.get(`${url}/health`, { timeout });
 
-const getPublicKey = () => client.get(`${url}/public-key`, { timeout });
+const getAccount = () => client.get(`${url}/account`, {
+  json: true,
+  timeout,
+});
 
 const signNewOrder = payload => client.post(
   `${url}/sign/new-order`,
@@ -28,7 +31,7 @@ const signNewOrder = payload => client.post(
 
 const signinService = {
   getHealth,
-  getPublicKey,
+  getAccount,
   signNewOrder,
 };
 

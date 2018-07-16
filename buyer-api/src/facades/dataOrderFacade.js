@@ -68,7 +68,10 @@ const createDataOrder = async (parameters) => {
     return new Response(null, ['Field \'buyerURL\' must be a valid URL']);
   }
 
-  const nonce = await web3.eth.getTransactionCount('0xc491D1A5ea0908A1864612AdaCA88852fF21C228');
+  const { address } = await signingService.getAccount();
+  console.log('address', address);
+
+  const nonce = await web3.eth.getTransactionCount(address);
   console.log('nonce', nonce.toString(16));
   const { signedTransaction } = await signingService.signNewOrder({
     nonce,
