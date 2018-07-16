@@ -75,8 +75,6 @@ const buildData = (newOrderParameters, newOrderPayload) => {
  * @returns {Response} with the result of the operation
  */
 const newOrderFacade = ({ nonce, newOrderParameters, newOrderPayload }) => {
-  console.log({ nonce, newOrderParameters, newOrderPayload });
-
   const newOrder = { ...newOrderParameters, publicKey: getPublicKey() };
 
   let errors = validatePresence({ nonce, newOrderParameters, newOrderPayload });
@@ -88,7 +86,7 @@ const newOrderFacade = ({ nonce, newOrderParameters, newOrderPayload }) => {
     return new Response(null, errors);
   }
 
-  const data = buildData(newOrder, newOrderPayload);
+  const data = buildData(newOrder, null);
 
   try {
     const rawTransaction = {
@@ -96,7 +94,8 @@ const newOrderFacade = ({ nonce, newOrderParameters, newOrderPayload }) => {
       to: config.contracts.dataExchange.address,
       value: '0x00',
       nonce: `0x${nonce.toString(16)}`,
-      gasLimit: `0x${parseInt(config.contracts.dataExchange.newOrder.gasLimit, 10).toString(16)}`,
+      gasLimit: config.contracts.dataExchange.newOrder.gasLimit,
+      // gasLimit: `0x${parseInt(config.contracts.dataExchange.newOrder.gasLimit, 10).toString(16)}`,
       // chainId: config.contracts.chainId,
       data,
     };

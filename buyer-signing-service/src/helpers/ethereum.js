@@ -17,7 +17,7 @@ export const generateData = (
   const func = EthUtil.keccak256(functionSignature).slice(0, 4).toString('hex');
   const args = parameterNames.map((parameterName) => {
     const value = transactionParameters[parameterName];
-
+    console.log('generateData', { [parameterName]: value });
     return EthUtil.setLengthLeft(value, 32).toString('hex');
   });
   const argsStr = args.join('');
