@@ -16,7 +16,13 @@ describe('dataOrderFacade', () => {
     //   * Buyer SS is not being mock for now.
   });
 
-  it('responds with error if filters is not present', async () => {
+  it('responds with error if filters is not present');
+  it('responds with error if dataRequest is not present');
+  it('responds with error if price is not present');
+  it('responds with error if initialBudgetForAudits is not present');
+  it('responds with error if termsAndConditions is not present');
+  it('responds with error if buyerURL is not present');
+  it('responds successfully', async () => {
     const response = await dataOrderFacade({
       filters,
       dataRequest,
@@ -28,10 +34,4 @@ describe('dataOrderFacade', () => {
 
     expect(response.success()).to.eq(true);
   });
-  it('responds with error if dataRequest is not present');
-  it('responds with error if price is not present');
-  it('responds with error if initialBudgetForAudits is not present');
-  it('responds with error if termsAndConditions is not present');
-  it('responds with error if buyerURL is not present');
-  it('responds successfully');
 });
