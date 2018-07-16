@@ -40,6 +40,9 @@ var config = {
   redis: {
     socket: env.REDIS_SOCKET
   },
+  orders: {
+    storePath: env.ORDERS_STORE_PATH
+  },
 };
 
 exports.default = config;
