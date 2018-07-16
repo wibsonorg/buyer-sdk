@@ -1,0 +1,75 @@
+.wibson-data-table {
+  border-spacing: 0;
+  border-collapse: separate;
+
+  background-color: #f7f9fa;
+
+  border: solid 1px #d8e2eb;
+  border-radius: 5px;
+}
+
+.wibson-data-table.fullWidth {
+  width: 100%;
+}
+
+.wibson-data-table th {
+  box-sizing: border-box;
+}
+
+.wibson-data-table thead th {
+  padding: 16px;
+  user-select: none;
+
+  font-family: MuseoSans;
+  font-size: 16px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: left;
+  color: #030f1a;
+}
+
+.wibson-data-table thead tr {
+  background-color: #ffffff;
+  box-shadow: inset 0 -1px 0 0 #d8e2eb;
+  margin-right: 8px;
+}
+
+.wibson-data-table .wibson-data-table-header-value {
+  display: inline;
+  margin-right: 8px;
+}
+
+.wibson-data-table .wibson-data-table-sort-arrow {
+  float: right;
+  margin: 0;
+  width: 8px;
+  height: 8px;
+}
+
+.wibson-data-table td {
+  padding: 16px;
+  vertical-align: top;
+}
+
+.wibson-data-table tbody {
+  font-family: MuseoSans;
+  font-size: 16px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: left;
+  color: #7f828a;
+}
+
+.wibson-data-table tbody tr {
+  background-color: #f5f9fc;
+}
+
+.wibson-data-table tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}

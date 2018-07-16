@@ -1,0 +1,38 @@
+.wibson-label {
+  color: #1c2331;
+  font-family: MuseoSans;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.wibson-label.sm {
+  font-size: 14px;
+}
+
+.wibson-label.md {
+  font-size: 16px;
+}
+
+.wibson-label.lg {
+  font-size: 18px;
+}
+
+.wibson-label.regular {
+  font-weight: 500 !important;
+}
+
+.wibson-label.bold {
+  font-weight: bold !important;
+}
+
+.wibson-label.color-dark {
+  color: #1c2331 !important;
+}
+
+.wibson-label.color-light-dark {
+  color: #7b8289 !important;
+}
+
+.wibson-label.color-light {
+  color: #fff !important;
+}

@@ -1,0 +1,5 @@
+{
+  "contract.addresses.simpleToken": "0xd037f68A208A4C4a3DF9a1e426595a1e5A2727b6",
+  "contract.addresses.dataExchange": "0x2238e8f7c39b389a50bb44e31c0f66f8dec51ffc",
+  "environment": "production"
+}
