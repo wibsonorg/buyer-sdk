@@ -1,14 +1,14 @@
 import EthTx from 'ethereumjs-tx';
 import { Buffer } from 'safe-buffer';
 import Response from '../Response';
-import { buyer, generateData, signTransaction } from '../../helpers';
+import { buyer, generateData, signTransactio, encodeFunctionCall } from '../../helpers';
 import getDataExchangeMethodDefinition from '../../contracts';
 import config from '../../../config';
 
 const {
-  functionSignature,
+  jsonInterface,
   parameterNames,
-  schema,
+  inputSchema,
 } = getDataExchangeMethodDefinition('newOrder');
 
 const {
@@ -20,7 +20,7 @@ const {
 const isPresent = obj => obj !== null && obj !== undefined;
 
 const validateNewOrderParameters = newOrderParameters =>
-  schema.reduce((accumulator, { name }) => {
+  inputSchema.reduce((accumulator, { name }) => {
     // TODO: type validation/coercion should also be done
     const value = newOrderParameters[name];
 
@@ -59,7 +59,11 @@ const validatePresence = ({ nonce, newOrderParameters, newOrderPayload }) => {
 
 const buildData = (newOrderParameters, newOrderPayload) => {
   if (isPresent(newOrderParameters)) {
-    return generateData(functionSignature, parameterNames, newOrderParameters);
+    // return generateData(functionSignature, parameterNames, newOrderParameters);
+    return encodeFunctionCall(
+      jsonInterface,
+      parameterNames.map(name => newOrderParameters[name]),
+    );
   }
 
   return newOrderPayload;

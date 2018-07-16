@@ -20,14 +20,14 @@ const dxFunctionDefinitions = dxDefinition.abi
  * }
  */
 const getDataExchangeMethodDefinition = (methodName) => {
-  const { inputs } = dxFunctionDefinitions.find(({ name }) => name === methodName);
-  const types = inputs.reduce((accumulator, { type }) => [...accumulator, type], []);
+  const jsonInterface = dxFunctionDefinitions.find(({ name }) => name === methodName);
+  const { inputs } = jsonInterface;
   const names = inputs.reduce((accumulator, { name }) => [...accumulator, name], []);
 
   return {
-    functionSignature: `${methodName}(${types.join(',')})`,
+    jsonInterface,
     parameterNames: names,
-    schema: inputs,
+    inputSchema: inputs,
   };
 };
 
