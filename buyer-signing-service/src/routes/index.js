@@ -1,5 +1,5 @@
 import health from './health';
-import publicKey from './publicKey';
+import account from './account';
 import * as sign from './sign';
 
-export { health, publicKey, sign };
+export { health, account, sign };

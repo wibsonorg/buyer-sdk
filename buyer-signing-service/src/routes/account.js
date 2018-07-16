@@ -5,17 +5,20 @@ const router = express.Router();
 
 /**
  * @swagger
- * /public-key:
+ * /account:
  *   get:
- *     description: Returns the public key
+ *     description: Returns account information
  *     produces:
  *       - application/json
  *     responses:
  *       200:
- *         description: When the app is OK
+ *         description: When account info is available
  */
 router.get('/', async (_req, res) => {
-  res.json({ publicKey: buyer.getPublicKey() });
+  res.json({
+    address: buyer.getAddress(),
+    publicKey: buyer.getPublicKey(),
+  });
 });
 
 export default router;
