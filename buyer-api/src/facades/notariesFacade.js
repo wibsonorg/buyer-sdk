@@ -25,11 +25,12 @@ const addNotaryToCache = notaryInfo =>
  * @returns {Promise} Promise which resolves to the notary's information.
  */
 const getNotaryInfo = async (web3, address) => {
-  const { dataExchange } = await getContracts({ web3, dataExchangeAddress });
-
   let notaryInfo = await notaryCache.get(address);
+
   if (!notaryInfo) {
     logger.debug('Notary :: Cache Miss :: %s :: Fetching from blockchain...', address);
+
+    const { dataExchange } = await getContracts({ web3, dataExchangeAddress });
     notaryInfo = await dataExchange.getNotaryInfo(address);
 
     if (notaryInfo[4]) {
