@@ -1,3 +1,4 @@
+import data from './data';
 import health from './health';
 
-export { health }; // eslint-disable-line import/prefer-default-export
+export { data, health }; // eslint-disable-line import/prefer-default-export

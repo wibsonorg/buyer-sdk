@@ -20,6 +20,9 @@ var config = {
     error: env.ERROR_LOG,
     combined: env.COMBINED_LOG
   },
+  buyer: {
+    privateKey: env.BUYER_PRIVATE_KEY
+  }
 };
 
 exports.default = config;
