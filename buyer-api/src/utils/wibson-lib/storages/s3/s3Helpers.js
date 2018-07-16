@@ -1,8 +1,4 @@
-import {
-  getS3Object,
-  getS3Objects,
-  putS3Object,
-} from './s3API';
+import { getS3Object, getS3Objects, putS3Object } from './s3API';
 
 const getStorageUrl = dataOrder => dataOrder.buyerPublicURL.storage;
 
@@ -32,10 +28,4 @@ const sendObject = (dataOrder, prefix, senderAccount, obj) => {
 
 const buildPrefixWithTarget = (prefix, target) => `${prefix}${target}-`;
 
-export {
-  countObjects,
-  listObjects,
-  getObject,
-  sendObject,
-  buildPrefixWithTarget
-};
+export { countObjects, listObjects, getObject, sendObject, buildPrefixWithTarget };

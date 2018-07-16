@@ -3,32 +3,27 @@ import {
   listObjects,
   getObject,
   sendObject,
-  buildPrefixWithTarget
+  buildPrefixWithTarget,
 } from './s3Helpers';
 
 const responsePrefix = 'response-';
 const dataPrefix = 'data-';
 
-
-const isSuitableForDataOrder = dataOrder => {
+const isSuitableForDataOrder = dataOrder => // eslint-disable-line no-unused-vars
   // TODO: change this when more storages are added and there is a way to know
   // if S3 is requested
-  return true;
-};
+  true;
 
 
-const countDataResponses = (dataOrder) =>
-  countObjects(dataOrder, responsePrefix);
+const countDataResponses = dataOrder => countObjects(dataOrder, responsePrefix);
 
-const listDataResponses = (dataOrder) =>
-  listObjects(dataOrder, responsePrefix);
+const listDataResponses = dataOrder => listObjects(dataOrder, responsePrefix);
 
 const getDataResponse = (dataOrder, senderAccount) =>
   getObject(dataOrder, responsePrefix, senderAccount);
 
 const sendDataResponse = (dataOrder, senderAccount, dataResponse) =>
   sendObject(dataOrder, responsePrefix, senderAccount, dataResponse);
-
 
 const countData = (dataOrder, sentTo) => {
   const prefix = buildPrefixWithTarget(dataPrefix, sentTo);
@@ -50,7 +45,6 @@ const sendData = (dataOrder, senderAccount, data, sendTo) => {
   return sendObject(dataOrder, prefix, senderAccount, data);
 };
 
-
 export {
   isSuitableForDataOrder,
   countDataResponses,
@@ -60,5 +54,5 @@ export {
   countData,
   listData,
   getData,
-  sendData
+  sendData,
 };

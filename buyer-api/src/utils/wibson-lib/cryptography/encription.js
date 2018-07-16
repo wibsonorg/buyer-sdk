@@ -7,7 +7,7 @@ import ethCrypto from 'eth-crypto';
  * @param {string} message the message to encrypt.
  * @public
  */
-const encryptSignedMessage = async (senderPrivateKey, targetPublicKey, message: string) => {
+const encryptSignedMessage = async (senderPrivateKey, targetPublicKey, message) => {
   if (!senderPrivateKey || !targetPublicKey) throw new Error('Keys must exist');
 
   // 1. we sign the message
@@ -17,7 +17,7 @@ const encryptSignedMessage = async (senderPrivateKey, targetPublicKey, message: 
   // 2. we create the payload with the message and the signature
   const payload = {
     message,
-    signature
+    signature,
   };
   const serializedPayload = JSON.stringify(payload);
 
@@ -28,7 +28,6 @@ const encryptSignedMessage = async (senderPrivateKey, targetPublicKey, message: 
   return ethCrypto.cipher.stringify(encrypted);
 };
 
-
 /**
  * It decrypts a signed message, checking it is from the expected sender.
  * @param {string} senderAddress Sender's ethereum address.
@@ -36,8 +35,10 @@ const encryptSignedMessage = async (senderPrivateKey, targetPublicKey, message: 
  * @param {string} encrypted the signed message to decrypt.
  * @public
  */
-const decryptSignedMessage = async (senderAddress, targetPrivateKey, encrypted: string) => {
-  if (!senderAddress || !targetPrivateKey) throw new Error('Sender address and target private key must exist');
+const decryptSignedMessage = async (senderAddress, targetPrivateKey, encrypted) => {
+  if (!senderAddress || !targetPrivateKey) {
+    throw new Error('Sender address and target private key must exist');
+  }
 
   // 1. we deserialize the encrypted payload
   const encryptedObject = ethCrypto.cipher.parse(encrypted);

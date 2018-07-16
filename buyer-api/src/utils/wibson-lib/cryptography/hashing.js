@@ -4,20 +4,18 @@ import web3Utils from 'web3-utils';
 
 import { encodeHashAndSalt, decodeHashAndSalt } from '../encoding';
 
-const _hashDataWithSalt = (data, salt) => {
-  return forge.md.sha256
-    .create()
-    .update(`${salt}${data}`)
-    .digest()
-    .toHex();
-};
+const hashDataWithSalt = (data, salt) => forge.md.sha256
+  .create()
+  .update(`${salt}${data}`)
+  .digest()
+  .toHex();
 
 const saltBytesSize = 32;
 
-const hashData = (data: string) => {
+const hashData = (data) => {
   try {
     const salt = forge.random.getBytesSync(saltBytesSize);
-    const hash = _hashDataWithSalt(data, salt);
+    const hash = hashDataWithSalt(data, salt);
     return encodeHashAndSalt(hash, salt);
   } catch (error) {
     throw new Error('Unable to hash the data');
@@ -27,7 +25,7 @@ const hashData = (data: string) => {
 const checkDataHash = (data, encodedHashAndSalt) => {
   try {
     const hashAndSalt = decodeHashAndSalt(encodedHashAndSalt, saltBytesSize);
-    const hash = _hashDataWithSalt(data, hashAndSalt.salt);
+    const hash = hashDataWithSalt(data, hashAndSalt.salt);
     return hash === hashAndSalt.hash;
   } catch (error) {
     throw new Error('The data does not match the hash');
@@ -44,7 +42,7 @@ const packMessage = (...args) => web3Utils.soliditySha3(...args);
  *    "\x19Ethereum Signed Message:\n" + message.length + message
  * and hashed using keccak256.
  */
-const hashMessage = message => {
+const hashMessage = (message) => {
   const byteMessage = web3Utils.isHexStrict(message) ? web3Utils.hexToBytes(message) : message;
   const preamble = `\x19Ethereum Signed Message:\n${byteMessage.length}`;
   const messageBuffer = Buffer.from(byteMessage);
@@ -56,7 +54,7 @@ const hashMessage = message => {
 /* Will sign the keccak256, solidity-compatible message using secp256k1 algorithm.
  */
 const signMessage = (privateKey, messageHash) => {
-  const pv = privateKey.startsWith("0x") ? privateKey : `0x${privateKey}`;
+  const pv = privateKey.startsWith('0x') ? privateKey : `0x${privateKey}`;
   return ethCrypto.sign(pv, messageHash);
 };
 
