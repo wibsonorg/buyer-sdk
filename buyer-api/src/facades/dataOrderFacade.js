@@ -2,7 +2,7 @@ import SolidityEvent from 'web3/lib/web3/event';
 import Response from './Response';
 import web3 from '../utils/web3';
 import signingService from '../services/signingService';
-import DataExchangeContract from '../contracts/definitions/DataExchange.json';
+import DataExchangeContract from '../../contracts/DataExchange.json';
 
 const toString = (value) => {
   if (value === null || value === undefined) return '';
