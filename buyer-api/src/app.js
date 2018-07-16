@@ -18,7 +18,7 @@ import {
   DataOrderContract,
 } from './utils';
 
-import { health, notaries } from './routes';
+import { account, health, notaries } from './routes';
 
 const app = express();
 // TODO: To be removed
@@ -42,6 +42,7 @@ app.use(morgan(config.logType || 'combined', {
 app.use(cors());
 app.use(boom());
 
+app.use('/account', account);
 app.use('/health', health);
 app.use('/notaries', notaries);
 
