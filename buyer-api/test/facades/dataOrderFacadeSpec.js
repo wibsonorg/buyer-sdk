@@ -1,12 +1,7 @@
 import { expect } from 'chai';
-import getContracts from '../../src/contracts';
-import web3 from '../../src/utils/web3';
 import dataOrderFacade from '../../src/facades/dataOrderFacade';
 
-describe.only('dataOrderFacade', () => {
-  const owner = web3.eth.accounts[0];
-  const buyerAddress = web3.eth.accounts[3];
-
+describe('dataOrderFacade', () => {
   const filters = { age: '30..35' };
   const dataRequest = 'data request';
   const price = 20;
@@ -15,22 +10,10 @@ describe.only('dataOrderFacade', () => {
   const buyerURL = 'asd';
 
   beforeEach(async () => {
-    // console.log('aca1');
-    // const { dataToken, dataExchange } = await getContracts({
-    //   web3,
-    //   dataTokenAddress: '0x3962fa1db01e006e73a984e927412d679bb49b10',
-    //   dataExchangeAddress: '0x3962fa1db01e006e73a984e927412d679bb49b10',
-    // });
-
-    // console.log('aca2', dataExchange.address);
-    // try {
-    //   await dataExchange.setMinimumInitialBudgetForAudits(10, { from: owner });
-    //   console.log('aca3');
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    // await dataToken.approve(dataExchange.address, 30000, { from: buyerAddress });
-    // console.log('aca4');
+    // TODO:
+    //   * Token Allowance: dx contract allowance is being set outside the test
+    //     suite. It should be set here.
+    //   * Buyer SS is not being mock for now.
   });
 
   it('responds with error if filters is not present', async () => {

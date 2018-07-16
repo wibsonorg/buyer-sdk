@@ -1,9 +1,8 @@
+import SolidityEvent from 'web3/lib/web3/event';
 import Response from './Response';
 import web3 from '../utils/web3';
 import signingService from '../services/signingService';
-import extractEventArguments from '../support/transaction';
 import DataExchangeContract from '../contracts/definitions/DataExchange.json';
-import config from '../../config';
 
 const toString = (value) => {
   if (value === null || value === undefined) return '';
@@ -48,6 +47,30 @@ const buildDataOrderParameters = ({
   buyerURL: toString(buyerURL),
 });
 
+const parseLogs = (logs, abi) => {
+  const decoders = abi
+    .filter(({ type }) => type === 'event')
+    .map(json => new SolidityEvent(null, json, null));
+
+  return logs.reduce((accumulator, log) => {
+    const found = decoders.find((decoder) => {
+      return decoder.signature() === log.topics[0].replace('0x', '');
+    });
+
+    if (found) {
+      return [...accumulator, found.decode(log)];
+    }
+
+    return accumulator;
+  }, []);
+};
+
+const extractEventArguments = (eventName, logs) => {
+  const parsedLogs = parseLogs(logs, DataExchangeContract.abi);
+  const { args } = parsedLogs.find(({ event }) => event === eventName);
+  return args;
+}
+
 /**
  * @async
  * @param {Object} parameters.filters Target audience.
@@ -63,7 +86,6 @@ const buildDataOrderParameters = ({
  * @returns {Response} The result of the operation.
  */
 const createDataOrder = async (parameters) => {
-  console.log('Start createDataOrder');
   const dataOrderParameters = buildDataOrderParameters(parameters);
 
   if (dataOrderParameters.buyerURL.length === 0) {
@@ -71,26 +93,17 @@ const createDataOrder = async (parameters) => {
   }
 
   const { address } = await signingService.getAccount();
-  console.log('address', address);
-
   const nonce = await web3.eth.getTransactionCount(address);
-  console.log('nonce', nonce.toString(16));
 
-  // console.log('dataOrder', { ...dataOrderParameters, publicKey });
-
-  // const payload = dx.newOrder.getData({ ...dataOrderParameters, publicKey });
   const { signedTransaction } = await signingService.signNewOrder({
     nonce,
     newOrderParameters: dataOrderParameters,
-    // newOrderPayload: payload,
   });
 
-  console.log('SignedTransaction', signedTransaction);
   const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
   const tx = await web3.eth.getTransactionReceipt(receipt);
 
-  console.log('tx', tx);
-  const { orderAddress } = extractEventArguments(tx);
+  const { orderAddress } = extractEventArguments('NewOrder', tx.logs);
 
   return new Response({ orderAddress });
 };
