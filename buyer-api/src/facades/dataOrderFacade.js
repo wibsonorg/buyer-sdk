@@ -2,6 +2,8 @@ import Response from './Response';
 import web3 from '../utils/web3';
 import signingService from '../services/signingService';
 import extractEventArguments from '../support/transaction';
+import DataExchangeContract from '../contracts/definitions/DataExchange.json';
+import config from '../../config';
 
 const toString = (value) => {
   if (value === null || value === undefined) return '';
@@ -73,16 +75,22 @@ const createDataOrder = async (parameters) => {
 
   const nonce = await web3.eth.getTransactionCount(address);
   console.log('nonce', nonce.toString(16));
+
+  // console.log('dataOrder', { ...dataOrderParameters, publicKey });
+
+  // const payload = dx.newOrder.getData({ ...dataOrderParameters, publicKey });
   const { signedTransaction } = await signingService.signNewOrder({
     nonce,
     newOrderParameters: dataOrderParameters,
+    // newOrderPayload: payload,
   });
 
   console.log('SignedTransaction', signedTransaction);
   const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
+  const tx = await web3.eth.getTransactionReceipt(receipt);
 
-  console.log(receipt);
-  const { orderAddress } = extractEventArguments(receipt);
+  console.log('tx', tx);
+  const { orderAddress } = extractEventArguments(tx);
 
   return new Response({ orderAddress });
 };

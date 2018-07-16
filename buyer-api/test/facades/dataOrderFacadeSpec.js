@@ -1,4 +1,4 @@
-import expect from 'chai';
+import { expect } from 'chai';
 import getContracts from '../../src/contracts';
 import web3 from '../../src/utils/web3';
 import dataOrderFacade from '../../src/facades/dataOrderFacade';
@@ -7,7 +7,7 @@ describe.only('dataOrderFacade', () => {
   const owner = web3.eth.accounts[0];
   const buyerAddress = web3.eth.accounts[3];
 
-  const filters = JSON.stringify({ age: '30..35' });
+  const filters = { age: '30..35' };
   const dataRequest = 'data request';
   const price = 20;
   const initialBudgetForAudits = 10;
