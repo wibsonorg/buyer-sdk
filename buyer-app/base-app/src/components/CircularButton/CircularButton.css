@@ -1,0 +1,80 @@
+.wibson-circular-button {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.wibson-circular-button .button {
+  outline: 0;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+}
+
+.wibson-circular-button .button.solid svg {
+  fill: #335980 !important;
+}
+
+.wibson-circular-button .button.solid {
+	background-color: #b8cfe6;
+}
+
+.wibson-circular-button .button.solid:hover {
+  opacity: .9;
+}
+
+.wibson-circular-button .button.outline {
+  border-radius: 21px;
+	background-color: rgba(0, 0, 0, 0.0);
+	border: solid 2px #b8cfe6;
+}
+.wibson-circular-button .button.outline svg {
+  fill: #b8cfe6 !important;
+}
+
+.wibson-circular-button .button.outline:hover {
+  opacity: .9;
+}
+
+.wibson-circular-button .label {
+  padding-top: 16px;
+	font-family: MuseoSans;
+	font-size: 14px;
+	font-weight: 500;
+  text-align: center;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.wibson-circular-button .button.sm {
+  height: 40px;
+  width: 40px;
+}
+
+.wibson-circular-button .button.md {
+  height: 44px;
+  width: 44px;
+}
+
+.wibson-circular-button .button.lg {
+  height: 48px;
+  width: 48px;
+}
+
+.wibson-circular-button .button.full-width {
+  width: 100%;
+}
+
+.wibson-circular-button .button.mid-width {
+  width: 50%;
+}
+
+.wibson-circular-button .disabled {
+  opacity: .5;
+  pointer-events: none;
+  cursor: not-allowed !important;
+}

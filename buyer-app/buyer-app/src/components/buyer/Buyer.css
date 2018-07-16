@@ -1,0 +1,51 @@
+.page-content {
+  padding: 48px 32px 32px 32px;
+}
+
+.page-content .page-navbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.page-content .page-selector {
+  display: flex;
+  align-items: center;
+}
+
+.page-content .page-selector > span {
+  margin-right: 16px;
+}
+
+.page-content .page-selector > .wibson-select,
+.page-selector-items-container {
+  width: 230px;
+}
+
+.page-content .actions {
+  min-width: 135px;
+}
+
+.page-content .actions > a {
+  text-decoration: none;
+}
+
+.page-content .offering-actions {
+  min-width: 121px;
+}
+
+.page-content .price {
+  min-width: 70px;
+}
+
+.page-content .request-action {
+  padding: 2px 8px;
+}
+
+.page-content .request-action > span {
+  font-size: 0.95rem;
+}
+
+.action-buttons > * {
+  margin-left: 15px;
+}

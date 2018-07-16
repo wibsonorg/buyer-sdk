@@ -1,0 +1,19 @@
+.wibson-subtitle {
+  color: #1c2331;
+  font-family: MuseoSans;
+  font-size: 18px;
+  font-weight: bold;
+  display: block;
+}
+
+.wibson-subtitle.color-dark {
+  color: #1c2331 !important;
+}
+
+.wibson-subtitle.color-light-dark {
+  color: #7b8289 !important;
+}
+
+.wibson-subtitle.color-light {
+  color: #fff !important;
+}
