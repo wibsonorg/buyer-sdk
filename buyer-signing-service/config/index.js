@@ -20,6 +20,13 @@ var config = {
     error: env.ERROR_LOG,
     combined: env.COMBINED_LOG
   },
+  contracts: {
+    chainId: env.CHAIN_ID,
+    dataExchange: {
+      address: env.DATA_EXCHANGE_CONTRACT_ADDRESS,
+      newOrder: { gasLimit: env.TX_NEW_ORDER_GAS_LIMIT }
+    },
+  },
   buyer: {
     privateKey: env.BUYER_PRIVATE_KEY
   }
