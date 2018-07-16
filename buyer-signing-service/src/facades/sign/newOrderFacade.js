@@ -1,7 +1,7 @@
 import EthTx from 'ethereumjs-tx';
 import { Buffer } from 'safe-buffer';
 import Response from '../Response';
-import { buyer, generateData, signTransactio, encodeFunctionCall } from '../../helpers';
+import { buyer, encodeFunctionCall } from '../../helpers';
 import getDataExchangeMethodDefinition from '../../contracts';
 import config from '../../../config';
 
@@ -59,7 +59,6 @@ const validatePresence = ({ nonce, newOrderParameters, newOrderPayload }) => {
 
 const buildData = (newOrderParameters, newOrderPayload) => {
   if (isPresent(newOrderParameters)) {
-    // return generateData(functionSignature, parameterNames, newOrderParameters);
     return encodeFunctionCall(
       jsonInterface,
       parameterNames.map(name => newOrderParameters[name]),
@@ -92,30 +91,23 @@ const newOrderFacade = ({ nonce, newOrderParameters, newOrderPayload }) => {
 
   const data = buildData(newOrder, null);
 
-  try {
-    const rawTransaction = {
-      from: getAddress(),
-      to: config.contracts.dataExchange.address,
-      value: '0x00',
-      nonce: `0x${nonce.toString(16)}`,
-      gasLimit: config.contracts.dataExchange.newOrder.gasLimit,
-      // gasLimit: `0x${parseInt(config.contracts.dataExchange.newOrder.gasLimit, 10).toString(16)}`,
-      // chainId: config.contracts.chainId,
-      data,
-    };
-    console.log(rawTransaction);
+  const rawTransaction = {
+    from: getAddress(),
+    to: config.contracts.dataExchange.address,
+    value: '0x00',
+    nonce: `0x${nonce.toString(16)}`,
+    // gasLimit: config.contracts.dataExchange.newOrder.gasLimit,
+    gasLimit: `0x${parseInt(config.contracts.dataExchange.newOrder.gasLimit, 10).toString(16)}`,
+    // chainId: config.contracts.chainId,
+    data,
+  };
 
-    // const result = signTransaction(rawTransaction, getPrivateKey());
-    const tx = new EthTx(rawTransaction);
-    tx.sign(Buffer.from(getPrivateKey(), 'hex'));
+  const tx = new EthTx(rawTransaction);
+  tx.sign(Buffer.from(getPrivateKey(), 'hex'));
 
-    const result = tx.serialize().toString('hex');
+  const result = tx.serialize().toString('hex');
 
-    return new Response(result);
-  } catch (error) {
-    console.log(error);
-    return new Response(null, [error]);
-  }
+  return new Response(result);
 };
 
 export default newOrderFacade;
