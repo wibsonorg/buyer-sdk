@@ -1,0 +1,6 @@
+{
+	"gd.logo": "img/grandata-logo.png",
+	"app.logo": "img/brand/gd-logo.png",
+	"app.lang": "en",
+	"minio": "https://publicwibson:publicwibson@publicstorage.wibson.org"
+}

@@ -1,0 +1,75 @@
+.wibson-button {
+  outline: 0;
+  cursor: pointer;
+  border: none;
+}
+
+.wibson-button.solid {
+  border-radius: 21px;
+	background-color: #0d8aff;
+  color: #f5f6fa !important;
+}
+
+.wibson-button.solid:hover {
+  opacity: .9;
+}
+
+.wibson-button.outline {
+  border-radius: 21px;
+	background-color: rgba(0, 0, 0, 0.0);
+	border: solid 1px #2e9afd;
+  color: #2e9afd !important;
+}
+
+.wibson-button.outline:hover {
+  opacity: .9;
+}
+
+.wibson-button.bare {
+  background-color: transparent;
+  border-radius: 0;
+  border-width: 0;
+  color: #333 !important;
+}
+
+.wibson-button.bare:hover {
+  opacity: .9;
+}
+
+.wibson-button.label {
+  padding: 0 16px;
+	font-family: MuseoSans;
+	font-size: 14px;
+	font-weight: 500;
+	text-align: left;
+}
+
+.wibson-button.sm {
+  height: 40px;
+  font-size: 12px !important;
+}
+
+.wibson-button.md {
+  height: 44px;
+  font-size: 14px !important;
+}
+
+.wibson-button.lg {
+  height: 48px;
+  font-size: 18px !important;
+}
+
+.wibson-button.full-width {
+  width: 100%;
+}
+
+.wibson-button.mid-width {
+  width: 50%;
+}
+
+.wibson-button.disabled {
+  opacity: .5;
+  pointer-events: none;
+  background-color: #0d8aff;
+  cursor: not-allowed !important;
+}

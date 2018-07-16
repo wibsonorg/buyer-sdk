@@ -1,0 +1,5 @@
+.wibson-tag-list {
+  display: flex !important;
+  flex-wrap: wrap;
+  margin: -3px;
+}

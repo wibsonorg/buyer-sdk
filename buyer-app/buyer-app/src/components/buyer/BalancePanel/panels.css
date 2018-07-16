@@ -1,0 +1,33 @@
+.panel-text {
+  font-size: 35px;
+	font-weight: 300;
+}
+
+.panel-note,
+.panel-units {
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.panel-note {
+  margin-left: 12px;
+}
+
+.panel-units {
+  margin-top: 16px;
+}
+
+.wibson-panel .wibson-link {
+  font-size: 14px;
+	font-weight: 300;
+  padding: 0;
+  margin-top: 16px;
+}
+
+.wibson-panel .wibson-link svg {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  margin-left: 5px;
+  margin-bottom: -2px;
+}

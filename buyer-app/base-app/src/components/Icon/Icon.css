@@ -1,0 +1,36 @@
+
+.icon {
+  display: flex;
+  fill: #92A8B7;
+}
+
+.icon.withHover {
+  cursor: pointer;
+}
+
+/* Sizes */
+
+.icon.xs {
+  width: auto;
+  height: 8px;
+}
+
+.icon.sm {
+  width: auto;
+  height: 16px;
+}
+
+.icon.md {
+  width: auto;
+  height: 27px;
+}
+
+.icon.lg {
+  width: auto;
+  height: 38px;
+}
+
+.icon.xl {
+  width: auto;
+  height: 50px;
+}

@@ -7,8 +7,9 @@
  *     name: X-API-Key
  */
 
+import account from './account';
 import health from './health';
 import notaries from './notaries';
 import dataOrders from './dataOrders';
 
-export { health, notaries, dataOrders };
+export { account, health, notaries, dataOrders };

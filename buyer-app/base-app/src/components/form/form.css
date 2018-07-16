@@ -1,0 +1,22 @@
+.wibson-form-info-item {
+  margin-top: 16px;
+}
+
+.wibson-form-info-item > * {
+  margin-top: 8px;
+  display: block;
+}
+
+.wibson-form-info-item-inline {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.wibson-form-info-item-inline > * {
+  margin-right: 8px;
+}
+
+.wibson-form-container > *:not(:first-child) {
+  margin-top: 24px;
+}

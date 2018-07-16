@@ -1,0 +1,81 @@
+ul.wibson-select-items-container {
+  background-color: #ffffff;
+  margin: 6px 0 0 0;
+  list-style-type: none;
+  border: solid 1px #d8e2eb;
+  border-radius: 3px;
+  padding: 0;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+ul.wibson-select-items-container li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+ul.wibson-select-items-container li:not(:last-child) {
+  border-bottom: solid 1px #d8e2eb;
+  margin: 0;
+}
+
+.wibson-select {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box !important;
+
+  /*height: 42px;*/
+  padding: 10px;
+  border-radius: 21px;
+  background-color: #ffffff;
+  border: solid 1px #d8e2eb;
+  padding-left: 16px;
+  padding-right: 16px;
+
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+.wibson-select-arrow {
+  max-width: 10%;
+  width: 8px;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+.wibson-select-value {
+  max-width: 90%;
+  font-family: MuseoSans;
+  font-size: 14px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: left;
+  color: #7b8289;
+
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}

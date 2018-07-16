@@ -1,7 +1,5 @@
 import express from 'express';
-import web3Utils from 'web3-utils';
-import { errorResponse, invalidAddressResponse } from '../responses';
-import { cache, logger, web3 } from '../utils';
+import { asyncError, cache, logger, validateAddress, web3 } from '../utils';
 
 import { getNotaryInfo, getNotariesInfo } from '../facades/notariesFacade';
 
@@ -20,18 +18,16 @@ const router = express.Router();
  *       500:
  *         description: When the fetch failed.
  */
-router.get('/', cache('1 day'), async (req, res) => {
-  try {
-    const result = {
-      notaries: await getNotariesInfo(web3),
-    };
-    res.json(result);
-  } catch (err) {
-    logger.error(err);
-    const error = errorResponse(`Couldn't get notaries. Error: ${err.message}`);
-    res.status(500).json(error);
-  }
-});
+router.get('/', cache('1 day'), asyncError(async (req, res) => {
+  const { contracts: { dataExchange } } = req.app.locals;
+
+  logger.info(JSON.stringify(dataExchange));
+
+  const result = {
+    notaries: await getNotariesInfo(web3, dataExchange),
+  };
+  res.json(result);
+}));
 
 /**
  * @swagger
@@ -53,26 +49,16 @@ router.get('/', cache('1 day'), async (req, res) => {
  *       500:
  *         description: When the fetch failed.
  */
-router.get('/:notaryAddress', cache('1 day'), async (req, res) => {
-  try {
-    const { notaryAddress } = req.params;
+router.get('/:notaryAddress', cache('1 day'), validateAddress('notaryAddress'), asyncError(async (req, res) => {
+  const { contracts: { dataExchange } } = req.app.locals;
+  const { notaryAddress } = req.params;
 
-    if (!web3Utils.isAddress(notaryAddress)) {
-      res.status(400).send(invalidAddressResponse('notaryAddress'));
-      return;
-    }
-
-    const result = await getNotaryInfo(web3, notaryAddress);
-    if (result.isRegistered) {
-      res.json(result);
-    } else {
-      res.status(404).send();
-    }
-  } catch (err) {
-    logger.error(err);
-    const error = errorResponse(`Couldn't get notary information. Error: ${err.message}`);
-    res.status(500).json(error);
+  const result = await getNotaryInfo(web3, dataExchange, notaryAddress);
+  if (result.isRegistered) {
+    res.json(result);
+  } else {
+    res.status(404).send();
   }
-});
+}));
 
 export default router;

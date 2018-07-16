@@ -1,22 +1,35 @@
 import express from 'express';
+import boom from 'express-boom';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cors from 'cors';
-import boom from 'express-boom';
 import bodyParser from 'body-parser';
 import swaggerUi from 'swagger-ui-express';
 import config from '../config';
-import { logger, createRedisStore, createLevelStore } from './utils';
 import schema from './schema';
-import errorHandler from './middlewares/errorHandling';
+import {
+  logger,
+  errorHandler,
+  createRedisStore,
+  createLevelStore,
+  wibcoin,
+  dataExchange,
+  DataOrderContract,
+} from './utils';
 
-import { health, notaries, dataOrders } from './routes';
+import { account, health, notaries, dataOrders } from './routes';
 
 const app = express();
 // TODO: To be removed
 app.locals.stores = {
   redis: createRedisStore('sample'),
   level: createLevelStore('/tmp/sample_level'),
+};
+
+app.locals.contracts = {
+  wibcoin,
+  dataExchange,
+  DataOrderContract,
 };
 
 app.use(helmet());
@@ -28,11 +41,14 @@ app.use(morgan(config.logType || 'combined', {
 app.use(cors());
 app.use(boom());
 
+app.use('/account', account);
 app.use('/health', health);
 app.use('/notaries', notaries);
 app.use('/data-orders', dataOrders);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
 app.get('/api-docs.json', (_req, res) => res.json(schema));
+
+app.use(errorHandler); // This MUST always go after any other app.use(...)
 
 app.use(errorHandler); // This MUST always go after any other app.use(...)
 
