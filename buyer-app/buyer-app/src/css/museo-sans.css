@@ -1,0 +1,32 @@
+@font-face {
+  font-family: 'MuseoSans';
+  font-weight: 300;
+  font-style: normal;
+  src: url('../fonts/Museo-Sans-300/Museo-Sans-300.otf');
+  src: local('Museo-Sans Light'),
+       local('Museo-Sans-300'),
+       url('../fonts/Museo-Sans-300/Museo-Sans-300.otf') format('truetype'),
+       url('../fonts/Museo-Sans-300/Museo-Sans-300.ttf') format('truetype'),
+}
+
+@font-face {
+  font-family: 'MuseoSans';
+  font-weight: 500;
+  font-style: normal;
+  src: url('../fonts/Museo-Sans-500/Museo-Sans-500.otf');
+  src: local('Museo-Sans Light'),
+       local('Museo-Sans-500'),
+       url('../fonts/Museo-Sans-500/Museo-Sans-500.otf') format('truetype'),
+       url('../fonts/Museo-Sans-500/Museo-Sans-500.ttf') format('truetype'),
+}
+
+@font-face {
+  font-family: 'MuseoSans';
+  font-weight: 700;
+  font-style: normal;
+  src: url('../fonts/Museo-Sans-700/Museo-Sans-700.otf');
+  src: local('Museo-Sans Light'),
+       local('Museo-Sans-700'),
+       url('../fonts/Museo-Sans-700/Museo-Sans-700.otf') format('truetype'),
+       url('../fonts/Museo-Sans-700/Museo-Sans-700.ttf') format('truetype'),
+}

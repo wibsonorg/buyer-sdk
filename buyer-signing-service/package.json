@@ -14,6 +14,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "aws-sdk": "^2.188.0",
     "babel-polyfill": "^6.26.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
@@ -27,10 +28,12 @@
     "helmet": "^3.12.1",
     "level": "^4.0.0",
     "morgan": "^1.9.0",
+    "node-forge": "^0.7.1",
     "safe-buffer": "^5.1.2",
     "swagger-jsdoc": "^1.9.7",
     "swagger-ui-express": "^3.0.10",
     "web3-eth-abi": "^1.0.0-beta.34",
+    "web3-utils": "1.0.0-beta.34",
     "winston": "^3.0.0"
   },
   "devDependencies": {

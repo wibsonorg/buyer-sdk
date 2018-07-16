@@ -1,0 +1,32 @@
+.requested-data {
+  display: flex;
+  align-items: start;
+  flex-direction: column;
+}
+
+.requested-data .notarized {
+    font-size: 10px;
+    line-height: 18px;
+    color: #00ab00;
+    text-transform: uppercase;
+    border: 1px solid #00ab00;
+    border-radius: 4px;
+    padding: 0px 4px;
+    margin-right: 5px;
+    min-width: 66px;
+    box-sizing: border-box;
+}
+
+
+.requested-data .not-connected {
+    font-size: 10px;
+    line-height: 18px;
+    color: red;
+    text-transform: uppercase;
+    border: 1px solid red;
+    border-radius: 4px;
+    padding: 0px 4px;
+    margin-right: 5px;
+    min-width: 66px;
+    box-sizing: border-box;
+}

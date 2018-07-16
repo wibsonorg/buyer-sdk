@@ -18,8 +18,8 @@ var config = {
   buyerSigningServiceUrl: env.BUYER_SIGNING_SERVICE_URL,
   contracts: {
     addresses: {
-      dataToken: env.DATA_TOKEN_CONTRACT_ADDRESS,
-      dataExchange: env.DATA_EXCHANGE_CONTRACT_ADDRESS,
+      wibcoin: env.WIBCOIN_ADDRESS,
+      dataExchange: env.DATA_EXCHANGE_ADDRESS
     },
     cache: {
       notaryTTL: env.CONTRACTS_CACHE_NOTARY_TTL

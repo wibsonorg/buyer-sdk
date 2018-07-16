@@ -1,0 +1,55 @@
+.wibson-link {
+  background-color: transparent;
+  border-radius: 0;
+  border-width: 0;
+  font-family: MuseoSans;
+	font-weight: 500;
+	text-align: left;
+  cursor: pointer;
+  outline: 0 !important;
+}
+
+.wibson-link:not(:hover) {
+  margin-bottom: 1px;
+}
+
+.wibson-link:hover {
+  opacity: .9;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #b8cfe6;
+}
+
+.wibson-link.disabled {
+  opacity: .5;
+  pointer-events: none;
+  cursor: not-allowed !important;
+}
+
+.wibson-link.sm {
+  font-size: 14px;
+}
+
+.wibson-link.md {
+  font-size: 18px;
+}
+
+.wibson-link.lg {
+  font-size: 20px;
+}
+
+.wibson-link.color-light-dark {
+  color: #b8cfe6 !important;
+}
+
+.wibson-link.color-light {
+  color: #fff !important;
+}
+
+.wibson-link.color-dark {
+  color: #1c2331 !important;
+}
+
+.wibson-link.color-regular {
+  color: #0d8aff !important;
+}

@@ -1,0 +1,76 @@
+.wibson-header {
+  padding: 0px 32px;
+  color: #fff;
+}
+
+.wibson-header.buyer {
+  color: #fff;
+  background-image: linear-gradient(to bottom, #0a1f33, #0f2f4d);
+}
+
+.wibson-header.seller {
+  color: #fff;
+  background-image: linear-gradient(to bottom, #0a1f33, #0f2f4d);
+}
+
+.wibson-header.notary {
+  color: #fff;
+  background-image: linear-gradient(to bottom, #0a1f33, #0f2f4d);
+}
+
+.wibson-header .info-section {
+  height: 64px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wibson-header .info-section .wibson-logo {
+  width: 126px;
+	height: 24px;
+}
+
+.wibson-header .info-section .account-info .account-name {
+  font-size: 14px;
+	font-weight: 500;
+  text-align: right;
+  text-transform: capitalize;
+}
+
+.wibson-header .info-section .account-info .account-address {
+  margin-top: 9px;
+  display: flex;
+  justify-content: flex-end;
+  font-size: 12px;
+  font-weight: 300;
+  color: #AAB3BD;
+}
+
+.wibson-header .info-section .account-info .account-address span {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.wibson-header .info-section .account-info .account-address svg {
+  fill: #AAB3BD;
+  height: 14px !important;
+  margin-left: 8px;
+}
+
+.wibson-header .info-section .account-info .account-address svg:hover {
+  fill: white;
+}
+
+.wibson-header .panels-section {
+  padding: 40px 0px;
+  display: flex;
+}
+
+.wibson-header .panels-section > * {
+  flex: 1;
+}
+
+.wibson-header .panels-section > *:not(:last-child) {
+  margin-right: 24px;
+}

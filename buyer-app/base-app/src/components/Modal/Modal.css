@@ -1,0 +1,54 @@
+.wibson-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.wibson-modal-content {
+  position: absolute;
+
+  top: 0; 
+  bottom: 0; 
+  margin-top: auto; 
+  margin-bottom: auto; 
+  height: 400px;
+
+  left: 0; 
+  right: 0; 
+  margin-left: auto; 
+  margin-right: auto; 
+  width: 475px; /* Need a specific value to work */
+
+
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 20px 0 #00000019;
+
+  background: #fff;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  outline: none;
+
+  padding: 24px 16px;
+}
+
+.wibson-modal-close-icon {
+  position: absolute;
+  top: 24px;
+  right: 16px;
+}
+
+.wibson-modal-title {
+  font-family: MuseoSans;
+  font-size: 25px;
+  font-weight: bold;
+  text-align: left;
+  color: #030f1a;
+}
+
+.wibson-modal-inside-content {
+  padding-top: 24px;
+}

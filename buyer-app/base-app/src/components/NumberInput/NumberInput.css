@@ -1,0 +1,63 @@
+.wibson-number-input-container {
+    position: relative;
+    display: flex !important;
+    height: 42px;
+    width: 100px;
+}
+
+.wibson-number-input {
+    height: auto;
+    border-radius: 21px;
+    background-color: #ffffff;
+    border: solid 1px #d8e2eb;
+    width: 100%;
+    padding: 16px;
+    padding-right: 32px;
+    outline-color: transparent;
+    outline-style: none;
+}
+
+.wibson-number-input.disabled {
+    background-color: lightgray;  
+}
+
+.wibson-number-input-arrows {
+    position: absolute;
+    width: 24px;
+
+    right: 0;
+    top: 0;
+    height: 100%;
+
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+.wibson-number-input-arrow-container {
+    cursor: pointer;
+    height: 50%;
+    position: relative;
+}
+
+.wibson-number-input-up {
+    position: absolute;
+    bottom: 0;
+    width: 6px;
+    height: 4px;
+    display: block;
+    margin-bottom: 1px;
+}
+
+.wibson-number-input-down {
+    position: absolute;
+    top: 0;
+    width: 6px;
+    height: 4px;
+    display: block;
+    margin-top: 1px;
+}

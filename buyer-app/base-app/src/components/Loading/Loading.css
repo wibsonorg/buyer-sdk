@@ -1,0 +1,59 @@
+.wibson-loading {
+  display: inline-flex;
+  flex-direction: column;
+  text-align: center;
+  margin: 20px 0px;
+}
+
+.wibson-loading.xs {
+  margin: 10px 0px;
+}
+
+.wibson-loading.center {
+  display: flex;
+  margin: auto;
+}
+
+.wibson-loading .wibson-loading-label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 24px;
+}
+
+.wibson-loading.xs .wibson-loading-label {
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.wibson-loading.xl .wibson-loading-label {
+  font-size: 20px;
+}
+
+.wibson-loading .wibson-loading-svg {
+  margin: auto;
+  animation: spin 1.4s infinite linear;
+}
+
+.wibson-loading.xs .wibson-loading-svg {
+  width: 30px;
+  height: 30px;
+}
+
+.wibson-loading.xl .wibson-loading-svg {
+  width: 100px;
+  height: 100px;
+}
+
+.wibson-loading-full-page {
+  height: 100vh;
+  display: flex;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

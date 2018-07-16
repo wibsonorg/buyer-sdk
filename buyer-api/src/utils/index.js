@@ -4,3 +4,5 @@ import logger from './logger';
 
 export { web3, cache, logger };
 export { createRedisStore, createLevelStore } from './storage';
+export { errorHandler, asyncError, validateAddress } from './routes';
+export { wibcoin, dataExchange, DataOrderContract } from './contracts';
