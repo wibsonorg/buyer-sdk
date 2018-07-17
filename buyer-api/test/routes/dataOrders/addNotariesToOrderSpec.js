@@ -19,7 +19,7 @@ describe('/orders/:orderAddress/notaries', () => {
 
   describe('POST /', () => {
     it('responds with an Not Found status when orderAddress is not present');
-    it('responds with an Unprocessable Entity status when notaryAddress is not present');
+    it('responds with an Unprocessable Entity status when notary is not present');
     it('responds with an Unprocessable Entity status when responsesPercentage is not present');
     it('responds with an Unprocessable Entity status when notarizationFee is not present');
     it('responds with an Unprocessable Entity status when notarizationTermsOfService is not present');

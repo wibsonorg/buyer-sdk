@@ -66,7 +66,7 @@ const validate = ({ orderAddress, notaries }) =>
  *   Notary:
  *     type: object
  *     properties:
- *       notaryAddress:
+ *       notary:
  *         type: string
  *         required: true
  *         description: Address of the notary

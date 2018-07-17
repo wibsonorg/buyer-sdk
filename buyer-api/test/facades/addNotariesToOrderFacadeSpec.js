@@ -6,7 +6,7 @@ describe('addNotariesToOrderFacade', () => {
   const notaries = [];
 
   it('responds with error when orderAddress is not present');
-  it('responds with error when notaryAddress is not present');
+  it('responds with error when notary is not present');
   it('responds with error when responsesPercentage is not present');
   it('responds with error when notarizationFee is not present');
   it('responds with error when notarizationTermsOfService is not present');
