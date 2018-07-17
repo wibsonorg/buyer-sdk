@@ -3,45 +3,20 @@ import Response from './Response';
 import signingService from '../services/signingService';
 import web3 from '../utils/web3';
 import logger from '../utils/logger';
+import { coercion, collection } from '../utils/wibson-lib';
 
-const isPresent = v => v !== null && v !== undefined;
-
-const toString = (value) => {
-  if (value === null || value === undefined) return '';
-  if (typeof value === 'string') return value;
-  if (typeof value.toString === 'function') return value.toString();
-  return '';
-};
-
-const toInteger = (value, defaultValue = 0) => {
-  if (value === null || value === undefined) return defaultValue;
-  return parseInt(value, 10);
-};
-
-const partition = (collection, partitionFunc) => {
-  let left = [];
-  let right = [];
-
-  collection.forEach((item) => {
-    if (partitionFunc(item)) {
-      left = [...left, item];
-    } else {
-      right = [...right, item];
-    }
-  });
-
-  return [left, right];
-};
+const { isPresent, toString, toInteger } = coercion;
+const { partition } = collection;
 
 const buildNotariesParameters = notaries =>
   notaries.map(({
-    notaryAddress,
+    notary,
     responsesPercentage,
     notarizationFee,
     notarizationTermsOfService,
     notarySignature,
   }) => ({
-    notaryAddress: toString(notaryAddress),
+    notary: toString(notary),
     responsesPercentage: toInteger(responsesPercentage),
     notarizationFee: toInteger(notarizationFee),
     notarizationTermsOfService: toString(notarizationTermsOfService),
@@ -72,20 +47,12 @@ export const extractEventArguments = (eventName, logs, contract) => {
   return args;
 };
 
-const addNotaryToOrder = async (
-  orderAddress,
-  notary,
-  buyerAddress,
-  contract,
-) => {
+const addNotaryToOrder = async (orderAddr, notary, buyerAddress, contract) => {
   try {
     const nonce = await web3.eth.getTransactionCount(buyerAddress);
     const { signedTransaction } = await signingService.signAddNotaryToOrder({
       nonce,
-      addNotaryToOrderParameters: {
-        orderAddress,
-        ...notary,
-      },
+      addNotaryToOrderParameters: { orderAddr, ...notary },
     });
     const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
     const { logs } = await web3.eth.getTransactionReceipt(receipt);
@@ -98,8 +65,13 @@ const addNotaryToOrder = async (
 
     return { notaryAddress };
   } catch (error) {
-    // TODO: treat each error type
-    const errorPayload = { error, orderAddress, notary };
+    // TODO: treat each error type accordingly
+    const errorPayload = {
+      error: error.message,
+      stack: error.stack,
+      orderAddress: orderAddr,
+      notary,
+    };
     logger.error('Transaction failed', errorPayload);
 
     return errorPayload;
@@ -123,9 +95,15 @@ const addNotariesToOrderFacade = async (orderAddress, notaries, contract) => {
   }
 
   const { address } = await signingService.getAccount();
-  const promises = notariesParameters.map(notary =>
-    addNotaryToOrder(orderAddress, notary, address, contract));
-  const txs = await Promise.all(promises);
+  let txs = [];
+  // eslint-disable-next-line no-restricted-syntax
+  for (const notary of notariesParameters) {
+    txs = [
+      ...txs,
+      // eslint-disable-next-line no-await-in-loop
+      await addNotaryToOrder(orderAddress, notary, address, contract),
+    ];
+  }
 
   const [
     failedTxs,

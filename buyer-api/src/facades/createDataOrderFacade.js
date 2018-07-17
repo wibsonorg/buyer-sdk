@@ -102,7 +102,7 @@ const createDataOrderFacade = async (parameters) => {
   const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
   const tx = await web3.eth.getTransactionReceipt(receipt);
 
-  const { orderAddress } = extractEventArguments('NewOrder', tx.logs);
+  const { orderAddr: orderAddress } = extractEventArguments('NewOrder', tx.logs);
 
   return new Response({ orderAddress });
 };

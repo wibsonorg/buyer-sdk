@@ -1,29 +1,39 @@
 import request from 'supertest';
-import sinon from 'sinon';
-import signingService from '../../../src/services/signingService';
-import web3 from '../../../src/utils/web3';
+// import sinon from 'sinon';
+// import signingService from '../../../src/services/signingService';
+// import web3 from '../../../src/utils/web3';
 import { mockStorage, restoreMocks, requireApp } from '../../helpers';
+import { cryptography } from '../../../src/utils/wibson-lib';
 
 describe('/orders/:orderAddress/notaries', () => {
   let app;
-  const ownerAddress = web3.eth.accounts[0];
-  const buyerAddress = web3.eth.accounts[1];
+  const orderAddress = '0xb6c27851f39566e2f148432815002cb219d48e6f';
   const notaryA = {
-    notaryAddress: web3.eth.accounts[6],
+    notary: '0x5ee6fd4d54540333c148885d52e81f39c256761a',
     responsesPercentage: 30,
     notarizationFee: 10,
     notarizationTermsOfService: 'Terms A',
-    notarySignature: 'signature',
+    notarySignature: cryptography.signPayload(
+      '0x3164c60ef3e26cb8c1d97effe36777ad8f45341c8b400fda5e5c5f57a9eb12c4',
+      orderAddress,
+      30,
+      10,
+      'Terms A',
+    ),
   };
   const notaryB = {
-    notaryAddress: web3.eth.accounts[7],
+    notary: '0x9a8288f6c76a7f37a5d5e2cdd34389f5edbc1d5e',
     responsesPercentage: 50,
     notarizationFee: 20,
     notarizationTermsOfService: 'Terms B',
-    notarySignature: 'signature',
+    notarySignature: cryptography.signPayload(
+      '0xe3c01467b44cf99430051cb9d4a48528c51896f5deb2eadf181d71bc7357f4da',
+      orderAddress,
+      50,
+      20,
+      'Terms B',
+    ),
   };
-
-  const orderAddress = '0xa662a5c63079009d79740f4e638a404f7917f93a';
   const notaries = [notaryA, notaryB];
 
   beforeEach(function (done) { // eslint-disable-line func-names
@@ -56,12 +66,10 @@ describe('/orders/:orderAddress/notaries', () => {
     it.only('responds with an OK status', (done) => {
       request(app)
         .post(`/orders/${orderAddress}/notaries`)
-        .send({
-          notaries,
-        })
+        .send({ notaries })
         .expect(200, {
           orderAddress,
-          notariesAddresses: notaries,
+          notariesAddresses: notaries.map(({ notary }) => notary),
         }, done);
     });
   });
