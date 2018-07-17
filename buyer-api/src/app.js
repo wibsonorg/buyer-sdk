@@ -50,6 +50,4 @@ app.get('/api-docs.json', (_req, res) => res.json(schema));
 
 app.use(errorHandler); // This MUST always go after any other app.use(...)
 
-app.use(errorHandler); // This MUST always go after any other app.use(...)
-
 module.exports = app;

@@ -1,6 +1,6 @@
 import express from 'express';
 import { createDataOrder } from '../facades';
-import asyncError from '../helpers/asyncError';
+import { asyncError } from '../utils';
 
 const router = express.Router();
 
