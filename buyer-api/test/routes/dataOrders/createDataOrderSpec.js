@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { mockStorage, restoreMocks, requireApp } from '../../helpers';
 
-describe('/data-orders', () => {
+describe('/orders', () => {
   let app;
 
   const dataOrder = {
@@ -38,7 +38,7 @@ describe('/data-orders', () => {
       this.timeout(60 * 1000);
 
       request(app)
-        .post('/data-orders')
+        .post('/orders')
         .send({
           dataOrder: {
             ...dataOrder,

@@ -47,7 +47,7 @@ const validate = ({
 
 /**
  * @swagger
- * /data-orders:
+ * /orders:
  *   post:
  *     description: |
  *       # STEP 1 from Wibson's Protocol
@@ -120,7 +120,7 @@ router.post('/', asyncError(async (req, res) => {
     const response = await createDataOrderFacade(dataOrder);
 
     if (response.success()) {
-      res.json({ signedTransaction: response.result });
+      res.json(response.result);
     } else {
       res.boom.badData('Operation failed', {
         errors: response.errors,

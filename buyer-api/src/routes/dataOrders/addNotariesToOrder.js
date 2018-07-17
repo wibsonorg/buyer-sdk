@@ -20,7 +20,7 @@ const validate = ({ orderAddress, notaries }) =>
 
 /**
  * @swagger
- * /data-orders/{orderAddress}/notaries:
+ * /orders/{orderAddress}/notaries:
  *   post:
  *     description: |
  *       # STEP 3 from Wibson's Protocol
@@ -87,7 +87,7 @@ router.post('/:orderAddress/notaries', asyncError(async (req, res) => {
   const { dataExchange } = req.app.locals.contracts;
   const { orderAddress } = req.params;
   const { notaries } = req.body;
-  const errors = validate(notaries);
+  const errors = validate({ orderAddress, notaries });
 
   if (errors.length > 0) {
     res.boom.badData('Validation failed', { validation: errors });
@@ -99,7 +99,7 @@ router.post('/:orderAddress/notaries', asyncError(async (req, res) => {
     );
 
     if (response.success()) {
-      res.json({ signedTransaction: response.result });
+      res.json(response.result);
     } else {
       res.boom.badData('Operation failed', {
         errors: response.errors,

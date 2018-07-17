@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { mockStorage, restoreMocks, requireApp } from '../../helpers';
 
-describe('/data-orders/:orderAddress/notaries', () => {
+describe('/orders/:orderAddress/notaries', () => {
   let app;
   const orderAddress = '0xa662a5c63079009d79740f4e638a404f7917f93a';
-  const notaries = [];
+  const notaries = ['0x0'];
 
   beforeEach(function (done) { // eslint-disable-line func-names
     this.timeout(5000);
@@ -30,11 +30,14 @@ describe('/data-orders/:orderAddress/notaries', () => {
       this.timeout(60 * 1000);
 
       request(app)
-        .post(`/data-orders/${orderAddress}/notaries`)
+        .post(`/orders/${orderAddress}/notaries`)
         .send({
           notaries,
         })
-        .expect(200, done);
+        .expect(200, {
+          orderAddress,
+          notariesAddresses: notaries,
+        }, done);
     });
   });
 });
