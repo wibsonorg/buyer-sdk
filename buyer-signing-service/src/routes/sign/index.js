@@ -1,3 +1,10 @@
+import express from 'express';
 import newOrder from './newOrder';
+import addNotaryToOrder from './addNotaryToOrder';
 
-export { newOrder }; // eslint-disable-line import/prefer-default-export
+const router = express.Router();
+
+router.use(newOrder);
+router.use(addNotaryToOrder);
+
+export default router;
