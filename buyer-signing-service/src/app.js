@@ -25,6 +25,7 @@ app.use(boom());
 app.use('/health', health);
 app.use('/data', data);
 app.use('/account', account);
+app.use('/sign', sign.newOrder);
 app.use('/sign', sign.addDataResponse);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
 app.get('/api-docs.json', (_req, res) => res.json(schema));
