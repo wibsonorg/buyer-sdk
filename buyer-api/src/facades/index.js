@@ -1,4 +1,5 @@
 import createDataOrderFacade from './createDataOrderFacade';
 import addNotariesToOrderFacade from './addNotariesToOrderFacade';
+import { getOrdersForBuyer } from './getOrdersFacade';
 
-export { createDataOrderFacade, addNotariesToOrderFacade };
+export { createDataOrderFacade, addNotariesToOrderFacade, getOrdersForBuyer };

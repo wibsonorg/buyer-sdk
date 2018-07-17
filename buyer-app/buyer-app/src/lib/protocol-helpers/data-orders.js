@@ -7,19 +7,15 @@ const apiUrl = Config.get("api.url");
  * @return {[type]} [description]
  */
 async function listBuyerDataOrders(limit, offset) {
-  return [];
+  const res = await fetch(`${apiUrl}/orders?limit=${limit}&offset=${offset}`);
 
-  // const res = await fetch(
-  //   `${apiUrl}/api/exchange/buyer/${currentAccount}/orders?limit=${limit}&offset=${offset}`
-  // );
-  //
-  // if (!res.ok) {
-  //   throw new Error("Could get data orders");
-  // }
-  //
-  // const orders = await res.json();
-  //
-  // return orders;
+  if (!res.ok) {
+    throw new Error("Could get data orders");
+  }
+
+  const orders = await res.json();
+
+  return orders;
 }
 
 async function createBuyerDataOrder(

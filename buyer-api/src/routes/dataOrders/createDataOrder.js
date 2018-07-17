@@ -1,8 +1,48 @@
 import express from 'express';
-import { createDataOrderFacade } from '../../facades';
-import { asyncError } from '../../utils';
+import { createDataOrderFacade, getOrdersForBuyer } from '../../facades';
+import { asyncError, cache } from '../../utils';
+import signingService from '../../services/signingService';
 
 const router = express.Router();
+
+/**
+ * @swagger
+ * /orders:
+ *   get:
+ *     description: Returns a list of all data orders created by the buyer in the Data Exchange
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: When the list could be fetched correctly.
+ *       500:
+ *         description: When the fetch failed.
+ */
+router.get(
+  '/',
+  cache('30 seconds'),
+  asyncError(async (req, res) => {
+    const { offset, limit } = req.query;
+    const { address } = await signingService.getAccount();
+
+    const {
+      stores: { buyerInfos, buyerInfoPerOrder },
+      contracts: { dataExchange, DataOrderContract },
+    } = req.app.locals;
+
+    const orders = await getOrdersForBuyer(
+      dataExchange,
+      DataOrderContract,
+      address,
+      buyerInfos,
+      buyerInfoPerOrder,
+      Number(offset),
+      Number(limit),
+    );
+
+    res.json({ orders });
+  }),
+);
 
 /**
  * Checks that every field is present.

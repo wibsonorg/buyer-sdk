@@ -26,7 +26,7 @@ const getNotaryInfo = async (web3, dataExchange, address) => {
   let notaryInfo = await notaryCache.get(address);
 
   if (!notaryInfo) {
-    logger.debug('Notary :: Cache Miss :: %s :: Fetching from blockchain...', address);
+    logger.debug('Notary :: Cache Miss :: Fetching from blockchain...', { address });
 
     notaryInfo = await dataExchange.getNotaryInfo(address);
 
@@ -35,7 +35,7 @@ const getNotaryInfo = async (web3, dataExchange, address) => {
       await addNotaryToCache(notaryInfo);
     }
   } else {
-    logger.debug('Notary :: Cache Hit :: %s', address);
+    logger.debug('Notary :: Cache Hit ::', { address });
     notaryInfo = JSON.parse(notaryInfo);
   }
 
