@@ -11,5 +11,6 @@ import account from './account';
 import health from './health';
 import notaries from './notaries';
 import dataOrders from './dataOrders';
+import dataResponses from './dataResponses';
 
-export { account, health, notaries, dataOrders };
+export { account, health, notaries, dataOrders, dataResponses };

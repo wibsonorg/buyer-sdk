@@ -17,7 +17,7 @@ import {
   DataOrderContract,
 } from './utils';
 
-import { account, health, notaries, dataOrders } from './routes';
+import { account, health, notaries, dataOrders, dataResponses } from './routes';
 
 const app = express();
 // TODO: To be removed
@@ -45,8 +45,24 @@ app.use('/account', account);
 app.use('/health', health);
 app.use('/notaries', notaries);
 app.use('/data-orders', dataOrders);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
-app.get('/api-docs.json', (_req, res) => res.json(schema));
+app.use('/data-responses', dataResponses);
+
+// Documentation
+const ls = dir =>
+  fs.readdirSync(dir).reduce((accumulator, file) => [...accumulator, `${dir}/${file}`], []);
+
+const swaggerSpec = swaggerJSDoc({
+  swaggerDefinition: {
+    info: {
+      title: 'Buyer API',
+      version: '1.0.0',
+    },
+  },
+  apis: ls(`${__dirname}/routes`),
+});
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/api-docs.json', (_req, res) => res.json(swaggerSpec));
+>>>>>>> Buyer API: POST /data_responses endpoint
 
 app.use(errorHandler); // This MUST always go after any other app.use(...)
 
