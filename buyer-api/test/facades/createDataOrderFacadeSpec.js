@@ -2,9 +2,9 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import signingService from '../../src/services/signingService';
 import web3 from '../../src/utils/web3';
-import dataOrderFacade from '../../src/facades/dataOrderFacade';
+import { createDataOrderFacade } from '../../src/facades';
 
-describe('dataOrderFacade', () => {
+describe('createDataOrderFacade', () => {
   const filters = { age: '30..35' };
   const dataRequest = 'data request';
   const price = 20;
@@ -29,10 +29,12 @@ describe('dataOrderFacade', () => {
     sinon.stub(signingService, 'getAccount')
       .returns(Promise.resolve(JSON.stringify({
         address: '0xaddress',
-        publicKey: '0xpublickey'
+        publicKey: '0xpublickey',
       })));
     sinon.stub(signingService, 'signNewOrder')
-      .returns(Promise.resolve(JSON.stringify({ signedTransaction: 'asdasd' })));
+      .returns(Promise.resolve(JSON.stringify({
+        signedTransaction: 'asdasd',
+      })));
 
     sinon.stub(web3.eth, 'getTransactionCount')
       .returns(Promise.resolve(2));
@@ -40,10 +42,10 @@ describe('dataOrderFacade', () => {
       .returns(Promise.resolve('0xtxhash'));
     sinon.stub(web3.eth, 'getTransactionReceipt')
       .returns(Promise.resolve(JSON.stringify({
-        logs: [] // fails because of this
+        logs: [], // fails because of this
       })));
 
-    const response = await dataOrderFacade({
+    const response = await createDataOrderFacade({
       filters,
       dataRequest,
       price,

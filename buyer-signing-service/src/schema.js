@@ -1,8 +1,6 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 import glob from 'glob';
 
-const ls = dir => glob.sync(dir);
-
 const schema = swaggerJSDoc({
   swaggerDefinition: {
     info: {
@@ -10,7 +8,7 @@ const schema = swaggerJSDoc({
       version: '1.0.0',
     },
   },
-  apis: ls(`${__dirname}/routes/**/*.js`),
+  apis: glob.sync(`${__dirname}/routes/**/*.js`),
 });
 
 export default schema;

@@ -11,7 +11,6 @@ import account from './account';
 import buyerInfos from './buyerInfos';
 import health from './health';
 import notaries from './notaries';
-import dataOrders from './dataOrders';
-import ordersInfo from './ordersInfo';
+import * as dataOrders from './dataOrders';
 
-export { account, buyerInfos, health, notaries, dataOrders, ordersInfo };
+export { account, buyerInfos, health, notaries, dataOrders };

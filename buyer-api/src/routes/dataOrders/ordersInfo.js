@@ -1,6 +1,6 @@
 import express from 'express';
-import { asyncError, cache, validateAddress } from '../utils';
-import { getBuyerInfo, associateBuyerInfoToOrder } from '../services/buyerInfo';
+import { asyncError, cache, validateAddress } from '../../utils';
+import { getBuyerInfo, associateBuyerInfoToOrder } from '../../services/buyerInfo';
 
 const router = express.Router();
 
