@@ -69,8 +69,6 @@ const addDataResponseFacade = (nonce, params, payload) => {
     return new Response(null, errors);
   }
 
-  params.signature = web3Utils.utf8ToHex(params.signature);
-
   const data = buildData(params, null);
 
   const rawTransaction = {

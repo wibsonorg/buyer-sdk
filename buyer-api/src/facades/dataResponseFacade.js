@@ -33,7 +33,7 @@ const addDataResponse = async (dataOrderContract, order, seller) => {
   }
 
   const params = {
-    order,
+    orderAddr: order,
     seller,
     notary: notaryAccount,
     dataHash,
