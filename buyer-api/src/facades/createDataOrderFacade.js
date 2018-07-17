@@ -85,7 +85,7 @@ const extractEventArguments = (eventName, logs) => {
  *                 must be sent.
  * @returns {Response} The result of the operation.
  */
-const createDataOrder = async (parameters) => {
+const createDataOrderFacade = async (parameters) => {
   const dataOrderParameters = buildDataOrderParameters(parameters);
 
   if (dataOrderParameters.buyerURL.length === 0) {
@@ -108,4 +108,4 @@ const createDataOrder = async (parameters) => {
   return new Response({ orderAddress });
 };
 
-export default createDataOrder;
+export default createDataOrderFacade;
