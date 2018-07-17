@@ -46,6 +46,17 @@ const validate = ({ orderAddress, notaries }) =>
  *     responses:
  *       200:
  *         description: When notary or notaries where added successfully
+ *         schema:
+ *           type: object
+ *           properties:
+ *             orderAddress:
+ *               type: string
+ *               description: Order address
+ *             notariesAddresses:
+ *               type: array
+ *               description: Addresses of the notaries added to the order
+ *               items:
+ *                 type: string
  *       422:
  *         description: When there is a problem with the input
  *       500:
@@ -101,7 +112,7 @@ router.post('/:orderAddress/notaries', asyncError(async (req, res) => {
     if (response.success()) {
       res.json(response.result);
     } else {
-      res.boom.badData('Operation failed', {
+      res.boom.internal('Operation failed', {
         errors: response.errors,
       });
     }
