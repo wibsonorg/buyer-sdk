@@ -1,3 +1,4 @@
 import newOrder from './newOrder';
+import addDataResponse from './addDataResponse';
 
-export { newOrder }; // eslint-disable-line import/prefer-default-export
+export { newOrder, addDataResponse };
