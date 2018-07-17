@@ -1,9 +1,5 @@
-import fs from 'fs';
 import swaggerJSDoc from 'swagger-jsdoc';
-
-const ls = dir =>
-  fs.readdirSync(dir)
-    .reduce((accumulator, file) => [...accumulator, `${dir}/${file}`], []);
+import glob from 'glob';
 
 const schema = swaggerJSDoc({
   swaggerDefinition: {
@@ -12,7 +8,7 @@ const schema = swaggerJSDoc({
       version: '1.0.0',
     },
   },
-  apis: ls(`${__dirname}/routes`),
+  apis: glob.sync(`${__dirname}/routes/**/*.js`),
 });
 
 export default schema;

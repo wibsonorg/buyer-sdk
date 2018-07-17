@@ -1,3 +1,4 @@
-import createDataOrder from './dataOrderFacade';
+import createDataOrderFacade from './createDataOrderFacade';
+import addNotariesToOrderFacade from './addNotariesToOrderFacade';
 
-export { createDataOrder }; // eslint-disable-line import/prefer-default-export
+export { createDataOrderFacade, addNotariesToOrderFacade };
