@@ -17,7 +17,7 @@ import {
   DataOrderContract,
 } from './utils';
 
-import { account, health, notaries, dataOrders, buyerInfo } from './routes';
+import { account, health, notaries, dataOrders, buyerInfos } from './routes';
 
 const app = express();
 // TODO: To be removed
@@ -46,8 +46,10 @@ app.use(boom());
 app.use('/account', account);
 app.use('/health', health);
 app.use('/notaries', notaries);
-dataOrders.use('/info', buyerInfo);
-app.use('/orders', dataOrders);
+app.use('/info', buyerInfos);
+app.use('/orders', dataOrders.createDataOrder);
+app.use('/orders', dataOrders.addNotariesToOrder);
+app.use('/orders', dataOrders.ordersInfo);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
 app.get('/api-docs.json', (_req, res) => res.json(schema));
 

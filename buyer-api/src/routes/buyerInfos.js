@@ -1,12 +1,11 @@
 import express from 'express';
-import { asyncError, cache, validateAddress, listLevelValues } from '../utils';
-import getBuyerInfo from '../services/buyerInfo';
+import { asyncError, cache, listLevelValues } from '../utils';
 
 const router = express.Router();
 
 /**
  * @swagger
- * /orders/info:
+ * /infos:
  *   get:
  *     description: Returns a list of all possible extra informations about a Data Order.
  *     produces:
@@ -34,7 +33,7 @@ router.get(
 
 /**
  * @swagger
- * /orders/info/create:
+ * /infos:
  *   post:
  *     description: Creates a new possible information set to be selected on future data orders.
  *     parameters:
@@ -80,7 +79,7 @@ router.get(
  *         description: When the creation failed.
  */
 router.post(
-  '/create',
+  '/',
   asyncError(async (req, res) => {
     const info = req.body;
     const {
@@ -100,46 +99,6 @@ router.post(
     }
 
     res.status(status).json({ message });
-  }),
-);
-
-/**
- * @swagger
- * /orders/info/:orderAddress:
- *   get:
- *     description: Returns extra information about the Data Order, such as buyer and project names,
- *                  category, etc.
- *     parameters:
- *       - name: orderAddress
- *         description: Ethereum address of the Data Order.
- *         required: true
- *         type: string
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: When the information could be fetched correctly.
- *       404:
- *         description: When the Data Order was not created by the buyer.
- *       500:
- *         description: When the fetch failed.
- */
-router.get(
-  '/:orderAddress',
-  cache('30 days'),
-  validateAddress('orderAddress'),
-  asyncError(async (req, res) => {
-    const { orderAddress } = req.params;
-    const {
-      stores: { buyerInfos, buyerInfoPerOrder },
-    } = req.app.locals;
-
-    try {
-      const buyerInfo = await getBuyerInfo(orderAddress, buyerInfoPerOrder, buyerInfos);
-      res.json(buyerInfo);
-    } catch (err) {
-      res.status(404).send();
-    }
   }),
 );
 
