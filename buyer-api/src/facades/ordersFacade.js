@@ -1,9 +1,9 @@
 import config from '../../config';
-import { logger, asyncRedisClient } from '../utils';
+import { logger, createRedisStore } from '../utils';
 import { getElements } from './helpers/blockchain';
 import { dateOrNull } from './helpers/date';
 
-const ordersCache = asyncRedisClient('orders.cache.');
+const ordersCache = createRedisStore('orders.cache.');
 const ordersTTL = Number(config.contracts.cache.ordersTTL);
 
 /**
@@ -46,21 +46,12 @@ const getDataOrderDetails = async (order) => {
     order.price(),
   ]);
 
-  // TODO: This should have been stored in the smart contract.
-  let buyerInfo;
-  try {
-    buyerInfo = await getBuyerInfo(buyerPublicURL, order.address);
-  } catch (err) {
-    // TODO: should we fail to fetch the whole order if the buyer API is not reachable?
-  }
-
   return {
     orderAddress: order.address,
     audience: JSON.parse(filters),
     requestedData: JSON.parse(dataRequest),
     notaries,
     termsAndConditions,
-    buyerInfo,
     buyerPublicURL: JSON.parse(buyerPublicURL),
     buyerPublicKey,
     price,
@@ -73,8 +64,10 @@ const getDataOrderDetails = async (order) => {
 /**
  * @async
  * @function getDataOrder
- * @param {Object} web3 the web3 object.
+ * @param {Object} DataOrderContract the Data Order truffle contract.
  * @param {String} orderAddress the ethereum address for the Data Order
+ * @param {Object} buyerInfoPerOrder Level Storage with orderAddress: buyerInfoId
+ * @param {Object} buyerInfos Level Storage with buyerInfoId: info
  * @throws When can not connect to blockchain or cache is not set up correctly.
  * @returns {Promise} Promise which resolves to the Data Order.
  */
@@ -98,15 +91,28 @@ const getDataOrder = async (DataOrderContract, orderAddress) => {
 /**
  * @async
  * @function getOrdersForBuyer
- * @param {Object} web3 the web3 object.
+ * @param {Object} dataExchange the Data Exchange truffle contract instance.
+ * @param {Object} DataOrderContract the Data Order truffle contract.
+ * @param {Object} buyerAddress the buyer's Ethereum address.
+ * @param {Object} buyerInfoPerOrder Level Storage with orderAddress: buyerInfoId
+ * @param {Object} buyerInfos Level Storage with buyerInfoId: info
  * @throws When can not connect to blockchain or cache is not set up correctly.
  * @returns {Promise} Promise which resolves to the list of orders.
  */
-const getOrdersForBuyer = async (dataExchange, DataOrderContract, address) => {
-  const orderAddresses = await dataExchange.getOrdersForBuyer(address);
+const getOrdersForBuyer = async (
+  dataExchange,
+  DataOrderContract,
+  buyerAddress,
+  buyerInfoPerOrder,
+  buyerInfos,
+  offset = 0,
+  limit = undefined,
+) => {
+  const orderAddresses = await dataExchange.getOrdersForBuyer(buyerAddress);
+  const upperBound = limit ? offset + limit : orderAddresses.length;
+  const ordersPage = orderAddresses.slice(offset, upperBound);
 
-  const dataOrders = orderAddresses.map(orderAddress =>
-    getDataOrder(DataOrderContract, orderAddress));
+  const dataOrders = ordersPage.map(orderAddress => getDataOrder(DataOrderContract, orderAddress));
 
   return Promise.all(dataOrders);
 };
