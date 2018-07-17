@@ -1,7 +1,7 @@
 import express from 'express';
 import { createDataOrder } from '../facades';
 import { asyncError, cache } from '../utils';
-import { getOrdersForBuyer } from '../facades/ordersFacade';
+import { getOrdersForBuyer } from '../facades/getOrdersFacade';
 import signingService from '../services/signingService';
 
 const router = express.Router();
