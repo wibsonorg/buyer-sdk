@@ -40,7 +40,6 @@ router.get(
       Number(offset),
       Number(limit),
     );
-    console.log("hellooo")
 
     res.json({ orders });
   }),

@@ -2,6 +2,7 @@ import config from '../../config';
 import { logger, createRedisStore } from '../utils';
 import { getElements } from './helpers/blockchain';
 import { dateOrNull } from './helpers/date';
+import { storages as offchainStorages } from '../utils/wibson-lib';
 
 const ordersCache = createRedisStore('orders.cache.');
 const ordersTTL = Number(config.contracts.cache.ordersTTL);
@@ -14,6 +15,27 @@ const ordersTTL = Number(config.contracts.cache.ordersTTL);
  */
 const addOrderToCache = dataOrder =>
   ordersCache.set(dataOrder.orderAddress, JSON.stringify(dataOrder), 'EX', ordersTTL);
+
+/**
+ * @async
+ * @function addOffChainInfo
+ * @param {Object} dataOrder the already-fetched data order
+ * @returns {Promise} Promise which resolves to the offchain data
+ */
+const addOffChainInfo = async (dataOrder) => {
+  const dataResponsesCount = await offchainStorages.countDataResponses(dataOrder);
+  const dataCount = await offchainStorages.countData(dataOrder, 'buyer');
+
+  const offChain = {
+    dataResponsesCount,
+    dataCount,
+  };
+
+  return {
+    ...dataOrder,
+    offChain,
+  };
+};
 
 /**
  * @async
@@ -72,20 +94,20 @@ const getDataOrderDetails = async (order) => {
  * @returns {Promise} Promise which resolves to the Data Order.
  */
 const getDataOrder = async (DataOrderContract, orderAddress) => {
-  let dataOrder = await ordersCache.get(orderAddress);
-
-  if (!dataOrder) {
-    logger.debug('DataOrder :: Cache Miss :: Fetching from blockchain... ::', { orderAddress });
-    const order = await DataOrderContract.at(orderAddress);
-
-    dataOrder = await getDataOrderDetails(order);
-    await addOrderToCache(dataOrder);
-  } else {
+  const cachedDataOrder = await ordersCache.get(orderAddress);
+  if (cachedDataOrder) {
     logger.debug('DataOrder :: Cache Hit ::', { orderAddress });
-    dataOrder = JSON.parse(dataOrder);
+    return JSON.parse(cachedDataOrder);
   }
 
-  return dataOrder;
+  logger.debug('DataOrder :: Cache Miss :: Fetching from blockchain... ::', { orderAddress });
+  const order = await DataOrderContract.at(orderAddress);
+
+  const dataOrder = await getDataOrderDetails(order);
+  const fullDataOrder = await addOffChainInfo(dataOrder);
+  await addOrderToCache(fullDataOrder);
+
+  return fullDataOrder;
 };
 
 /**
