@@ -53,9 +53,8 @@ const parseLogs = (logs, abi) => {
     .map(json => new SolidityEvent(null, json, null));
 
   return logs.reduce((accumulator, log) => {
-    const found = decoders.find((decoder) => {
-      return decoder.signature() === log.topics[0].replace('0x', '');
-    });
+    const found = decoders
+      .find(decoder => decoder.signature() === log.topics[0].replace('0x', ''));
 
     if (found) {
       return [...accumulator, found.decode(log)];
@@ -69,7 +68,7 @@ const extractEventArguments = (eventName, logs) => {
   const parsedLogs = parseLogs(logs, DataExchangeContract.abi);
   const { args } = parsedLogs.find(({ event }) => event === eventName);
   return args;
-}
+};
 
 /**
  * @async
