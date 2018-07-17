@@ -16,13 +16,11 @@ import Modal, { ModalTitle, ModalContent } from "base-app-src/components/Modal";
 import {
   InfoItem,
   FormSection,
-  InlineItem,
   Form
 } from "base-app-src/components/form";
 import Button from "base-app-src/components/Button";
 import NumberInput from "base-app-src/components/NumberInput";
 
-import Checkbox from "base-app-src/components/Checkbox";
 import Select, { SelectItem } from "base-app-src/components/Select";
 import Label from "base-app-src/components/Label";
 
@@ -34,18 +32,11 @@ import Loading from "base-app-src/components/Loading";
 import AudiencePicker from "./AudiencePicker";
 import Config from "../../../config";
 
+import terms from './terms.md';
+
 import "./DataOrderCreate.css";
 
-const BUYERS = [
-  {
-    label: "Wibson & UC3M - Global Warming Project",
-    value: "wibson-global-warming"
-  },
-  {
-    label: "Wibson & UC Berkeley - Reduce Traffic Congestion",
-    value: "wibson-berkeley-traffic"
-  }
-];
+const apiUrl = Config.get("api.url");
 
 const NotariesSelect = ({ availableNotaries, value, onNotarySelected }) => {
   const notaries =
@@ -74,15 +65,16 @@ class DataOrderCreate extends Component {
     const { dataOntology } = this.props;
 
     this.state = {
-      buyerId: "wibson-global-warming",
+      buyerInfos: [],
+      buyerId: undefined,
       audience: [],
       requestedData: dataOntology.options[0].value,
       notarizeData: false,
       // TODO: allow multiple notaries.
       // requestedNotaries: [],
       requestedNotary: null,
-      publicURL: Config.get("minio"),
-      conditions: "www.wibson.org/buying/terms_and_conditions",
+      publicURL: Config.get("buyerPublicURL"),
+      conditions: terms,
       errors: {},
       loading: false,
       creationError: undefined,
@@ -102,6 +94,11 @@ class DataOrderCreate extends Component {
 
   componentWillMount() {
     this.props.createDataOrderClear();
+  }
+
+  async componentDidMount() {
+    const buyerInfos = await fetch(`${apiUrl}/infos`);
+    this.setState({ buyerInfos });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -175,7 +172,7 @@ class DataOrderCreate extends Component {
             <Label color="light-dark">Buyer name</Label>
 
             <Select value={this.state.buyerId}>
-              {BUYERS.map(({ value, label }) => (
+              {this.state.buyerInfos.map(({ value, label }) => (
                 <SelectItem
                   key={value}
                   value={value}
@@ -213,7 +210,7 @@ class DataOrderCreate extends Component {
           </InfoItem>
 
           <InfoItem>
-            <Label color="light-dark">Maximum price</Label>
+            <Label color="light-dark">Price</Label>
             <NumberInput
               min={1}
               step={1}
@@ -221,15 +218,6 @@ class DataOrderCreate extends Component {
               disabled={!this.state.useMaxPrice}
               onChange={value => this.setState({ maxPrice: value })}
             />
-            <InlineItem>
-              <Checkbox
-                value={!this.state.useMaxPrice}
-                onChange={value => this.setState({ useMaxPrice: !value })}
-              />
-              <Text size="sm" color="light-dark">
-                Set price later
-              </Text>
-            </InlineItem>
           </InfoItem>
           <InfoItem>
             <Label color="light-dark">Notary</Label>
@@ -242,29 +230,15 @@ class DataOrderCreate extends Component {
             />
           </InfoItem>
           <InfoItem>
-            <InlineItem>
-              <Checkbox
-                value={this.state.notarizeData}
-                onChange={value => this.setState({ notarizeData: value })}
-              />
-              <Text size="sm" color="light-dark">
-                Audit data upfront
-              </Text>
-            </InlineItem>
-          </InfoItem>
-          <InfoItem>
             <Label color="light-dark">URL to receive responses and data</Label>
-
             <Text size="sm" color="regular">
-              {this.state.publicURL}
+              {this.state.publicURL.storage}
             </Text>
           </InfoItem>
-
           <InfoItem>
-            <Label color="light-dark">Terms and conditions</Label>
-
+            <Label color="light-dark">URL to receive requests</Label>
             <Text size="sm" color="regular">
-              {this.state.conditions}
+              {this.state.publicURL.api}
             </Text>
           </InfoItem>
         </FormSection>
@@ -310,7 +284,7 @@ const mapStateToProps = state => ({
   createdDataOrder: DataOrdersSelectors.getCreatedDataOrder(state),
   dataOntology: OntologySelectors.getDataOntology(state),
   audienceOntology: OntologySelectors.getAudienceOntology(state),
-  availableNotaries: NotariesSelectors.getNotaries(state)
+  availableNotaries: NotariesSelectors.getNotaries(state),
 });
 
 const mapDispatchToProps = dispatch => ({
