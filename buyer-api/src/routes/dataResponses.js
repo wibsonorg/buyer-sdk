@@ -1,6 +1,7 @@
 import express from 'express';
 import web3Utils from 'web3-utils';
 import { asyncError } from '../utils';
+import { addDataResponse } from '../facades';
 import { getDataResponse } from '../utils/wibson-lib/storages';
 
 const router = express.Router();
@@ -18,7 +19,7 @@ const router = express.Router();
  */
 router.post('/', asyncError(async (req, res) => {
   const { orderAddress, sellerAddress } = req.body;
-  const { contracts: { dataExchange, DataOrderContract } } = req.app.locals;
+  const { contracts: { DataOrderContract } } = req.app.locals;
 
   if (!web3Utils.isAddress(orderAddress) || !web3Utils.isAddress(sellerAddress)) {
     throw new Error('Invalid order|seller address');
@@ -41,20 +42,16 @@ router.post('/', asyncError(async (req, res) => {
     throw new Error('Invalid notary');
   }
 
-  // TODO:
-  //
-  // 1) Send a request to Buyer SS to create a signed transaction for adding
-  // the data response:
-  // DataExchange.addDataResponseToOrder(
-  //  orderAddress,
-  //  sellerAddress,
-  //  notaryAccount,
-  //  dataHash,
-  //  signature
-  // )
-  //
+  // 1) Call Buyer SS to create a signed transaction for adding the data response
   // 2) Then write it to the blockchain.
-  //
+  const addDataResponseTx = await addDataResponse(
+    orderAddress,
+    sellerAddress,
+    notaryAccount,
+    dataHash,
+    signature,
+  );
+
   // 3) Despues le pego al notario para que me pase el certificado y su veredicto.
   //
   // 4) Si la notarizacion dio ok, o `no voy a validar`:

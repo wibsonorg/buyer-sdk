@@ -29,10 +29,19 @@ const signNewOrder = payload => client.post(
   },
 );
 
+const signAddDataResponse = payload => client.post(
+  `${url}/sign/add-data-response`,
+  {
+    json: payload,
+    timeout,
+  },
+);
+
 const signinService = {
   getHealth,
   getAccount,
   signNewOrder,
+  signAddDataResponse,
 };
 
 export default signinService;

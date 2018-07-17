@@ -1,3 +1,4 @@
 import createDataOrder from './dataOrderFacade';
+import addDataResponse from './dataResponseFacade';
 
-export { createDataOrder }; // eslint-disable-line import/prefer-default-export
+export { createDataOrder, addDataResponse };
