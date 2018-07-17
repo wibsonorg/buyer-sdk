@@ -18,13 +18,18 @@ const router = express.Router();
  */
 router.post('/', asyncError(async (req, res) => {
   const { orderAddress, sellerAddress } = req.body;
+  const { contracts: { dataExchange, DataOrderContract } } = req.app.locals;
 
   if (!web3Utils.isAddress(orderAddress) || !web3Utils.isAddress(sellerAddress)) {
     throw new Error('Invalid order|seller address');
   }
 
-  const { contracts: { DataOrderContract } } = req.app.locals;
   const dataOrder = await DataOrderContract.at(orderAddress);
+
+  if (dataOrder.hasSellerBeenAccepted(sellerAddress)) {
+    throw new Error('Data Response has already been added');
+  }
+
   const dataResponse = await getDataResponse(dataOrder, sellerAddress) || {};
 
   const { notaryAccount, dataHash, signature } = dataResponse;
@@ -36,8 +41,10 @@ router.post('/', asyncError(async (req, res) => {
     throw new Error('Invalid notary');
   }
 
-  // TODO: Send a request to Buyer SS to create a signed transaction for adding
-  // the data response and then write it to the blockchain.
+  // TODO:
+  //
+  // 1) Send a request to Buyer SS to create a signed transaction for adding
+  // the data response:
   // DataExchange.addDataResponseToOrder(
   //  orderAddress,
   //  sellerAddress,
@@ -45,6 +52,23 @@ router.post('/', asyncError(async (req, res) => {
   //  dataHash,
   //  signature
   // )
+  //
+  // 2) Then write it to the blockchain.
+  //
+  // 3) Despues le pego al notario para que me pase el certificado y su veredicto.
+  //
+  // 4) Si la notarizacion dio ok, o `no voy a validar`:
+  //      Le pego al Buyer SS para que me devuelva la tx firmada del closeDataResponse:
+  //      DataExchange.closeDataResponse(
+  //        orderAddress,
+  //        sellerAddress,
+  //        wasAudited,
+  //        isDataValid,
+  //        notarySignature
+  //      )
+  //
+  // 5) Bajo la tx al blockchain.
+  //
   res.status(200).send();
 }));
 
