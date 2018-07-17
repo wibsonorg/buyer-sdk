@@ -1,36 +1,8 @@
 import express from 'express';
 import { asyncError, cache, validateAddress, listLevelValues } from '../utils';
-import { getOrdersForBuyer } from '../facades/ordersFacade';
+import getBuyerInfo from '../services/buyerInfo';
 
 const router = express.Router();
-
-/**
- * @swagger
- * /orders:
- *   get:
- *     description: Returns a list of all data orders created by the buyer in the Data Exchange
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: When the list could be fetched correctly.
- *       500:
- *         description: When the fetch failed.
- */
-router.get('/', cache('30 seconds'), asyncError(async (req, res) => {
-  // TODO: use signingService getAccount method
-  // const response = await axios.get(`${config.buyerSigningServiceUrl}/account`);
-  // const { address } = response.data.account;
-  const address = '0xdc431915d3a5abad4f651cb57b40e035e4fbea9f';
-
-  const {
-    contracts: { dataExchange, DataOrderContract },
-  } = req.app.locals;
-
-  const orders = await getOrdersForBuyer(dataExchange, DataOrderContract, address);
-
-  res.json({ orders });
-}));
 
 /**
  * @swagger
@@ -45,14 +17,20 @@ router.get('/', cache('30 seconds'), asyncError(async (req, res) => {
  *       500:
  *         description: When the fetch failed.
  */
-router.get('/info', cache('1 day'), asyncError(async (req, res) => {
-  const { stores: { buyerInfos } } = req.app.locals;
-  const values = await listLevelValues(buyerInfos);
+router.get(
+  '/',
+  cache('1 day'),
+  asyncError(async (req, res) => {
+    const {
+      stores: { buyerInfos },
+    } = req.app.locals;
+    const values = await listLevelValues(buyerInfos);
 
-  res.json({
-    options: values.map(value => JSON.parse(value)),
-  });
-}));
+    res.json({
+      options: values.map(value => JSON.parse(value)),
+    });
+  }),
+);
 
 /**
  * @swagger
@@ -101,28 +79,33 @@ router.get('/info', cache('1 day'), asyncError(async (req, res) => {
  *       500:
  *         description: When the creation failed.
  */
-router.post('/info/create', asyncError(async (req, res) => {
-  const info = req.body;
-  const { stores: { buyerInfos } } = req.app.locals;
+router.post(
+  '/create',
+  asyncError(async (req, res) => {
+    const info = req.body;
+    const {
+      stores: { buyerInfos },
+    } = req.app.locals;
 
-  let status = 200;
-  let message = 'OK';
+    let status = 200;
+    let message = 'OK';
 
-  try {
-    await buyerInfos.get(info.id);
-    status = 400;
-    message = 'The ID already exists';
-  } catch (err) {
-    // no previous buyer info was found
-    await buyerInfos.set(info.id, JSON.stringify(info));
-  }
+    try {
+      await buyerInfos.get(info.id);
+      status = 400;
+      message = 'The ID already exists';
+    } catch (err) {
+      // no previous buyer info was found
+      await buyerInfos.put(info.id, JSON.stringify(info));
+    }
 
-  res.status(status).json({ message });
-}));
+    res.status(status).json({ message });
+  }),
+);
 
 /**
  * @swagger
- * /orders/:orderAddress/info:
+ * /orders/info/:orderAddress:
  *   get:
  *     description: Returns extra information about the Data Order, such as buyer and project names,
  *                  category, etc.
@@ -142,7 +125,7 @@ router.post('/info/create', asyncError(async (req, res) => {
  *         description: When the fetch failed.
  */
 router.get(
-  '/:orderAddress/info',
+  '/:orderAddress',
   cache('30 days'),
   validateAddress('orderAddress'),
   asyncError(async (req, res) => {
@@ -152,9 +135,8 @@ router.get(
     } = req.app.locals;
 
     try {
-      const buyerInfoId = await buyerInfoPerOrder.get(orderAddress);
-      const buyerInfo = await buyerInfos.get(buyerInfoId);
-      res.json(JSON.parse(buyerInfo));
+      const buyerInfo = await getBuyerInfo(orderAddress, buyerInfoPerOrder, buyerInfos);
+      res.json(buyerInfo);
     } catch (err) {
       res.status(404).send();
     }

@@ -8,8 +8,9 @@
  */
 
 import account from './account';
+import buyerInfo from './buyerInfo';
 import health from './health';
 import notaries from './notaries';
 import dataOrders from './dataOrders';
 
-export { account, health, notaries, dataOrders };
+export { account, buyerInfo, health, notaries, dataOrders };
