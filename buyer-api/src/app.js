@@ -46,7 +46,7 @@ app.use(boom());
 app.use('/account', account);
 app.use('/health', health);
 app.use('/notaries', notaries);
-app.use('/info', buyerInfos);
+app.use('/infos', buyerInfos);
 app.use('/orders', dataOrders.createDataOrder);
 app.use('/orders', dataOrders.addNotariesToOrder);
 app.use('/orders', dataOrders.ordersInfo);
