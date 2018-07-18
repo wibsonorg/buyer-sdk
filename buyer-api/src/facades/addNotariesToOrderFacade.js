@@ -1,58 +1,44 @@
-import SolidityEvent from 'web3/lib/web3/event';
 import Response from './Response';
+import { getNotariesInfo } from './notariesFacade';
+import { extractEventArguments } from './helpers';
 import signingService from '../services/signingService';
+import notaryService from '../services/notaryService';
 import web3 from '../utils/web3';
 import logger from '../utils/logger';
 import { coercion, collection } from '../utils/wibson-lib';
 
-const { isPresent, toString, toInteger } = coercion;
+const { isPresent } = coercion;
 const { partition } = collection;
 
-const buildNotariesParameters = notaries =>
-  notaries.map(({
-    notary,
-    responsesPercentage,
-    notarizationFee,
-    notarizationTermsOfService,
-    notarySignature,
-  }) => ({
-    notary: toString(notary),
-    responsesPercentage: toInteger(responsesPercentage),
-    notarizationFee: toInteger(notarizationFee),
-    notarizationTermsOfService: toString(notarizationTermsOfService),
-    notarySignature: toString(notarySignature),
-  }));
+const buildNotariesParameters = async (notaries, buyerAddress, orderAddress) => {
+  const promises = notaries.map(async ({ notary, publicUrl }) => {
+    const {
+      orderAddr,
+      responsesPercentage,
+      notarizationFee,
+      notarizationTermsOfService,
+      notarizationSignature,
+    } = await notaryService.conscent(publicUrl, buyerAddress, orderAddress);
 
-const parseLogs = (logs, abi) => {
-  const decoders = abi
-    .filter(({ type }) => type === 'event')
-    .map(json => new SolidityEvent(null, json, null));
+    return {
+      orderAddr,
+      notary,
+      responsesPercentage,
+      notarizationFee,
+      notarizationTermsOfService,
+      notarizationSignature,
+    };
+  });
 
-  return logs.reduce((accumulator, log) => {
-    const found = decoders
-      .find(decoder => decoder.signature() === log.topics[0].replace('0x', ''));
-
-    if (found) {
-      return [...accumulator, found.decode(log)];
-    }
-
-    return accumulator;
-  }, []);
+  return Promise.all(promises);
 };
 
-export const extractEventArguments = (eventName, logs, contract) => {
-  const parsedLogs = parseLogs(logs, contract.abi);
-
-  const { args } = parsedLogs.find(({ event }) => event === eventName);
-  return args;
-};
-
-const addNotaryToOrder = async (orderAddr, notary, buyerAddress, contract) => {
+const addNotaryToOrder = async (notaryParameters, buyerAddress, contract) => {
   try {
     const nonce = await web3.eth.getTransactionCount(buyerAddress);
     const { signedTransaction } = await signingService.signAddNotaryToOrder({
       nonce,
-      addNotaryToOrderParameters: { orderAddr, ...notary },
+      addNotaryToOrderParameters: notaryParameters,
     });
     const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
     const { logs } = await web3.eth.getTransactionReceipt(receipt);
@@ -69,8 +55,7 @@ const addNotaryToOrder = async (orderAddr, notary, buyerAddress, contract) => {
     const errorPayload = {
       error: error.message,
       stack: error.stack,
-      orderAddress: orderAddr,
-      notary,
+      notaryParameters,
     };
     logger.error('Transaction failed', errorPayload);
 
@@ -81,27 +66,35 @@ const addNotaryToOrder = async (orderAddr, notary, buyerAddress, contract) => {
 /**
  * @async
  * @param {String} orderAddress Address of the DataOrder
- * @param {Array} notaries Information of the notaries to be added
+ * @param {Array} addresses Notaries' addresses
  * @param {Object} contract DataExchange contract
  * @returns {Response} The result of the operation.
  */
-const addNotariesToOrderFacade = async (orderAddress, notaries, contract) => {
-  const notariesParameters = buildNotariesParameters(notaries);
-  // check notarySignature to fail fast?
+const addNotariesToOrderFacade = async (orderAddress, addresses, contract) => {
+  const { address: buyerAddress } = await signingService.getAccount();
+  const notariesInformation = await getNotariesInfo(web3, contract, addresses);
+  const notariesParameters = await buildNotariesParameters(
+    notariesInformation,
+    buyerAddress,
+    orderAddress,
+  );
+
+  console.log('notariesParameters', notariesParameters);
+
   if (notariesParameters.length === 0) {
     return new Response(null, [
       'Field \'notaries\' should contain at least one item with notary info',
     ]);
   }
 
-  const { address } = await signingService.getAccount();
   let txs = [];
+
   // eslint-disable-next-line no-restricted-syntax
-  for (const notary of notariesParameters) {
+  for (const notaryParameters of notariesParameters) {
     txs = [
       ...txs,
       // eslint-disable-next-line no-await-in-loop
-      await addNotaryToOrder(orderAddress, notary, address, contract),
+      await addNotaryToOrder(notaryParameters, buyerAddress, contract),
     ];
   }
 

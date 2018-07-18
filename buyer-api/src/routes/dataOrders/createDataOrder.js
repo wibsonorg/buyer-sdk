@@ -111,13 +111,14 @@ const validate = ({
  *         example: https://buyer.com/submit-your-data
  */
 router.post('/', asyncError(async (req, res) => {
+  const { dataExchange } = req.app.locals.contracts;
   const { dataOrder } = req.body;
   const errors = validate(dataOrder);
 
   if (errors.length > 0) {
     res.boom.badData('Validation failed', { validation: errors });
   } else {
-    const response = await createDataOrderFacade(dataOrder);
+    const response = await createDataOrderFacade(dataOrder, dataExchange);
 
     if (response.success()) {
       res.json(response.result);

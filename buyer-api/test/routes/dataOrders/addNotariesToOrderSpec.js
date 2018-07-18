@@ -1,19 +1,20 @@
 import request from 'supertest';
-// import sinon from 'sinon';
-// import signingService from '../../../src/services/signingService';
+import sinon from 'sinon';
+import notaryService from '../../../src/services/notaryService';
 // import web3 from '../../../src/utils/web3';
 import { mockStorage, restoreMocks, requireApp } from '../../helpers';
 import { cryptography } from '../../../src/utils/wibson-lib';
 
 describe('/orders/:orderAddress/notaries', () => {
   let app;
-  const orderAddress = '0xb6c27851f39566e2f148432815002cb219d48e6f';
+  let notaryServiceConscent;
+  const orderAddress = '0x9f98a296fa44c4ffad4bb5b61048461599ebf761';
   const notaryA = {
     notary: '0x5ee6fd4d54540333c148885d52e81f39c256761a',
     responsesPercentage: 30,
     notarizationFee: 10,
     notarizationTermsOfService: 'Terms A',
-    notarySignature: cryptography.signPayload(
+    signature: cryptography.signPayload(
       '0x3164c60ef3e26cb8c1d97effe36777ad8f45341c8b400fda5e5c5f57a9eb12c4',
       orderAddress,
       30,
@@ -26,7 +27,7 @@ describe('/orders/:orderAddress/notaries', () => {
     responsesPercentage: 50,
     notarizationFee: 20,
     notarizationTermsOfService: 'Terms B',
-    notarySignature: cryptography.signPayload(
+    signature: cryptography.signPayload(
       '0xe3c01467b44cf99430051cb9d4a48528c51896f5deb2eadf181d71bc7357f4da',
       orderAddress,
       50,
@@ -34,25 +35,25 @@ describe('/orders/:orderAddress/notaries', () => {
       'Terms B',
     ),
   };
-  const notaries = [notaryA, notaryB];
+  const notariesAddresses = [notaryA.notary, notaryB.notary];
 
   beforeEach(function (done) { // eslint-disable-line func-names
     this.timeout(5000);
     mockStorage();
     app = requireApp();
 
-    // sinon.stub(signingService, 'getAccount')
-    //   .returns(Promise.resolve(JSON.stringify({
-    //     address: '0xaddress',
-    //     publicKey: '0xpublickey',
-    //   })));
+    notaryServiceConscent = sinon.stub(notaryService, 'conscent');
+    notaryServiceConscent.withArgs(notaryA.notary)
+      .returns(Promise.resolve(JSON.stringify(notaryA)));
+    notaryServiceConscent.withArgs(notaryB.notary)
+      .returns(Promise.resolve(JSON.stringify(notaryB)));
 
     done();
   });
 
   afterEach(() => {
     restoreMocks();
-    // signingService.getAccount.restore();
+    notaryServiceConscent.conscent.restore();
   });
 
   describe('POST /', () => {
@@ -66,10 +67,10 @@ describe('/orders/:orderAddress/notaries', () => {
     it.only('responds with an OK status', (done) => {
       request(app)
         .post(`/orders/${orderAddress}/notaries`)
-        .send({ notaries })
-        .expect(200, {
+        .send({ notariesAddresses })
+        .expect(422, {
           orderAddress,
-          notariesAddresses: notaries.map(({ notary }) => notary),
+          notariesAddresses,
         }, done);
     });
   });
