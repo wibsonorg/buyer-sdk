@@ -3,13 +3,14 @@ import web3 from '../utils/web3';
 import signingService from '../services/signingService';
 import { getElements } from './helpers';
 import { getDataResponse } from '../utils/wibson-lib/storages';
+import { dataExchange, DataOrderContract } from '../utils';
 
-const addDataResponse = async (dataOrderContract, order, seller) => {
+const addDataResponse = async (order, seller) => {
   if (!web3Utils.isAddress(order) || !web3Utils.isAddress(seller)) {
     throw new Error('Invalid order|seller address');
   }
 
-  const dataOrder = await dataOrderContract.at(order);
+  const dataOrder = await DataOrderContract.at(order);
 
   if (dataOrder.hasSellerBeenAccepted(seller)) {
     throw new Error('Data Response has already been added');
@@ -52,4 +53,42 @@ const addDataResponse = async (dataOrderContract, order, seller) => {
   return true;
 };
 
-export default addDataResponse;
+const closeDataResponse = async (order, seller) => {
+  if (!web3Utils.isAddress(order) || !web3Utils.isAddress(seller)) {
+    throw new Error('Invalid order|seller address');
+  }
+
+  const dataOrder = await DataOrderContract.at(order);
+
+  const sellerInfo = dataOrder.getSellerInfo(seller);
+  if (web3Utils.hexToUtf8(sellerInfo[5]) !== 'DataResponseAdded') {
+    throw new Error('Data Response has already been closed|refunded');
+  }
+
+  const notaryAddress = sellerInfo[1];
+  const notaryInfo = dataExchange.getNotaryInfo(notaryAddress);
+  const notaryURL = notaryInfo[2];
+
+  const { wasAudited, isDataValid, notarySignature } = { wasAudited: false, isDataValid: false, notarySignature: '' };
+
+  const params = {
+    orderAddr: order,
+    seller,
+    wasAudited,
+    isDataValid,
+    notarySignature,
+  };
+
+  const { address } = await signingService.getAccount();
+  const nonce = await web3.eth.getTransactionCount(address);
+
+  const { signedTransaction } = await signingService.signCloseDataResponse({ nonce, params });
+
+  const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
+  await web3.eth.getTransactionReceipt(receipt);
+  // TODO: Check receipt
+
+  return true;
+};
+
+export { addDataResponse, closeDataResponse };

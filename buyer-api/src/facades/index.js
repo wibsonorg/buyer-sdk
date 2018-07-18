@@ -1,6 +1,12 @@
-import addDataResponse from './dataResponseFacade';
+import { addDataResponse, closeDataResponse } from './dataResponseFacade';
 import createDataOrderFacade from './createDataOrderFacade';
 import addNotariesToOrderFacade from './addNotariesToOrderFacade';
 import { getOrdersForBuyer } from './getOrdersFacade';
 
-export { createDataOrderFacade, addNotariesToOrderFacade, getOrdersForBuyer, addDataResponse };
+export {
+  createDataOrderFacade,
+  addNotariesToOrderFacade,
+  getOrdersForBuyer,
+  addDataResponse,
+  closeDataResponse,
+};

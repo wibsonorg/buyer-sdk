@@ -37,11 +37,20 @@ const signAddDataResponse = payload => client.post(
   },
 );
 
+const signCloseDataResponse = payload => client.post(
+  `${url}/sign/close-data-response`,
+  {
+    json: payload,
+    timeout,
+  },
+);
+
 const signinService = {
   getHealth,
   getAccount,
   signNewOrder,
   signAddDataResponse,
+  signCloseDataResponse,
 };
 
 export default signinService;
