@@ -13,7 +13,7 @@ const conscent = async (url, { buyerAddress, orderAddress }) => {
     notarizationFee,
     notarizationTermsOfService,
     signature,
-  } = client.get(
+  } = await client.get(
     `${url}/audit/consent/${buyerAddress}/${orderAddress}`,
     {
       timeout,
@@ -25,7 +25,7 @@ const conscent = async (url, { buyerAddress, orderAddress }) => {
     responsesPercentage,
     notarizationFee,
     notarizationTermsOfService,
-    notarizationSignature: signature,
+    notarySignature: signature,
   };
 };
 

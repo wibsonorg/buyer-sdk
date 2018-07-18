@@ -12,22 +12,9 @@ const { partition } = collection;
 
 const buildNotariesParameters = async (notaries, buyerAddress, orderAddress) => {
   const promises = notaries.map(async ({ notary, publicUrl }) => {
-    const {
-      orderAddr,
-      responsesPercentage,
-      notarizationFee,
-      notarizationTermsOfService,
-      notarizationSignature,
-    } = await notaryService.conscent(publicUrl, buyerAddress, orderAddress);
+    const response = await notaryService.conscent(publicUrl, { buyerAddress, orderAddress });
 
-    return {
-      orderAddr,
-      notary,
-      responsesPercentage,
-      notarizationFee,
-      notarizationTermsOfService,
-      notarizationSignature,
-    };
+    return { ...response, notary };
   });
 
   return Promise.all(promises);
@@ -50,13 +37,8 @@ const addNotaryToOrder = async (notaryParameters, buyerAddress, contract) => {
     );
 
     return { notaryAddress };
-  } catch (error) {
-    // TODO: treat each error type accordingly
-    const errorPayload = {
-      error: error.message,
-      stack: error.stack,
-      notaryParameters,
-    };
+  } catch (error) { // TODO: treat each error type accordingly
+    const errorPayload = { error: error.message, notaryParameters };
     logger.error('Transaction failed', errorPayload);
 
     return errorPayload;
@@ -78,8 +60,6 @@ const addNotariesToOrderFacade = async (orderAddress, addresses, contract) => {
     buyerAddress,
     orderAddress,
   );
-
-  console.log('notariesParameters', notariesParameters);
 
   if (notariesParameters.length === 0) {
     return new Response(null, [

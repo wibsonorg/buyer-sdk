@@ -20,7 +20,6 @@ import {
 import { account, health, notaries, dataOrders } from './routes';
 
 const app = express();
-// TODO: To be removed
 app.locals.stores = {
   redis: createRedisStore('sample'),
   level: createLevelStore('/tmp/sample_level'),
