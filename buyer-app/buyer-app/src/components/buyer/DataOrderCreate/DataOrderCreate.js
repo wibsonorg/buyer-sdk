@@ -69,7 +69,6 @@ class DataOrderCreate extends Component {
       buyerId: undefined,
       audience: [],
       requestedData: dataOntology.options[0].value,
-      notarizeData: false,
       // TODO: allow multiple notaries.
       // requestedNotaries: [],
       requestedNotary: null,
@@ -78,8 +77,7 @@ class DataOrderCreate extends Component {
       errors: {},
       loading: false,
       creationError: undefined,
-      maxPrice: 15,
-      useMaxPrice: true
+      price: 15,
     };
   }
 
@@ -97,8 +95,13 @@ class DataOrderCreate extends Component {
   }
 
   async componentDidMount() {
-    const buyerInfos = await fetch(`${apiUrl}/infos`);
-    this.setState({ buyerInfos });
+    try {
+      const res = await fetch(`${apiUrl}/infos`);
+      const result = await res.json();
+      this.setState({ buyerInfos: result.infos });
+    } catch(error) {
+      console.log(error);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -112,11 +115,9 @@ class DataOrderCreate extends Component {
       audience,
       requestedData,
       requestedNotary,
-      notarizeData,
       publicURL,
       conditions,
-      maxPrice,
-      useMaxPrice,
+      price,
       buyerId
     } = this.state;
 
@@ -129,18 +130,17 @@ class DataOrderCreate extends Component {
       };
     });
 
-    const data = requestedData ? requestedData : undefined;
+    const data = requestedData ? [requestedData] : undefined;
 
     const notaries = [requestedNotary];
 
     createDataOrder(
       selectedAudience,
       data,
-      notarizeData,
       notaries,
       publicURL,
       conditions,
-      useMaxPrice ? maxPrice : null,
+      price,
       buyerId
     );
   };
@@ -172,12 +172,12 @@ class DataOrderCreate extends Component {
             <Label color="light-dark">Buyer name</Label>
 
             <Select value={this.state.buyerId}>
-              {this.state.buyerInfos.map(({ value, label }) => (
+              {this.state.buyerInfos.map(({ id, label }) => (
                 <SelectItem
-                  key={value}
-                  value={value}
+                  key={id}
+                  value={id}
                   label={label}
-                  onClick={() => this.setState({ buyerId: value })}
+                  onClick={() => this.setState({ buyerId: id })}
                 />
               ))}
             </Select>
@@ -214,9 +214,8 @@ class DataOrderCreate extends Component {
             <NumberInput
               min={1}
               step={1}
-              value={this.state.maxPrice}
-              disabled={!this.state.useMaxPrice}
-              onChange={value => this.setState({ maxPrice: value })}
+              value={this.state.price}
+              onChange={value => this.setState({ price: value })}
             />
           </InfoItem>
           <InfoItem>
@@ -294,22 +293,20 @@ const mapDispatchToProps = dispatch => ({
   createDataOrder: (
     audience,
     requestedData,
-    notarizeData,
     requestedNotaries,
     publicURL,
     conditions,
-    maxPrice,
+    price,
     buyerId
   ) => {
     dispatch(
       DataOrdersActions.createDataOrder({
         audience,
         requestedData,
-        notarizeData,
         requestedNotaries,
         publicURL,
         conditions,
-        maxPrice,
+        price,
         buyerId
       })
     );
