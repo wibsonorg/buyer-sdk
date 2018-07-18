@@ -9,7 +9,7 @@ const {
   jsonInterface,
   parameterNames,
   inputSchema,
-} = getDataExchangeMethodDefinition('addDataResponseToOrder');
+} = getDataExchangeMethodDefinition('closeDataResponse');
 
 const {
   getAddress,
