@@ -8,12 +8,12 @@ const router = express.Router();
  * @swagger
  * /data_responses:
  *   post:
- *     description:
+ *     description: Adds a data response and closes it.
  *     responses:
  *       200:
- *         description:
+ *         description: When the data response was added and closed correctly
  *       500:
- *         description:
+ *         description: When the data response could not be added or closed.
  */
 router.post('/', asyncError(async (req, res) => {
   const { orderAddress, sellerAddress } = req.body;
