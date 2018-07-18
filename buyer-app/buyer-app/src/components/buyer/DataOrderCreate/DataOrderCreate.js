@@ -293,7 +293,7 @@ const mapDispatchToProps = dispatch => ({
   createDataOrder: (
     audience,
     requestedData,
-    requestedNotaries,
+    notaries,
     publicURL,
     conditions,
     price,
@@ -303,7 +303,7 @@ const mapDispatchToProps = dispatch => ({
       DataOrdersActions.createDataOrder({
         audience,
         requestedData,
-        requestedNotaries,
+        notaries,
         publicURL,
         conditions,
         price,

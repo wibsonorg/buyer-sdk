@@ -1,7 +1,7 @@
 {
-	"api.url": "http://localhost:9000",
+	"api.url": "http://localhost:9001",
 	"buyerPublicURL": {
-		"api": "http://localhost:9000",
+		"api": "http://localhost:9001",
 		"storage": "https://publicwibson:publicwibson@publicstorage.wibson.org"
 	}
 }

@@ -40,7 +40,7 @@ function* createDataOrderSaga(action) {
     );
 
     yield call(
-      DataOrdersHelpers.associateBuyerIdWithOrder,
+      DataOrdersHelpers.associateBuyerInfoToOrder,
       orderAddress,
       buyerId
     );
