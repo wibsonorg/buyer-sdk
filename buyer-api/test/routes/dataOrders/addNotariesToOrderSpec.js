@@ -1,43 +1,123 @@
 import request from 'supertest';
+import { expect } from 'chai';
+import sinon from 'sinon';
+import notaryService from '../../../src/services/notaryService';
+import web3 from '../../../src/utils/web3';
+import config from '../../../config';
+import { cryptography } from '../../../src/utils/wibson-lib';
+import {
+  WibcoinContract,
+  DataExchangeContract,
+} from '../../../src/utils/contracts';
+import { createDataOrderFacade } from '../../../src/facades';
 import { mockStorage, restoreMocks, requireApp } from '../../helpers';
 
-describe('/orders/:orderAddress/notaries', () => {
-  let app;
-  const orderAddress = '0xa662a5c63079009d79740f4e638a404f7917f93a';
-  const notaries = ['0x0'];
+const { signPayload } = cryptography;
 
-  beforeEach(function (done) { // eslint-disable-line func-names
+describe('POST /orders/:orderAddress/notaries', () => {
+  let app;
+  let token;
+  let dataExchange;
+  let orderAddress;
+  let notaryServiceConscent;
+  let notaryAResponse;
+  let notaryBResponse;
+
+  const owner = web3.eth.accounts[0];
+  const buyer = web3.eth.accounts[1];
+  const notaryA = web3.eth.accounts[6];
+  const notaryB = web3.eth.accounts[7];
+  const notariesAddresses = [notaryA, notaryB];
+
+  beforeEach(async function () { // eslint-disable-line func-names
     this.timeout(5000);
     mockStorage();
     app = requireApp();
-    done();
+
+    config.contracts.addresses.wibcoin = '0x60b2a4f49ef7538a5b5806247c0f62eb39353742';
+    config.contracts.addresses.dataExchange = '0xb5532fa50322a92e401cda24893cc6ee455ede0c';
+    token = WibcoinContract.at(config.contracts.addresses.wibcoin);
+    dataExchange = DataExchangeContract.at(config.contracts.addresses.dataExchange);
+    await token.approve(dataExchange.address, 30000, { from: buyer });
+    await dataExchange.registerNotary(notaryA, 'A', 'A URL', 'A Public Key', { from: owner, gas: 2000000 });
+    await dataExchange.registerNotary(notaryB, 'B', 'B URL', 'B Public Key', { from: owner, gas: 2000000 });
+    const facadeResponse = await createDataOrderFacade({
+      filters: { age: '20' },
+      dataRequest: 'data request',
+      price: 20,
+      initialBudgetForAudits: 10,
+      termsAndConditions: 'DataOrder T&C',
+      buyerURL: 'https://buyer.example.com/data',
+    }, dataExchange);
+    // eslint-disable-next-line prefer-destructuring
+    orderAddress = facadeResponse.result.orderAddress;
+
+    app.locals.contracts.dataExchange = dataExchange;
+
+    notaryAResponse = {
+      notary: notaryA,
+      orderAddr: orderAddress,
+      responsesPercentage: 30,
+      notarizationFee: 10,
+      notarizationTermsOfService: 'Terms A',
+      notarySignature: signPayload('0x414da185dc5989c39360066ad194275252ac2521ef96e18a5be0c88b3cf0484c', orderAddress, 30, 10, 'Terms A'),
+    };
+
+    notaryBResponse = {
+      notary: notaryB,
+      orderAddr: orderAddress,
+      responsesPercentage: 50,
+      notarizationFee: 20,
+      notarizationTermsOfService: 'Terms B',
+      notarySignature: signPayload('0x5e2995a62dc7989e485323cbe6dc654601ef74b17a77d2c760a61a994d7432e5', orderAddress, 50, 20, 'Terms B'),
+    };
+
+    notaryServiceConscent = sinon.stub(notaryService, 'conscent');
+    notaryServiceConscent.onFirstCall()
+      .returns(Promise.resolve(notaryAResponse));
+    notaryServiceConscent.onSecondCall()
+      .returns(Promise.resolve(notaryBResponse));
   });
 
   afterEach(() => {
     restoreMocks();
+    notaryServiceConscent.restore();
   });
 
-  describe('POST /', () => {
-    it('responds with an Not Found status when orderAddress is not present');
-    it('responds with an Unprocessable Entity status when notary is not present');
-    it('responds with an Unprocessable Entity status when responsesPercentage is not present');
-    it('responds with an Unprocessable Entity status when notarizationFee is not present');
-    it('responds with an Unprocessable Entity status when notarizationTermsOfService is not present');
-    it('responds with an Unprocessable Entity status when notarySignature is not present');
+  it('responds with an Not Found status when orderAddress is not present');
+  it('responds with an Unprocessable Entity status when notary is not present');
+  it('responds with an Unprocessable Entity status when responsesPercentage is not present');
+  it('responds with an Unprocessable Entity status when notarizationFee is not present');
+  it('responds with an Unprocessable Entity status when notarizationTermsOfService is not present');
+  it('responds with an Unprocessable Entity status when notarySignature is not present');
 
-    // eslint-disable-next-line func-names
-    it('responds with an OK status', function (done) {
-      this.timeout(60 * 1000);
+  it('responds with an OK status when every notary is added successfully', (done) => {
+    request(app)
+      .post(`/orders/${orderAddress}/notaries`)
+      .send({ notariesAddresses })
+      .expect(200, {
+        orderAddress,
+        notariesAddresses,
+      }, done);
+  });
 
-      request(app)
-        .post(`/orders/${orderAddress}/notaries`)
-        .send({
-          notaries,
-        })
-        .expect(200, {
-          orderAddress,
-          notariesAddresses: notaries,
-        }, done);
+  context('when an error occurrs during the process of one notary', () => {
+    beforeEach(() => {
+      const method = sinon.stub(web3.eth, 'sendRawTransaction');
+      method.onFirstCall().throws('revert');
+      method.onSecondCall().returns('0xfb4b732393acd9fb7094a596f2a96546db0be939799c3d62dca8049c0237b030');
     });
+
+    afterEach(() => {
+      web3.eth.sendRawTransaction.restore();
+    });
+
+    it('responds with an Internal Server Error status', () => request(app)
+      .post(`/orders/${orderAddress}/notaries`)
+      .send({ notariesAddresses })
+      .expect(500)
+      .then((response) => {
+        expect(response.body.errors.length).to.eq(1); // Check for content
+      }));
   });
 });
