@@ -1,21 +1,10 @@
-import SolidityEvent from 'web3/lib/web3/event';
 import Response from './Response';
+import { extractEventArguments } from './helpers';
 import web3 from '../utils/web3';
 import signingService from '../services/signingService';
-import DataExchangeContract from '../../contracts/DataExchange.json';
-import { logger } from '../utils';
+import { coercion } from '../utils/wibson-lib';
 
-const toString = (value) => {
-  if (value === null || value === undefined) return '';
-  if (typeof value === 'string') return value;
-  if (typeof value.toString === 'function') return value.toString();
-  return '';
-};
-
-const toInteger = (value, defaultValue = 0) => {
-  if (value === null || value === undefined) return defaultValue;
-  return parseInt(value, 10);
-};
+const { toString, toInteger } = coercion;
 
 /**
  * Builds DataOrder parameters.
@@ -48,30 +37,6 @@ const buildDataOrderParameters = ({
   buyerURL: JSON.stringify(buyerURL),
 });
 
-const parseLogs = (logs, abi) => {
-  const decoders = abi
-    .filter(({ type }) => type === 'event')
-    .map(json => new SolidityEvent(null, json, null));
-
-  return logs.reduce((accumulator, log) => {
-    const found = decoders.find((decoder) => {
-      return decoder.signature() === log.topics[0].replace('0x', '');
-    });
-
-    if (found) {
-      return [...accumulator, found.decode(log)];
-    }
-
-    return accumulator;
-  }, []);
-};
-
-const extractEventArguments = (eventName, logs) => {
-  const parsedLogs = parseLogs(logs, DataExchangeContract.abi);
-  const { args } = parsedLogs.find(({ event }) => event === eventName);
-  return args;
-}
-
 /**
  * @async
  * @param {Object} parameters.filters Target audience.
@@ -84,9 +49,10 @@ const extractEventArguments = (eventName, logs) => {
  *                 for the order.
  * @param {String} parameters.buyerURL Public URL of the buyer where the data
  *                 must be sent.
+ * @param {Object} contract DataExchange contract
  * @returns {Response} The result of the operation.
  */
-const createDataOrderFacade = async (parameters) => {
+const createDataOrderFacade = async (parameters, contract) => {
   const dataOrderParameters = buildDataOrderParameters(parameters);
 
   if (dataOrderParameters.buyerURL.length === 0) {
@@ -103,9 +69,13 @@ const createDataOrderFacade = async (parameters) => {
   });
 
   const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
+  const { logs } = await web3.eth.getTransactionReceipt(receipt);
 
-  const tx = await web3.eth.getTransactionReceipt(receipt);
-  const { orderAddress } = extractEventArguments('NewOrder', tx.logs);
+  const { orderAddr: orderAddress } = extractEventArguments(
+    'NewOrder',
+    logs,
+    contract,
+  );
 
   return new Response({ orderAddress });
 };

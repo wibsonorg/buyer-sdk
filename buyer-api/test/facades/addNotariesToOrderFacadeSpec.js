@@ -13,10 +13,11 @@ describe('addNotariesToOrderFacade', () => {
   it('responds with error when notarySignature is not present');
 
   it('responds successfully', async () => {
-    const response = await addNotariesToOrderFacade({
+    const response = await addNotariesToOrderFacade(
       orderAddress,
       notaries,
-    });
+      {},
+    );
 
     expect(response.success()).to.eq(true);
   });
