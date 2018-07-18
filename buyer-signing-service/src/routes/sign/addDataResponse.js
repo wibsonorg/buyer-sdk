@@ -60,7 +60,7 @@ const validate = ({ nonce, params, payload }) => {
 
 /**
  * @swagger
- * /sign/new-order:
+ * /sign/add-data-response:
  *   post:
  *     description: |
  *       ## Sign addDataResponseToOrder Transaction
@@ -77,15 +77,15 @@ const validate = ({ nonce, params, payload }) => {
  *           The number of transactions made by the sender including this one.
  *         required: true
  *       - in: body
- *         name: addDataResponseParameters
+ *         name: params
  *         description: Parameters to be used in the transaction call.
  *         schema:
- *           $ref: "#/definitions/AddDataResponseParameters"
+ *           $ref: "#/definitions/params"
  *       - in: body
- *         name: addDataResponsePayload
+ *         name: payload
  *         type: string
  *         description: |
- *           Data payload to be used instead of `addDataResponseParameters`.
+ *           Data payload to be used instead of `params`.
  *     responses:
  *       200:
  *         description: When the signing performs successfully
@@ -93,7 +93,7 @@ const validate = ({ nonce, params, payload }) => {
  *         description: Any other case
  *
  * definitions:
- *   AddDataResponseParameters:
+ *   params:
  *     type: object
  *     properties:
  *       orderAddr:
@@ -104,7 +104,7 @@ const validate = ({ nonce, params, payload }) => {
  *         type: string
  *         description: Address of the seller.
  *         required: true
- *       notary:
+ *       notaryAccount:
  *         type: string
  *         description: Address of the notary.
  *         required: true

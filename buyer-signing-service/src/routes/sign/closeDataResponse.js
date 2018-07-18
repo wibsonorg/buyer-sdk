@@ -60,11 +60,11 @@ const validate = ({ nonce, params, payload }) => {
 
 /**
  * @swagger
- * /sign/new-order:
+ * /sign/close-data-response:
  *   post:
  *     description: |
- *       ## Sign addDataResponseToOrder Transaction
- *       Receives DataExchange.addDataResponseToOrder parameters or a serialized payload and
+ *       ## Sign closeDataResponse Transaction
+ *       Receives DataExchange.closeDataResponse parameters or a serialized payload and
  *       responds with the serialized transaction ready to be sent to the
  *       network.
  *     produces:
@@ -77,7 +77,7 @@ const validate = ({ nonce, params, payload }) => {
  *           The number of transactions made by the sender including this one.
  *         required: true
  *       - in: body
- *         name: addDataResponseParameters
+ *         name: params
  *         description: Parameters to be used in the transaction call.
  *         schema:
  *           $ref: "#/definitions/AddDataResponseParameters"
@@ -93,7 +93,7 @@ const validate = ({ nonce, params, payload }) => {
  *         description: Any other case
  *
  * definitions:
- *   AddDataResponseParameters:
+ *   params:
  *     type: object
  *     properties:
  *       orderAddr:
@@ -104,17 +104,17 @@ const validate = ({ nonce, params, payload }) => {
  *         type: string
  *         description: Address of the seller.
  *         required: true
- *       notary:
- *         type: string
- *         description: Address of the notary.
+ *       wasAudited:
+ *         type: boolean
+ *         description: If the data response was audited or not.
  *         required: true
- *       dataHash:
- *         type: string
- *         description: SHA256 of the data that will be sent.
+ *       isDataValid:
+ *         type: boolean
+ *         description: If the data audited is valid.
  *         required: true
- *       signature:
+ *       notarySignature:
  *         type: string
- *         description: Data Response signature.
+ *         description: Notary signature.
  *         required: true
  */
 router.post('/close-data-response', asyncError(async (req, res) => {
