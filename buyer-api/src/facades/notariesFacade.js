@@ -53,11 +53,15 @@ const getNotaryInfo = async (web3, dataExchange, address) => {
  * @function getNotariesInfo
  * @param {Object} web3 the web3 object.
  * @param {Object} dataExchange an instance of the DataExchange.
+ * @param {Array} addresses specific notary addresses to fetch.
  * @throws When can not connect to blockchain or cache is not set up correctly.
  * @returns {Promise} Promise which resolves to the list with the notaries' information.
  */
-const getNotariesInfo = async (web3, dataExchange) => {
-  const notaryAddresses = await dataExchange.getAllowedNotaries();
+const getNotariesInfo = async (web3, dataExchange, addresses = []) => {
+  const notaryAddresses = addresses.length > 0
+    ? addresses
+    : await dataExchange.getAllowedNotaries();
+
   const notaries = notaryAddresses.map(notaryAddress =>
     getNotaryInfo(web3, dataExchange, notaryAddress));
 

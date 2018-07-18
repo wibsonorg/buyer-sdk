@@ -29,10 +29,19 @@ const signNewOrder = payload => client.post(
   },
 );
 
+const signAddNotaryToOrder = payload => client.post(
+  `${url}/sign/add-notary-to-order`,
+  {
+    json: payload,
+    timeout,
+  },
+);
+
 const signinService = {
   getHealth,
   getAccount,
   signNewOrder,
+  signAddNotaryToOrder,
 };
 
 export default signinService;
