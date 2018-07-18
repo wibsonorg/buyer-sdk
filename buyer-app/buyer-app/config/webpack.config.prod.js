@@ -123,6 +123,7 @@ module.exports = {
           /\.json$/,
           /\.woff$/,
           /\.woff2$/,
+          /\.md$/,
           /\.([ot]tf|svg|eot)$/,
           /\.(gif|png|jpg)(\?.*)?$/
         ],
@@ -187,6 +188,10 @@ module.exports = {
         query: {
           name: 'fonts/[name].[hash].[ext]'
         }
+      },
+      {
+        test: /\.md$/,
+        loader: 'raw-loader'
       },
       {
         test: /\.(gif|png|jpg)(\?.*)?$/,

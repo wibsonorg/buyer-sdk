@@ -10,6 +10,7 @@ const router = express.Router();
  * /orders:
  *   get:
  *     description: Returns a list of all data orders created by the buyer in the Data Exchange
+ *       along with the minimumInitialBudgetForAudits set for the market.
  *     produces:
  *       - application/json
  *     responses:
@@ -30,7 +31,7 @@ router.get(
       contracts: { dataExchange, DataOrderContract },
     } = req.app.locals;
 
-    const orders = await getOrdersForBuyer(
+    const ordersResult = getOrdersForBuyer(
       dataExchange,
       DataOrderContract,
       address,
@@ -40,7 +41,14 @@ router.get(
       Number(limit),
     );
 
-    res.json({ orders });
+    const minimumBudget = dataExchange.minimumInitialBudgetForAudits();
+
+    const [orders, minimumInitialBudgetForAudits] = await Promise.all([
+      ordersResult,
+      minimumBudget,
+    ]);
+
+    res.json({ orders, minimumInitialBudgetForAudits });
   }),
 );
 
@@ -123,12 +131,12 @@ const validate = ({
  *         type: object
  *         required: true
  *         description: Target audience of the order
- *         example: { age: 20 }
+ *         example: '{ "age": 20 }'
  *       dataRequest:
  *         type: string
  *         required: true
  *         description: Requested data type (Geolocation, Facebook, etc)
- *         example: Geolocalization (last 30 days)
+ *         example: '["geolocation"]'
  *       price:
  *         type: integer
  *         required: true
@@ -143,30 +151,33 @@ const validate = ({
  *         type: string
  *         required: true
  *         description: The initial budget set for future audits
- *         example: Terms and Conditions
+ *         example: 'Terms and Conditions'
  *       buyerURL:
  *         type: string
  *         required: true
  *         description: Public URL of the buyer where the data must be sent
- *         example: https://buyer.com/submit-your-data
+ *         example: '{"api": "https://api.buyer.com", "storage": "https://storage.buyer.com"}'
  */
-router.post('/', asyncError(async (req, res) => {
-  const { dataOrder } = req.body;
-  const errors = validate(dataOrder);
+router.post(
+  '/',
+  asyncError(async (req, res) => {
+    const { dataOrder } = req.body;
+    const errors = validate(dataOrder);
 
-  if (errors.length > 0) {
-    res.boom.badData('Validation failed', { validation: errors });
-  } else {
-    const response = await createDataOrderFacade(dataOrder);
-
-    if (response.success()) {
-      res.json(response.result);
+    if (errors.length > 0) {
+      res.boom.badData('Validation failed', { validation: errors });
     } else {
-      res.boom.badData('Operation failed', {
-        errors: response.errors,
-      });
+      const response = await createDataOrderFacade(dataOrder);
+
+      if (response.success()) {
+        res.json(response.result);
+      } else {
+        res.boom.badData('Operation failed', {
+          errors: response.errors,
+        });
+      }
     }
-  }
-}));
+  }),
+);
 
 export default router;

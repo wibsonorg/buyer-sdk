@@ -2,5 +2,9 @@
 	"gd.logo": "img/grandata-logo.png",
 	"app.logo": "img/brand/gd-logo.png",
 	"app.lang": "en",
-	"minio": "https://publicwibson:publicwibson@publicstorage.wibson.org"
+	"api.url": "https://api.wibson.org/buyer",
+	"buyerPublicURL": {
+		"api": "https://api.wibson.org/buyer",
+		"storage": "https://publicwibson:publicwibson@publicstorage.wibson.org"
+	}
 }
