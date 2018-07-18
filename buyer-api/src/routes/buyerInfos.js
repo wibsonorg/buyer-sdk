@@ -26,7 +26,7 @@ router.get(
     const values = await listLevelValues(buyerInfos);
 
     res.json({
-      options: values.map(value => JSON.parse(value)),
+      infos: values.map(value => JSON.parse(value)),
     });
   }),
 );

@@ -3,6 +3,7 @@ import Response from './Response';
 import web3 from '../utils/web3';
 import signingService from '../services/signingService';
 import DataExchangeContract from '../../contracts/DataExchange.json';
+import { logger } from '../utils';
 
 const toString = (value) => {
   if (value === null || value === undefined) return '';
@@ -40,11 +41,11 @@ const buildDataOrderParameters = ({
   buyerURL,
 }) => ({
   filters: JSON.stringify(filters),
-  dataRequest: toString(dataRequest),
+  dataRequest: JSON.stringify(dataRequest),
   price: toInteger(price),
   initialBudgetForAudits: toInteger(initialBudgetForAudits),
   termsAndConditions: toString(termsAndConditions),
-  buyerURL: toString(buyerURL),
+  buyerURL: JSON.stringify(buyerURL),
 });
 
 const parseLogs = (logs, abi) => {
@@ -93,6 +94,7 @@ const createDataOrderFacade = async (parameters) => {
   }
 
   const { address } = await signingService.getAccount();
+
   const nonce = await web3.eth.getTransactionCount(address);
 
   const { signedTransaction } = await signingService.signNewOrder({
@@ -101,8 +103,8 @@ const createDataOrderFacade = async (parameters) => {
   });
 
   const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
-  const tx = await web3.eth.getTransactionReceipt(receipt);
 
+  const tx = await web3.eth.getTransactionReceipt(receipt);
   const { orderAddress } = extractEventArguments('NewOrder', tx.logs);
 
   return new Response({ orderAddress });
