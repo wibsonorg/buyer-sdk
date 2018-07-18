@@ -22,7 +22,8 @@ var config = {
       dataExchange: env.DATA_EXCHANGE_ADDRESS
     },
     cache: {
-      notaryTTL: env.CONTRACTS_CACHE_NOTARY_TTL
+      notaryTTL: env.CONTRACTS_CACHE_NOTARY_TTL,
+      ordersTTL: env.CONTRACTS_CACHE_ORDERS_TTL
     }
   },
   cache: {

@@ -10,7 +10,7 @@ import R from "ramda";
 export function* fetchDataOrdersAddresses(action) {
   try {
     const { limit, offset } = action.payload;
-    
+
     const fullDataOrders = yield call(DataOrdersHelpers.listBuyerDataOrders, limit, offset);
 
     yield put(
@@ -30,7 +30,7 @@ export function* fetchDataOrdersAddresses(action) {
     }
   } catch (error) {
     yield put(
-      DataOrdersAddressesActions.fetchDataOrdersAddressesSucceed({ error })
+      DataOrdersAddressesActions.fetchDataOrdersAddressesFailed({ error })
     );
   }
 }

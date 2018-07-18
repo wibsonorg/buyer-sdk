@@ -1,8 +1,48 @@
 import express from 'express';
-import { createDataOrder } from '../facades';
-import { asyncError } from '../utils';
+import { createDataOrderFacade, getOrdersForBuyer } from '../../facades';
+import { asyncError, cache } from '../../utils';
+import signingService from '../../services/signingService';
 
 const router = express.Router();
+
+/**
+ * @swagger
+ * /orders:
+ *   get:
+ *     description: Returns a list of all data orders created by the buyer in the Data Exchange
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: When the list could be fetched correctly.
+ *       500:
+ *         description: When the fetch failed.
+ */
+router.get(
+  '/',
+  cache('30 seconds'),
+  asyncError(async (req, res) => {
+    const { offset, limit } = req.query;
+    const { address } = await signingService.getAccount();
+
+    const {
+      stores: { buyerInfos, buyerInfoPerOrder },
+      contracts: { dataExchange, DataOrderContract },
+    } = req.app.locals;
+
+    const orders = await getOrdersForBuyer(
+      dataExchange,
+      DataOrderContract,
+      address,
+      buyerInfos,
+      buyerInfoPerOrder,
+      Number(offset),
+      Number(limit),
+    );
+
+    res.json({ orders });
+  }),
+);
 
 /**
  * Checks that every field is present.
@@ -47,7 +87,7 @@ const validate = ({
 
 /**
  * @swagger
- * /data-orders:
+ * /orders:
  *   post:
  *     description: |
  *       # STEP 1 from Wibson's Protocol
@@ -64,8 +104,16 @@ const validate = ({
  *     responses:
  *       200:
  *         description: When the app is OK
+ *         schema:
+ *           type: object
+ *           properties:
+ *             orderAddress:
+ *               type: string
+ *               description: Address to be used in further requests
  *       422:
- *         description: When the app is OK
+ *         description: When there is a problem with the input
+ *       500:
+ *         description: Problem on our side
  *
  * definitions:
  *   DataOrder:
@@ -109,9 +157,15 @@ router.post('/', asyncError(async (req, res) => {
   if (errors.length > 0) {
     res.boom.badData('Validation failed', { validation: errors });
   } else {
-    const response = await createDataOrder(dataOrder);
+    const response = await createDataOrderFacade(dataOrder);
 
-    res.json(response);
+    if (response.success()) {
+      res.json(response.result);
+    } else {
+      res.boom.badData('Operation failed', {
+        errors: response.errors,
+      });
+    }
   }
 }));
 
