@@ -30,11 +30,11 @@ const buildDataOrderParameters = ({
   buyerURL,
 }) => ({
   filters: JSON.stringify(filters),
-  dataRequest: toString(dataRequest),
+  dataRequest: JSON.stringify(dataRequest),
   price: toInteger(price),
   initialBudgetForAudits: toInteger(initialBudgetForAudits),
   termsAndConditions: toString(termsAndConditions),
-  buyerURL: toString(buyerURL),
+  buyerURL: JSON.stringify(buyerURL),
 });
 
 /**
@@ -60,6 +60,7 @@ const createDataOrderFacade = async (parameters, contract) => {
   }
 
   const { address } = await signingService.getAccount();
+
   const nonce = await web3.eth.getTransactionCount(address);
 
   const { signedTransaction } = await signingService.signNewOrder({

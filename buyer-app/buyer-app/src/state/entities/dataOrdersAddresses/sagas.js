@@ -3,6 +3,7 @@ import { throttle, put, all, call } from "redux-saga/effects";
 import * as DataOrdersHelpers from "lib/protocol-helpers/data-orders";
 import * as DataOrdersAddressesActions from "state/entities/dataOrdersAddresses/actions";
 import * as DataOrdersByAddressActions from "state/entities/dataOrdersByAddress/actions";
+import * as DataExchangeActions from "state/entities/dataExchange/actions";
 
 import R from "ramda";
 
@@ -10,7 +11,7 @@ import R from "ramda";
 export function* fetchDataOrdersAddresses(action) {
   try {
     const { limit, offset } = action.payload;
-    
+
     const fullDataOrders = yield call(DataOrdersHelpers.listBuyerDataOrders, limit, offset);
 
     yield put(
@@ -28,10 +29,14 @@ export function* fetchDataOrdersAddresses(action) {
         })
       );
     }
-  } catch (error) {
+
+    const { minimumInitialBudgetForAudits } = fullDataOrders;
     yield put(
-      DataOrdersAddressesActions.fetchDataOrdersAddressesSucceed({ error })
-    );
+      DataExchangeActions.fetchMinimumInitialBudgetSucceed(minimumInitialBudgetForAudits)
+    )
+  } catch (error) {
+    yield put(DataOrdersAddressesActions.fetchDataOrdersAddressesFailed({ error }));
+    yield put(DataExchangeActions.fetchMinimumInitialBudgetFailed({ error }));
   }
 }
 

@@ -17,12 +17,14 @@ import {
   DataOrderContract,
 } from './utils';
 
-import { account, health, notaries, dataOrders } from './routes';
+import { account, health, notaries, dataOrders, buyerInfos } from './routes';
 
 const app = express();
 app.locals.stores = {
   redis: createRedisStore('sample'),
   level: createLevelStore('/tmp/sample_level'),
+  buyerInfos: createLevelStore('/tmp/buyer_infos'),
+  buyerInfoPerOrder: createLevelStore('/tmp/buyer_info_per_order'),
 };
 
 app.locals.contracts = {
@@ -43,8 +45,10 @@ app.use(boom());
 app.use('/account', account);
 app.use('/health', health);
 app.use('/notaries', notaries);
+app.use('/infos', buyerInfos);
 app.use('/orders', dataOrders.createDataOrder);
 app.use('/orders', dataOrders.addNotariesToOrder);
+app.use('/orders', dataOrders.ordersInfo);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
 app.get('/api-docs.json', (_req, res) => res.json(schema));
 

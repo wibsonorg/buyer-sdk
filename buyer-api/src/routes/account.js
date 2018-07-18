@@ -1,8 +1,7 @@
 import express from 'express';
-import axios from 'axios';
 import web3Utils from 'web3-utils';
-import config from '../../config';
 import { web3, cache, asyncError } from '../utils';
+import signingService from '../services/signingService';
 
 const router = express.Router();
 
@@ -20,8 +19,7 @@ const router = express.Router();
  *         description: When the fetch failed.
  */
 router.get('/', cache('30 seconds'), asyncError(async (req, res) => {
-  const response = await axios.get(`${config.buyerSigningServiceUrl}/account`);
-  const { address } = response.data.account;
+  const { address } = await signingService.getAccount();
 
   const { contracts: { wibcoin } } = req.app.locals;
 

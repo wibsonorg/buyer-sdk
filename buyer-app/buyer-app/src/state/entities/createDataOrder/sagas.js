@@ -1,34 +1,47 @@
-import { put, takeLatest, all, call } from "redux-saga/effects";
+import { put, takeLatest, all, call, select } from "redux-saga/effects";
 
 import * as Actions from "./actions";
 
 import * as NotificationsActions from "state/entities/notifications/actions";
+import * as DataExchangeSelectors from "state/entities/dataExchange/selectors";
 
 import * as DataOrdersHelpers from "lib/protocol-helpers/data-orders";
 import formatDate from 'date-fns/format'
 
 function* createDataOrderSaga(action) {
   const {
-    requestedAudience,
+    audience,
     requestedData,
-    notarizeData,
-    requestedNotaries,
+    notaries,
     publicURL,
     conditions,
-    maxPrice,
+    price,
     buyerId
   } = action.payload;
+
+  // we take the minimum of the market as the initial budget for the order
+  const initialBudgetForAudits = yield select(DataExchangeSelectors.getMinimumInitialBudgetForAudits);
 
   try {
     const { orderAddress } = yield call(
       DataOrdersHelpers.createBuyerDataOrder,
-      requestedAudience,
+      audience,
       requestedData,
-      notarizeData,
-      requestedNotaries.map(n => n.toLowerCase()),
       publicURL,
       conditions,
-      maxPrice,
+      price,
+      initialBudgetForAudits
+    );
+
+    yield call(
+      DataOrdersHelpers.addNotariesToOrder,
+      orderAddress,
+      notaries.map(n => n.toLowerCase())
+    );
+
+    yield call(
+      DataOrdersHelpers.associateBuyerIdWithOrder,
+      orderAddress,
       buyerId
     );
 
@@ -36,16 +49,14 @@ function* createDataOrderSaga(action) {
       Actions.createDataOrderSucceed({
         dataOrder: {
           orderAddress,
-          requestedAudience,
+          audience,
           requestedData: [requestedData], // It is an array of requested data, even if right now we only use one.
-          notarizeData,
-          requestedNotaries,
-          acceptedNotaries: [],
+          notaries,
           conditions,
           publicURL,
           createdAt: formatDate(Date.now()),
           transactionCompleted: false,
-          maxPrice,
+          price,
           offChain: {},
           buyerId
         }

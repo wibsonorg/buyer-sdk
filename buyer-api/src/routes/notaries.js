@@ -1,5 +1,5 @@
 import express from 'express';
-import { asyncError, cache, logger, validateAddress, web3 } from '../utils';
+import { asyncError, cache, validateAddress, web3 } from '../utils';
 
 import { getNotaryInfo, getNotariesInfo } from '../facades/notariesFacade';
 
@@ -20,8 +20,6 @@ const router = express.Router();
  */
 router.get('/', cache('1 day'), asyncError(async (req, res) => {
   const { contracts: { dataExchange } } = req.app.locals;
-
-  logger.info(JSON.stringify(dataExchange));
 
   const result = {
     notaries: await getNotariesInfo(web3, dataExchange),

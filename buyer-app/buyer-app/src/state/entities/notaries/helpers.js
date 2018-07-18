@@ -9,7 +9,7 @@ const getNotariesFromContract = async () => {
     throw new Error("Could get data orders");
   }
 
-  const notaries = await res.json();
+  const { notaries } = await res.json();
 
   return notaries.map(notary => ({
     value: notary.notary,
