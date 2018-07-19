@@ -34,15 +34,15 @@ function* createDataOrderSaga(action) {
     );
 
     yield call(
-      DataOrdersHelpers.addNotariesToOrder,
-      orderAddress,
-      notaries.map(n => n.toLowerCase())
-    );
-
-    yield call(
       DataOrdersHelpers.associateBuyerInfoToOrder,
       orderAddress,
       buyerId
+    );
+
+    yield call(
+      DataOrdersHelpers.addNotariesToOrder,
+      orderAddress,
+      notaries.map(n => n.toLowerCase())
     );
 
     yield put(
