@@ -7,7 +7,7 @@ import client from 'request-promise-native';
  */
 const timeout = 1000;
 
-const conscent = async (url, { buyerAddress, orderAddress }) => {
+const consent = async (url, { buyerAddress, orderAddress }) => {
   const {
     responsesPercentage,
     notarizationFee,
@@ -29,4 +29,4 @@ const conscent = async (url, { buyerAddress, orderAddress }) => {
   };
 };
 
-export default { conscent };
+export default { consent };

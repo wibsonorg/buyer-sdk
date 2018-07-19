@@ -11,8 +11,8 @@ const { isPresent } = coercion;
 const { partition } = collection;
 
 const buildNotariesParameters = async (notaries, buyerAddress, orderAddress) => {
-  const promises = notaries.map(async ({ notary, publicUrl }) => {
-    const response = await notaryService.conscent(publicUrl, { buyerAddress, orderAddress });
+  const promises = notaries.map(async ({ notary, publicUrls: { api } }) => {
+    const response = await notaryService.consent(api, { buyerAddress, orderAddress });
 
     return { ...response, notary };
   });
