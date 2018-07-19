@@ -1,5 +1,14 @@
+import express from 'express';
 import newOrder from './newOrder';
 import addDataResponse from './addDataResponse';
 import closeDataResponse from './closeDataResponse';
+import addNotaryToOrder from './addNotaryToOrder';
 
-export { newOrder, addDataResponse, closeDataResponse };
+const router = express.Router();
+
+router.use(newOrder);
+router.use(addNotaryToOrder);
+router.use(addDataResponse);
+router.use(closeDataResponse);
+
+export default router;

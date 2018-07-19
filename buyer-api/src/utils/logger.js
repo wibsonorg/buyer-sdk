@@ -8,7 +8,7 @@ if (config.env === 'production') {
   logger.add(new winston.transports.File({ filename: config.log.combined }));
   logger.add(new winston.transports.File({ filename: config.log.error, level: 'error' }));
 } else if (config.env === 'development') {
-  logger.add(new winston.transports.Console({ format: winston.format.simple() }));
+  logger.add(new winston.transports.Console({ format: winston.format.simple(), level: 'debug' }));
 } else {
   logger.add(new winston.transports.Console({ silent: true }));
 }
