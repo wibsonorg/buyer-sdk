@@ -39,10 +39,13 @@ const getNotaryInfo = async (web3, dataExchange, address) => {
     notaryInfo = JSON.parse(notaryInfo);
   }
 
+  const publicUrls = JSON.parse(notaryInfo[2]);
+
   return {
     notary: notaryInfo[0],
     name: notaryInfo[1],
-    publicUrl: notaryInfo[2],
+    publicUrl: publicUrls,
+    publicUrls,
     publicKey: notaryInfo[3],
     isRegistered: notaryInfo[4],
   };
