@@ -8,7 +8,7 @@ import { getDataResponse } from '../utils/wibson-lib/storages';
 import { dataExchange, DataOrderContract } from '../utils';
 
 const auditResult = async (notaryUrl, order, seller, buyer) => {
-  const auditUrl = url.resolve(notaryUrl, `/buyers/audit/result/${order}/${buyer}`);
+  const auditUrl = url.resolve(notaryUrl, `/buyers/audit/result/${buyer}/${order}`);
   const payload = { dataResponses: [{ seller }] };
   const response = await client.post(auditUrl, { json: payload, timeout: 1000 });
   const res = response.dataResponses[0];
@@ -83,15 +83,15 @@ const closeDataResponse = async (order, seller) => {
     throw new Error('Invalid order|seller address');
   }
 
-  const dataOrder = await DataOrderContract.at(order);
+  const dataOrder = DataOrderContract.at(order);
 
-  const sellerInfo = dataOrder.getSellerInfo(seller);
+  const sellerInfo = await dataOrder.getSellerInfo(seller);
   if (web3Utils.hexToUtf8(sellerInfo[5]) !== 'DataResponseAdded') {
     throw new Error('Data Response has already been closed|refunded');
   }
 
   const notaryAddress = sellerInfo[1];
-  const notaryInfo = dataExchange.getNotaryInfo(notaryAddress);
+  const notaryInfo = await dataExchange.getNotaryInfo(notaryAddress);
   const notaryURL = notaryInfo[2];
 
   const params = await auditResult(notaryURL, order, seller, dataOrder.buyer());

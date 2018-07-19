@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /data_responses:
+ * /data-responses:
  *   post:
  *     description: Adds a data response and closes it.
  *     responses:
