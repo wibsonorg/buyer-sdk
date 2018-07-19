@@ -81,7 +81,7 @@ router.post(
 
     try {
       await associateBuyerInfoToOrder(orderAddress, buyerInfoId, buyerInfoPerOrder, buyerInfos);
-      res.json();
+      res.json({});
     } catch (err) {
       res.status(404).send();
     }
