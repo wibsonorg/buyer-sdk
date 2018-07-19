@@ -5,20 +5,22 @@ import client from 'request-promise-native';
  * milisseconds.
  * @type {Number}
  */
-const timeout = 1000;
+const timeout = 10000;
 
 const consent = async (url, { buyerAddress, orderAddress }) => {
+  const result = await client.get(
+    `${url}/buyers/audit/consent/${buyerAddress}/${orderAddress}`,
+    {
+      timeout,
+    },
+  );
+
   const {
     responsesPercentage,
     notarizationFee,
     notarizationTermsOfService,
     signature,
-  } = await client.get(
-    `${url}/audit/consent/${buyerAddress}/${orderAddress}`,
-    {
-      timeout,
-    },
-  );
+  } = JSON.parse(result);
 
   return {
     orderAddr: orderAddress,
