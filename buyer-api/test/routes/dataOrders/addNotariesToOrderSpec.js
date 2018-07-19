@@ -16,7 +16,7 @@ import {
 
 const { signPayload } = cryptography;
 
-describe.only('POST /orders/:orderAddress/notaries', () => {
+describe('POST /orders/:orderAddress/notaries', () => {
   let app;
   let token;
   let dataExchange;
