@@ -35,7 +35,7 @@ const addDataResponse = async (order, seller) => {
     throw new Error('Invalid order|seller address');
   }
 
-  const dataOrder = await DataOrderContract.at(order);
+  const dataOrder = DataOrderContract.at(order);
 
   if (dataOrder.hasSellerBeenAccepted(seller)) {
     throw new Error('Data Response has already been added');
