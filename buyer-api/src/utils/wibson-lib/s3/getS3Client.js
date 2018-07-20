@@ -1,10 +1,9 @@
-import url from 'url';
-
 import aws from 'aws-sdk';
 
 class AWSWrapper {
-  constructor(s3) {
+  constructor(s3, bucket) {
     this.s3 = s3;
+    this.bucket = bucket;
   }
 
   promisifyMethod(methodName, params) {
@@ -19,31 +18,31 @@ class AWSWrapper {
     });
   }
 
-  putObject(bucket, objectName, object) {
+  putObject(objectName, object) {
     const params = {
       Body: object,
-      Bucket: bucket,
+      Bucket: this.bucket,
       Key: objectName,
     };
     return this.promisifyMethod('putObject', params);
   }
 
-  getObject(bucket, objectName) {
+  getObject(objectName) {
     const params = {
-      Bucket: bucket,
+      Bucket: this.bucket,
       Key: objectName,
     };
     return this.promisifyMethod('getObject', params);
   }
 
-  async listObjects(bucket, prefix) {
+  async listObjects(prefix) {
     let objects = [];
     let isTruncated = true;
     let continuationToken;
 
     while (isTruncated) {
       const params = {
-        Bucket: bucket,
+        Bucket: this.bucket,
         Prefix: prefix,
         ContinuationToken: continuationToken,
       };
@@ -54,40 +53,21 @@ class AWSWrapper {
     }
     return objects;
   }
-
-  makeBucket(bucketName, location) {
-    const params = {
-      Bucket: bucketName,
-      CreateBucketConfiguration: {
-        LocationConstraint: location,
-      },
-    };
-    return this.promisifyMethod('createBucket', params);
-  }
-
-  bucketExists(bucketName) {
-    const params = {
-      Bucket: bucketName,
-    };
-    return this.promisifyMethod('headBucket', params);
-  }
 }
 
-const getS3Client = (uri) => {
+const getS3Client = (uri, region, bucket, accessKeyId, secretAccessKey) => {
   if (!uri) throw new Error('A URI is required');
-
-  const location = url.parse(uri);
-  const [accessKeyId, secretAccessKey] = location.auth ? location.auth.split(':') : [];
-  const endpoint = `${location.protocol}//${location.host}`;
+  if (!region) throw new Error('A Region is required');
+  if (!bucket) throw new Error('A Bucket is required');
 
   const client = new aws.S3({
     accessKeyId,
     secretAccessKey,
-    endpoint,
+    region,
     s3ForcePathStyle: true,
   });
 
-  return new AWSWrapper(client);
+  return new AWSWrapper(client, bucket);
 };
 
 export default getS3Client;
