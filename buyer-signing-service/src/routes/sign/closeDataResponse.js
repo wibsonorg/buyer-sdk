@@ -1,10 +1,8 @@
 import express from 'express';
-import { asyncError } from '../../helpers';
+import { asyncError, validate, isPresent } from '../../helpers';
 import signCloseDataResponseFacade from '../../facades/sign/closeDataResponseFacade';
 
 const router = express.Router();
-
-const isPresent = obj => obj !== null && obj !== undefined;
 
 const validateParameters = ({
   orderAddr,
@@ -28,34 +26,6 @@ const validateParameters = ({
 
     return accumulator;
   }, []);
-};
-
-/*
- * Checks that `nonce` and one of `params` or `payload` are
- * present.
- */
-const validate = ({ nonce, params, payload }) => {
-  let errors = [];
-
-  if (!isPresent(nonce)) {
-    errors = ['Field \'nonce\' is required'];
-  }
-
-  if (!isPresent(params) && !isPresent(payload)) {
-    errors = [
-      ...errors,
-      'Field \'params\' or \'payload\' must be provided',
-    ];
-  }
-
-  if (isPresent(params)) {
-    errors = [
-      ...errors,
-      ...validateParameters(params),
-    ];
-  }
-
-  return errors;
 };
 
 /**
@@ -119,7 +89,7 @@ const validate = ({ nonce, params, payload }) => {
  */
 router.post('/close-data-response', asyncError(async (req, res) => {
   const { nonce, params, payload } = req.body;
-  const errors = validate({ nonce, params, payload });
+  const errors = validate({ nonce, params, payload }, validateParameters);
 
   if (errors.length > 0) {
     res.boom.badData('Validation failed', { validation: errors });
