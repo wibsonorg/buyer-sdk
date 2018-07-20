@@ -96,7 +96,7 @@ class Buyer extends React.Component {
 
     const aviableDataResponsesCount = R.compose(
       R.sum,
-      R.map(item => (item.data ? item.data.offChain.dataResponsesCount : 0)),
+      R.map(item => (item.data && item.data.offChain ? item.data.offChain.dataResponsesCount : 0)),
       R.values
     )(activeDataOrders);
 
