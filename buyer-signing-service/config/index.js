@@ -24,7 +24,9 @@ var config = {
     chainId: env.CHAIN_ID,
     dataExchange: {
       address: env.DATA_EXCHANGE_CONTRACT_ADDRESS,
-      newOrder: { gasLimit: env.TX_NEW_ORDER_GAS_LIMIT }
+      newOrder: { gasLimit: env.TX_NEW_ORDER_GAS_LIMIT },
+      addNotaryToOrder: { gasLimit: env.TX_ADD_NOTARY_TO_ORDER_GAS_LIMIT },
+      closeOrder: { gasLimit: env.TX_CLOSE_ORDER_GAS_LIMIT },
     },
   },
   buyer: {
