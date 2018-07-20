@@ -4,8 +4,9 @@ import url from 'url';
 import web3 from '../utils/web3';
 import signingService from '../services/signingService';
 import { getElements } from './helpers/blockchain';
+import { getNotaryInfo } from './notariesFacade';
 import { getDataResponse } from '../utils/wibson-lib/s3';
-import { dataExchange, DataOrderContract } from '../utils';
+import { dataExchange, DataOrderContract, logger } from '../utils';
 
 const auditResult = async (notaryUrl, order, seller, buyer) => {
   const auditUrl = url.resolve(notaryUrl, `/buyers/audit/result/${buyer}/${order}`);
@@ -30,6 +31,26 @@ const auditResult = async (notaryUrl, order, seller, buyer) => {
   };
 };
 
+const performTransaction = async (address, signingServiceMethod, params) => {
+  const nonce = await web3.eth.getTransactionCount(address);
+
+  const { signedTransaction } = await signingService[signingServiceMethod]({ nonce, ...params });
+
+  const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
+  return web3.eth.getTransactionReceipt(receipt);
+};
+
+const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
+  const [price, notaryInfo, remainingBudgetForAudits] = await Promise.all([
+    dataOrder.price(),
+    dataOrder.getNotaryInfo(notaryAccount),
+    dataExchange.buyerRemainingBudgetForAudits(myAddress, dataOrder.address),
+  ]);
+  const notarizationFee = notaryInfo[2];
+  const prePaid = Math.min(notarizationFee, remainingBudgetForAudits);
+  return price + (notarizationFee - prePaid); // without parenthesis, eslint complains
+};
+
 const addDataResponse = async (order, seller) => {
   if (!web3Utils.isAddress(order) || !web3Utils.isAddress(seller)) {
     throw new Error('Invalid order|seller address');
@@ -45,6 +66,7 @@ const addDataResponse = async (order, seller) => {
   try {
     dataResponse = await getDataResponse(dataOrder, seller);
   } catch (err) {
+    logger.debug(err);
     throw new Error('Could not retrieve data response from storage');
   }
 
@@ -58,6 +80,15 @@ const addDataResponse = async (order, seller) => {
     throw new Error('Invalid notary');
   }
 
+  const { address } = await signingService.getAccount();
+
+  const totalPrice = await getTotalPrice(address, dataOrder, notaryAccount);
+
+  await performTransaction(address, 'signIncreaseApproval', {
+    target: dataExchange.address,
+    value: totalPrice,
+  });
+
   const params = {
     orderAddr: order,
     seller,
@@ -66,15 +97,10 @@ const addDataResponse = async (order, seller) => {
     signature,
   };
 
-  const { address } = await signingService.getAccount();
-  const nonce = await web3.eth.getTransactionCount(address);
-
-  const { signedTransaction } = await signingService.signAddDataResponse({ nonce, params });
-
-  const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
-  await web3.eth.getTransactionReceipt(receipt);
+  await performTransaction(address, 'signAddDataResponse', { params });
   // TODO: Check receipt
 
+  logger.debug('Data Response Added', { order, seller });
   return true;
 };
 
@@ -91,20 +117,16 @@ const closeDataResponse = async (order, seller) => {
   }
 
   const notaryAddress = sellerInfo[1];
-  const notaryInfo = await dataExchange.getNotaryInfo(notaryAddress);
-  const notaryURL = notaryInfo[2];
+  const notaryInfo = await getNotaryInfo(web3, dataExchange, notaryAddress);
+  const notaryApi = notaryInfo.publicUrls.api;
 
-  const params = await auditResult(notaryURL, order, seller, dataOrder.buyer());
+  const params = await auditResult(notaryApi, order, seller, dataOrder.buyer());
 
   const { address } = await signingService.getAccount();
-  const nonce = await web3.eth.getTransactionCount(address);
-
-  const { signedTransaction } = await signingService.signCloseDataResponse({ nonce, params });
-
-  const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
-  await web3.eth.getTransactionReceipt(receipt);
+  await performTransaction(address, 'signCloseDataResponse', { params });
   // TODO: Check receipt
 
+  logger.debug('Data Response Closed', { order, seller });
   return true;
 };
 
