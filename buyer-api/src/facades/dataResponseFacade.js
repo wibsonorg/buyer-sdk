@@ -4,7 +4,7 @@ import url from 'url';
 import web3 from '../utils/web3';
 import signingService from '../services/signingService';
 import { getElements } from './helpers/blockchain';
-import { getDataResponse } from '../utils/wibson-lib/storages';
+import { getDataResponse } from '../utils/wibson-lib/s3';
 import { dataExchange, DataOrderContract } from '../utils';
 
 const auditResult = async (notaryUrl, order, seller, buyer) => {
