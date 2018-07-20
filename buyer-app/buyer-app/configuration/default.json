@@ -5,6 +5,6 @@
 	"api.url": "https://api.wibson.org/buyer",
 	"buyerPublicURL": {
 		"api": "https://api.wibson.org/buyer",
-		"storage": "https://publicwibson:publicwibson@publicstorage.wibson.org"
+		"storage": "s3://AKIAIA5RQNSW6PO65WVA:kgKwMYSl3ZE6kCVoF3rZhjXN4Z3lUT922RUphbAL@wibson-storage"
 	}
 }
