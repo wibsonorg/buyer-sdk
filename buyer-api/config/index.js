@@ -44,6 +44,13 @@ var config = {
   orders: {
     storePath: env.ORDERS_STORE_PATH
   },
+  storage: {
+    url: env.STORAGE_URL,
+    region: env.STORAGE_REGION,
+    user: env.STORAGE_USER,
+    password: env.STORAGE_PASSWORD,
+    bucket: env.STORAGE_BUCKET,
+  }
 };
 
 exports.default = config;

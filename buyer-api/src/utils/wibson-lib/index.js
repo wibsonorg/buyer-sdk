@@ -1,7 +1,7 @@
 import * as cryptography from './cryptography';
 import * as encoding from './encoding';
-import * as storages from './storages';
 import * as coercion from './coercion';
 import * as collection from './collection';
+import * as storage from './s3';
 
-export { cryptography, encoding, storages, coercion, collection };
+export { cryptography, encoding, coercion, collection, storage };
