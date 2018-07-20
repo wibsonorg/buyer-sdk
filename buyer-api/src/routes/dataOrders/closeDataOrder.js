@@ -33,7 +33,7 @@ const router = express.Router();
  *       500:
  *         description: Problem on our side
  */
-router.patch(
+router.post(
   '/:orderAddress/close',
   validateAddress('orderAddress'),
   asyncError(async (req, res) => {
