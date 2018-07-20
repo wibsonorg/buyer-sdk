@@ -3,7 +3,13 @@ import config from '../../../../config';
 
 const prefix = 'buyer';
 const { storage } = config;
-const client = getS3Client(storage.url, storage.region);
+const client = getS3Client(
+  storage.url,
+  storage.region,
+  storage.bucket,
+  storage.user,
+  storage.password,
+);
 
 const getS3Object = async (objectName) => {
   const obj = await client.getObject(objectName);

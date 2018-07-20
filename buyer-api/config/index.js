@@ -46,7 +46,10 @@ var config = {
   },
   storage: {
     url: env.STORAGE_URL,
-    region: env.STORAGE_REGION
+    region: env.STORAGE_REGION,
+    user: env.STORAGE_USER,
+    password: env.STORAGE_PASSWORD,
+    bucket: env.STORAGE_BUCKET,
   }
 };
 

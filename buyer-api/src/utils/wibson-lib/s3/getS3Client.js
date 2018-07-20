@@ -1,5 +1,4 @@
 import aws from 'aws-sdk';
-import url from 'url';
 
 class AWSWrapper {
   constructor(s3, bucket) {
@@ -56,12 +55,10 @@ class AWSWrapper {
   }
 }
 
-const getS3Client = (uri, region) => {
+const getS3Client = (uri, region, bucket, accessKeyId, secretAccessKey) => {
   if (!uri) throw new Error('A URI is required');
   if (!region) throw new Error('A Region is required');
-
-  const location = url.parse(uri);
-  const [accessKeyId, secretAccessKey] = location.auth ? location.auth.split(':') : [];
+  if (!bucket) throw new Error('A Bucket is required');
 
   const client = new aws.S3({
     accessKeyId,
@@ -70,7 +67,7 @@ const getS3Client = (uri, region) => {
     s3ForcePathStyle: true,
   });
 
-  return new AWSWrapper(client, location.host);
+  return new AWSWrapper(client, bucket);
 };
 
 export default getS3Client;
