@@ -29,6 +29,22 @@ const signNewOrder = payload => client.post(
   },
 );
 
+const signAddDataResponse = payload => client.post(
+  `${url}/sign/add-data-response`,
+  {
+    json: payload,
+    timeout,
+  },
+);
+
+const signCloseDataResponse = payload => client.post(
+  `${url}/sign/close-data-response`,
+  {
+    json: payload,
+    timeout,
+  },
+);
+
 const signAddNotaryToOrder = payload => client.post(
   `${url}/sign/add-notary-to-order`,
   {
@@ -42,6 +58,8 @@ const signinService = {
   getAccount,
   signNewOrder,
   signAddNotaryToOrder,
+  signAddDataResponse,
+  signCloseDataResponse,
 };
 
 export default signinService;

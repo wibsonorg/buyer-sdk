@@ -2,7 +2,7 @@ import config from '../../config';
 import { logger, createRedisStore } from '../utils';
 import { getElements } from './helpers/blockchain';
 import { dateOrNull } from './helpers/date';
-import { storages as offchainStorages } from '../utils/wibson-lib';
+import { storage as offchainStorage } from '../utils/wibson-lib';
 
 const ordersCache = createRedisStore('orders.cache.');
 const ordersTTL = Number(config.contracts.cache.ordersTTL);
@@ -23,8 +23,8 @@ const addOrderToCache = dataOrder =>
  * @returns {Promise} Promise which resolves to the offchain data
  */
 const addOffChainInfo = async (dataOrder) => {
-  const dataResponsesCount = await offchainStorages.countDataResponses(dataOrder);
-  const dataCount = await offchainStorages.countData(dataOrder, 'buyer');
+  const dataResponsesCount = await offchainStorage.countDataResponses(dataOrder);
+  const dataCount = await offchainStorage.countData(dataOrder);
 
   const offChain = {
     dataResponsesCount,

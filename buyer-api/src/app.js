@@ -17,7 +17,7 @@ import {
   DataOrderContract,
 } from './utils';
 
-import { account, health, notaries, dataOrders, buyerInfos } from './routes';
+import { account, health, notaries, dataOrders, dataResponses, buyerInfos } from './routes';
 
 const app = express();
 app.locals.stores = {
@@ -45,6 +45,7 @@ app.use(boom());
 app.use('/account', account);
 app.use('/health', health);
 app.use('/notaries', notaries);
+app.use('/data-responses', dataResponses);
 app.use('/infos', buyerInfos);
 app.use('/orders', dataOrders.createDataOrder);
 app.use('/orders', dataOrders.addNotariesToOrder);
