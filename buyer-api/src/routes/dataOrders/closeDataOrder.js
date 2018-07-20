@@ -33,8 +33,8 @@ const router = express.Router();
  *       500:
  *         description: Problem on our side
  */
-router.post(
-  '/',
+router.patch(
+  '/:orderAddress/close',
   validateAddress('orderAddress'),
   asyncError(async (req, res) => {
     const { dataExchange } = req.app.locals.contracts;

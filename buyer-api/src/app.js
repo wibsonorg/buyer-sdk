@@ -47,9 +47,7 @@ app.use('/health', health);
 app.use('/notaries', notaries);
 app.use('/data-responses', dataResponses);
 app.use('/infos', buyerInfos);
-app.use('/orders', dataOrders.createDataOrder);
-app.use('/orders', dataOrders.addNotariesToOrder);
-app.use('/orders', dataOrders.ordersInfo);
+app.use('/orders', dataOrders);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
 app.get('/api-docs.json', (_req, res) => res.json(schema));
 
