@@ -37,11 +37,20 @@ const signAddNotaryToOrder = payload => client.post(
   },
 );
 
+const signCloseOrder = payload => client.post(
+  `${url}/sign/close-order`,
+  {
+    json: payload,
+    timeout,
+  },
+);
+
 const signinService = {
   getHealth,
   getAccount,
   signNewOrder,
   signAddNotaryToOrder,
+  signCloseOrder,
 };
 
 export default signinService;
