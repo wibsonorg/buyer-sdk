@@ -69,7 +69,7 @@ const addDataResponse = async (order, seller) => {
   try {
     dataResponse = await getDataResponse(dataOrder, seller);
   } catch (err) {
-    logger.debug(err);
+    logger.error(err);
     throw new Error('Could not retrieve data response from storage');
   }
 
@@ -103,7 +103,7 @@ const addDataResponse = async (order, seller) => {
   await performTransaction(address, 'signAddDataResponse', params);
   // TODO: Check receipt
 
-  logger.debug('Data Response Added', { order, seller });
+  logger.info('Data Response Added', { order, seller });
   return true;
 };
 
@@ -129,7 +129,7 @@ const closeDataResponse = async (order, seller) => {
   await performTransaction(address, 'signCloseDataResponse', params);
   // TODO: Check receipt
 
-  logger.debug('Data Response Closed', { order, seller });
+  logger.info('Data Response Closed', { order, seller });
   return true;
 };
 
