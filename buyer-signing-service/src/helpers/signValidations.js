@@ -4,7 +4,7 @@ const isPresent = obj => obj !== null && obj !== undefined;
  * Checks that `nonce` and one of `params` or `payload` are
  * present.
  */
-const validate = ({ nonce, params, payload }, validateParameters) => {
+const validatePresence = ({ nonce, params, payload }, validateParameters) => {
   let errors = [];
 
   if (!isPresent(nonce)) {
@@ -18,15 +18,14 @@ const validate = ({ nonce, params, payload }, validateParameters) => {
     ];
   }
 
-  if (isPresent(params)) {
-    const paramsErrors = validateParameters ? validateParameters(params) : [];
+  if (isPresent(params) && validateParameters) {
     errors = [
       ...errors,
-      ...paramsErrors,
+      ...validateParameters(params),
     ];
   }
 
   return errors;
 };
 
-export { isPresent, validate };
+export { isPresent, validatePresence };

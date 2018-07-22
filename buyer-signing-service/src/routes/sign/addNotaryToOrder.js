@@ -1,5 +1,5 @@
 import express from 'express';
-import { asyncError, validate } from '../../helpers';
+import { asyncError, validatePresence } from '../../helpers';
 import addNotaryToOrderFacade from '../../facades/sign/addNotaryToOrderFacade';
 
 const router = express.Router();
@@ -78,7 +78,7 @@ const router = express.Router();
  */
 router.post('/add-notary-to-order', asyncError(async (req, res) => {
   const { nonce, addNotaryToOrderParameters } = req.body;
-  const errors = validate({ nonce, addNotaryToOrderParameters });
+  const errors = validatePresence({ nonce, addNotaryToOrderParameters });
 
   if (errors.length > 0) {
     res.boom.badData('Validation failed', { validation: errors });

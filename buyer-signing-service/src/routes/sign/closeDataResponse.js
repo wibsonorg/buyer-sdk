@@ -1,5 +1,5 @@
 import express from 'express';
-import { asyncError, validate, isPresent } from '../../helpers';
+import { asyncError, validatePresence, isPresent } from '../../helpers';
 import signCloseDataResponseFacade from '../../facades/sign/closeDataResponseFacade';
 
 const router = express.Router();
@@ -89,7 +89,7 @@ const validateParameters = ({
  */
 router.post('/close-data-response', asyncError(async (req, res) => {
   const { nonce, params, payload } = req.body;
-  const errors = validate({ nonce, params, payload }, validateParameters);
+  const errors = validatePresence({ nonce, params, payload }, validateParameters);
 
   if (errors.length > 0) {
     res.boom.badData('Validation failed', { validation: errors });

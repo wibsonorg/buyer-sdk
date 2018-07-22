@@ -1,5 +1,5 @@
 import express from 'express';
-import { asyncError, validate, isPresent } from '../../helpers';
+import { asyncError, validatePresence, isPresent } from '../../helpers';
 import increaseApprovalFacade from '../../facades/sign/increaseApprovalFacade';
 
 const router = express.Router();
@@ -59,16 +59,16 @@ const validateParameters = ({ spender, addedValue }) => {
  */
 router.post('/increase-approval', asyncError(async (req, res) => {
   const { nonce, params, payload } = req.body;
-  const errors = validate({ nonce, params, payload }, validateParameters);
+  const errors = validatePresence({ nonce, params, payload }, validateParameters);
 
   if (errors.length > 0) {
     res.boom.badData('Validation failed', { validation: errors });
   } else {
     const txParams = {
       _spender: params.spender,
-      _addedValue: params.addedValue,
+      _addedValue: Number(params.addedValue),
     };
-    const response = increaseApprovalFacade({ nonce, params: txParams, payload });
+    const response = increaseApprovalFacade(nonce, txParams);
 
     if (response.success()) {
       res.json({ signedTransaction: response.result });

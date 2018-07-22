@@ -34,19 +34,22 @@ const auditResult = async (notaryUrl, order, seller, buyer) => {
 const performTransaction = async (address, signingServiceMethod, params) => {
   const nonce = await web3.eth.getTransactionCount(address);
 
-  const { signedTransaction } = await signingService[signingServiceMethod]({ nonce, ...params });
+  const { signedTransaction } = await signingService[signingServiceMethod]({ nonce, params });
 
   const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
   return web3.eth.getTransactionReceipt(receipt);
 };
 
 const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
-  const [price, notaryInfo, remainingBudgetForAudits] = await Promise.all([
+  const [priceStr, notaryInfo, remainingBudgetForAuditsStr] = await Promise.all([
     dataOrder.price(),
     dataOrder.getNotaryInfo(notaryAccount),
     dataExchange.buyerRemainingBudgetForAudits(myAddress, dataOrder.address),
   ]);
-  const notarizationFee = notaryInfo[2];
+  const price = Number(priceStr);
+  const notarizationFee = Number(notaryInfo[2]);
+  const remainingBudgetForAudits = Number(remainingBudgetForAuditsStr);
+
   const prePaid = Math.min(notarizationFee, remainingBudgetForAudits);
   return price + (notarizationFee - prePaid); // without parenthesis, eslint complains
 };
@@ -85,8 +88,8 @@ const addDataResponse = async (order, seller) => {
   const totalPrice = await getTotalPrice(address, dataOrder, notaryAccount);
 
   await performTransaction(address, 'signIncreaseApproval', {
-    target: dataExchange.address,
-    value: totalPrice,
+    spender: dataExchange.address,
+    addedValue: totalPrice,
   });
 
   const params = {
@@ -97,7 +100,7 @@ const addDataResponse = async (order, seller) => {
     signature,
   };
 
-  await performTransaction(address, 'signAddDataResponse', { params });
+  await performTransaction(address, 'signAddDataResponse', params);
   // TODO: Check receipt
 
   logger.debug('Data Response Added', { order, seller });
@@ -123,7 +126,7 @@ const closeDataResponse = async (order, seller) => {
   const params = await auditResult(notaryApi, order, seller, dataOrder.buyer());
 
   const { address } = await signingService.getAccount();
-  await performTransaction(address, 'signCloseDataResponse', { params });
+  await performTransaction(address, 'signCloseDataResponse', params);
   // TODO: Check receipt
 
   logger.debug('Data Response Closed', { order, seller });

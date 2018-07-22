@@ -58,7 +58,7 @@ const buildData = (params, payload) => {
   return payload;
 };
 
-const addDataResponseFacade = (nonce, params, payload) => {
+const closeDataResponseFacade = (nonce, params, payload) => {
   let errors = validatePresence(nonce, params, payload);
   if (isPresent(params)) {
     errors = [...errors, ...validateParameters(params)];
@@ -87,4 +87,4 @@ const addDataResponseFacade = (nonce, params, payload) => {
   return new Response(result);
 };
 
-export default addDataResponseFacade;
+export default closeDataResponseFacade;

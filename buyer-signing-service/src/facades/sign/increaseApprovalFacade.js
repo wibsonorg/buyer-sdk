@@ -1,7 +1,7 @@
 import EthTx from 'ethereumjs-tx';
 import { Buffer } from 'safe-buffer';
 import Response from '../Response';
-import { buyer, encodeFunctionCall, validate } from '../../helpers';
+import { buyer, encodeFunctionCall, validatePresence } from '../../helpers';
 import { getWibcoinMethodDefinition } from '../../contracts';
 import config from '../../../config';
 
@@ -34,7 +34,7 @@ const buildData = params => encodeFunctionCall(
 );
 
 const increaseApprovalFacade = (nonce, params) => {
-  const errors = validate({ nonce, params }, validateParameters);
+  const errors = validatePresence({ nonce, params }, validateParameters);
 
   if (errors.length > 0) {
     return new Response(null, errors);
