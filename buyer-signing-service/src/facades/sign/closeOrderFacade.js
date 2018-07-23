@@ -9,7 +9,7 @@ const {
   jsonInterface,
   parameterNames,
   inputSchema,
-} = getDataExchangeMethodDefinition('addNotaryToOrder');
+} = getDataExchangeMethodDefinition('closeOrder');
 
 const {
   getAddress,
@@ -23,52 +23,32 @@ const validateParameters = parameters =>
     // TODO: type validation/coercion should also be done
     const value = parameters[name];
 
-    if (value === null || value === undefined) {
+    if (!isPresent(value)) {
       return [...accumulator, `Field '${name}' is required`];
     }
 
     return accumulator;
   }, []);
 
-const buildData = addNotaryToOrderParameters => encodeFunctionCall(
+const buildData = parameters => encodeFunctionCall(
   jsonInterface,
-  parameterNames.map(name => addNotaryToOrderParameters[name]),
+  parameterNames.map(name => parameters[name]),
 );
 
 /**
- * Checks that `nonce` and one of `addNotaryToOrderParameters` are present.
+ * Generates a signed transaction for DataExchange.closeOrder ready to be sent
+ * to the network.
  *
  * @param {Integer} parameters.nonce Current transaction count + 1 of the sender
- * @param {Object} parameters.addNotaryToOrderParameters Add notary to order
- *                 parameters
- * @returns {Array} Error messages
- */
-const validate = ({ nonce, addNotaryToOrderParameters }) => {
-  let errors = [];
-
-  if (!isPresent(nonce)) {
-    errors = ['Field \'nonce\' is required'];
-  }
-
-  if (!isPresent(addNotaryToOrderParameters)) {
-    errors = [...errors, 'Field \'addNotaryToOrderParameters\' is required'];
-  } else {
-    errors = [...errors, ...validateParameters(addNotaryToOrderParameters)];
-  }
-
-  return errors;
-};
-
-/**
- * Generates a signed transaction for DataExchange.addNotaryToOrder ready to be
- * sent to the network.
- *
- * @param {Integer} parameters.nonce Current transaction count + 1 of the sender
- * @param {Object} parameters.addNotaryToOrderParameters
+ * @param {Object} parameters.parameters
  * @returns {Response} with the result of the operation
  */
-const addNotaryToOrderFacade = ({ nonce, addNotaryToOrderParameters }) => {
-  const errors = validate({ nonce, addNotaryToOrderParameters });
+const closeOrderFacade = ({ nonce, ...parameters }) => {
+  let errors = validateParameters(parameters);
+
+  if (!isPresent(nonce)) {
+    errors = [...errors, 'Field \'nonce\' is required'];
+  }
 
   if (errors.length > 0) {
     return new Response(null, errors);
@@ -77,7 +57,7 @@ const addNotaryToOrderFacade = ({ nonce, addNotaryToOrderParameters }) => {
   const {
     dataExchange: {
       address,
-      addNotaryToOrder: { gasLimit },
+      closeOrder: { gasLimit },
     },
   } = config.contracts;
 
@@ -89,7 +69,7 @@ const addNotaryToOrderFacade = ({ nonce, addNotaryToOrderParameters }) => {
     gasLimit: `0x${parseInt(gasLimit, 10).toString(16)}`,
     // TODO: This must be set before deploying to production
     // chainId: config.contracts.chainId,
-    data: buildData(addNotaryToOrderParameters),
+    data: buildData(parameters),
   };
 
   const tx = new EthTx(rawTransaction);
@@ -100,4 +80,4 @@ const addNotaryToOrderFacade = ({ nonce, addNotaryToOrderParameters }) => {
   return new Response(result);
 };
 
-export default addNotaryToOrderFacade;
+export default closeOrderFacade;

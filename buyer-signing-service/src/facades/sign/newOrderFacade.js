@@ -89,17 +89,23 @@ const newOrderFacade = ({ nonce, newOrderParameters, newOrderPayload }) => {
     return new Response(null, errors);
   }
 
-  const data = buildData(newOrder, null);
+  const {
+    dataExchange: {
+      address,
+      newOrder: { gasLimit },
+    },
+  } = config.contracts;
 
   const rawTransaction = {
     from: getAddress(),
-    to: config.contracts.dataExchange.address,
+    to: address,
     value: '0x00',
     nonce: `0x${nonce.toString(16)}`,
-    // gasLimit: config.contracts.dataExchange.newOrder.gasLimit,
-    gasLimit: `0x${parseInt(config.contracts.dataExchange.newOrder.gasLimit, 10).toString(16)}`,
+    gasLimit: `0x${parseInt(gasLimit, 10).toString(16)}`,
+    // TODO: This must be set before deploying to production
     // chainId: config.contracts.chainId,
-    data,
+    // chainId: config.contracts.chainId,
+    data: buildData(newOrder),
   };
 
   const tx = new EthTx(rawTransaction);

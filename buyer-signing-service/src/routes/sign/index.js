@@ -1,9 +1,10 @@
 import express from 'express';
 import newOrder from './newOrder';
+import addNotaryToOrder from './addNotaryToOrder';
 import increaseApproval from './increaseApproval';
 import addDataResponse from './addDataResponse';
 import closeDataResponse from './closeDataResponse';
-import addNotaryToOrder from './addNotaryToOrder';
+import closeOrder from './closeOrder';
 
 const router = express.Router();
 
@@ -12,5 +13,6 @@ router.use(addNotaryToOrder);
 router.use(increaseApproval);
 router.use(addDataResponse);
 router.use(closeDataResponse);
+router.use(closeOrder);
 
 export default router;

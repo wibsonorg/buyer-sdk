@@ -29,6 +29,14 @@ const signNewOrder = payload => client.post(
   },
 );
 
+const signAddNotaryToOrder = payload => client.post(
+  `${url}/sign/add-notary-to-order`,
+  {
+    json: payload,
+    timeout,
+  },
+);
+
 const signIncreaseApproval = payload => client.post(
   `${url}/sign/increase-approval`,
   {
@@ -53,8 +61,8 @@ const signCloseDataResponse = payload => client.post(
   },
 );
 
-const signAddNotaryToOrder = payload => client.post(
-  `${url}/sign/add-notary-to-order`,
+const signCloseOrder = payload => client.post(
+  `${url}/sign/close-order`,
   {
     json: payload,
     timeout,
@@ -69,6 +77,7 @@ const signinService = {
   signIncreaseApproval,
   signAddDataResponse,
   signCloseDataResponse,
+  signCloseOrder,
 };
 
 export default signinService;
