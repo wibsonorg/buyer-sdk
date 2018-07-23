@@ -18,3 +18,11 @@
   margin-left: 1.5rem;
 }
 */
+
+.wibson-bought-data-orders-actions {
+  display: flex;
+  flex-direction: row;
+}
+.wibson-bought-data-orders-actions > *:not(:first-child)  {
+  margin-left: 12px;
+}

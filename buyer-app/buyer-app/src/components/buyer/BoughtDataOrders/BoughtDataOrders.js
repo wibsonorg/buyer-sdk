@@ -7,16 +7,13 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 
 import Label from "base-app-src/components/Label";
-import Button from "base-app-src/components/Button";
 import DataTable from "base-app-src/components/DataTable";
 import DateDetail from "base-app-src/components/DateDetail";
-import AudienceDetail from "base-app-src/components/AudienceDetail";
 import NotariesDetail from "base-app-src/components/NotariesDetail";
 import RequestedDataDetail from "base-app-src/components/RequestedDataDetail";
 
 import * as OntologySelectors from "base-app-src/state/ontologies/selectors";
 import * as NotariesSelectors from "state/entities/notaries/selectors";
-import * as CloseDataOrderActions from "state/entities/closeDataOrder/actions";
 
 import "./BoughtDataOrders.css";
 
@@ -34,42 +31,8 @@ const flattenDataOrders = R.compose(
 );
 
 class OpenDataOrders extends Component {
-  renderStatus(order) {
-    if (order.notaries > 0) {
-      return "Active";
-    } else {
-      return "Waiting for notary";
-    }
-  }
-
-  renderActions(order) {
-    const { closeDataOrder, dataOrders } = this.props;
-
-    const fullOrder = dataOrders[order.orderAddress];
-
-
-    const closeDisabled =
-      // eslint-disable-next-line eqeqeq
-      order.dataCount == 0 ||
-      fullOrder.data.transactionCompleted ||
-      fullOrder.closePending;
-
-    return (
-      <div className="wibson-bought-data-orders-actions">
-        <Button
-          onClick={() => closeDataOrder(order)}
-          disabled={closeDisabled}
-          size="sm"
-        >
-          {fullOrder.closePending ? "Closing" : "Close"}
-        </Button>
-      </div>
-    );
-  }
-
   render() {
     const {
-      audienceOntology,
       dataOntology,
       dataOrders,
       availableNotaries
@@ -100,17 +63,6 @@ class OpenDataOrders extends Component {
               renderer: value => <Label color="light-dark">{value}</Label>
             },
             {
-              name: "audience",
-              label: "Audience",
-              width: "402",
-              renderer: value => (
-                <AudienceDetail
-                  audience={value}
-                  requestableAudience={audienceOntology}
-                />
-              )
-            },
-            {
               name: "notaries",
               label: "Notaries",
               width: "150",
@@ -133,28 +85,17 @@ class OpenDataOrders extends Component {
               )
             },
             {
-              name: "sellers",
-              label: "Data bought",
-              width: "245",
-              renderer: sellers => <Label>{sellers.length || 0}</Label>
-            },
-            {
-              name: "dataCount",
-              label: "Data received",
-              width: "245",
+              name: "price",
+              label: "Price",
+              width: "150",
               renderer: value => <Label>{value || 0}</Label>
             },
             {
-              name: "status",
-              label: "Status",
-              width: "234",
-              renderer: (value, order) => this.renderStatus(order)
+              name: "dataResponsesCount",
+              label: "Responses",
+              width: "245",
+              renderer: value => <Label>{value || 0}</Label>
             },
-            {
-              name: "actions",
-              width: "160",
-              renderer: (value, order) => this.renderActions(order)
-            }
           ]}
         />
       </div>
@@ -168,13 +109,7 @@ const mapStateToProps = state => ({
   availableNotaries: NotariesSelectors.getNotaries(state)
 });
 
-const mapDispatchToProps = dispatch => ({
-  closeDataOrder: dataOrder => {
-    dispatch(CloseDataOrderActions.closeDataOrder({ dataOrder }));
-  }
-});
-
 export default compose(
   withRouter,
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(mapStateToProps)
 )(OpenDataOrders);

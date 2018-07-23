@@ -1,6 +1,7 @@
-import { put, takeLatest, all } from "redux-saga/effects";
+import { put, takeLatest, all, call } from "redux-saga/effects";
 
 import * as NotificationActions from "state/entities/notifications/actions";
+import * as DataOrdersHelpers from "lib/protocol-helpers/data-orders";
 
 import * as Actions from "./actions";
 
@@ -12,7 +13,7 @@ function* closeDataOrder(action) {
   const { dataOrder } = action.payload;
 
   try {
-    // yield call(CloseDataOrderHelpers.closeDataOrder, dataOrder);
+    yield call(DataOrdersHelpers.closeOrder, dataOrder.orderAddress);
 
     yield put(Actions.closeDataOrderSucceed({ dataOrder }));
 

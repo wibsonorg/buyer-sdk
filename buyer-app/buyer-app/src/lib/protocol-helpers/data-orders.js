@@ -1,6 +1,6 @@
-import Config from "../../config";
+import Config from '../../config';
 
-const apiUrl = Config.get("api.url");
+const apiUrl = Config.get('api.url');
 
 /**
  * TODO: Implement pagination
@@ -10,7 +10,7 @@ async function listBuyerDataOrders(limit, offset) {
   const res = await fetch(`${apiUrl}/orders?limit=${limit}&offset=${offset}`);
 
   if (!res.ok) {
-    throw new Error("Could get data orders");
+    throw new Error('Could get data orders');
   }
 
   const orders = await res.json();
@@ -24,70 +24,81 @@ async function createBuyerDataOrder(
   buyerURL,
   termsAndConditions,
   price,
-  initialBudgetForAudits
+  initialBudgetForAudits,
 ) {
-  const res = await fetch(
-    `${apiUrl}/orders`,
-    {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
+  const res = await fetch(`${apiUrl}/orders`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      dataOrder: {
+        filters,
+        dataRequest,
+        buyerURL,
+        termsAndConditions,
+        price,
+        initialBudgetForAudits,
       },
-      method: "POST",
-      body: JSON.stringify({
-        dataOrder: {
-          filters,
-          dataRequest,
-          buyerURL,
-          termsAndConditions,
-          price,
-          initialBudgetForAudits
-        }
-      })
-    }
-  );
+    }),
+  });
 
   if (!res.ok) {
-    throw new Error("Could create data order");
+    throw new Error('Could create data order');
   }
 
   return res.json();
 }
 
 const associateBuyerInfoToOrder = async (orderAddress, buyerInfoId) => {
-  const res = await fetch(
-    `${apiUrl}/orders/${orderAddress}/info`,
-    {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      method: "POST",
-      body: JSON.stringify({ buyerInfoId })
-    }
-  );
+  const res = await fetch(`${apiUrl}/orders/${orderAddress}/info`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify({ buyerInfoId }),
+  });
   if (!res.ok) {
-    throw new Error("Could associate the buyer info ID");
-  }
-  return res.json();
-}
-
-const addNotariesToOrder = async (orderAddress, notariesAddresses) => {
-  const res = await fetch(
-    `${apiUrl}/orders/${orderAddress}/notaries`,
-    {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      method: "POST",
-      body: JSON.stringify({ notariesAddresses })
-    }
-  );
-  if (!res.ok) {
-    throw new Error("Could not add notaries to order");
+    throw new Error('Could associate the buyer info ID');
   }
   return res.json();
 };
 
-export { listBuyerDataOrders, createBuyerDataOrder, associateBuyerInfoToOrder, addNotariesToOrder };
+const addNotariesToOrder = async (orderAddress, notariesAddresses) => {
+  const res = await fetch(`${apiUrl}/orders/${orderAddress}/notaries`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify({ notariesAddresses }),
+  });
+  if (!res.ok) {
+    throw new Error('Could not add notaries to order');
+  }
+  return res.json();
+};
+
+const closeOrder = async orderAddress => {
+  const res = await fetch(`${apiUrl}/orders/${orderAddress}/close`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+  });
+  if (!res.ok) {
+    throw new Error('Could close data order');
+  }
+  return res.json();
+};
+
+export {
+  listBuyerDataOrders,
+  createBuyerDataOrder,
+  associateBuyerInfoToOrder,
+  addNotariesToOrder,
+  closeOrder,
+};

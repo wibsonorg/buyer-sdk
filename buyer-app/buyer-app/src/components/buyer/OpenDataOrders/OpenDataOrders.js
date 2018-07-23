@@ -7,6 +7,7 @@ import { compose } from "recompose";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 
+import Button from "base-app-src/components/Button";
 import Label from "base-app-src/components/Label";
 import DataTable from "base-app-src/components/DataTable";
 import DateDetail from "base-app-src/components/DateDetail";
@@ -16,6 +17,7 @@ import RequestedDataDetail from "base-app-src/components/RequestedDataDetail";
 
 import * as OntologySelectors from "base-app-src/state/ontologies/selectors";
 import * as NotariesSelectors from "state/entities/notaries/selectors";
+import * as CloseDataOrderActions from "state/entities/closeDataOrder/actions";
 
 import "./OpenDataOrders.css";
 
@@ -39,6 +41,31 @@ class OpenDataOrders extends Component {
     } else {
       return "Waiting for notary";
     }
+  }
+
+  renderActions(order) {
+    const { closeDataOrder, dataOrders } = this.props;
+
+    const fullOrder = dataOrders[order.orderAddress];
+
+
+    const closeDisabled =
+      // eslint-disable-next-line eqeqeq
+      order.dataCount == 0 ||
+      fullOrder.data.transactionCompleted ||
+      fullOrder.closePending;
+
+    return (
+      <div className="wibson-bought-data-orders-actions">
+        <Button
+          onClick={() => closeDataOrder(order)}
+          disabled={closeDisabled}
+          size="sm"
+        >
+          {fullOrder.closePending ? "Closing" : "Close"}
+        </Button>
+      </div>
+    );
   }
 
   render() {
@@ -123,6 +150,12 @@ class OpenDataOrders extends Component {
               label: "Status",
               width: "234",
               renderer: (value, order) => this.renderStatus(order)
+            },
+            {
+              name: "actions",
+              label: "Actions",
+              width: "160",
+              renderer: (value, order) => this.renderActions(order)
             }
           ]}
         />
@@ -141,4 +174,10 @@ const mapStateToProps = state => ({
   availableNotaries: NotariesSelectors.getNotaries(state)
 });
 
-export default compose(withRouter, connect(mapStateToProps))(OpenDataOrders);
+const mapDispatchToProps = dispatch => ({
+  closeDataOrder: dataOrder => {
+    dispatch(CloseDataOrderActions.closeDataOrder({ dataOrder }));
+  }
+});
+
+export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(OpenDataOrders);
