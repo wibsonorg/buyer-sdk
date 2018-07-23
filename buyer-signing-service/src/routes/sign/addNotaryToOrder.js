@@ -78,7 +78,8 @@ const router = express.Router();
  */
 router.post('/add-notary-to-order', asyncError(async (req, res) => {
   const { nonce, addNotaryToOrderParameters } = req.body;
-  const errors = validatePresence({ nonce, addNotaryToOrderParameters });
+  const params = addNotaryToOrderParameters;
+  const errors = validatePresence({ nonce, params });
 
   if (errors.length > 0) {
     res.boom.badData('Validation failed', { validation: errors });
