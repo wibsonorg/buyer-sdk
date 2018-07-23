@@ -8,9 +8,8 @@ const isBought = ({ data }) =>
   data.responsesSelected && !data.transactionCompleted;
 const pickAvailable = R.pickBy(({ data }) => data);
 
-const isClosed = ({ data }) => data.transactionCompleted;
-const isActive = ({ data }) =>
-  !data.responsesSelected && !data.transactionCompleted;
+const isClosed = ({ data }) => data.isClosed;
+const isActive = ({ data }) => !data.isClosed;
 
 const hasFailed = ({ error }) => error; // eslint-disable-next-line eqeqeq
 

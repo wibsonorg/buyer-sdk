@@ -68,6 +68,8 @@ const getDataOrderDetails = async (order) => {
     order.price(),
   ]);
 
+  logger.debug(JSON.stringify(notaries));
+
   return {
     orderAddress: order.address,
     audience: JSON.parse(filters),
@@ -131,7 +133,7 @@ const getOrdersForBuyer = async (
   limit = undefined,
 ) => {
   const orderAddresses = await dataExchange.getOrdersForBuyer(buyerAddress);
-  const upperBound = limit ? offset + limit : orderAddresses.length;
+  const upperBound = limit && offset > 0 ? offset + limit : orderAddresses.length;
   const ordersPage = orderAddresses.slice(offset, upperBound);
 
   const dataOrders = ordersPage.map(orderAddress => getDataOrder(DataOrderContract, orderAddress));

@@ -84,17 +84,17 @@ class OpenDataOrders extends Component {
                 />
               )
             },
-            {
-              name: "audience",
-              label: "Audience",
-              width: "402",
-              renderer: value => (
-                <AudienceDetail
-                  audience={value}
-                  requestableAudience={audienceOntology}
-                />
-              )
-            },
+            // {
+            //   name: "audience",
+            //   label: "Audience",
+            //   width: "402",
+            //   renderer: value => (
+            //     <AudienceDetail
+            //       audience={value}
+            //       requestableAudience={audienceOntology}
+            //     />
+            //   )
+            // },
             {
               name: "requestedData",
               label: "Requested Data",
@@ -105,6 +105,12 @@ class OpenDataOrders extends Component {
                   requestableData={dataOntology}
                 />
               )
+            },
+            {
+              name: "price",
+              label: "Price",
+              width: "150",
+              renderer: value => <Label>{value || 0}</Label>
             },
             {
               name: "dataResponsesCount",
