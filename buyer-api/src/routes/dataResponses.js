@@ -4,6 +4,12 @@ import { addDataResponse, closeDataResponse } from '../facades';
 
 const router = express.Router();
 
+const buyData = async (orderAddress, sellerAddress) => {
+  await addDataResponse(orderAddress, sellerAddress);
+
+  await closeDataResponse(orderAddress, sellerAddress);
+};
+
 /**
  * @swagger
  * /data-responses:
@@ -18,9 +24,8 @@ const router = express.Router();
 router.post('/', asyncError(async (req, res) => {
   const { orderAddress, sellerAddress } = req.body;
 
-  await addDataResponse(orderAddress, sellerAddress);
-
-  await closeDataResponse(orderAddress, sellerAddress);
+  // fire and forget
+  buyData(orderAddress, sellerAddress);
 
   res.status(200).send();
 }));
