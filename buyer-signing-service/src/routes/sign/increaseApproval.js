@@ -53,7 +53,7 @@ const validateParameters = ({ spender, addedValue }) => {
  *               type: string
  *               description: Serialized transaction
  *       422:
- *         description: When the signing performs successfully
+ *         description: When one or more validations failed
  *       500:
  *         description: Problem with the signing process
  */
