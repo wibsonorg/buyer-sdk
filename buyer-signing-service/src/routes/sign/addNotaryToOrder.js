@@ -1,33 +1,8 @@
 import express from 'express';
-import { asyncError } from '../../helpers';
+import { asyncError, validatePresence } from '../../helpers';
 import addNotaryToOrderFacade from '../../facades/sign/addNotaryToOrderFacade';
 
 const router = express.Router();
-
-const isPresent = obj => obj !== null && obj !== undefined;
-
-/**
- * Checks that `nonce` and `addNotaryToOrderParameters` are present.
- *
- * @param {Number} parameters.nonce The number of transactions made by the
- *                 sender including this one.
- * @param {Object} parameters.addNotaryToOrderParameters Parameters to be used
- *                 in the transaction call.
- * @returns {array} Error messages
- */
-const validate = ({ nonce, addNotaryToOrderParameters }) => {
-  let errors = [];
-
-  if (!isPresent(nonce)) {
-    errors = ['Field \'nonce\' is required'];
-  }
-
-  if (!isPresent(addNotaryToOrderParameters)) {
-    errors = [...errors, 'Field \'addNotaryToOrderParameters\' is required'];
-  }
-
-  return errors;
-};
 
 /**
  * @swagger
@@ -103,7 +78,8 @@ const validate = ({ nonce, addNotaryToOrderParameters }) => {
  */
 router.post('/add-notary-to-order', asyncError(async (req, res) => {
   const { nonce, addNotaryToOrderParameters } = req.body;
-  const errors = validate({ nonce, addNotaryToOrderParameters });
+  const params = addNotaryToOrderParameters;
+  const errors = validatePresence({ nonce, params });
 
   if (errors.length > 0) {
     res.boom.badData('Validation failed', { validation: errors });
