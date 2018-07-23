@@ -2,7 +2,7 @@ import EthTx from 'ethereumjs-tx';
 import { Buffer } from 'safe-buffer';
 import Response from '../Response';
 import { buyer, encodeFunctionCall } from '../../helpers';
-import getDataExchangeMethodDefinition from '../../contracts';
+import { getDataExchangeMethodDefinition } from '../../contracts';
 import config from '../../../config';
 
 const {
