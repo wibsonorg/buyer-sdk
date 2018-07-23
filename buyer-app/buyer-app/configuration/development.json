@@ -2,6 +2,6 @@
 	"api.url": "http://localhost:9001",
 	"buyerPublicURL": {
 		"api": "http://localhost:9001",
-		"storage": "https://publicwibson:publicwibson@publicstorage.wibson.org"
+		"storage": "s3://AKIAIA5RQNSW6PO65WVA:kgKwMYSl3ZE6kCVoF3rZhjXN4Z3lUT922RUphbAL@wibson-storage"
 	}
 }

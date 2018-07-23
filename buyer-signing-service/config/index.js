@@ -29,6 +29,12 @@ var config = {
       addDataResponseToOrder: { gasLimit: env.TX_ADD_DATA_RESPONSE_TO_ORDER_GAS_LIMIT },
       closeOrder: { gasLimit: env.TX_CLOSE_ORDER_GAS_LIMIT },
     },
+    wibcoin: {
+      address: env.WIBCOIN_CONTRACT_ADDRESS,
+      increaseApproval: {
+        gasLimit: env.TX_INCREASE_APPROVAL_GAS_LIMIT
+      }
+    }
   },
   buyer: {
     privateKey: env.BUYER_PRIVATE_KEY

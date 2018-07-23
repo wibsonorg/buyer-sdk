@@ -61,18 +61,8 @@ class Buyer extends React.Component {
           onClick={this.handleSelectClick}
         />
         <SelectItem
-          value="data-responses"
-          label="Data Responses"
-          onClick={this.handleSelectClick}
-        />
-        <SelectItem
           value="closed-orders"
           label="Closed Data Orders"
-          onClick={this.handleSelectClick}
-        />
-        <SelectItem
-          value="failed-orders"
-          label="Failed Data Orders"
           onClick={this.handleSelectClick}
         />
       </Select>
@@ -96,7 +86,7 @@ class Buyer extends React.Component {
 
     const aviableDataResponsesCount = R.compose(
       R.sum,
-      R.map(item => (item.data ? item.data.offChain.dataResponsesCount : 0)),
+      R.map(item => (item.data && item.data.offChain ? item.data.offChain.dataResponsesCount : 0)),
       R.values
     )(activeDataOrders);
 
@@ -201,7 +191,7 @@ const mapDispatchToProps = (dispatch, props) => ({
     dispatch(
       DataOrdersAddressesActions.fetchDataOrdersAddresses({
         limit: Number(limit || 10),
-        offset: Number(offset || 0)
+        offset: Number(offset || -10)
       })
     );
   }
