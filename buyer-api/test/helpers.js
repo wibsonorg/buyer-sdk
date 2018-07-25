@@ -13,4 +13,4 @@ export const mockStorage = () =>
 
 export const restoreMocks = () => td.reset();
 
-export const requireApp = () => require('../src/app');
+export const requireApp = () => require('../src/app'); // eslint-disable-line global-require

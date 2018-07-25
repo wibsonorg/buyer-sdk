@@ -46,7 +46,7 @@ class AWSWrapper {
         Prefix: prefix,
         ContinuationToken: continuationToken,
       };
-      const batch = await this.promisifyMethod('listObjectsV2', params);
+      const batch = await this.promisifyMethod('listObjectsV2', params); // eslint-disable-line no-await-in-loop
       objects = [...objects, ...batch.Contents];
       isTruncated = batch.IsTruncated;
       continuationToken = batch.NextContinuationToken;
