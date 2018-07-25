@@ -19,13 +19,13 @@ pipeline {
     }
     stage('Status Checks') {
       parallel {
-        stage('Test') {
-          steps {
-            dir(workdir) {
-              sh 'npm run test:coverage'
-            }
-          }
-        }
+        //stage('Test') {
+        //  steps {
+        //    dir(workdir) {
+        //      sh 'npm run test:coverage'
+        //    }
+        //  }
+        //}
         stage('Linter') {
           steps {
             dir(workdir) {
