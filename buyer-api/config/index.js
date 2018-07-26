@@ -50,7 +50,8 @@ var config = {
     user: env.STORAGE_USER,
     password: env.STORAGE_PASSWORD,
     bucket: env.STORAGE_BUCKET,
-  }
+  },
+  levelDirectory: env.LEVEL_DIRECTORY
 };
 
 exports.default = config;

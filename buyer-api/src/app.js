@@ -22,9 +22,9 @@ import { account, health, notaries, dataOrders, dataResponses, buyerInfos } from
 const app = express();
 app.locals.stores = {
   redis: createRedisStore('sample'),
-  level: createLevelStore('/tmp/sample_level'),
-  buyerInfos: createLevelStore('/tmp/buyer_infos'),
-  buyerInfoPerOrder: createLevelStore('/tmp/buyer_info_per_order'),
+  level: createLevelStore(`${config.levelDirectory}/sample_level`),
+  buyerInfos: createLevelStore(`${config.levelDirectory}/buyer_infos`),
+  buyerInfoPerOrder: createLevelStore(`${config.levelDirectory}/buyer_info_per_order`),
 };
 
 app.locals.contracts = {
