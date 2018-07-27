@@ -57,6 +57,7 @@ cp -r dist build/
 cp -r config build/
 cp -r node_modules build/
 cp package.json build/
+cp .env.example build/
 cd build
 tar -zcf ../artifacts/${package_name}.tar.gz .'''
           archiveArtifacts(artifacts: 'artifacts/*.tar.gz', fingerprint: true, onlyIfSuccessful: true)
