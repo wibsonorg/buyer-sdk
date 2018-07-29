@@ -1,5 +1,5 @@
-import dxDefinition from './definitions/DataExchange.json';
-import wibcoinDefinition from './definitions/Wibcoin.json';
+import dxDefinition from '../../contracts/DataExchange.json';
+import wibcoinDefinition from '../../contracts/Wibcoin.json';
 
 const dxFunctionDefinitions = dxDefinition.abi
   .filter(({ type }) => type === 'function');

@@ -53,6 +53,7 @@ pipeline {
       steps {
         dir(workdir) {
           sh '''mkdir artifacts build
+cp -r contracts build/
 cp -r dist build/
 cp -r config build/
 cp -r node_modules build/
