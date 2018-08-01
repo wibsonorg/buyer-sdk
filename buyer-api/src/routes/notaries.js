@@ -21,11 +21,10 @@ const router = express.Router();
 router.get('/', cache('1 day'), asyncError(async (req, res) => {
   const {
     contracts: { dataExchange },
-    stores: { notaryCache },
   } = req.app.locals;
 
   const result = {
-    notaries: await getNotariesInfo(dataExchange, notaryCache),
+    notaries: await getNotariesInfo(dataExchange),
   };
   res.json(result);
 }));
@@ -57,14 +56,12 @@ router.get(
   asyncError(async (req, res) => {
     const {
       contracts: { dataExchange },
-      stores: { notaryCache },
     } = req.app.locals;
     const { notaryAddress } = req.params;
 
     const result = await getNotaryInfo(
       dataExchange,
       notaryAddress,
-      notaryCache,
     );
 
     if (result.isRegistered) {

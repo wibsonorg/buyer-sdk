@@ -54,7 +54,7 @@ const addNotaryToOrder = async (notaryParameters, buyerAddress, contract) => {
  */
 const addNotariesToOrderFacade = async (orderAddress, addresses, contract) => {
   const { address: buyerAddress } = await signingService.getAccount();
-  const notariesInformation = await getNotariesInfo(web3, contract, addresses);
+  const notariesInformation = await getNotariesInfo(contract, addresses);
   const notariesParameters = await buildNotariesParameters(
     notariesInformation,
     buyerAddress,
