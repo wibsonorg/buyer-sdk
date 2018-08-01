@@ -53,36 +53,43 @@ const buildDataOrderParameters = ({
  * @returns {Response} The result of the operation.
  */
 const createDataOrderFacade = async (parameters, contract) => {
-  const dataOrderParameters = buildDataOrderParameters(parameters);
+  const params = buildDataOrderParameters(parameters);
 
-  if (dataOrderParameters.buyerURL.length === 0) {
+  if (params.buyerURL.length === 0) {
     return new Response(null, ['Field \'buyerURL\' must be a valid URL']);
   }
 
   const { address } = await signingService.getAccount();
 
-  await performTransaction(
-    web3,
-    address,
-    signingService.signIncreaseApproval,
-    {
-      spender: contract.address,
-      addedValue: dataOrderParameters.initialBudgetForAudits,
-    },
-  );
 
-  const response = await performTransaction(
+  if (params.initialBudgetForAudits > 0) {
+    await performTransaction(
+      web3,
+      address,
+      signingService.signIncreaseApproval,
+      {
+        spender: contract.address,
+        addedValue: params.initialBudgetForAudits,
+      },
+    );
+  }
+
+  const { error, tx } = await performTransaction(
     web3,
     address,
     signingService.signNewOrder,
-    dataOrderParameters,
+    params,
   );
-  console.log('[createDataOrderFacade] response', response);
-  const { logs } = response;
+
+  console.log('response', { error, tx });
+
+  if (error) {
+    return new Response(null, [error]);
+  }
 
   const { orderAddr: orderAddress } = extractEventArguments(
     'NewOrder',
-    logs,
+    tx.logs,
     contract,
   );
 

@@ -21,7 +21,7 @@ const router = express.Router();
  */
 router.get(
   '/',
-  cache('30 seconds'),
+  cache('10 minutes'),
   asyncError(async (req, res) => {
     const { offset, limit } = req.query;
     const { address } = await signingService.getAccount();

@@ -36,7 +36,6 @@ const buildData = params => encodeFunctionCall(
 
 const increaseApprovalFacade = (nonce, gasPrice, params) => {
   const errors = validatePresence({ nonce, params }, validateParameters);
-  console.log('increase', { nonce, gasPrice, params });
 
   if (errors.length > 0) {
     return new Response(null, errors);

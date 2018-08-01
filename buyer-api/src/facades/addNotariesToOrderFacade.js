@@ -1,6 +1,6 @@
 import Response from './Response';
 import { getNotariesInfo } from './notariesFacade';
-import { extractEventArguments } from './helpers';
+import { extractEventArguments, performTransaction } from './helpers';
 import signingService from '../services/signingService';
 import notaryService from '../services/notaryService';
 import web3 from '../utils/web3';
@@ -10,9 +10,14 @@ import { coercion, collection } from '../utils/wibson-lib';
 const { isPresent } = coercion;
 const { partition } = collection;
 
-const buildNotariesParameters = async (notaries, buyerAddress, orderAddress) => {
+const buildNotariesParameters = async (
+  notaries,
+  buyerAddress,
+  orderAddress,
+) => {
   const promises = notaries.map(async ({ notary, publicUrls: { api } }) => {
-    const response = await notaryService.consent(api, { buyerAddress, orderAddress });
+    const response = await notaryService
+      .consent(api, { buyerAddress, orderAddress });
 
     return { ...response, notary };
   });
@@ -22,17 +27,20 @@ const buildNotariesParameters = async (notaries, buyerAddress, orderAddress) => 
 
 const addNotaryToOrder = async (notaryParameters, buyerAddress, contract) => {
   try {
-    const nonce = await web3.eth.getTransactionCount(buyerAddress);
-    const { signedTransaction } = await signingService.signAddNotaryToOrder({
-      nonce,
-      addNotaryToOrderParameters: notaryParameters,
-    });
-    const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
-    const { logs } = await web3.eth.getTransactionReceipt(receipt);
+    const { error, tx } = await performTransaction(
+      web3,
+      buyerAddress,
+      signingService.signAddNotaryToOrder,
+      notaryParameters,
+    );
+
+    if (error) {
+      return { error, notaryParameters };
+    }
 
     const { notary: notaryAddress } = extractEventArguments(
       'NotaryAddedToOrder',
-      logs,
+      tx.logs,
       contract,
     );
 

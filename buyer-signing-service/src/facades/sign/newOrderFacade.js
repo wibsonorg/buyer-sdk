@@ -47,8 +47,6 @@ const newOrderFacade = (nonce, gasPrice, params, contract) => {
     },
   } = config.contracts;
 
-  console.log('ENV', { chainId, address, gasLimit });
-
   const result = signTransaction(getPrivateKey(), {
     from: getAddress(),
     to: address,

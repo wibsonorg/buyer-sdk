@@ -13,8 +13,8 @@ const signTransaction = (privateKey, {
   data,
 }) => {
   let rawTransaction = {
-    from,
-    to,
+    from: from.toLowerCase(),
+    to: to.toLowerCase(),
     value,
     nonce: web3Utils.numberToHex(nonce),
     gasPrice: web3Utils.numberToHex(gasPrice),
