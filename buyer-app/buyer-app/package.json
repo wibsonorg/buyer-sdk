@@ -80,8 +80,9 @@
   "scripts": {
     "start": "DEPLOY_ENVIRONMENT=development PORT=3001 ACCOUNT_INDEX=1 node scripts/start.js",
     "start-metamask": "DEPLOY_ENVIRONMENT=development PORT=3001 node scripts/start.js",
-    "build": "node scripts/build.js",
-    "build-staging": "NODE_ENV=production DEPLOY_ENVIRONMENT=staging node scripts/build.js",
+    "build": "NODE_ENV=production DEPLOY_ENVIRONMENT=production node scripts/build.js",
+    "build-production": "NODE_ENV=production DEPLOY_ENVIRONMENT=production node scripts/build.js",
+    "build-staging": "NODE_ENV=staging DEPLOY_ENVIRONMENT=staging node scripts/build.js",
     "build-develop": "NODE_ENV=development DEPLOY_ENVIRONMENT=development node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom"
   },
