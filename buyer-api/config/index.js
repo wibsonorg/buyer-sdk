@@ -41,9 +41,6 @@ var config = {
   redis: {
     socket: env.REDIS_SOCKET
   },
-  orders: {
-    storePath: env.ORDERS_STORE_PATH
-  },
   storage: {
     url: env.STORAGE_URL,
     region: env.STORAGE_REGION,
