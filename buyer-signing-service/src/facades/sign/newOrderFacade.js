@@ -1,15 +1,11 @@
-import EthTx from 'ethereumjs-tx';
-import { Buffer } from 'safe-buffer';
 import Response from '../Response';
-import { buyer, encodeFunctionCall } from '../../helpers';
-import { getDataExchangeMethodDefinition } from '../../contracts';
+import { buyer } from '../../helpers';
+import {
+  createDataBuilder,
+  signTransaction,
+  isPresent,
+} from '../../utils/wibson-lib';
 import config from '../../../config';
-
-const {
-  jsonInterface,
-  parameterNames,
-  inputSchema,
-} = getDataExchangeMethodDefinition('newOrder');
 
 const {
   getAddress,
@@ -17,72 +13,26 @@ const {
   getPrivateKey,
 } = buyer;
 
-const isPresent = obj => obj !== null && obj !== undefined;
-
-const validateNewOrderParameters = newOrderParameters =>
-  inputSchema.reduce((accumulator, { name }) => {
-    // TODO: type validation/coercion should also be done
-    const value = newOrderParameters[name];
-
-    if (value === null || value === undefined) {
-      return [...accumulator, `Field '${name}' is required`];
-    }
-
-    return accumulator;
-  }, []);
-
-/**
- * Checks that `nonce` and one of `newOrderParameters` or `newOrderPayload` are
- * present.
- *
- * @param {Integer} parameters.nonce Current transaction count + 1 of the sender
- * @param {Object} parameters.newOrderParameters New Order parameters
- * @param {Object} parameters.newOrderPayload Order data payload
- * @returns {Array} Error messages
- */
-const validatePresence = ({ nonce, newOrderParameters, newOrderPayload }) => {
-  let errors = [];
-
-  if (!isPresent(nonce)) {
-    errors = ['Field \'nonce\' is required'];
-  }
-
-  if (!isPresent(newOrderParameters) && !isPresent(newOrderPayload)) {
-    errors = [
-      ...errors,
-      'Field \'newOrderParameters\' or \'newOrderPayload\' must be provided',
-    ];
-  }
-
-  return errors;
-};
-
-const buildData = (newOrderParameters, newOrderPayload) => {
-  if (isPresent(newOrderParameters)) {
-    return encodeFunctionCall(
-      jsonInterface,
-      parameterNames.map(name => newOrderParameters[name]),
-    );
-  }
-
-  return newOrderPayload;
-};
-
 /**
  * Generates a signed transaction for DataExchange.newOrder ready to be sent to
  * the network.
  *
- * @param {Integer} parameters.nonce Current transaction count + 1 of the sender
- * @param {Object} parameters.newOrderParameters
- * @param {String} parameters.newOrderPayload
+ * @param {Number} nonce Current transaction count + 1 of the sender
+ * @param {Number} gasPrice
+ * @param {Object} params
  * @returns {Response} with the result of the operation
  */
-const newOrderFacade = ({ nonce, newOrderParameters, newOrderPayload }) => {
-  const newOrder = { ...newOrderParameters, publicKey: getPublicKey() };
+const newOrderFacade = (nonce, gasPrice, params, contract) => {
+  const build = createDataBuilder(contract, 'newOrder');
+  const response = build({ ...params, publicKey: getPublicKey() });
+  let { errors } = response;
 
-  let errors = validatePresence({ nonce, newOrderParameters, newOrderPayload });
-  if (isPresent(newOrderParameters)) {
-    errors = [...errors, ...validateNewOrderParameters(newOrder)];
+  if (!isPresent(nonce)) {
+    errors = [...errors, 'Field \'nonce\' is required'];
+  }
+
+  if (!isPresent(gasPrice)) {
+    errors = [...errors, 'Field \'gasPrice\' is required'];
   }
 
   if (errors.length > 0) {
@@ -90,28 +40,22 @@ const newOrderFacade = ({ nonce, newOrderParameters, newOrderPayload }) => {
   }
 
   const {
+    chainId,
     dataExchange: {
       address,
       newOrder: { gasLimit },
     },
   } = config.contracts;
 
-  const rawTransaction = {
+  const result = signTransaction(getPrivateKey(), {
     from: getAddress(),
     to: address,
-    value: '0x00',
-    nonce: `0x${nonce.toString(16)}`,
-    gasLimit: `0x${parseInt(gasLimit, 10).toString(16)}`,
-    // TODO: This must be set before deploying to production
-    // chainId: config.contracts.chainId,
-    // chainId: config.contracts.chainId,
-    data: buildData(newOrder),
-  };
-
-  const tx = new EthTx(rawTransaction);
-  tx.sign(Buffer.from(getPrivateKey(), 'hex'));
-
-  const result = tx.serialize().toString('hex');
+    nonce,
+    gasPrice,
+    gasLimit,
+    chainId,
+    data: response.data,
+  });
 
   return new Response(result);
 };

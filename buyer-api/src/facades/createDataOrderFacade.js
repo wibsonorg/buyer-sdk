@@ -1,5 +1,5 @@
 import Response from './Response';
-import { extractEventArguments } from './helpers';
+import { extractEventArguments, performTransaction } from './helpers';
 import web3 from '../utils/web3';
 import signingService from '../services/signingService';
 import { coercion } from '../utils/wibson-lib';
@@ -33,7 +33,8 @@ const buildDataOrderParameters = ({
   dataRequest: JSON.stringify(dataRequest),
   price: toInteger(price),
   initialBudgetForAudits: toInteger(initialBudgetForAudits),
-  termsAndConditions: toString(termsAndConditions),
+  // TODO: remove before deploy to main net
+  termsAndConditions: toString(termsAndConditions).substring(0, 100),
   buyerURL: JSON.stringify(buyerURL),
 });
 
@@ -53,27 +54,43 @@ const buildDataOrderParameters = ({
  * @returns {Response} The result of the operation.
  */
 const createDataOrderFacade = async (parameters, contract) => {
-  const dataOrderParameters = buildDataOrderParameters(parameters);
+  const params = buildDataOrderParameters(parameters);
 
-  if (dataOrderParameters.buyerURL.length === 0) {
+  if (params.buyerURL.length === 0) {
     return new Response(null, ['Field \'buyerURL\' must be a valid URL']);
   }
 
   const { address } = await signingService.getAccount();
 
-  const nonce = await web3.eth.getTransactionCount(address);
 
-  const { signedTransaction } = await signingService.signNewOrder({
-    nonce,
-    newOrderParameters: dataOrderParameters,
-  });
+  if (params.initialBudgetForAudits > 0) {
+    await performTransaction(
+      web3,
+      address,
+      signingService.signIncreaseApproval,
+      {
+        spender: contract.address,
+        addedValue: params.initialBudgetForAudits,
+      },
+    );
+  }
 
-  const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
-  const { logs } = await web3.eth.getTransactionReceipt(receipt);
+  const { error, tx } = await performTransaction(
+    web3,
+    address,
+    signingService.signNewOrder,
+    params,
+  );
+
+  console.log('response', { error, tx });
+
+  if (error) {
+    return new Response(null, [error]);
+  }
 
   const { orderAddr: orderAddress } = extractEventArguments(
     'NewOrder',
-    logs,
+    tx.logs,
     contract,
   );
 

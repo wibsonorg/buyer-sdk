@@ -58,7 +58,9 @@ const validateParameters = ({ spender, addedValue }) => {
  *         description: Problem with the signing process
  */
 router.post('/increase-approval', asyncError(async (req, res) => {
-  const { nonce, params, payload } = req.body;
+  const {
+    nonce, gasPrice, params, payload,
+  } = req.body;
   const errors = validatePresence({ nonce, params, payload }, validateParameters);
 
   if (errors.length > 0) {
@@ -68,7 +70,7 @@ router.post('/increase-approval', asyncError(async (req, res) => {
       _spender: params.spender,
       _addedValue: Number(params.addedValue),
     };
-    const response = increaseApprovalFacade(nonce, txParams);
+    const response = increaseApprovalFacade(nonce, gasPrice, txParams);
 
     if (response.success()) {
       res.json({ signedTransaction: response.result });
