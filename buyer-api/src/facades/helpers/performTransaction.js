@@ -27,7 +27,9 @@ const getTransactionReceipt = (web3, receipt, seconds) =>
           ) {
             resolve(result);
           } else {
-            reject(new Error(`Failed tx: ${receipt}`));
+            const failedError = new Error(`Failed tx: ${receipt}`);
+            failedError.failed = true;
+            reject(failedError);
           }
         } else {
           reject(new Error(`Unknown error for tx: ${receipt}`));
@@ -53,6 +55,10 @@ const transactionResponse = async (web3, receipt) => {
         response = {
           error: error.message,
         };
+      }
+
+      if (error.failed) {
+        throw error;
       }
     }
   }

@@ -33,7 +33,8 @@ const buildDataOrderParameters = ({
   dataRequest: JSON.stringify(dataRequest),
   price: toInteger(price),
   initialBudgetForAudits: toInteger(initialBudgetForAudits),
-  termsAndConditions: toString(termsAndConditions),
+  // TODO: remove before deploy to main net
+  termsAndConditions: toString(termsAndConditions).substring(0, 100),
   buyerURL: JSON.stringify(buyerURL),
 });
 
