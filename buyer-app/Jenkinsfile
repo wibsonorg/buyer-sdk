@@ -31,7 +31,7 @@ pipeline {
       steps {
         dir(workdir) {
           sh '''mkdir artifacts
-tar -zcf ../artifacts/${package_name}.tar.gz -C build .
+tar -zcf artifacts/${package_name}.tar.gz -C build .
 '''
           archiveArtifacts(artifacts: 'artifacts/*.tar.gz', fingerprint: true, onlyIfSuccessful: true)
         }
