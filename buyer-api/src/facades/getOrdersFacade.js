@@ -4,7 +4,7 @@ import { getElements } from './helpers/blockchain';
 import { dateOrNull } from './helpers/date';
 import { storage as offchainStorage } from '../utils/wibson-lib';
 
-const ordersCache = createRedisStore('orders.cache.');
+// const ordersCache = createRedisStore('orders.cache.');
 const ordersTTL = Number(config.contracts.cache.ordersTTL);
 
 /**

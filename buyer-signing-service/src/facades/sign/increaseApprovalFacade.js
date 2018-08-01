@@ -1,4 +1,5 @@
 import EthTx from 'ethereumjs-tx';
+import web3Utils from 'web3-utils';
 import { Buffer } from 'safe-buffer';
 import Response from '../Response';
 import { buyer, encodeFunctionCall, validatePresence } from '../../helpers';
@@ -33,21 +34,30 @@ const buildData = params => encodeFunctionCall(
   parameterNames.map(name => params[name]),
 );
 
-const increaseApprovalFacade = (nonce, params) => {
+const increaseApprovalFacade = (nonce, gasPrice, params) => {
   const errors = validatePresence({ nonce, params }, validateParameters);
+  console.log('increase', { nonce, gasPrice, params });
 
   if (errors.length > 0) {
     return new Response(null, errors);
   }
 
+  const {
+    chainId,
+    wibcoin: {
+      address,
+      increaseApproval: { gasLimit },
+    },
+  } = config.contracts;
+
   const rawTransaction = {
     from: getAddress(),
-    to: config.contracts.wibcoin.address,
+    to: address,
     value: '0x00',
-    nonce: `0x${nonce.toString(16)}`,
-    gasLimit: `0x${parseInt(config.contracts.wibcoin.increaseApproval.gasLimit, 10).toString(16)}`,
-    // TODO: This must be set before deploying to production
-    // chainId: config.contracts.chainId,
+    nonce: web3Utils.numberToHex(nonce),
+    gasPrice: web3Utils.numberToHex(3),
+    gasLimit: web3Utils.numberToHex(gasLimit),
+    chainId,
     data: buildData(params),
   };
 

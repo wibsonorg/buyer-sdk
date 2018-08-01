@@ -1,5 +1,5 @@
 import Response from './Response';
-import { extractEventArguments } from './helpers';
+import { extractEventArguments, performTransaction } from './helpers';
 import web3 from '../utils/web3';
 import signingService from '../services/signingService';
 import { coercion } from '../utils/wibson-lib';
@@ -61,15 +61,24 @@ const createDataOrderFacade = async (parameters, contract) => {
 
   const { address } = await signingService.getAccount();
 
-  const nonce = await web3.eth.getTransactionCount(address);
+  await performTransaction(
+    web3,
+    address,
+    signingService.signIncreaseApproval,
+    {
+      spender: contract.address,
+      addedValue: dataOrderParameters.initialBudgetForAudits,
+    },
+  );
 
-  const { signedTransaction } = await signingService.signNewOrder({
-    nonce,
-    newOrderParameters: dataOrderParameters,
-  });
-
-  const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
-  const { logs } = await web3.eth.getTransactionReceipt(receipt);
+  const response = await performTransaction(
+    web3,
+    address,
+    signingService.signNewOrder,
+    dataOrderParameters,
+  );
+  console.log('[createDataOrderFacade] response', response);
+  const { logs } = response;
 
   const { orderAddr: orderAddress } = extractEventArguments(
     'NewOrder',

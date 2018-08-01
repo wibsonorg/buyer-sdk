@@ -79,7 +79,8 @@ const validate = ({
     filters,
     dataRequest,
     price,
-    initialBudgetForAudits,
+    // TODO: Uncomment when field is used in Buyer Frontend App
+    // initialBudgetForAudits,
     termsAndConditions,
     buyerURL,
   };

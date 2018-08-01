@@ -17,7 +17,14 @@ import {
   DataOrderContract,
 } from './utils';
 
-import { account, health, notaries, dataOrders, dataResponses, buyerInfos } from './routes';
+import {
+  account,
+  health,
+  notaries,
+  dataOrders,
+  dataResponses,
+  buyerInfos,
+} from './routes';
 
 const app = express();
 app.locals.stores = {
@@ -25,6 +32,8 @@ app.locals.stores = {
   level: createLevelStore(`${config.levelDirectory}/sample_level`),
   buyerInfos: createLevelStore(`${config.levelDirectory}/buyer_infos`),
   buyerInfoPerOrder: createLevelStore(`${config.levelDirectory}/buyer_info_per_order`),
+  ordersCache: createRedisStore('cache.orders.'),
+  notaryCache: createRedisStore('cache.notary.'),
 };
 
 app.locals.contracts = {

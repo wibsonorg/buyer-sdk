@@ -1,5 +1,5 @@
 import express from 'express';
-import { asyncError, cache, validateAddress, web3 } from '../utils';
+import { asyncError, cache, validateAddress } from '../utils';
 
 import { getNotaryInfo, getNotariesInfo } from '../facades/notariesFacade';
 
@@ -19,10 +19,13 @@ const router = express.Router();
  *         description: When the fetch failed.
  */
 router.get('/', cache('1 day'), asyncError(async (req, res) => {
-  const { contracts: { dataExchange } } = req.app.locals;
+  const {
+    contracts: { dataExchange },
+    stores: { notaryCache },
+  } = req.app.locals;
 
   const result = {
-    notaries: await getNotariesInfo(web3, dataExchange),
+    notaries: await getNotariesInfo(dataExchange, notaryCache),
   };
   res.json(result);
 }));
@@ -47,16 +50,29 @@ router.get('/', cache('1 day'), asyncError(async (req, res) => {
  *       500:
  *         description: When the fetch failed.
  */
-router.get('/:notaryAddress', cache('1 day'), validateAddress('notaryAddress'), asyncError(async (req, res) => {
-  const { contracts: { dataExchange } } = req.app.locals;
-  const { notaryAddress } = req.params;
+router.get(
+  '/:notaryAddress',
+  cache('1 day'),
+  validateAddress('notaryAddress'),
+  asyncError(async (req, res) => {
+    const {
+      contracts: { dataExchange },
+      stores: { notaryCache },
+    } = req.app.locals;
+    const { notaryAddress } = req.params;
 
-  const result = await getNotaryInfo(web3, dataExchange, notaryAddress);
-  if (result.isRegistered) {
-    res.json(result);
-  } else {
-    res.status(404).send();
-  }
-}));
+    const result = await getNotaryInfo(
+      dataExchange,
+      notaryAddress,
+      notaryCache,
+    );
+
+    if (result.isRegistered) {
+      res.json(result);
+    } else {
+      res.status(404).send();
+    }
+  }),
+);
 
 export default router;
