@@ -1,10 +1,30 @@
 import Response from './Response';
-import { extractEventArguments } from './helpers';
+import { performTransaction, sendTransaction } from './helpers';
 import web3 from '../utils/web3';
 import signingService from '../services/signingService';
 import { coercion } from '../utils/wibson-lib';
 
 const { toString, toInteger } = coercion;
+
+const addReceipt = async (store, receipt) => {
+  try {
+    const rawReceipts = await store.get('receipts');
+    const receipts = JSON.parse(rawReceipts);
+    await store.put('receipts', JSON.stringify(new Set([...receipts, receipt])));
+  } catch (error) {
+    await store.put('receipts', JSON.stringify([receipt]));
+  }
+};
+
+export const removeReceipt = async (store, receipt) => {
+  try {
+    const rawReceipts = await store.get('receipts');
+    const receipts = JSON.parse(rawReceipts);
+    await store.put('receipts', JSON.stringify(receipts.filter(value => value !== receipt)));
+  } catch (error) {
+    // do nothing
+  }
+};
 
 /**
  * Builds DataOrder parameters.
@@ -33,7 +53,8 @@ const buildDataOrderParameters = ({
   dataRequest: JSON.stringify(dataRequest),
   price: toInteger(price),
   initialBudgetForAudits: toInteger(initialBudgetForAudits),
-  termsAndConditions: toString(termsAndConditions),
+  // TODO: remove before deploy to main net
+  termsAndConditions: toString(termsAndConditions).substring(0, 100),
   buyerURL: JSON.stringify(buyerURL),
 });
 
@@ -52,32 +73,41 @@ const buildDataOrderParameters = ({
  * @param {Object} contract DataExchange contract
  * @returns {Response} The result of the operation.
  */
-const createDataOrderFacade = async (parameters, contract) => {
-  const dataOrderParameters = buildDataOrderParameters(parameters);
+const createDataOrderFacade = async (
+  parameters,
+  contract,
+  pendingDataOrders,
+) => {
+  const params = buildDataOrderParameters(parameters);
 
-  if (dataOrderParameters.buyerURL.length === 0) {
+  if (params.buyerURL.length === 0) {
     return new Response(null, ['Field \'buyerURL\' must be a valid URL']);
   }
 
   const { address } = await signingService.getAccount();
 
-  const nonce = await web3.eth.getTransactionCount(address);
+  if (params.initialBudgetForAudits > 0) {
+    await performTransaction(
+      web3,
+      address,
+      signingService.signIncreaseApproval,
+      {
+        spender: contract.address,
+        addedValue: params.initialBudgetForAudits, // TODO: This needs to be converted
+      },
+    );
+  }
 
-  const { signedTransaction } = await signingService.signNewOrder({
-    nonce,
-    newOrderParameters: dataOrderParameters,
-  });
-
-  const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
-  const { logs } = await web3.eth.getTransactionReceipt(receipt);
-
-  const { orderAddr: orderAddress } = extractEventArguments(
-    'NewOrder',
-    logs,
-    contract,
+  const receipt = await sendTransaction(
+    web3,
+    address,
+    signingService.signNewOrder,
+    params,
   );
 
-  return new Response({ orderAddress });
+  await addReceipt(pendingDataOrders, receipt);
+
+  return new Response({ receipt });
 };
 
 export default createDataOrderFacade;

@@ -1,6 +1,14 @@
 import express from 'express';
-import { createDataOrderFacade, getOrdersForBuyer } from '../../facades';
-import { asyncError, cache } from '../../utils';
+import {
+  createDataOrderFacade,
+  getOrdersForBuyer,
+  removeReceipt,
+} from '../../facades';
+import {
+  getTransactionReceipt,
+  extractEventArguments,
+} from '../../facades/helpers';
+import { asyncError, cache, web3 } from '../../utils';
 import signingService from '../../services/signingService';
 
 const router = express.Router();
@@ -21,7 +29,7 @@ const router = express.Router();
  */
 router.get(
   '/',
-  cache('30 seconds'),
+  cache('10 minutes'),
   asyncError(async (req, res) => {
     const { offset, limit } = req.query;
     const { address } = await signingService.getAccount();
@@ -161,14 +169,21 @@ const validate = ({
 router.post(
   '/',
   asyncError(async (req, res) => {
-    const { dataExchange } = req.app.locals.contracts;
+    const {
+      contracts: { dataExchange },
+      stores: { pendingDataOrders },
+    } = req.app.locals;
     const { dataOrder } = req.body;
     const errors = validate(dataOrder);
 
     if (errors.length > 0) {
       res.boom.badData('Validation failed', { validation: errors });
     } else {
-      const response = await createDataOrderFacade(dataOrder, dataExchange);
+      const response = await createDataOrderFacade(
+        dataOrder,
+        dataExchange,
+        pendingDataOrders,
+      );
 
       if (response.success()) {
         res.json(response.result);
@@ -176,6 +191,52 @@ router.post(
         res.boom.badData('Operation failed', {
           errors: response.errors,
         });
+      }
+    }
+  }),
+);
+
+router.get(
+  '/receipts',
+  asyncError(async (req, res) => {
+    const {
+      stores: { pendingDataOrders },
+    } = req.app.locals;
+    const rawReceipts = await pendingDataOrders.get('receipts');
+
+    res.json({
+      receipts: JSON.parse(rawReceipts),
+    });
+  }),
+);
+
+router.get(
+  '/receipts/:receipt',
+  asyncError(async (req, res) => {
+    const {
+      contracts: { dataExchange },
+      stores: { pendingDataOrders },
+    } = req.app.locals;
+    const { receipt } = req.params;
+
+    if (!receipt) {
+      res.boom.badData('Parameter \'receipt\' is mandatory');
+    } else {
+      try {
+        const { logs } = await getTransactionReceipt(web3, receipt);
+        const { orderAddr: orderAddress } = extractEventArguments(
+          'NewOrder',
+          logs,
+          dataExchange,
+        );
+        await removeReceipt(pendingDataOrders, receipt);
+        res.json({ status: 'success', result: { orderAddress } });
+      } catch (error) {
+        if (error.pending) {
+          res.json({ status: 'pending' });
+        } else {
+          res.json({ status: 'failed', error: error.message });
+        }
       }
     }
   }),

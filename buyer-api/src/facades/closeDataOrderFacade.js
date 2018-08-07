@@ -1,6 +1,6 @@
 import Response from './Response';
 import { getSellersInfo } from './sellersFacade';
-import { extractEventArguments } from './helpers';
+import { extractEventArguments, performTransaction } from './helpers';
 import web3 from '../utils/web3';
 import { DataOrderContract } from '../utils/contracts';
 import signingService from '../services/signingService';
@@ -35,15 +35,19 @@ const closeDataOrderFacade = async (orderAddr, contract) => {
   }
 
   const { address } = await signingService.getAccount();
-  const nonce = await web3.eth.getTransactionCount(address);
 
-  const { signedTransaction } = await signingService.signCloseOrder({
-    nonce, orderAddr,
-  });
+  const { logs } = await performTransaction(
+    web3,
+    address,
+    signingService.signCloseOrder,
+    { orderAddr },
+  );
 
-  const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
-  const { logs } = await web3.eth.getTransactionReceipt(receipt);
-  const { orderAddr: orderAddress } = extractEventArguments('OrderClosed', logs, contract);
+  const { orderAddr: orderAddress } = extractEventArguments(
+    'OrderClosed',
+    logs,
+    contract,
+  );
 
   return new Response({ orderAddress });
 };

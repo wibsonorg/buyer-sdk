@@ -25,6 +25,7 @@ app.locals.stores = {
   level: createLevelStore(`${config.levelDirectory}/sample_level`),
   buyerInfos: createLevelStore(`${config.levelDirectory}/buyer_infos`),
   buyerInfoPerOrder: createLevelStore(`${config.levelDirectory}/buyer_info_per_order`),
+  pendingDataOrders: createLevelStore(`${config.levelDirectory}/pending_data_orders`),
 };
 
 app.locals.contracts = {

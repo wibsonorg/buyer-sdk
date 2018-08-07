@@ -1,5 +1,5 @@
 import { addDataResponse, closeDataResponse } from './dataResponseFacade';
-import createDataOrderFacade from './createDataOrderFacade';
+import createDataOrderFacade, { removeReceipt } from './createDataOrderFacade';
 import addNotariesToOrderFacade from './addNotariesToOrderFacade';
 import closeDataOrderFacade from './closeDataOrderFacade';
 import { getOrdersForBuyer } from './getOrdersFacade';
@@ -11,4 +11,5 @@ export {
   addDataResponse,
   closeDataResponse,
   closeDataOrderFacade,
+  removeReceipt,
 };

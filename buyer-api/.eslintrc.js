@@ -3,5 +3,8 @@ module.exports = {
   "env": {
     "node": true,
     "mocha": true
+  },
+  "rules": {
+    "import/prefer-default-export": false
   }
 };
