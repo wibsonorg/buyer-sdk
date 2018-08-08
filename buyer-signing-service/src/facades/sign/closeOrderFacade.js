@@ -1,53 +1,38 @@
-import EthTx from 'ethereumjs-tx';
-import { Buffer } from 'safe-buffer';
 import Response from '../Response';
-import { buyer, encodeFunctionCall } from '../../helpers';
-import { getDataExchangeMethodDefinition } from '../../contracts';
+import { buyer } from '../../helpers';
+import {
+  createDataBuilder,
+  signTransaction,
+  isPresent,
+} from '../../utils/wibson-lib';
 import config from '../../../config';
-
-const {
-  jsonInterface,
-  parameterNames,
-  inputSchema,
-} = getDataExchangeMethodDefinition('closeOrder');
 
 const {
   getAddress,
   getPrivateKey,
 } = buyer;
 
-const isPresent = obj => obj !== null && obj !== undefined;
-
-const validateParameters = parameters =>
-  inputSchema.reduce((accumulator, { name }) => {
-    // TODO: type validation/coercion should also be done
-    const value = parameters[name];
-
-    if (!isPresent(value)) {
-      return [...accumulator, `Field '${name}' is required`];
-    }
-
-    return accumulator;
-  }, []);
-
-const buildData = parameters => encodeFunctionCall(
-  jsonInterface,
-  parameterNames.map(name => parameters[name]),
-);
-
 /**
  * Generates a signed transaction for DataExchange.closeOrder ready to be sent
  * to the network.
  *
- * @param {Integer} parameters.nonce Current transaction count + 1 of the sender
- * @param {Object} parameters.parameters
+ * @param {Number} nonce Sender's transaction count
+ * @param {String} gasPrice ethereum's current gas price
+ * @param {Object} params transaction params
+ * @param {Object} contract DataExchange contract instance
  * @returns {Response} with the result of the operation
  */
-const closeOrderFacade = ({ nonce, ...parameters }) => {
-  let errors = validateParameters(parameters);
+const closeOrderFacade = (nonce, gasPrice, params, contract) => {
+  const build = createDataBuilder(contract, 'closeOrder');
+  const response = build(params);
+  let { errors } = response;
 
   if (!isPresent(nonce)) {
     errors = [...errors, 'Field \'nonce\' is required'];
+  }
+
+  if (!isPresent(gasPrice)) {
+    errors = [...errors, 'Field \'gasPrice\' is required'];
   }
 
   if (errors.length > 0) {
@@ -55,27 +40,22 @@ const closeOrderFacade = ({ nonce, ...parameters }) => {
   }
 
   const {
+    chainId,
     dataExchange: {
       address,
       closeOrder: { gasLimit },
     },
   } = config.contracts;
 
-  const rawTransaction = {
+  const result = signTransaction(getPrivateKey(), {
     from: getAddress(),
     to: address,
-    value: '0x00',
-    nonce: `0x${nonce.toString(16)}`,
-    gasLimit: `0x${parseInt(gasLimit, 10).toString(16)}`,
-    // TODO: This must be set before deploying to production
-    // chainId: config.contracts.chainId,
-    data: buildData(parameters),
-  };
-
-  const tx = new EthTx(rawTransaction);
-  tx.sign(Buffer.from(getPrivateKey(), 'hex'));
-
-  const result = tx.serialize().toString('hex');
+    nonce,
+    gasPrice,
+    gasLimit,
+    chainId,
+    data: response.data,
+  });
 
   return new Response(result);
 };

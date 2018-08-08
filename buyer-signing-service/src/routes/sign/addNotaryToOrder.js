@@ -1,5 +1,5 @@
 import express from 'express';
-import { asyncError, validatePresence } from '../../helpers';
+import { asyncError } from '../../helpers';
 import addNotaryToOrderFacade from '../../facades/sign/addNotaryToOrderFacade';
 
 const router = express.Router();
@@ -23,7 +23,12 @@ const router = express.Router();
  *           The number of transactions made by the sender including this one.
  *         required: true
  *       - in: body
- *         name: addNotaryToOrderParameters
+ *         name: gasPrice
+ *         type: string
+ *         description: The number of transactions made by the sender.
+ *         required: true
+ *       - in: body
+ *         name: params
  *         description: Parameters to be used in the transaction call.
  *         schema:
  *           $ref: "#/definitions/AddNotaryToOrderParameters"
@@ -77,25 +82,22 @@ const router = express.Router();
  *         example: 0x3164c60ef3e26cb8c1d97effe36777ad8f45341c8b400fda5e5c5f57a
  */
 router.post('/add-notary-to-order', asyncError(async (req, res) => {
-  const { nonce, addNotaryToOrderParameters } = req.body;
-  const params = addNotaryToOrderParameters;
-  const errors = validatePresence({ nonce, params });
+  const { contracts: { dataExchange } } = req.app.locals;
+  const { nonce, gasPrice, params } = req.body;
 
-  if (errors.length > 0) {
-    res.boom.badData('Validation failed', { validation: errors });
+  const response = addNotaryToOrderFacade(
+    nonce,
+    gasPrice,
+    params,
+    dataExchange,
+  );
+
+  if (response.success()) {
+    res.json({ signedTransaction: response.result });
   } else {
-    const response = addNotaryToOrderFacade({
-      nonce,
-      addNotaryToOrderParameters,
+    res.boom.badData('Operation failed', {
+      errors: response.errors,
     });
-
-    if (response.success()) {
-      res.json({ signedTransaction: response.result });
-    } else {
-      res.boom.badData('Operation failed', {
-        errors: response.errors,
-      });
-    }
   }
 }));
 

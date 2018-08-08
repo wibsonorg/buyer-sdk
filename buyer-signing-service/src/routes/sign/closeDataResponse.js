@@ -4,30 +4,6 @@ import signCloseDataResponseFacade from '../../facades/sign/closeDataResponseFac
 
 const router = express.Router();
 
-const validateParameters = ({
-  orderAddr,
-  seller,
-  wasAudited,
-  isDataValid,
-  notarySignature,
-}) => {
-  const fields = {
-    orderAddr,
-    seller,
-    wasAudited,
-    isDataValid,
-    notarySignature,
-  };
-
-  return Object.entries(fields).reduce((accumulator, [field, value]) => {
-    if (!isPresent(value)) {
-      return [...accumulator, `Field '${field}' is required`];
-    }
-
-    return accumulator;
-  }, []);
-};
-
 /**
  * @swagger
  * /sign/close-data-response:
@@ -47,15 +23,15 @@ const validateParameters = ({
  *           The number of transactions made by the sender including this one.
  *         required: true
  *       - in: body
+ *         name: gasPrice
+ *         type: string
+ *         description: The number of transactions made by the sender.
+ *         required: true
+ *       - in: body
  *         name: params
  *         description: Parameters to be used in the transaction call.
  *         schema:
  *           $ref: "#/definitions/AddDataResponseParameters"
- *       - in: body
- *         name: addDataResponsePayload
- *         type: string
- *         description: |
- *           Data payload to be used instead of `addDataResponseParameters`.
  *     responses:
  *       200:
  *         description: When the signing performs successfully
@@ -88,21 +64,21 @@ const validateParameters = ({
  *         required: true
  */
 router.post('/close-data-response', asyncError(async (req, res) => {
-  const { nonce, params, payload } = req.body;
-  const errors = validatePresence({ nonce, params, payload }, validateParameters);
+  const { contracts: { dataExchange } } = req.app.locals;
+  const { nonce, gasPrice, params } = req.body;
+  const response = signCloseDataResponseFacade(
+    nonce,
+    gasPrice,
+    params,
+    dataExchange,
+  );
 
-  if (errors.length > 0) {
-    res.boom.badData('Validation failed', { validation: errors });
+  if (response.success()) {
+    res.json({ signedTransaction: response.result });
   } else {
-    const response = signCloseDataResponseFacade(nonce, params, payload);
-
-    if (response.success()) {
-      res.json({ signedTransaction: response.result });
-    } else {
-      res.boom.badData('Operation failed', {
-        errors: response.errors,
-      });
-    }
+    res.boom.badData('Operation failed', {
+      errors: response.errors,
+    });
   }
 }));
 

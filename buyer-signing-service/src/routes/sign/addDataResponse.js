@@ -1,32 +1,8 @@
 import express from 'express';
-import { asyncError, validatePresence, isPresent } from '../../helpers';
+import { asyncError } from '../../helpers';
 import signAddDataResponseFacade from '../../facades/sign/addDataResponseFacade';
 
 const router = express.Router();
-
-const validateParameters = ({
-  orderAddr,
-  seller,
-  notary,
-  dataHash,
-  signature,
-}) => {
-  const fields = {
-    orderAddr,
-    seller,
-    notary,
-    dataHash,
-    signature,
-  };
-
-  return Object.entries(fields).reduce((accumulator, [field, value]) => {
-    if (!isPresent(value)) {
-      return [...accumulator, `Field '${field}' is required`];
-    }
-
-    return accumulator;
-  }, []);
-};
 
 /**
  * @swagger
@@ -47,15 +23,15 @@ const validateParameters = ({
  *           The number of transactions made by the sender including this one.
  *         required: true
  *       - in: body
+ *         name: gasPrice
+ *         type: string
+ *         description: The number of transactions made by the sender.
+ *         required: true
+ *       - in: body
  *         name: params
  *         description: Parameters to be used in the transaction call.
  *         schema:
  *           $ref: "#/definitions/params"
- *       - in: body
- *         name: payload
- *         type: string
- *         description: |
- *           Data payload to be used instead of `params`.
  *     responses:
  *       200:
  *         description: When the signing performs successfully
@@ -88,21 +64,21 @@ const validateParameters = ({
  *         required: true
  */
 router.post('/add-data-response', asyncError(async (req, res) => {
-  const { nonce, params, payload } = req.body;
-  const errors = validatePresence({ nonce, params, payload }, validateParameters);
+  const { contracts: { dataExchange } } = req.app.locals;
+  const { nonce, gasPrice, params } = req.body;
+  const response = signAddDataResponseFacade(
+    nonce,
+    gasPrice,
+    params,
+    dataExchange,
+  );
 
-  if (errors.length > 0) {
-    res.boom.badData('Validation failed', { validation: errors });
+  if (response.success()) {
+    res.json({ signedTransaction: response.result });
   } else {
-    const response = signAddDataResponseFacade(nonce, params, payload);
-
-    if (response.success()) {
-      res.json({ signedTransaction: response.result });
-    } else {
-      res.boom.badData('Operation failed', {
-        errors: response.errors,
-      });
-    }
+    res.boom.badData('Operation failed', {
+      errors: response.errors,
+    });
   }
 }));
 
