@@ -107,7 +107,7 @@ const addDataResponse = async (order, seller) => {
   return true;
 };
 
-const closeDataResponse = async (order, seller) => {
+const closeDataResponse = async (order, seller, notariesCache) => {
   if (!web3Utils.isAddress(order) || !web3Utils.isAddress(seller)) {
     throw new Error('Invalid order|seller address');
   }
@@ -120,7 +120,7 @@ const closeDataResponse = async (order, seller) => {
   }
 
   const notaryAddress = sellerInfo[1];
-  const notaryInfo = await getNotaryInfo(web3, dataExchange, notaryAddress);
+  const notaryInfo = await getNotaryInfo(web3, dataExchange, notaryAddress, notariesCache);
   const notaryApi = notaryInfo.publicUrls.api;
 
   const params = await auditResult(notaryApi, order, seller, dataOrder.buyer());

@@ -4,10 +4,10 @@ import { addDataResponse, closeDataResponse } from '../facades';
 
 const router = express.Router();
 
-const buyData = async (orderAddress, sellerAddress) => {
+const buyData = async (orderAddress, sellerAddress, notariesCache) => {
   await addDataResponse(orderAddress, sellerAddress);
 
-  await closeDataResponse(orderAddress, sellerAddress);
+  await closeDataResponse(orderAddress, sellerAddress, notariesCache);
 };
 
 /**
@@ -23,9 +23,10 @@ const buyData = async (orderAddress, sellerAddress) => {
  */
 router.post('/', asyncError(async (req, res) => {
   const { orderAddress, sellerAddress } = req.body;
+  const { stores: { notariesCache } } = req.app.locals;
 
   // fire and forget
-  buyData(orderAddress, sellerAddress);
+  buyData(orderAddress, sellerAddress, notariesCache);
 
   res.status(200).send();
 }));

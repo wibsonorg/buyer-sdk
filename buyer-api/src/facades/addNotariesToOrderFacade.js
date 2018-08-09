@@ -52,9 +52,9 @@ const addNotaryToOrder = async (notaryParameters, buyerAddress, contract) => {
  * @param {Object} contract DataExchange contract
  * @returns {Response} The result of the operation.
  */
-const addNotariesToOrderFacade = async (orderAddress, addresses, contract) => {
+const addNotariesToOrderFacade = async (orderAddress, addresses, contract, notariesCache) => {
   const { address: buyerAddress } = await signingService.getAccount();
-  const notariesInformation = await getNotariesInfo(web3, contract, addresses);
+  const notariesInformation = await getNotariesInfo(web3, contract, notariesCache, addresses);
   const notariesParameters = await buildNotariesParameters(
     notariesInformation,
     buyerAddress,

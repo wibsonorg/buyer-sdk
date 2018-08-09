@@ -27,7 +27,7 @@ router.get(
     const { address } = await signingService.getAccount();
 
     const {
-      stores: { buyerInfos, buyerInfoPerOrder },
+      stores: { ordersCache },
       contracts: { dataExchange, DataOrderContract },
     } = req.app.locals;
 
@@ -35,8 +35,7 @@ router.get(
       dataExchange,
       DataOrderContract,
       address,
-      buyerInfos,
-      buyerInfoPerOrder,
+      ordersCache,
       Number(offset),
       Number(limit),
     );
