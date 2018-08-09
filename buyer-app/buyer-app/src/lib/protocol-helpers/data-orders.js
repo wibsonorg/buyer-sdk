@@ -25,6 +25,8 @@ async function createBuyerDataOrder(
   termsAndConditions,
   price,
   initialBudgetForAudits,
+  notaries,
+  buyerInfoId,
 ) {
   const res = await fetch(`${apiUrl}/orders`, {
     headers: {
@@ -40,6 +42,8 @@ async function createBuyerDataOrder(
         termsAndConditions,
         price,
         initialBudgetForAudits,
+        notaries,
+        buyerInfoId,
       },
     }),
   });
@@ -51,6 +55,9 @@ async function createBuyerDataOrder(
   return res.json();
 }
 
+/**
+ * @deprecated
+ */
 const associateBuyerInfoToOrder = async (orderAddress, buyerInfoId) => {
   const res = await fetch(`${apiUrl}/orders/${orderAddress}/info`, {
     headers: {

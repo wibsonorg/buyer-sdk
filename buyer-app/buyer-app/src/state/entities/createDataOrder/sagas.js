@@ -30,19 +30,9 @@ function* createDataOrderSaga(action) {
       publicURL,
       conditions,
       price,
-      initialBudgetForAudits
-    );
-
-    yield call(
-      DataOrdersHelpers.associateBuyerInfoToOrder,
-      orderAddress,
+      initialBudgetForAudits,
+      notaries,
       buyerId
-    );
-
-    yield call(
-      DataOrdersHelpers.addNotariesToOrder,
-      orderAddress,
-      notaries.map(n => n.toLowerCase())
     );
 
     yield put(
