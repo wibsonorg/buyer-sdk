@@ -83,7 +83,7 @@ const sendTransaction = async (
   const { signedTransaction } = await signingFunc(payload);
 
   const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
-  logger.debug(`[performTransaction] tx receipt ${receipt}`);
+  logger.info(`[sendTransaction] receipt ${receipt}`);
 
   return receipt;
 };

@@ -20,6 +20,9 @@ const createDataOrderQueue = ({ contracts }) => {
     },
   });
 
+  // NOTE: The processing can be done in a separate process by specifying the
+  //       path to a module instead of function.
+  // @see https://github.com/OptimalBits/bull#separate-processes
   dataOrderQueue.process('addNotariesToOrder', async (
     { data: { receipt, notaries } },
   ) => {

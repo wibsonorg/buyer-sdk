@@ -124,9 +124,12 @@ const validate = ({
  *         schema:
  *           type: object
  *           properties:
- *             orderAddress:
+ *             status:
  *               type: string
- *               description: Address to be used in further requests
+ *               description: Status of the transaction
+ *             receipt:
+ *               type: string
+ *               description: Receipt of the transaction
  *       422:
  *         description: When there is a problem with the input
  *       500:
