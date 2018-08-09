@@ -16,8 +16,15 @@ import {
   dataExchange,
   DataOrderContract,
 } from './utils';
-
-import { account, health, notaries, dataOrders, dataResponses, buyerInfos } from './routes';
+import { createDataOrderQueue } from './queues/createDataOrderQueue';
+import {
+  account,
+  health,
+  notaries,
+  dataOrders,
+  dataResponses,
+  buyerInfos,
+} from './routes';
 
 const app = express();
 app.locals.stores = {
@@ -25,13 +32,16 @@ app.locals.stores = {
   level: createLevelStore(`${config.levelDirectory}/sample_level`),
   buyerInfos: createLevelStore(`${config.levelDirectory}/buyer_infos`),
   buyerInfoPerOrder: createLevelStore(`${config.levelDirectory}/buyer_info_per_order`),
-  pendingDataOrders: createLevelStore(`${config.levelDirectory}/pending_data_orders`),
 };
 
 app.locals.contracts = {
   wibcoin,
   dataExchange,
   DataOrderContract,
+};
+
+app.locals.queues = {
+  dataOrder: createDataOrderQueue(app.locals),
 };
 
 app.use(helmet());

@@ -6,26 +6,6 @@ import { coercion } from '../utils/wibson-lib';
 
 const { toString, toInteger } = coercion;
 
-const addReceipt = async (store, receipt) => {
-  try {
-    const rawReceipts = await store.get('receipts');
-    const receipts = JSON.parse(rawReceipts);
-    await store.put('receipts', JSON.stringify(new Set([...receipts, receipt])));
-  } catch (error) {
-    await store.put('receipts', JSON.stringify([receipt]));
-  }
-};
-
-export const removeReceipt = async (store, receipt) => {
-  try {
-    const rawReceipts = await store.get('receipts');
-    const receipts = JSON.parse(rawReceipts);
-    await store.put('receipts', JSON.stringify(receipts.filter(value => value !== receipt)));
-  } catch (error) {
-    // do nothing
-  }
-};
-
 /**
  * Builds DataOrder parameters.
  *
@@ -70,13 +50,16 @@ const buildDataOrderParameters = ({
  *                 for the order.
  * @param {String} parameters.buyerURL Public URL of the buyer where the data
  *                 must be sent.
+ * @param {String} parameters.notaries Ethereum addresses of the notaries
+ *                 involved.
  * @param {Object} contract DataExchange contract
+ * @param {Object} dataOrderQueue DataOrder's queue object
  * @returns {Response} The result of the operation.
  */
 const createDataOrderFacade = async (
-  parameters,
+  { notaries, ...parameters },
   contract,
-  pendingDataOrders,
+  dataOrderQueue,
 ) => {
   const params = buildDataOrderParameters(parameters);
 
@@ -105,9 +88,14 @@ const createDataOrderFacade = async (
     params,
   );
 
-  await addReceipt(pendingDataOrders, receipt);
+  dataOrderQueue.add('addNotariesToOrder', { receipt, notaries }, {
+    attempts: 20,
+    backoff: {
+      type: 'linear',
+    },
+  });
 
-  return new Response({ receipt });
+  return new Response({ status: 'pending', receipt });
 };
 
 export default createDataOrderFacade;

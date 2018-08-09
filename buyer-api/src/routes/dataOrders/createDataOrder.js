@@ -2,7 +2,6 @@ import express from 'express';
 import {
   createDataOrderFacade,
   getOrdersForBuyer,
-  removeReceipt,
 } from '../../facades';
 import {
   getTransactionReceipt,
@@ -82,6 +81,7 @@ const validate = ({
   initialBudgetForAudits,
   termsAndConditions,
   buyerURL,
+  notaries,
 }) => {
   const fields = {
     filters,
@@ -90,6 +90,7 @@ const validate = ({
     initialBudgetForAudits,
     termsAndConditions,
     buyerURL,
+    notaries,
   };
 
   return Object.entries(fields).reduce((accumulator, [field, value]) => {
@@ -165,13 +166,17 @@ const validate = ({
  *         required: true
  *         description: Public URL of the buyer where the data must be sent
  *         example: '{"api": "https://api.buyer.com", "storage": "https://storage.buyer.com"}'
+ *       notaries:
+ *         type: array
+ *         required: true
+ *         description: List of notaries' ethereum addresses
  */
 router.post(
   '/',
   asyncError(async (req, res) => {
     const {
       contracts: { dataExchange },
-      stores: { pendingDataOrders },
+      queues: { dataOrder: queue },
     } = req.app.locals;
     const { dataOrder } = req.body;
     const errors = validate(dataOrder);
@@ -182,7 +187,7 @@ router.post(
       const response = await createDataOrderFacade(
         dataOrder,
         dataExchange,
-        pendingDataOrders,
+        queue,
       );
 
       if (response.success()) {
@@ -197,25 +202,10 @@ router.post(
 );
 
 router.get(
-  '/receipts',
-  asyncError(async (req, res) => {
-    const {
-      stores: { pendingDataOrders },
-    } = req.app.locals;
-    const rawReceipts = await pendingDataOrders.get('receipts');
-
-    res.json({
-      receipts: JSON.parse(rawReceipts),
-    });
-  }),
-);
-
-router.get(
   '/receipts/:receipt',
   asyncError(async (req, res) => {
     const {
       contracts: { dataExchange },
-      stores: { pendingDataOrders },
     } = req.app.locals;
     const { receipt } = req.params;
 
@@ -229,7 +219,6 @@ router.get(
           logs,
           dataExchange,
         );
-        await removeReceipt(pendingDataOrders, receipt);
         res.json({ status: 'success', result: { orderAddress } });
       } catch (error) {
         if (error.pending) {
