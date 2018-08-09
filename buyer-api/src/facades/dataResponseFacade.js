@@ -3,7 +3,11 @@ import client from 'request-promise-native';
 import url from 'url';
 import web3 from '../utils/web3';
 import signingService from '../services/signingService';
-import { getElements } from './helpers/blockchain';
+import {
+  getElements,
+  performTransaction,
+  sendTransaction,
+} from './helpers';
 import { getNotaryInfo } from './notariesFacade';
 import { getDataResponse } from '../utils/wibson-lib/s3';
 import { dataExchange, DataOrderContract, logger } from '../utils';
@@ -29,15 +33,6 @@ const auditResult = async (notaryUrl, order, seller, buyer) => {
     isDataValid,
     notarySignature,
   };
-};
-
-const performTransaction = async (address, signingServiceMethod, params) => {
-  const nonce = await web3.eth.getTransactionCount(address);
-
-  const { signedTransaction } = await signingService[signingServiceMethod]({ nonce, params });
-
-  const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
-  return web3.eth.getTransactionReceipt(receipt);
 };
 
 const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
@@ -87,10 +82,15 @@ const addDataResponse = async (order, seller) => {
 
   const totalPrice = await getTotalPrice(address, dataOrder, notaryAccount);
 
-  await performTransaction(address, 'signIncreaseApproval', {
-    spender: dataExchange.address,
-    addedValue: totalPrice,
-  });
+  await performTransaction(
+    web3,
+    address,
+    signingService.signIncreaseApproval,
+    {
+      spender: dataExchange.address,
+      addedValue: totalPrice, // TODO: This needs to be converted
+    },
+  );
 
   const params = {
     orderAddr: order,
@@ -100,10 +100,14 @@ const addDataResponse = async (order, seller) => {
     signature,
   };
 
-  await performTransaction(address, 'signAddDataResponse', params);
-  // TODO: Check receipt
+  const receipt = await sendTransaction(
+    web3,
+    address,
+    signingService.signAddDataResponse,
+    params,
+  );
 
-  logger.info('Data Response Added', { order, seller });
+  logger.info('Data Response Added', { order, seller, receipt });
   return true;
 };
 
@@ -126,10 +130,15 @@ const closeDataResponse = async (order, seller) => {
   const params = await auditResult(notaryApi, order, seller, dataOrder.buyer());
 
   const { address } = await signingService.getAccount();
-  await performTransaction(address, 'signCloseDataResponse', params);
-  // TODO: Check receipt
 
-  logger.info('Data Response Closed', { order, seller });
+  const receipt = await sendTransaction(
+    web3,
+    address,
+    signingService.signCloseDataResponse,
+    params,
+  );
+
+  logger.info('Data Response Closed', { order, seller, receipt });
   return true;
 };
 
