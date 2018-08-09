@@ -120,7 +120,7 @@ const closeDataResponse = async (order, seller, notariesCache) => {
   }
 
   const notaryAddress = sellerInfo[1];
-  const notaryInfo = await getNotaryInfo(web3, dataExchange, notaryAddress, notariesCache);
+  const notaryInfo = await getNotaryInfo(notaryAddress, notariesCache);
   const notaryApi = notaryInfo.publicUrls.api;
 
   const params = await auditResult(notaryApi, order, seller, dataOrder.buyer());

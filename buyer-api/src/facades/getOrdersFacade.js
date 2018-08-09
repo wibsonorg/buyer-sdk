@@ -1,5 +1,5 @@
 import config from '../../config';
-import { logger } from '../utils';
+import { logger, dataExchange, DataOrderContract } from '../utils';
 import { getElements } from './helpers/blockchain';
 import { dateOrNull } from './helpers/date';
 import { storage as offchainStorage } from '../utils/wibson-lib';
@@ -85,14 +85,30 @@ const getDataOrderDetails = async (order) => {
 
 /**
  * @async
+ * @function fetchAndCacheDataOrder
+ * @param {String} orderAddress the ethereum address for the Data Order
+ * @param {Object} ordersCache store used for Order caching
+ * @throws When can not connect to blockchain or cache is not set up correctly.
+ * @returns {Promise} Promise which resolves to the Data Order.
+ */
+const fetchAndCacheDataOrder = async (orderAddress, ordersCache) => {
+  const order = DataOrderContract.at(orderAddress);
+  const dataOrder = await getDataOrderDetails(order);
+  const fullDataOrder = await addOffChainInfo(dataOrder);
+  await addOrderToCache(fullDataOrder, ordersCache);
+
+  return dataOrder;
+};
+
+/**
+ * @async
  * @function getDataOrder
- * @param {Object} DataOrderContract the Data Order truffle contract.
  * @param {String} orderAddress the ethereum address for the Data Order
  * @param {Object} ordersCache Redis storage used for orders caching
  * @throws When can not connect to blockchain or cache is not set up correctly.
  * @returns {Promise} Promise which resolves to the Data Order.
  */
-const getDataOrder = async (DataOrderContract, orderAddress, ordersCache) => {
+const getDataOrder = async (orderAddress, ordersCache) => {
   const cachedDataOrder = await ordersCache.get(orderAddress);
   if (cachedDataOrder) {
     logger.debug('DataOrder :: Cache Hit ::', { orderAddress });
@@ -100,20 +116,12 @@ const getDataOrder = async (DataOrderContract, orderAddress, ordersCache) => {
   }
 
   logger.debug('DataOrder :: Cache Miss :: Fetching from blockchain... ::', { orderAddress });
-  const order = await DataOrderContract.at(orderAddress);
-
-  const dataOrder = await getDataOrderDetails(order);
-  const fullDataOrder = await addOffChainInfo(dataOrder);
-  await addOrderToCache(fullDataOrder, ordersCache);
-
-  return fullDataOrder;
+  return fetchAndCacheDataOrder(orderAddress, ordersCache);
 };
 
 /**
  * @async
  * @function getOrdersForBuyer
- * @param {Object} dataExchange the Data Exchange truffle contract instance.
- * @param {Object} DataOrderContract the Data Order truffle contract.
  * @param {Object} buyerAddress the buyer's Ethereum address.
  * @param {Object} ordersCache Redis storage used for orders caching
  * @param {Number} offset Pagination offset
@@ -122,8 +130,6 @@ const getDataOrder = async (DataOrderContract, orderAddress, ordersCache) => {
  * @returns {Promise} Promise which resolves to the list of orders.
  */
 const getOrdersForBuyer = async (
-  dataExchange,
-  DataOrderContract,
   buyerAddress,
   ordersCache,
   offset = 0,
@@ -134,9 +140,9 @@ const getOrdersForBuyer = async (
   const ordersPage = orderAddresses.slice(offset, upperBound);
 
   const dataOrders = ordersPage.map(orderAddress =>
-    getDataOrder(DataOrderContract, orderAddress, ordersCache));
+    getDataOrder(orderAddress, ordersCache));
 
   return Promise.all(dataOrders);
 };
 
-export { getDataOrder, getOrdersForBuyer };
+export { getDataOrder, getOrdersForBuyer, fetchAndCacheDataOrder };

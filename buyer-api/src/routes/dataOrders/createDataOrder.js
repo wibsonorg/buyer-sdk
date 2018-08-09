@@ -1,6 +1,6 @@
 import express from 'express';
 import { createDataOrderFacade, getOrdersForBuyer } from '../../facades';
-import { asyncError, cache } from '../../utils';
+import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 
 const router = express.Router();
@@ -26,19 +26,9 @@ router.get(
     const { offset, limit } = req.query;
     const { address } = await signingService.getAccount();
 
-    const {
-      stores: { ordersCache },
-      contracts: { dataExchange, DataOrderContract },
-    } = req.app.locals;
+    const { stores: { ordersCache } } = req.app.locals;
 
-    const ordersResult = getOrdersForBuyer(
-      dataExchange,
-      DataOrderContract,
-      address,
-      ordersCache,
-      Number(offset),
-      Number(limit),
-    );
+    const ordersResult = getOrdersForBuyer(address, ordersCache, Number(offset), Number(limit));
 
     const minimumBudget = dataExchange.minimumInitialBudgetForAudits();
 
@@ -160,7 +150,6 @@ const validate = ({
 router.post(
   '/',
   asyncError(async (req, res) => {
-    const { dataExchange } = req.app.locals.contracts;
     const { dataOrder } = req.body;
     const errors = validate(dataOrder);
 
