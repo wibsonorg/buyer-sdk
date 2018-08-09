@@ -82,6 +82,7 @@ const validate = ({
   termsAndConditions,
   buyerURL,
   notaries,
+  buyerInfoId,
 }) => {
   const fields = {
     filters,
@@ -91,6 +92,7 @@ const validate = ({
     termsAndConditions,
     buyerURL,
     notaries,
+    buyerInfoId,
   };
 
   return Object.entries(fields).reduce((accumulator, [field, value]) => {
@@ -173,6 +175,10 @@ const validate = ({
  *         type: array
  *         required: true
  *         description: List of notaries' ethereum addresses
+ *       buyerInfoId:
+ *         type: string
+ *         required: true
+ *         description: The ID for the buyer info
  */
 router.post(
   '/',

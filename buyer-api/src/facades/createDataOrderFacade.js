@@ -50,14 +50,15 @@ const buildDataOrderParameters = ({
  *                 for the order.
  * @param {String} parameters.buyerURL Public URL of the buyer where the data
  *                 must be sent.
- * @param {String} parameters.notaries Ethereum addresses of the notaries
+ * @param {Array} parameters.notaries Ethereum addresses of the notaries
  *                 involved.
+ * @param {String} parameters.buyerInfoId The ID for the buyer info.
  * @param {Object} contract DataExchange contract
  * @param {Object} dataOrderQueue DataOrder's queue object
  * @returns {Response} The result of the operation.
  */
 const createDataOrderFacade = async (
-  { notaries, ...parameters },
+  { notaries, buyerInfoId, ...parameters },
   contract,
   dataOrderQueue,
 ) => {
@@ -88,7 +89,7 @@ const createDataOrderFacade = async (
     params,
   );
 
-  dataOrderQueue.add('addNotariesToOrder', { receipt, notaries }, {
+  dataOrderQueue.add('fetchOrderAddress', { receipt, notaries, buyerInfoId }, {
     attempts: 20,
     backoff: {
       type: 'linear',
