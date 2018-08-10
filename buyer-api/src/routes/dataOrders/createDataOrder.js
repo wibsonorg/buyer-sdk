@@ -156,7 +156,7 @@ router.post(
     if (errors.length > 0) {
       res.boom.badData('Validation failed', { validation: errors });
     } else {
-      const response = await createDataOrderFacade(dataOrder, dataExchange);
+      const response = await createDataOrderFacade(dataOrder);
 
       if (response.success()) {
         res.json(response.result);

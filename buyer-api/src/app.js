@@ -12,9 +12,6 @@ import {
   errorHandler,
   createRedisStore,
   createLevelStore,
-  wibcoin,
-  dataExchange,
-  DataOrderContract,
 } from './utils';
 
 import { account, health, notaries, dataOrders, dataResponses, buyerInfos } from './routes';
@@ -27,12 +24,6 @@ app.locals.stores = {
   notariesCache: createRedisStore('notaries.cache.'),
   buyerInfos: createLevelStore(`${config.levelDirectory}/buyer_infos`),
   buyerInfoPerOrder: createLevelStore(`${config.levelDirectory}/buyer_info_per_order`),
-};
-
-app.locals.contracts = {
-  wibcoin,
-  dataExchange,
-  DataOrderContract,
 };
 
 app.use(helmet());
