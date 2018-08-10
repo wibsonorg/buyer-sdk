@@ -40,10 +40,9 @@ router.post(
   '/:orderAddress/close',
   validateAddress('orderAddress'),
   asyncError(async (req, res) => {
-    const { dataExchange } = req.app.locals.contracts;
     const { orderAddress } = req.params;
 
-    const response = await closeDataOrderFacade(orderAddress, dataExchange);
+    const response = await closeDataOrderFacade(orderAddress);
 
     if (response.success()) {
       res.json(response.result);

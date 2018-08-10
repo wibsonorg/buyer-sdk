@@ -184,7 +184,6 @@ router.post(
   '/',
   asyncError(async (req, res) => {
     const {
-      contracts: { dataExchange },
       queues: { dataOrder: queue },
     } = req.app.locals;
     const { dataOrder } = req.body;
@@ -193,11 +192,7 @@ router.post(
     if (errors.length > 0) {
       res.boom.badData('Validation failed', { validation: errors });
     } else {
-      const response = await createDataOrderFacade(
-        dataOrder,
-        dataExchange,
-        queue,
-      );
+      const response = await createDataOrderFacade(dataOrder, queue);
 
       if (response.success()) {
         res.json(response.result);

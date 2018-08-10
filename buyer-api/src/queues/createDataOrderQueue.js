@@ -1,10 +1,6 @@
 import Queue from 'bull';
-import { logger, web3 } from '../utils';
-import { addNotariesToOrderFacade } from '../facades';
-import {
-  getTransactionReceipt,
-  extractEventArguments,
-} from '../facades/helpers';
+import { logger } from '../utils';
+import { onDataOrderSent, addNotariesToOrderFacade } from '../facades';
 import { associateBuyerInfoToOrder } from '../services/buyerInfo';
 
 const PREFIX = 'buyer-api:jobs';
@@ -25,24 +21,10 @@ const createDataOrderQueue = ({ contracts, stores }) => {
   // NOTE: The processing can be done in a separate process by specifying the
   //       path to a module instead of function.
   // @see https://github.com/OptimalBits/bull#separate-processes
-  dataOrderQueue.process('fetchOrderAddress', async (
+  dataOrderQueue.process('dataOrderSent', async (
     { data: { receipt, notaries, buyerInfoId } },
   ) => {
-    const { logs } = await getTransactionReceipt(web3, receipt);
-    const { orderAddr } = extractEventArguments(
-      'NewOrder',
-      logs,
-      dataExchange,
-    );
-
-    dataOrderQueue.add('addNotariesToOrder', {
-      orderAddr,
-      notaries,
-    });
-    dataOrderQueue.add('associateBuyerInfoToOrder', {
-      orderAddr,
-      buyerInfoId,
-    });
+    await onDataOrderSent(receipt, notaries, buyerInfoId, dataOrderQueue);
   });
 
   dataOrderQueue.process('addNotariesToOrder', async (
