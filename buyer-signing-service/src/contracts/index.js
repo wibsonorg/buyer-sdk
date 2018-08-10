@@ -75,4 +75,9 @@ const getDataExchangeMethodDefinition = methodName =>
 const getWibcoinMethodDefinition = methodName =>
   getContractMethodDefinition(wibcoinFunctionDefinitions, methodName);
 
-export { getDataExchangeMethodDefinition, getWibcoinMethodDefinition };
+export {
+  getDataExchangeMethodDefinition,
+  getWibcoinMethodDefinition,
+  dxDefinition as dataExchange,
+  wibcoinDefinition as wibcoin,
+};

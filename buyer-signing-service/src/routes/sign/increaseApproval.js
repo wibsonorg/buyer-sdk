@@ -38,6 +38,11 @@ const validateParameters = ({ spender, addedValue }) => {
  *           The number of transactions made by the sender including this one.
  *         required: true
  *       - in: body
+ *         name: gasPrice
+ *         type: string
+ *         description: The number of transactions made by the sender.
+ *         required: true
+ *       - in: body
  *         name: spender
  *         description: The target ethereum address
  *       - in: body
@@ -58,8 +63,9 @@ const validateParameters = ({ spender, addedValue }) => {
  *         description: Problem with the signing process
  */
 router.post('/increase-approval', asyncError(async (req, res) => {
-  const { nonce, params, payload } = req.body;
-  const errors = validatePresence({ nonce, params, payload }, validateParameters);
+  const { contracts: { wibcoin } } = req.app.locals;
+  const { nonce, gasPrice, params } = req.body;
+  const errors = validatePresence({ nonce, params }, validateParameters);
 
   if (errors.length > 0) {
     res.boom.badData('Validation failed', { validation: errors });
@@ -68,7 +74,7 @@ router.post('/increase-approval', asyncError(async (req, res) => {
       _spender: params.spender,
       _addedValue: Number(params.addedValue),
     };
-    const response = increaseApprovalFacade(nonce, txParams);
+    const response = increaseApprovalFacade(nonce, gasPrice, txParams, wibcoin);
 
     if (response.success()) {
       res.json({ signedTransaction: response.result });

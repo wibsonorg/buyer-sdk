@@ -1,60 +1,51 @@
-import EthTx from 'ethereumjs-tx';
-import { Buffer } from 'safe-buffer';
 import Response from '../Response';
-import { buyer, encodeFunctionCall, validatePresence } from '../../helpers';
-import { getWibcoinMethodDefinition } from '../../contracts';
+import { buyer } from '../../helpers';
+import {
+  createDataBuilder,
+  signTransaction,
+  isPresent,
+} from '../../utils/wibson-lib';
 import config from '../../../config';
-
-const {
-  jsonInterface,
-  parameterNames,
-  inputSchema,
-} = getWibcoinMethodDefinition('increaseApproval');
 
 const {
   getAddress,
   getPrivateKey,
 } = buyer;
 
-const validateParameters = parameters =>
-  inputSchema.reduce((accumulator, { name }) => {
-    // TODO: type validation/coercion should also be done
-    const value = parameters[name];
+const increaseApprovalFacade = (nonce, gasPrice, params, contract) => {
+  const build = createDataBuilder(contract, 'increaseApproval');
+  const response = build(params);
+  let { errors } = response;
 
-    if (value === null || value === undefined) {
-      return [...accumulator, `Field '${name}' is required`];
-    }
+  if (!isPresent(nonce)) {
+    errors = [...errors, 'Field \'nonce\' is required'];
+  }
 
-    return accumulator;
-  }, []);
-
-const buildData = params => encodeFunctionCall(
-  jsonInterface,
-  parameterNames.map(name => params[name]),
-);
-
-const increaseApprovalFacade = (nonce, params) => {
-  const errors = validatePresence({ nonce, params }, validateParameters);
+  if (!isPresent(gasPrice)) {
+    errors = [...errors, 'Field \'gasPrice\' is required'];
+  }
 
   if (errors.length > 0) {
     return new Response(null, errors);
   }
 
-  const rawTransaction = {
+  const {
+    chainId,
+    wibcoin: {
+      address,
+      increaseApproval: { gasLimit },
+    },
+  } = config.contracts;
+
+  const result = signTransaction(getPrivateKey(), {
     from: getAddress(),
-    to: config.contracts.wibcoin.address,
-    value: '0x00',
-    nonce: `0x${nonce.toString(16)}`,
-    gasLimit: `0x${parseInt(config.contracts.wibcoin.increaseApproval.gasLimit, 10).toString(16)}`,
-    // TODO: This must be set before deploying to production
-    // chainId: config.contracts.chainId,
-    data: buildData(params),
-  };
-
-  const tx = new EthTx(rawTransaction);
-  tx.sign(Buffer.from(getPrivateKey(), 'hex'));
-
-  const result = tx.serialize().toString('hex');
+    to: address,
+    nonce,
+    gasPrice,
+    gasLimit,
+    chainId,
+    data: response.data,
+  });
 
   return new Response(result);
 };
