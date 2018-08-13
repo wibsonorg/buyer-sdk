@@ -1,14 +1,11 @@
 import Queue from 'bull';
-import { logger } from '../utils';
+import { logger, dataExchange } from '../utils';
 import { onDataOrderSent, addNotariesToOrderFacade } from '../facades';
 import { associateBuyerInfoToOrder } from '../services/buyerInfo';
 
 const PREFIX = 'buyer-api:jobs';
 
-const createDataOrderQueue = ({ contracts, stores }) => {
-  const { dataExchange } = contracts;
-  const { buyerInfos, buyerInfoPerOrder } = stores;
-
+const createDataOrderQueue = ({ buyerInfos, buyerInfoPerOrder }) => {
   const dataOrderQueue = new Queue('DataOrderQueue', {
     prefix: PREFIX,
     settings: {

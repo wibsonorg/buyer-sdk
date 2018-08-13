@@ -41,7 +41,7 @@ app.locals.contracts = {
 };
 
 app.locals.queues = {
-  dataOrder: createDataOrderQueue(app.locals),
+  dataOrder: createDataOrderQueue(app.locals.stores),
 };
 
 app.use(helmet());
