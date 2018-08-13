@@ -10,8 +10,13 @@ import logger from './utils/logger';
 import schema from './schema';
 import { data, health, account, sign } from './routes';
 import errorHandler from './middlewares/errorHandler';
+import { dataExchange, wibcoin } from './contracts';
 
 const app = express();
+app.locals.contracts = {
+  wibcoin,
+  dataExchange,
+};
 
 app.use(helmet());
 app.use(bodyParser.json());

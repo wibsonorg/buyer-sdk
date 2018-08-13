@@ -1,11 +1,8 @@
 import express from 'express';
 import { asyncError } from '../../helpers';
-import validateAddress from '../../middlewares/validateAddress';
 import signCloseOrderFacade from '../../facades/sign/closeOrderFacade';
 
 const router = express.Router();
-
-const isPresent = obj => obj !== null && obj !== undefined;
 
 /**
  * @swagger
@@ -25,38 +22,42 @@ const isPresent = obj => obj !== null && obj !== undefined;
  *           The number of transactions made by the sender including this one.
  *         required: true
  *       - in: body
- *         name: orderAddr
+ *         name: gasPrice
  *         type: string
+ *         description: The number of transactions made by the sender.
  *         required: true
- *         description: The address of order to be closed
+ *       - in: body
+ *         name: params
+ *         description: Parameters to be used in the transaction call.
+ *         schema:
+ *           $ref: "#/definitions/CloseOrderParameters"
  *     responses:
  *       200:
  *         description: When the signing performs successfully
  *       500:
  *         description: Any other case
+ *
+ * definitions:
+ *   CloseOrderParameters:
+ *     type: object
+ *     properties:
+ *       orderAddr:
+ *         type: string
+ *         description: The address of order to be closed
+ *         required: true
  */
-router.post(
-  '/close-order',
-  validateAddress('orderAddr'),
-  asyncError(async (req, res) => {
-    const { nonce, orderAddr } = req.body;
+router.post('/close-order', asyncError(async (req, res) => {
+  const { contracts: { dataExchange } } = req.app.locals;
+  const { nonce, gasPrice, params } = req.body;
+  const response = signCloseOrderFacade(nonce, gasPrice, params, dataExchange);
 
-    if (!isPresent(nonce)) {
-      res.boom.badData('Validation failed', {
-        validation: ['Field \'nonce\' is required'],
-      });
-    } else {
-      const response = signCloseOrderFacade({ nonce, orderAddr });
-
-      if (response.success()) {
-        res.json({ signedTransaction: response.result });
-      } else {
-        res.boom.badData('Operation failed', {
-          errors: response.errors,
-        });
-      }
-    }
-  }),
-);
+  if (response.success()) {
+    res.json({ signedTransaction: response.result });
+  } else {
+    res.boom.badData('Operation failed', {
+      errors: response.errors,
+    });
+  }
+}));
 
 export default router;

@@ -4,86 +4,6 @@ import signNewOrderFacade from '../../facades/sign/newOrderFacade';
 
 const router = express.Router();
 
-const isPresent = obj => obj !== null && obj !== undefined;
-
-/**
- * Checks that every field is present.
- *
- * @param {String} parameters.filters Hashed target audience.
- * @param {String} parameters.dataRequest Requested data type (Geolocation,
- *                 Facebook, etc).
- * @param {Integer} parameters.price Price per Data Response added.
- * @param {String} parameters.initialBudgetForAudits The initial budget set for
- *                 future audits.
- * @param {String} parameters.termsAndConditions Buyer's terms and conditions
- *                 for the order.
- * @param {String} parameters.buyerURL Public URL of the buyer where the data
- *                 must be sent.
- * @returns {array} Error messages
- */
-const validateNewOrderParameters = ({
-  filters,
-  dataRequest,
-  price,
-  initialBudgetForAudits,
-  termsAndConditions,
-  buyerURL,
-}) => {
-  const fields = {
-    filters,
-    dataRequest,
-    price: price && parseInt(price, 10),
-    initialBudgetForAudits: initialBudgetForAudits &&
-      parseInt(initialBudgetForAudits, 10),
-    termsAndConditions,
-    buyerURL,
-  };
-
-  return Object.entries(fields).reduce((accumulator, [field, value]) => {
-    if (!isPresent(value)) {
-      return [...accumulator, `Field '${field}' is required`];
-    }
-
-    return accumulator;
-  }, []);
-};
-
-/**
- * Checks that `nonce` and one of `newOrderParameters` or `newOrderPayload` are
- * present.
- *
- * @param {Number} parameters.nonce The number of transactions made by the
- *                 sender including this one.
- * @param {Object} parameters.newOrderParameters Parameters to be used in the
- *                 transaction call.
- * @param {String} parameters.newOrderPayload Data payload to be used instead of
- *                 `newOrderParameters`
- * @returns {array} Error messages
- */
-const validate = ({ nonce, newOrderParameters, newOrderPayload }) => {
-  let errors = [];
-
-  if (!isPresent(nonce)) {
-    errors = ['Field \'nonce\' is required'];
-  }
-
-  if (!isPresent(newOrderParameters) && !isPresent(newOrderPayload)) {
-    errors = [
-      ...errors,
-      'Field \'newOrderParameters\' or \'newOrderPayload\' must be provided',
-    ];
-  }
-
-  if (isPresent(newOrderParameters)) {
-    errors = [
-      ...errors,
-      ...validateNewOrderParameters(newOrderParameters),
-    ];
-  }
-
-  return errors;
-};
-
 /**
  * @swagger
  * /sign/new-order:
@@ -103,15 +23,15 @@ const validate = ({ nonce, newOrderParameters, newOrderPayload }) => {
  *           The number of transactions made by the sender including this one.
  *         required: true
  *       - in: body
- *         name: newOrderParameters
+ *         name: gasPrice
+ *         type: string
+ *         description: The number of transactions made by the sender.
+ *         required: true
+ *       - in: body
+ *         name: params
  *         description: Parameters to be used in the transaction call.
  *         schema:
  *           $ref: "#/definitions/NewOrderParameters"
- *       - in: body
- *         name: newOrderPayload
- *         type: string
- *         description: |
- *           Data payload to be used instead of `newOrderParameters`.
  *     responses:
  *       200:
  *         description: When the signing performs successfully
@@ -148,25 +68,16 @@ const validate = ({ nonce, newOrderParameters, newOrderPayload }) => {
  *         required: true
  */
 router.post('/new-order', asyncError(async (req, res) => {
-  const { nonce, newOrderParameters, newOrderPayload } = req.body;
-  const errors = validate({ nonce, newOrderParameters, newOrderPayload });
+  const { contracts: { dataExchange } } = req.app.locals;
+  const { nonce, gasPrice, params } = req.body;
+  const response = signNewOrderFacade(nonce, gasPrice, params, dataExchange);
 
-  if (errors.length > 0) {
-    res.boom.badData('Validation failed', { validation: errors });
+  if (response.success()) {
+    res.json({ signedTransaction: response.result });
   } else {
-    const response = signNewOrderFacade({
-      nonce,
-      newOrderParameters,
-      newOrderPayload,
+    res.boom.badData('Operation failed', {
+      errors: response.errors,
     });
-
-    if (response.success()) {
-      res.json({ signedTransaction: response.result });
-    } else {
-      res.boom.badData('Operation failed', {
-        errors: response.errors,
-      });
-    }
   }
 }));
 
