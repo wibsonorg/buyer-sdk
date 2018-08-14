@@ -31,6 +31,9 @@ export default {
   name: 'CacheUpdater',
   callback: subscriberCallback,
   events: [
+    'NotaryRegistered',
+    'NotaryUpdated',
+    'NotaryUnregistered',
     'NotaryAddedToOrder',
     'DataAdded',
     'TransactionCompleted',
