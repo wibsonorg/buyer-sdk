@@ -1,30 +1,21 @@
-import Queue from 'bull';
-import { logger, dataExchange } from '../utils';
+import { createQueue } from './createQueue';
+import { dataExchange } from '../utils';
 import { onDataOrderSent, addNotariesToOrderFacade } from '../facades';
 import { associateBuyerInfoToOrder } from '../services/buyerInfo';
 
-const PREFIX = 'buyer-api:jobs';
-
 const createDataOrderQueue = ({ buyerInfos, buyerInfoPerOrder }) => {
-  const dataOrderQueue = new Queue('DataOrderQueue', {
-    prefix: PREFIX,
-    settings: {
-      backoffStrategies: {
-        linear: attemptsMade => attemptsMade * 10 * 1000,
-      },
-    },
-  });
+  const queue = createQueue('DataOrderQueue');
 
   // NOTE: The processing can be done in a separate process by specifying the
   //       path to a module instead of function.
   // @see https://github.com/OptimalBits/bull#separate-processes
-  dataOrderQueue.process('dataOrderSent', async (
+  queue.process('dataOrderSent', async (
     { data: { receipt, notaries, buyerInfoId } },
   ) => {
-    await onDataOrderSent(receipt, notaries, buyerInfoId, dataOrderQueue);
+    await onDataOrderSent(receipt, notaries, buyerInfoId, queue);
   });
 
-  dataOrderQueue.process('addNotariesToOrder', async (
+  queue.process('addNotariesToOrder', async (
     { data: { orderAddr, notaries } },
   ) => {
     const response = await addNotariesToOrderFacade(
@@ -38,7 +29,7 @@ const createDataOrderQueue = ({ buyerInfos, buyerInfoPerOrder }) => {
     }
   });
 
-  dataOrderQueue.process('associateBuyerInfoToOrder', async (
+  queue.process('associateBuyerInfoToOrder', async (
     { data: { orderAddr, buyerInfoId } },
   ) => {
     await associateBuyerInfoToOrder(
@@ -49,14 +40,7 @@ const createDataOrderQueue = ({ buyerInfos, buyerInfoPerOrder }) => {
     );
   });
 
-  dataOrderQueue.on('failed', ({
-    id, name, attemptsMade, failedReason,
-  }) => {
-    const fullJobId = `${PREFIX}:DataOrderQueue:${id}`;
-    logger.error(`[${fullJobId}][${name}][${attemptsMade}] failed with reason: ${failedReason}`);
-  });
-
-  return dataOrderQueue;
+  return queue;
 };
 
 export { createDataOrderQueue };

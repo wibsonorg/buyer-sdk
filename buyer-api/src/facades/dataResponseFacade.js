@@ -4,6 +4,7 @@ import url from 'url';
 import web3 from '../utils/web3';
 import signingService from '../services/signingService';
 import {
+  getTransactionReceipt,
   getElements,
   performTransaction,
   sendTransaction,
@@ -11,6 +12,7 @@ import {
 import { getNotaryInfo } from './notariesFacade';
 import { getDataResponse } from '../utils/wibson-lib/s3';
 import { dataExchange, DataOrderContract, logger } from '../utils';
+import config from '../../config';
 
 const auditResult = async (notaryUrl, order, seller, buyer) => {
   const auditUrl = url.resolve(notaryUrl, `/buyers/audit/result/${buyer}/${order}`);
@@ -49,7 +51,7 @@ const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
   return price + (notarizationFee - prePaid); // without parenthesis, eslint complains
 };
 
-const addDataResponse = async (order, seller) => {
+const addDataResponse = async (order, seller, dataResponseQueue) => {
   if (!web3Utils.isAddress(order) || !web3Utils.isAddress(seller)) {
     throw new Error('Invalid order|seller address');
   }
@@ -57,7 +59,18 @@ const addDataResponse = async (order, seller) => {
   const dataOrder = DataOrderContract.at(order);
 
   if (dataOrder.hasSellerBeenAccepted(seller)) {
-    throw new Error('Data Response has already been added');
+    dataResponseQueue.add('addDataResponseSent', {
+      receipt: null, // We don't have the receipt at this point
+      orderAddress: order,
+      sellerAddress: seller,
+    }, {
+      attempts: 20,
+      backoff: {
+        type: 'linear',
+      },
+    });
+
+    return true;
   }
 
   let dataResponse;
@@ -73,8 +86,7 @@ const addDataResponse = async (order, seller) => {
     throw new Error('Invalid data response payload');
   }
 
-  const dataOrderNotaries = await getElements(dataOrder, 'notaries');
-  if (!dataOrderNotaries.includes(notaryAccount)) {
+  if (!dataOrder.hasNotaryBeenAdded(notaryAccount)) {
     throw new Error('Invalid notary');
   }
 
@@ -107,11 +119,21 @@ const addDataResponse = async (order, seller) => {
     params,
   );
 
-  logger.info('Data Response Added', { order, seller, receipt });
+  dataResponseQueue.add('addDataResponseSent', {
+    receipt,
+    orderAddress: order,
+    sellerAddress: seller,
+  }, {
+    attempts: 20,
+    backoff: {
+      type: 'linear',
+    },
+  });
+
   return true;
 };
 
-const closeDataResponse = async (order, seller) => {
+const closeDataResponse = async (order, seller, dataResponseQueue) => {
   if (!web3Utils.isAddress(order) || !web3Utils.isAddress(seller)) {
     throw new Error('Invalid order|seller address');
   }
@@ -120,14 +142,15 @@ const closeDataResponse = async (order, seller) => {
 
   const sellerInfo = await dataOrder.getSellerInfo(seller);
   if (web3Utils.hexToUtf8(sellerInfo[5]) !== 'DataResponseAdded') {
-    throw new Error('Data Response has already been closed|refunded');
+    return true; // DataResponse has already been closed.
   }
 
   const notaryAddress = sellerInfo[1];
-  const notaryInfo = await getNotaryInfo(web3, dataExchange, notaryAddress);
+  const notaryInfo = await getNotaryInfo(dataExchange, notaryAddress);
   const notaryApi = notaryInfo.publicUrls.api;
 
   const params = await auditResult(notaryApi, order, seller, dataOrder.buyer());
+  console.log('auditResult', params);
 
   const { address } = await signingService.getAccount();
 
@@ -138,8 +161,86 @@ const closeDataResponse = async (order, seller) => {
     params,
   );
 
-  logger.info('Data Response Closed', { order, seller, receipt });
+  dataResponseQueue.add('closeDataResponseSent', {
+    receipt,
+    orderAddress: order,
+    sellerAddress: seller,
+  }, {
+    attempts: 20,
+    backoff: {
+      type: 'linear',
+    },
+  });
+
   return true;
 };
 
-export { addDataResponse, closeDataResponse };
+const buyData = async (orderAddress, sellerAddress, dataResponseQueue) => {
+  try {
+    await addDataResponse(orderAddress, sellerAddress, dataResponseQueue);
+  } catch (error) {
+    if (
+      error.message === 'Invalid order|seller address' ||
+      error.message === 'Invalid data response payload' ||
+      error.message === 'Invalid notary' ||
+      error.failed
+    ) {
+      logger.error('Could not add DataResponse (it will not be retried)' +
+        ` | reason: ${error.message}` +
+        ` | params ${JSON.stringify({ orderAddress, sellerAddress })}`);
+    } else {
+      throw error;
+    }
+  }
+};
+
+const onAddDataResponseSent = async (
+  receipt,
+  orderAddress,
+  sellerAddress,
+  dataResponseQueue,
+) => {
+  try {
+    if (receipt) {
+      await getTransactionReceipt(web3, receipt);
+    }
+    await closeDataResponse(orderAddress, sellerAddress, dataResponseQueue);
+  } catch (error) {
+    console.error('stacktrace', error);
+    if (
+      error.message === 'Invalid order|seller address' || error.failed
+    ) {
+      logger.error('Could not close DataResponse (it will not be retried)' +
+        ` | reason: ${error.message}` +
+        ` | params ${JSON.stringify({ receipt, orderAddress, sellerAddress })}`);
+    } else {
+      throw error;
+    }
+  }
+};
+
+const onCloseDataResponseSent = async (
+  receipt,
+  orderAddress,
+  sellerAddress,
+) => {
+  try {
+    await getTransactionReceipt(web3, receipt);
+  } catch (error) {
+    if (error.failed) {
+      logger.error('Close DataResponse failed (it will not be retried)' +
+        ` | reason: ${error.message}` +
+        ` | params ${JSON.stringify({ receipt, orderAddress, sellerAddress })}`);
+    } else {
+      throw error;
+    }
+  }
+};
+
+export {
+  buyData,
+  addDataResponse,
+  onAddDataResponseSent,
+  closeDataResponse,
+  onCloseDataResponseSent,
+};
