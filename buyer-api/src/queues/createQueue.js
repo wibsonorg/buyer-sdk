@@ -14,10 +14,15 @@ const createQueue = (queueName) => {
   });
 
   queue.on('failed', ({
-    id, name, attemptsMade, failedReason: reason,
+    id, name, failedReason: reason,
   }) => {
     const fullJobId = `${PREFIX}:${queueName}:${id}`;
-    logger.error(`[${fullJobId}][${name}][${attemptsMade}] reason: ${reason}`);
+    logger.error(`[${fullJobId}][${name}] reason: ${reason}`);
+  });
+
+  queue.on('completed', ({ id, name }) => {
+    const fullJobId = `${PREFIX}:${queueName}:${id}`;
+    logger.info(`[${fullJobId}][${name}] completed`);
   });
 
   return queue;

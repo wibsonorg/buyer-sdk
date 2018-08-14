@@ -11,6 +11,9 @@ const client = getS3Client(
   storage.password,
 );
 
+const putS3Object = async (objectName, payload) =>
+  client.putObject(objectName, JSON.stringify(payload));
+
 const getS3Object = async (objectName) => {
   const obj = await client.getObject(objectName);
   const data = obj.Body.toString();
@@ -51,6 +54,10 @@ const getObject = (dataOrder, seller, type) => {
   return getS3Object(name);
 };
 
+const putObject = (dataOrder, seller, type, payload) => {
+  const name = `${prefix}/${dataOrder.address}/${type}/${seller}.json`;
+  return putS3Object(name, payload);
+};
 
 // //
 
@@ -59,6 +66,8 @@ const countDataResponses = dataOrder => countObjects(dataOrder, 'data-responses'
 const listDataResponses = dataOrder => listObjects(dataOrder, 'data-responses');
 
 const getDataResponse = (dataOrder, seller) => getObject(dataOrder, seller, 'data-responses');
+
+const putDataResponse = (dataOrder, seller, payload) => putObject(dataOrder, seller, 'data-responses', payload);
 
 const countData = dataOrder => countObjects(dataOrder, 'data');
 
@@ -70,6 +79,7 @@ export {
   countDataResponses,
   listDataResponses,
   getDataResponse,
+  putDataResponse,
   countData,
   listData,
   getData,

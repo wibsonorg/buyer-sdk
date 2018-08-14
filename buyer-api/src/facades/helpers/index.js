@@ -5,4 +5,5 @@ export {
   performTransaction,
   sendTransaction,
   getTransactionReceipt,
+  retryAfterError,
 } from './performTransaction';

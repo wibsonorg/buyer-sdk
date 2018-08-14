@@ -1,5 +1,6 @@
 import {
-  buyData,
+  onBuyData,
+  onIncreaseApprovalSent,
   addDataResponse,
   onAddDataResponseSent,
   closeDataResponse,
@@ -21,7 +22,8 @@ export {
   closeDataResponse,
   closeDataOrderFacade,
   onDataOrderSent,
-  buyData,
+  onBuyData,
+  onIncreaseApprovalSent,
   onAddDataResponseSent,
   onCloseDataResponseSent,
 };

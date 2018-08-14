@@ -1,6 +1,7 @@
 import { createQueue } from './createQueue';
 import {
-  buyData,
+  onBuyData,
+  onIncreaseApprovalSent,
   onAddDataResponseSent,
   onCloseDataResponseSent,
 } from '../facades';
@@ -14,7 +15,23 @@ const createDataResponseQueue = () => {
   queue.process('buyData', async (
     { data: { orderAddress, sellerAddress } },
   ) => {
-    await buyData(orderAddress, sellerAddress, queue);
+    await onBuyData(orderAddress, sellerAddress, queue);
+  });
+
+  queue.process('increaseApprovalSent', async (
+    {
+      data: {
+        receipt, orderAddress, sellerAddress, addDataResponseParams,
+      },
+    },
+  ) => {
+    await onIncreaseApprovalSent(
+      receipt,
+      orderAddress,
+      sellerAddress,
+      addDataResponseParams,
+      queue,
+    );
   });
 
   queue.process('addDataResponseSent', async (
