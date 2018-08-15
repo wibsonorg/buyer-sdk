@@ -12,7 +12,7 @@ Transaction sent to Ropsten, or Main Ethereum networks can have the following st
   Possible causes of failure:
     * The Smart Contract code execution began to run but stopped because of a condition not met (usually the condition checked by `require` calls)
     * The transaction went out of gas
-* _Unkonwn_
+* _Unknown_
   This case does not happen very often, but it happens. The error message is:
   ```
   The transaction was not mined within 50 blocks, please make sure your transaction was properly sent. Be aware that it might still be mined!
@@ -20,7 +20,7 @@ Transaction sent to Ropsten, or Main Ethereum networks can have the following st
 
 ### Resilient Transaction Status follow up
 
-The most resilient way we found to follow up the status of a transaction is to use a job processing subsystem (a.k.a. background processing or queue processing system). The state of this subsystem is persisted to Redis so, with a few precautions, jobs can be retried if the need arise, or the service can go down and start rigth from where it left.
+The most resilient way we found to follow up the status of a transaction is to use a job processing subsystem (a.k.a. background processing or queue processing system). The state of this subsystem is persisted to Redis so, with a few precautions, jobs can be retried if the need arise, or the service can go down and start right from where it left.
 
 Add DataResponse simplified example:
 
@@ -80,7 +80,7 @@ With this scheme, if the job fails with an error, the job processor retries the 
 #### Important aspects to take into account
 
 1. __Idempotency__: As jobs can be retried many times it is important that the underneath transaction has no additional effect than calling the transaction only once. An explicit and safe approach is to check against the blockchain to send the transaction (see the very first lines of `addDataResponse`).
-2. __Statues__: `Pending` and `Unknown` Transactions Statuses should be retried. There is no need to retry `Failed` transactions since the smart contract code is saying that a condition is not met.
+2. __Statuses__: `Pending` and `Unknown` Transactions Statuses should be retried. There is no need to retry `Failed` transactions since the smart contract code is saying that a condition is not met.
 3. __Explicitly define what errors should not be retried__: in our example
 ```js
 queue.process('addDataResponseSent', async ({ data }) => {
