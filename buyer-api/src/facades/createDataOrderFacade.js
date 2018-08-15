@@ -1,6 +1,6 @@
 import Response from './Response';
 import { extractEventArguments } from './helpers';
-import web3 from '../utils/web3';
+import { web3, dataExchange } from '../utils';
 import signingService from '../services/signingService';
 import { coercion } from '../utils/wibson-lib';
 
@@ -49,10 +49,9 @@ const buildDataOrderParameters = ({
  *                 for the order.
  * @param {String} parameters.buyerURL Public URL of the buyer where the data
  *                 must be sent.
- * @param {Object} contract DataExchange contract
  * @returns {Response} The result of the operation.
  */
-const createDataOrderFacade = async (parameters, contract) => {
+const createDataOrderFacade = async (parameters) => {
   const dataOrderParameters = buildDataOrderParameters(parameters);
 
   if (dataOrderParameters.buyerURL.length === 0) {
@@ -74,7 +73,7 @@ const createDataOrderFacade = async (parameters, contract) => {
   const { orderAddr: orderAddress } = extractEventArguments(
     'NewOrder',
     logs,
-    contract,
+    dataExchange,
   );
 
   return new Response({ orderAddress });

@@ -1,47 +1,31 @@
 import config from '../../config';
-import { logger, createRedisStore } from '../utils';
+import { logger, dataExchange } from '../utils';
 
-const notaryCache = createRedisStore('cache.notary.');
 const notaryTTL = Number(config.contracts.cache.notaryTTL);
 
 /**
  * @async
  * @function addNotaryToCache
  * @param {Object} notaryInfo the notary information to store in the cache
+ * @param {Object} notariesCache Redis storage used for notaries caching
  * @returns {Promise} Promise which resolves to redis result
  */
-const addNotaryToCache = notaryInfo =>
-  notaryCache.set(notaryInfo[0], JSON.stringify(notaryInfo), 'EX', notaryTTL);
+const addNotaryToCache = (notaryInfo, notariesCache) =>
+  notariesCache.set(notaryInfo.notary, JSON.stringify(notaryInfo), 'EX', notaryTTL);
 
 /**
  * @async
- * @function getNotaryInfo
- * @param {Object} web3 the web3 object.
- * @param {Object} dataExchange an instance of the DataExchange.
- * @param {String} address the notary's ethereum address.
+ * @function fetchAndCacheNotary
+ * @param {String} address the ethereum address for the Notary
+ * @param {Object} notariesCache Redis storage used for notaries caching
  * @throws When can not connect to blockchain or cache is not set up correctly.
- * @returns {Promise} Promise which resolves to the notary's information.
+ * @returns {Promise} Promise which resolves to the Data Order.
  */
-const getNotaryInfo = async (web3, dataExchange, address) => {
-  let notaryInfo = await notaryCache.get(address);
-
-  if (!notaryInfo) {
-    logger.debug('Notary :: Cache Miss :: Fetching from blockchain...', { address });
-
-    notaryInfo = await dataExchange.getNotaryInfo(address);
-
-    if (notaryInfo[4]) {
-      // if notary is registered in Data Exchange
-      await addNotaryToCache(notaryInfo);
-    }
-  } else {
-    logger.debug('Notary :: Cache Hit ::', { address });
-    notaryInfo = JSON.parse(notaryInfo);
-  }
-
+const fetchAndCacheNotary = async (address, notariesCache) => {
+  const notaryInfo = await dataExchange.getNotaryInfo(address);
   const publicUrls = JSON.parse(notaryInfo[2]);
 
-  return {
+  const parsedNotaryInfo = {
     notary: notaryInfo[0],
     name: notaryInfo[1],
     publicUrl: publicUrls,
@@ -49,26 +33,47 @@ const getNotaryInfo = async (web3, dataExchange, address) => {
     publicKey: notaryInfo[3],
     isRegistered: notaryInfo[4],
   };
+  await addNotaryToCache(parsedNotaryInfo, notariesCache);
+
+  return parsedNotaryInfo;
+};
+
+/**
+ * @async
+ * @function getNotaryInfo
+ * @param {String} address the notary's ethereum address.
+ * @param {Object} notariesCache Redis storage used for notaries caching.
+ * @throws When can not connect to blockchain or cache is not set up correctly.
+ * @returns {Promise} Promise which resolves to the notary's information.
+ */
+const getNotaryInfo = async (address, notariesCache) => {
+  const cachedNotaryInfo = await notariesCache.get(address);
+  if (cachedNotaryInfo) {
+    logger.debug('Notary :: Cache Hit ::', { address });
+    return JSON.parse(cachedNotaryInfo);
+  }
+
+  logger.debug('Notary :: Cache Miss :: Fetching from blockchain... ::', { address });
+  return fetchAndCacheNotary(address, notariesCache);
 };
 
 /**
  * @async
  * @function getNotariesInfo
- * @param {Object} web3 the web3 object.
- * @param {Object} dataExchange an instance of the DataExchange.
+ * @param {Object} notariesCache Redis storage used for notaries caching.
  * @param {Array} addresses specific notary addresses to fetch.
  * @throws When can not connect to blockchain or cache is not set up correctly.
  * @returns {Promise} Promise which resolves to the list with the notaries' information.
  */
-const getNotariesInfo = async (web3, dataExchange, addresses = []) => {
+const getNotariesInfo = async (notariesCache, addresses = []) => {
   const notaryAddresses = addresses.length > 0
     ? addresses
     : await dataExchange.getAllowedNotaries();
 
   const notaries = notaryAddresses.map(notaryAddress =>
-    getNotaryInfo(web3, dataExchange, notaryAddress));
+    getNotaryInfo(notaryAddress, notariesCache));
 
   return Promise.all(notaries);
 };
 
-export { getNotaryInfo, getNotariesInfo };
+export { getNotaryInfo, getNotariesInfo, fetchAndCacheNotary };

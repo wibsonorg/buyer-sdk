@@ -1,6 +1,6 @@
 import express from 'express';
 import { createDataOrderFacade, getOrdersForBuyer } from '../../facades';
-import { asyncError, cache } from '../../utils';
+import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 
 const router = express.Router();
@@ -23,23 +23,13 @@ router.get(
   '/',
   cache('30 seconds'),
   asyncError(async (req, res) => {
+    req.apicacheGroup = '/orders/*';
     const { offset, limit } = req.query;
     const { address } = await signingService.getAccount();
 
-    const {
-      stores: { buyerInfos, buyerInfoPerOrder },
-      contracts: { dataExchange, DataOrderContract },
-    } = req.app.locals;
+    const { stores: { ordersCache } } = req.app.locals;
 
-    const ordersResult = getOrdersForBuyer(
-      dataExchange,
-      DataOrderContract,
-      address,
-      buyerInfos,
-      buyerInfoPerOrder,
-      Number(offset),
-      Number(limit),
-    );
+    const ordersResult = getOrdersForBuyer(address, ordersCache, Number(offset), Number(limit));
 
     const minimumBudget = dataExchange.minimumInitialBudgetForAudits();
 
@@ -161,14 +151,13 @@ const validate = ({
 router.post(
   '/',
   asyncError(async (req, res) => {
-    const { dataExchange } = req.app.locals.contracts;
     const { dataOrder } = req.body;
     const errors = validate(dataOrder);
 
     if (errors.length > 0) {
       res.boom.badData('Validation failed', { validation: errors });
     } else {
-      const response = await createDataOrderFacade(dataOrder, dataExchange);
+      const response = await createDataOrderFacade(dataOrder);
 
       if (response.success()) {
         res.json(response.result);

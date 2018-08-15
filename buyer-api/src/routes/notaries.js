@@ -1,5 +1,5 @@
 import express from 'express';
-import { asyncError, cache, validateAddress, web3 } from '../utils';
+import { asyncError, cache, validateAddress } from '../utils';
 
 import { getNotaryInfo, getNotariesInfo } from '../facades/notariesFacade';
 
@@ -19,10 +19,11 @@ const router = express.Router();
  *         description: When the fetch failed.
  */
 router.get('/', cache('1 day'), asyncError(async (req, res) => {
-  const { contracts: { dataExchange } } = req.app.locals;
+  req.apicacheGroup = '/notaries/*';
+  const { stores: { notariesCache } } = req.app.locals;
 
   const result = {
-    notaries: await getNotariesInfo(web3, dataExchange),
+    notaries: await getNotariesInfo(notariesCache),
   };
   res.json(result);
 }));
@@ -48,10 +49,11 @@ router.get('/', cache('1 day'), asyncError(async (req, res) => {
  *         description: When the fetch failed.
  */
 router.get('/:notaryAddress', cache('1 day'), validateAddress('notaryAddress'), asyncError(async (req, res) => {
-  const { contracts: { dataExchange } } = req.app.locals;
+  req.apicacheGroup = '/notaries/*';
+  const { stores: { notariesCache } } = req.app.locals;
   const { notaryAddress } = req.params;
 
-  const result = await getNotaryInfo(web3, dataExchange, notaryAddress);
+  const result = await getNotaryInfo(notaryAddress, notariesCache);
   if (result.isRegistered) {
     res.json(result);
   } else {

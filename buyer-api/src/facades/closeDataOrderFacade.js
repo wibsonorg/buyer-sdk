@@ -1,8 +1,7 @@
 import Response from './Response';
 import { getSellersInfo } from './sellersFacade';
 import { extractEventArguments } from './helpers';
-import web3 from '../utils/web3';
-import { DataOrderContract } from '../utils/contracts';
+import { web3, DataOrderContract, dataExchange } from '../utils';
 import signingService from '../services/signingService';
 
 /**
@@ -24,11 +23,10 @@ const validate = async (orderAddres) => {
 /**
  * @async
  * @param {String} orderAddr Order address to be closed.
- * @param {Object} contract DataExchange contract
  * @returns {Response} The result of the operation.
  */
-const closeDataOrderFacade = async (orderAddr, contract) => {
-  const errors = await validate(orderAddr, contract);
+const closeDataOrderFacade = async (orderAddr) => {
+  const errors = await validate(orderAddr);
 
   if (errors.length > 0) {
     return new Response(null, errors);
@@ -43,7 +41,7 @@ const closeDataOrderFacade = async (orderAddr, contract) => {
 
   const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
   const { logs } = await web3.eth.getTransactionReceipt(receipt);
-  const { orderAddr: orderAddress } = extractEventArguments('OrderClosed', logs, contract);
+  const { orderAddr: orderAddress } = extractEventArguments('OrderClosed', logs, dataExchange);
 
   return new Response({ orderAddress });
 };

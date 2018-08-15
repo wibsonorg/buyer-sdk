@@ -62,7 +62,7 @@ const validate = ({ orderAddress, notariesAddresses }) =>
  *         description: Problem on our side
  */
 router.post('/:orderAddress/notaries', asyncError(async (req, res) => {
-  const { dataExchange } = req.app.locals.contracts;
+  const { stores: { notariesCache } } = req.app.locals;
   const { orderAddress } = req.params;
   const { notariesAddresses } = req.body;
   const errors = validate({ orderAddress, notariesAddresses });
@@ -73,7 +73,7 @@ router.post('/:orderAddress/notaries', asyncError(async (req, res) => {
     const response = await addNotariesToOrderFacade(
       orderAddress,
       notariesAddresses,
-      dataExchange,
+      notariesCache,
     );
 
     if (response.success()) {

@@ -2,7 +2,9 @@ import { addDataResponse, closeDataResponse } from './dataResponseFacade';
 import createDataOrderFacade from './createDataOrderFacade';
 import addNotariesToOrderFacade from './addNotariesToOrderFacade';
 import closeDataOrderFacade from './closeDataOrderFacade';
-import { getOrdersForBuyer } from './getOrdersFacade';
+import { getOrdersForBuyer, fetchAndCacheDataOrder } from './getOrdersFacade';
+
+export { getNotaryInfo, getNotariesInfo, fetchAndCacheNotary } from './notariesFacade';
 
 export {
   createDataOrderFacade,
@@ -11,4 +13,5 @@ export {
   addDataResponse,
   closeDataResponse,
   closeDataOrderFacade,
+  fetchAndCacheDataOrder,
 };

@@ -4,7 +4,7 @@ import { extractEventArguments } from './helpers';
 import signingService from '../services/signingService';
 import notaryService from '../services/notaryService';
 import web3 from '../utils/web3';
-import logger from '../utils/logger';
+import { logger, dataExchange } from '../utils';
 import { coercion, collection } from '../utils/wibson-lib';
 
 const { isPresent } = coercion;
@@ -20,7 +20,7 @@ const buildNotariesParameters = async (notaries, buyerAddress, orderAddress) => 
   return Promise.all(promises);
 };
 
-const addNotaryToOrder = async (notaryParameters, buyerAddress, contract) => {
+const addNotaryToOrder = async (notaryParameters, buyerAddress) => {
   try {
     const nonce = await web3.eth.getTransactionCount(buyerAddress);
     const { signedTransaction } = await signingService.signAddNotaryToOrder({
@@ -33,7 +33,7 @@ const addNotaryToOrder = async (notaryParameters, buyerAddress, contract) => {
     const { notary: notaryAddress } = extractEventArguments(
       'NotaryAddedToOrder',
       logs,
-      contract,
+      dataExchange,
     );
 
     return { notaryAddress };
@@ -52,9 +52,9 @@ const addNotaryToOrder = async (notaryParameters, buyerAddress, contract) => {
  * @param {Object} contract DataExchange contract
  * @returns {Response} The result of the operation.
  */
-const addNotariesToOrderFacade = async (orderAddress, addresses, contract) => {
+const addNotariesToOrderFacade = async (orderAddress, addresses, notariesCache) => {
   const { address: buyerAddress } = await signingService.getAccount();
-  const notariesInformation = await getNotariesInfo(web3, contract, addresses);
+  const notariesInformation = await getNotariesInfo(notariesCache, addresses);
   const notariesParameters = await buildNotariesParameters(
     notariesInformation,
     buyerAddress,
@@ -74,7 +74,7 @@ const addNotariesToOrderFacade = async (orderAddress, addresses, contract) => {
     txs = [
       ...txs,
       // eslint-disable-next-line no-await-in-loop
-      await addNotaryToOrder(notaryParameters, buyerAddress, contract),
+      await addNotaryToOrder(notaryParameters, buyerAddress),
     ];
   }
 
