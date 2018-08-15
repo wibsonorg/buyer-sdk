@@ -55,24 +55,6 @@ async function createBuyerDataOrder(
   return res.json();
 }
 
-/**
- * @deprecated
- */
-const associateBuyerInfoToOrder = async (orderAddress, buyerInfoId) => {
-  const res = await fetch(`${apiUrl}/orders/${orderAddress}/info`, {
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    method: 'POST',
-    body: JSON.stringify({ buyerInfoId }),
-  });
-  if (!res.ok) {
-    throw new Error('Could associate the buyer info ID');
-  }
-  return res.json();
-};
-
 const addNotariesToOrder = async (orderAddress, notariesAddresses) => {
   const res = await fetch(`${apiUrl}/orders/${orderAddress}/notaries`, {
     headers: {
@@ -105,7 +87,6 @@ const closeOrder = async orderAddress => {
 export {
   listBuyerDataOrders,
   createBuyerDataOrder,
-  associateBuyerInfoToOrder,
   addNotariesToOrder,
   closeOrder,
 };
