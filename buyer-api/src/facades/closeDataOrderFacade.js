@@ -1,8 +1,7 @@
 import Response from './Response';
 import { getSellersInfo } from './sellersFacade';
 import { sendTransaction } from './helpers';
-import { web3, dataExchange } from '../utils';
-import { DataOrderContract } from '../utils/contracts';
+import { web3, DataOrderContract } from '../utils';
 import signingService from '../services/signingService';
 
 /**
@@ -28,7 +27,7 @@ const validate = async (orderAddres) => {
  * @returns {Response} The result of the operation.
  */
 const closeDataOrderFacade = async (orderAddr) => {
-  const errors = await validate(orderAddr, dataExchange);
+  const errors = await validate(orderAddr);
 
   if (errors.length > 0) {
     return new Response(null, errors);

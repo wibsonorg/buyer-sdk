@@ -6,7 +6,7 @@ import {
   onCloseDataResponseSent,
 } from '../facades';
 
-const createDataResponseQueue = () => {
+const createDataResponseQueue = ({ notariesCache }) => {
   const queue = createQueue('DataResponseQueue');
 
   // NOTE: The processing can be done in a separate process by specifying the
@@ -37,7 +37,7 @@ const createDataResponseQueue = () => {
   queue.process('addDataResponseSent', async (
     { data: { receipt, orderAddress, sellerAddress } },
   ) => {
-    await onAddDataResponseSent(receipt, orderAddress, sellerAddress, queue);
+    await onAddDataResponseSent(receipt, orderAddress, sellerAddress, notariesCache, queue);
   });
 
   queue.process('closeDataResponseSent', async (

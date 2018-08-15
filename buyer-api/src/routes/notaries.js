@@ -19,10 +19,11 @@ const router = express.Router();
  *         description: When the fetch failed.
  */
 router.get('/', cache('1 day'), asyncError(async (req, res) => {
-  const { contracts: { dataExchange } } = req.app.locals;
+  req.apicacheGroup = '/notaries/*';
+  const { stores: { notariesCache } } = req.app.locals;
 
   const result = {
-    notaries: await getNotariesInfo(dataExchange),
+    notaries: await getNotariesInfo(notariesCache),
   };
   res.json(result);
 }));
@@ -47,21 +48,17 @@ router.get('/', cache('1 day'), asyncError(async (req, res) => {
  *       500:
  *         description: When the fetch failed.
  */
-router.get(
-  '/:notaryAddress',
-  cache('1 day'),
-  validateAddress('notaryAddress'),
-  asyncError(async (req, res) => {
-    const { contracts: { dataExchange } } = req.app.locals;
-    const { notaryAddress } = req.params;
+router.get('/:notaryAddress', cache('1 day'), validateAddress('notaryAddress'), asyncError(async (req, res) => {
+  req.apicacheGroup = '/notaries/*';
+  const { stores: { notariesCache } } = req.app.locals;
+  const { notaryAddress } = req.params;
 
-    const result = await getNotaryInfo(dataExchange, notaryAddress);
-    if (result.isRegistered) {
-      res.json(result);
-    } else {
-      res.status(404).send();
-    }
-  }),
-);
+  const result = await getNotaryInfo(notaryAddress, notariesCache);
+  if (result.isRegistered) {
+    res.json(result);
+  } else {
+    res.status(404).send();
+  }
+}));
 
 export default router;

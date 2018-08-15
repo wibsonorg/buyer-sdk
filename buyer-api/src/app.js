@@ -12,9 +12,6 @@ import {
   errorHandler,
   createRedisStore,
   createLevelStore,
-  wibcoin,
-  dataExchange,
-  DataOrderContract,
 } from './utils';
 import {
   createDataOrderQueue,
@@ -33,14 +30,10 @@ const app = express();
 app.locals.stores = {
   redis: createRedisStore('sample'),
   level: createLevelStore(`${config.levelDirectory}/sample_level`),
+  ordersCache: createRedisStore('orders.cache'),
+  notariesCache: createRedisStore('notaries.cache'),
   buyerInfos: createLevelStore(`${config.levelDirectory}/buyer_infos`),
   buyerInfoPerOrder: createLevelStore(`${config.levelDirectory}/buyer_info_per_order`),
-};
-
-app.locals.contracts = {
-  wibcoin,
-  dataExchange,
-  DataOrderContract,
 };
 
 app.locals.queues = {

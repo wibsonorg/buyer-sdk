@@ -1,4 +1,5 @@
 import express from 'express';
+import apicache from 'apicache';
 import { asyncError, cache, listLevelValues } from '../utils';
 
 const router = express.Router();
@@ -18,8 +19,9 @@ const router = express.Router();
  */
 router.get(
   '/',
-  cache('1 day'),
+  cache('30 days'),
   asyncError(async (req, res) => {
+    req.apicacheGroup = '/infos/*';
     const {
       stores: { buyerInfos },
     } = req.app.locals;
@@ -96,6 +98,7 @@ router.post(
     } catch (err) {
       // no previous buyer info was found
       await buyerInfos.put(info.id, JSON.stringify(info));
+      apicache.clear('/infos/*');
     }
 
     res.status(status).json({ message });

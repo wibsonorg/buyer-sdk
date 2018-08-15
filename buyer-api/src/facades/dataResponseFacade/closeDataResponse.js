@@ -1,7 +1,6 @@
 import web3Utils from 'web3-utils';
 import client from 'request-promise-native';
 import url from 'url';
-import web3 from '../../utils/web3';
 import signingService from '../../services/signingService';
 import {
   getTransactionReceipt,
@@ -9,7 +8,7 @@ import {
   retryAfterError,
 } from '../helpers';
 import { getNotaryInfo } from '../notariesFacade';
-import { dataExchange, DataOrderContract, logger } from '../../utils';
+import { web3, DataOrderContract, logger } from '../../utils';
 
 const auditResult = async (notaryUrl, order, seller, buyer) => {
   const auditUrl = url.resolve(notaryUrl, `/buyers/audit/result/${buyer}/${order}`);
@@ -34,7 +33,7 @@ const auditResult = async (notaryUrl, order, seller, buyer) => {
   };
 };
 
-const closeDataResponse = async (order, seller, dataResponseQueue) => {
+const closeDataResponse = async (order, seller, notariesCache, dataResponseQueue) => {
   if (!web3Utils.isAddress(order) || !web3Utils.isAddress(seller)) {
     throw new Error('Invalid order|seller address');
   }
@@ -47,7 +46,7 @@ const closeDataResponse = async (order, seller, dataResponseQueue) => {
   }
 
   const notaryAddress = sellerInfo[1];
-  const notaryInfo = await getNotaryInfo(dataExchange, notaryAddress);
+  const notaryInfo = await getNotaryInfo(notaryAddress, notariesCache);
   const notaryApi = notaryInfo.publicUrls.api;
 
   const params = await auditResult(notaryApi, order, seller, dataOrder.buyer());
@@ -79,6 +78,7 @@ const onAddDataResponseSent = async (
   receipt,
   orderAddress,
   sellerAddress,
+  notariesCache,
   dataResponseQueue,
 ) => {
   try {
@@ -86,7 +86,12 @@ const onAddDataResponseSent = async (
       await getTransactionReceipt(web3, receipt);
     }
 
-    await closeDataResponse(orderAddress, sellerAddress, dataResponseQueue);
+    await closeDataResponse(
+      orderAddress,
+      sellerAddress,
+      notariesCache,
+      dataResponseQueue,
+    );
   } catch (error) {
     const { message } = error;
 

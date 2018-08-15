@@ -1,6 +1,6 @@
 import express from 'express';
 import web3Utils from 'web3-utils';
-import { web3, cache, asyncError } from '../utils';
+import { web3, cache, asyncError, wibcoin } from '../utils';
 import signingService from '../services/signingService';
 
 const router = express.Router();
@@ -20,8 +20,6 @@ const router = express.Router();
  */
 router.get('/', cache('30 seconds'), asyncError(async (req, res) => {
   const { address } = await signingService.getAccount();
-
-  const { contracts: { wibcoin } } = req.app.locals;
 
   const [balance, ethBalance] = await Promise.all([
     wibcoin.balanceOf.call(address),

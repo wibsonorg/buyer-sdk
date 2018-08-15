@@ -72,7 +72,7 @@ const addNotaryToOrder = async (notaryParameters, buyerAddress) => {
  * @param {Array} addresses Notaries' addresses
  * @returns {Response} The result of the operation.
  */
-const addNotariesToOrderFacade = async (orderAddress, addresses) => {
+const addNotariesToOrderFacade = async (orderAddress, addresses, notariesCache) => {
   if (addresses.length === 0) {
     return new Response(null, ['Field \'notaries\' must contain at least one notary address']);
   }
@@ -88,7 +88,7 @@ const addNotariesToOrderFacade = async (orderAddress, addresses) => {
   }
 
   const { address: buyerAddress } = await signingService.getAccount();
-  const notariesInformation = await getNotariesInfo(dataExchange, notariesToAdd);
+  const notariesInformation = await getNotariesInfo(notariesCache, notariesToAdd);
   const notariesParameters = await buildNotariesParameters(
     notariesInformation,
     buyerAddress,

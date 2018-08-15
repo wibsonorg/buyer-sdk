@@ -1,13 +1,6 @@
 import express from 'express';
-import {
-  createDataOrderFacade,
-  getOrdersForBuyer,
-} from '../../facades';
-import {
-  getTransactionReceipt,
-  extractEventArguments,
-} from '../../facades/helpers';
-import { asyncError, cache, web3 } from '../../utils';
+import { createDataOrderFacade, getOrdersForBuyer } from '../../facades';
+import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 
 const router = express.Router();
@@ -30,23 +23,13 @@ router.get(
   '/',
   cache('10 minutes'),
   asyncError(async (req, res) => {
+    req.apicacheGroup = '/orders/*';
     const { offset, limit } = req.query;
     const { address } = await signingService.getAccount();
 
-    const {
-      stores: { buyerInfos, buyerInfoPerOrder },
-      contracts: { dataExchange, DataOrderContract },
-    } = req.app.locals;
+    const { stores: { ordersCache } } = req.app.locals;
 
-    const ordersResult = getOrdersForBuyer(
-      dataExchange,
-      DataOrderContract,
-      address,
-      buyerInfos,
-      buyerInfoPerOrder,
-      Number(offset),
-      Number(limit),
-    );
+    const ordersResult = getOrdersForBuyer(address, ordersCache, Number(offset), Number(limit));
 
     const minimumBudget = dataExchange.minimumInitialBudgetForAudits();
 
@@ -200,36 +183,6 @@ router.post(
         res.boom.badData('Operation failed', {
           errors: response.errors,
         });
-      }
-    }
-  }),
-);
-
-router.get(
-  '/receipts/:receipt',
-  asyncError(async (req, res) => {
-    const {
-      contracts: { dataExchange },
-    } = req.app.locals;
-    const { receipt } = req.params;
-
-    if (!receipt) {
-      res.boom.badData('Parameter \'receipt\' is mandatory');
-    } else {
-      try {
-        const { logs } = await getTransactionReceipt(web3, receipt);
-        const { orderAddr: orderAddress } = extractEventArguments(
-          'NewOrder',
-          logs,
-          dataExchange,
-        );
-        res.json({ status: 'success', result: { orderAddress } });
-      } catch (error) {
-        if (error.pending) {
-          res.json({ status: 'pending' });
-        } else {
-          res.json({ status: 'failed', error: error.message });
-        }
       }
     }
   }),
