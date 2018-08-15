@@ -2,6 +2,25 @@ import web3Utils from 'web3-utils';
 import { logger, delay } from '../../utils';
 
 /**
+ * Suggests if an operation should be retried or not after specified error.
+ *
+ * Operation after error `Transaction was not mined within 50 blocks...` occurs
+ * should be retried.
+ *
+ * @param {Error} error to check
+ * @returns {Boolean} true if error should be retried, false otherwise.
+ */
+const retryAfterError = (error) => {
+  const { message } = error;
+
+  const retry = !(error.failed
+    || message === 'replacement transaction underpriced'
+    || message.startsWith('known transaction'));
+
+  return retry;
+};
+
+/**
  * @function getTransactionReceipt
  * @param {Object} web3 instance of Web3
  * @param {Sting} receipt transaction receipt
@@ -89,6 +108,8 @@ const sendTransaction = async (
 };
 
 /**
+ * @deprecated The usage of this function is discouraged. Use Jobs instead.
+ *
  * @async
  * @function performTransaction
  * @param {Object} web3
@@ -116,4 +137,9 @@ const performTransaction = async (
   return response;
 };
 
-export { performTransaction, sendTransaction, getTransactionReceipt };
+export {
+  performTransaction,
+  sendTransaction,
+  getTransactionReceipt,
+  retryAfterError,
+};

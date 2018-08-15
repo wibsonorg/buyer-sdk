@@ -16,7 +16,10 @@ import {
   dataExchange,
   DataOrderContract,
 } from './utils';
-import { createDataOrderQueue } from './queues/createDataOrderQueue';
+import {
+  createDataOrderQueue,
+  createDataResponseQueue,
+} from './queues';
 import {
   account,
   health,
@@ -42,6 +45,7 @@ app.locals.contracts = {
 
 app.locals.queues = {
   dataOrder: createDataOrderQueue(app.locals.stores),
+  dataResponse: createDataResponseQueue(app.locals.stores),
 };
 
 app.use(helmet());

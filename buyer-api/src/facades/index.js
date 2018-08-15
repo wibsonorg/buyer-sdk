@@ -1,4 +1,11 @@
-import { addDataResponse, closeDataResponse } from './dataResponseFacade';
+import {
+  onBuyData,
+  onIncreaseApprovalSent,
+  addDataResponse,
+  onAddDataResponseSent,
+  closeDataResponse,
+  onCloseDataResponseSent,
+} from './dataResponseFacade';
 import {
   createDataOrderFacade,
   onDataOrderSent,
@@ -15,4 +22,8 @@ export {
   closeDataResponse,
   closeDataOrderFacade,
   onDataOrderSent,
+  onBuyData,
+  onIncreaseApprovalSent,
+  onAddDataResponseSent,
+  onCloseDataResponseSent,
 };
