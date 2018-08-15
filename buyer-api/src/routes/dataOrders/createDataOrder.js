@@ -23,6 +23,7 @@ router.get(
   '/',
   cache('30 seconds'),
   asyncError(async (req, res) => {
+    req.apicacheGroup = '/orders/*';
     const { offset, limit } = req.query;
     const { address } = await signingService.getAccount();
 

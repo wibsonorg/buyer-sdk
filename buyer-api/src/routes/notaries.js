@@ -19,6 +19,7 @@ const router = express.Router();
  *         description: When the fetch failed.
  */
 router.get('/', cache('1 day'), asyncError(async (req, res) => {
+  req.apicacheGroup = '/notaries/*';
   const { stores: { notariesCache } } = req.app.locals;
 
   const result = {
@@ -48,6 +49,7 @@ router.get('/', cache('1 day'), asyncError(async (req, res) => {
  *         description: When the fetch failed.
  */
 router.get('/:notaryAddress', cache('1 day'), validateAddress('notaryAddress'), asyncError(async (req, res) => {
+  req.apicacheGroup = '/notaries/*';
   const { stores: { notariesCache } } = req.app.locals;
   const { notaryAddress } = req.params;
 
