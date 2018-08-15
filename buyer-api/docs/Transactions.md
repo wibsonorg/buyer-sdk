@@ -44,7 +44,7 @@ const addDataResponse = async (order, seller, queue) => {
 }
 ```
 
-For this to work, we need to define a Processor for the `addDataResponseSent` event.
+For this to work, we need to define a Processor for the `addDataResponseSent` Job.
 
 ```js
 const queue = createQueue('DataResponseQueue');
@@ -101,5 +101,4 @@ queue.process('addDataResponseSent', async ({ data }) => {
     }
 })
 ``` 
-The helper 
 4. __Always inform__: There is a lot already done, failed jobs are logged with a reason. This will help us when tracing issues.
