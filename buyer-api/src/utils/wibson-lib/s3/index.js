@@ -51,7 +51,6 @@ const getObject = (dataOrder, seller, type) => {
   return getS3Object(name);
 };
 
-
 // //
 
 const countDataResponses = dataOrder => countObjects(dataOrder, 'data-responses');

@@ -1,14 +1,7 @@
 import express from 'express';
 import { asyncError } from '../utils';
-import { addDataResponse, closeDataResponse } from '../facades';
 
 const router = express.Router();
-
-const buyData = async (orderAddress, sellerAddress, notariesCache) => {
-  await addDataResponse(orderAddress, sellerAddress);
-
-  await closeDataResponse(orderAddress, sellerAddress, notariesCache);
-};
 
 /**
  * @swagger
@@ -22,11 +15,16 @@ const buyData = async (orderAddress, sellerAddress, notariesCache) => {
  *         description: When the data response could not be added or closed.
  */
 router.post('/', asyncError(async (req, res) => {
+  const { dataResponse } = req.app.locals.queues;
   const { orderAddress, sellerAddress } = req.body;
-  const { stores: { notariesCache } } = req.app.locals;
 
   // fire and forget
-  buyData(orderAddress, sellerAddress, notariesCache);
+  dataResponse.add('buyData', { orderAddress, sellerAddress }, {
+    attempts: 20,
+    backoff: {
+      type: 'linear',
+    },
+  });
 
   res.status(200).send();
 }));

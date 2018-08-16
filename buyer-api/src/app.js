@@ -13,8 +13,18 @@ import {
   createRedisStore,
   createLevelStore,
 } from './utils';
-
-import { account, health, notaries, dataOrders, dataResponses, buyerInfos } from './routes';
+import {
+  createDataOrderQueue,
+  createDataResponseQueue,
+} from './queues';
+import {
+  account,
+  health,
+  notaries,
+  dataOrders,
+  dataResponses,
+  buyerInfos,
+} from './routes';
 
 const app = express();
 app.locals.stores = {
@@ -24,6 +34,11 @@ app.locals.stores = {
   notariesCache: createRedisStore('notaries.cache'),
   buyerInfos: createLevelStore(`${config.levelDirectory}/buyer_infos`),
   buyerInfoPerOrder: createLevelStore(`${config.levelDirectory}/buyer_info_per_order`),
+};
+
+app.locals.queues = {
+  dataOrder: createDataOrderQueue(app.locals.stores),
+  dataResponse: createDataResponseQueue(app.locals.stores),
 };
 
 app.use(helmet());

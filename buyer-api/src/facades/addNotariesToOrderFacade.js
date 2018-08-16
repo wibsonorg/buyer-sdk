@@ -1,18 +1,22 @@
 import Response from './Response';
 import { getNotariesInfo } from './notariesFacade';
-import { extractEventArguments } from './helpers';
+import { extractEventArguments, performTransaction } from './helpers';
 import signingService from '../services/signingService';
 import notaryService from '../services/notaryService';
-import web3 from '../utils/web3';
-import { logger, dataExchange } from '../utils';
+import { logger, web3, dataExchange, DataOrderContract } from '../utils';
 import { coercion, collection } from '../utils/wibson-lib';
 
 const { isPresent } = coercion;
 const { partition } = collection;
 
-const buildNotariesParameters = async (notaries, buyerAddress, orderAddress) => {
+const buildNotariesParameters = async (
+  notaries,
+  buyerAddress,
+  orderAddress,
+) => {
   const promises = notaries.map(async ({ notary, publicUrls: { api } }) => {
-    const response = await notaryService.consent(api, { buyerAddress, orderAddress });
+    const response = await notaryService
+      .consent(api, { buyerAddress, orderAddress });
 
     return { ...response, notary };
   });
@@ -20,15 +24,32 @@ const buildNotariesParameters = async (notaries, buyerAddress, orderAddress) => 
   return Promise.all(promises);
 };
 
+const takeOnlyNotariesToAdd = async (orderAddress, addresses) => {
+  const dataOrder = DataOrderContract.at(orderAddress);
+
+  let notariesNotAdded = [];
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const address of addresses) {
+    // eslint-disable-next-line no-await-in-loop
+    const added = await dataOrder.hasNotaryBeenAdded(address);
+
+    if (!added) {
+      notariesNotAdded = [...notariesNotAdded, address];
+    }
+  }
+
+  return notariesNotAdded;
+};
+
 const addNotaryToOrder = async (notaryParameters, buyerAddress) => {
   try {
-    const nonce = await web3.eth.getTransactionCount(buyerAddress);
-    const { signedTransaction } = await signingService.signAddNotaryToOrder({
-      nonce,
-      addNotaryToOrderParameters: notaryParameters,
-    });
-    const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
-    const { logs } = await web3.eth.getTransactionReceipt(receipt);
+    const { logs } = await performTransaction(
+      web3,
+      buyerAddress,
+      signingService.signAddNotaryToOrder,
+      notaryParameters,
+    );
 
     const { notary: notaryAddress } = extractEventArguments(
       'NotaryAddedToOrder',
@@ -49,23 +70,30 @@ const addNotaryToOrder = async (notaryParameters, buyerAddress) => {
  * @async
  * @param {String} orderAddress Address of the DataOrder
  * @param {Array} addresses Notaries' addresses
- * @param {Object} contract DataExchange contract
  * @returns {Response} The result of the operation.
  */
 const addNotariesToOrderFacade = async (orderAddress, addresses, notariesCache) => {
+  if (addresses.length === 0) {
+    return new Response(null, ['Field \'notaries\' must contain at least one notary address']);
+  }
+
+  const notariesToAdd = await takeOnlyNotariesToAdd(orderAddress, addresses);
+
+  if (notariesToAdd.length === 0) {
+    // Don't fail, all notaries have been added
+    return new Response({
+      orderAddress,
+      notariesAddresses: addresses,
+    });
+  }
+
   const { address: buyerAddress } = await signingService.getAccount();
-  const notariesInformation = await getNotariesInfo(notariesCache, addresses);
+  const notariesInformation = await getNotariesInfo(notariesCache, notariesToAdd);
   const notariesParameters = await buildNotariesParameters(
     notariesInformation,
     buyerAddress,
     orderAddress,
   );
-
-  if (notariesParameters.length === 0) {
-    return new Response(null, [
-      'Field \'notaries\' should contain at least one item with notary info',
-    ]);
-  }
 
   let txs = [];
 

@@ -1,10 +1,11 @@
 import Response from './Response';
 import { getSellersInfo } from './sellersFacade';
-import { extractEventArguments } from './helpers';
-import { web3, DataOrderContract, dataExchange } from '../utils';
+import { sendTransaction } from './helpers';
+import { web3, DataOrderContract } from '../utils';
 import signingService from '../services/signingService';
 
 /**
+ * @async
  * @param {String} orderAddres
  * @returns {Array} Error messages
  */
@@ -33,17 +34,15 @@ const closeDataOrderFacade = async (orderAddr) => {
   }
 
   const { address } = await signingService.getAccount();
-  const nonce = await web3.eth.getTransactionCount(address);
 
-  const { signedTransaction } = await signingService.signCloseOrder({
-    nonce, orderAddr,
-  });
+  const receipt = await sendTransaction(
+    web3,
+    address,
+    signingService.signCloseOrder,
+    { orderAddr },
+  );
 
-  const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
-  const { logs } = await web3.eth.getTransactionReceipt(receipt);
-  const { orderAddr: orderAddress } = extractEventArguments('OrderClosed', logs, dataExchange);
-
-  return new Response({ orderAddress });
+  return new Response({ status: 'pending', receipt });
 };
 
 export default closeDataOrderFacade;

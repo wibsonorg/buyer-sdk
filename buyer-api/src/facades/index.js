@@ -1,5 +1,15 @@
-import { addDataResponse, closeDataResponse } from './dataResponseFacade';
-import createDataOrderFacade from './createDataOrderFacade';
+import {
+  onBuyData,
+  onIncreaseApprovalSent,
+  addDataResponse,
+  onAddDataResponseSent,
+  closeDataResponse,
+  onCloseDataResponseSent,
+} from './dataResponseFacade';
+import {
+  createDataOrderFacade,
+  onDataOrderSent,
+} from './createDataOrderFacade';
 import addNotariesToOrderFacade from './addNotariesToOrderFacade';
 import closeDataOrderFacade from './closeDataOrderFacade';
 import { getOrdersForBuyer, fetchAndCacheDataOrder } from './getOrdersFacade';
@@ -13,5 +23,10 @@ export {
   addDataResponse,
   closeDataResponse,
   closeDataOrderFacade,
+  onDataOrderSent,
+  onBuyData,
+  onIncreaseApprovalSent,
+  onAddDataResponseSent,
+  onCloseDataResponseSent,
   fetchAndCacheDataOrder,
 };

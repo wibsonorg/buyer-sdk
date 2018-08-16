@@ -21,7 +21,7 @@ const router = express.Router();
  */
 router.get(
   '/',
-  cache('30 seconds'),
+  cache('10 minutes'),
   asyncError(async (req, res) => {
     req.apicacheGroup = '/orders/*';
     const { offset, limit } = req.query;
@@ -64,6 +64,8 @@ const validate = ({
   initialBudgetForAudits,
   termsAndConditions,
   buyerURL,
+  notaries,
+  buyerInfoId,
 }) => {
   const fields = {
     filters,
@@ -72,6 +74,8 @@ const validate = ({
     initialBudgetForAudits,
     termsAndConditions,
     buyerURL,
+    notaries,
+    buyerInfoId,
   };
 
   return Object.entries(fields).reduce((accumulator, [field, value]) => {
@@ -105,9 +109,12 @@ const validate = ({
  *         schema:
  *           type: object
  *           properties:
- *             orderAddress:
+ *             status:
  *               type: string
- *               description: Address to be used in further requests
+ *               description: Status of the transaction
+ *             receipt:
+ *               type: string
+ *               description: Receipt of the transaction
  *       422:
  *         description: When there is a problem with the input
  *       500:
@@ -147,17 +154,28 @@ const validate = ({
  *         required: true
  *         description: Public URL of the buyer where the data must be sent
  *         example: '{"api": "https://api.buyer.com", "storage": "https://storage.buyer.com"}'
+ *       notaries:
+ *         type: array
+ *         required: true
+ *         description: List of notaries' ethereum addresses
+ *       buyerInfoId:
+ *         type: string
+ *         required: true
+ *         description: The ID for the buyer info
  */
 router.post(
   '/',
   asyncError(async (req, res) => {
+    const {
+      queues: { dataOrder: queue },
+    } = req.app.locals;
     const { dataOrder } = req.body;
     const errors = validate(dataOrder);
 
     if (errors.length > 0) {
       res.boom.badData('Validation failed', { validation: errors });
     } else {
-      const response = await createDataOrderFacade(dataOrder);
+      const response = await createDataOrderFacade(dataOrder, queue);
 
       if (response.success()) {
         res.json(response.result);
