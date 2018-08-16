@@ -1,17 +1,16 @@
-/* eslint-disable */
+/* eslint-disable strict */
 
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-require('dotenv').config();
 
-var _process = process,
-    env = _process.env;
+// TODO: Consider moving config folder to src, since tests must not use it.
+// Do NOT use dotenv here. Let the loadEnv function in src/loadEnv handle that.
+const { env } = process;
 
-
-var config = {
+const config = {
   env: env.NODE_ENV,
   port: env.PORT,
   host: env.HOST,
@@ -19,27 +18,27 @@ var config = {
   contracts: {
     addresses: {
       wibcoin: env.WIBCOIN_ADDRESS,
-      dataExchange: env.DATA_EXCHANGE_ADDRESS
+      dataExchange: env.DATA_EXCHANGE_ADDRESS,
     },
     cache: {
       notaryTTL: env.CONTRACTS_CACHE_NOTARY_TTL,
-      ordersTTL: env.CONTRACTS_CACHE_ORDERS_TTL
-    }
+      ordersTTL: env.CONTRACTS_CACHE_ORDERS_TTL,
+    },
   },
   cache: {
     enabled: env.CACHE === 'enabled',
-    adapter: env.CACHE_ADAPTER
+    adapter: env.CACHE_ADAPTER,
   },
   logType: env.LOG_TYPE,
   log: {
     error: env.ERROR_LOG,
-    combined: env.COMBINED_LOG
+    combined: env.COMBINED_LOG,
   },
   web3: {
-    provider: env.WEB3_PROVIDER
+    provider: env.WEB3_PROVIDER,
   },
   redis: {
-    socket: env.REDIS_SOCKET
+    socket: env.REDIS_SOCKET,
   },
   storage: {
     url: env.STORAGE_URL,
@@ -48,7 +47,7 @@ var config = {
     password: env.STORAGE_PASSWORD,
     bucket: env.STORAGE_BUCKET,
   },
-  levelDirectory: env.LEVEL_DIRECTORY
+  levelDirectory: env.LEVEL_DIRECTORY,
 };
 
 exports.default = config;
