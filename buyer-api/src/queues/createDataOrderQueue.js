@@ -1,9 +1,8 @@
 import { createQueue } from './createQueue';
-import { dataExchange } from '../utils';
 import { onDataOrderSent, addNotariesToOrderFacade } from '../facades';
 import { associateBuyerInfoToOrder } from '../services/buyerInfo';
 
-const createDataOrderQueue = ({ buyerInfos, buyerInfoPerOrder }) => {
+const createDataOrderQueue = ({ buyerInfos, buyerInfoPerOrder, notariesCache }) => {
   const queue = createQueue('DataOrderQueue');
 
   // NOTE: The processing can be done in a separate process by specifying the
@@ -21,7 +20,7 @@ const createDataOrderQueue = ({ buyerInfos, buyerInfoPerOrder }) => {
     const response = await addNotariesToOrderFacade(
       orderAddr,
       notaries,
-      dataExchange,
+      notariesCache,
     );
 
     if (!response.success()) {
