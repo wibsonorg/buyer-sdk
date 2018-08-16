@@ -1,24 +1,23 @@
-/* eslint-disable */
+/* eslint-disable strict */
 
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-require('dotenv').config();
 
-var _process = process,
-    env = _process.env;
+// TODO: Consider moving config folder to src, since tests must not use it.
+// Do NOT use dotenv here. Let the loadEnv function in src/loadEnv handle that.
+const { env } = process;
 
-
-var config = {
+const config = {
   env: env.NODE_ENV,
   port: env.PORT,
   host: env.HOST,
   logType: env.LOG_TYPE,
   log: {
     error: env.ERROR_LOG,
-    combined: env.COMBINED_LOG
+    combined: env.COMBINED_LOG,
   },
   contracts: {
     chainId: env.CHAIN_ID,
@@ -32,13 +31,13 @@ var config = {
     wibcoin: {
       address: env.WIBCOIN_CONTRACT_ADDRESS,
       increaseApproval: {
-        gasLimit: env.TX_INCREASE_APPROVAL_GAS_LIMIT
-      }
-    }
+        gasLimit: env.TX_INCREASE_APPROVAL_GAS_LIMIT,
+      },
+    },
   },
   buyer: {
-    privateKey: env.BUYER_PRIVATE_KEY
-  }
+    privateKey: env.BUYER_PRIVATE_KEY,
+  },
 };
 
 exports.default = config;
