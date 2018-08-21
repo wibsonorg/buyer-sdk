@@ -51,11 +51,11 @@ const router = express.Router();
  *         description: Requested data type (Geolocation, Facebook, etc).
  *         required: true
  *       price:
- *         type: integer
+ *         type: string
  *         description: Price per Data Response added.
  *         required: true
  *       initialBudgetForAudits:
- *         type: integer
+ *         type: string
  *         description: The initial budget set for future audits.
  *         required: true
  *       termsAndConditions:

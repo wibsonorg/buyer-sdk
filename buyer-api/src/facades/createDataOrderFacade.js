@@ -18,7 +18,7 @@ const { fromWib } = coin;
  * @param {Object} parameters.filters Target audience.
  * @param {String} parameters.dataRequest Requested data type (Geolocation,
  *                 Facebook, etc).
- * @param {Integer} parameters.price Price per Data Response added.
+ * @param {String} parameters.price Price per Data Response added.
  * @param {String} parameters.initialBudgetForAudits The initial budget set for
  *                 future audits.
  * @param {String} parameters.termsAndConditions Buyer's terms and conditions
@@ -49,7 +49,7 @@ const buildDataOrderParameters = ({
  * @param {Object} parameters.filters Target audience.
  * @param {String} parameters.dataRequest Requested data type (Geolocation,
  *                 Facebook, etc).
- * @param {Integer} parameters.price Price per Data Response added.
+ * @param {String} parameters.price Price per Data Response added.
  * @param {String} parameters.initialBudgetForAudits The initial budget set for
  *                 future audits.
  * @param {String} parameters.termsAndConditions Buyer's terms and conditions
