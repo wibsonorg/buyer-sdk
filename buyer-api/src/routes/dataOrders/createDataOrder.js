@@ -48,7 +48,7 @@ router.get(
  * @param {Object} parameters.filters Target audience.
  * @param {String} parameters.dataRequest Requested data type (Geolocation,
  *                 Facebook, etc).
- * @param {Integer} parameters.price Price per Data Response added.
+ * @param {String} parameters.price Price per Data Response added.
  * @param {String} parameters.initialBudgetForAudits The initial budget set for
  *                 future audits.
  * @param {String} parameters.termsAndConditions Buyer's terms and conditions
@@ -135,15 +135,15 @@ const validate = ({
  *         description: Requested data type (Geolocation, Facebook, etc)
  *         example: '["geolocation"]'
  *       price:
- *         type: integer
+ *         type: string
  *         required: true
  *         description: Price per added Data Response
- *         example: 20
+ *         example: '20'
  *       initialBudgetForAudits:
- *         type: integer
+ *         type: string
  *         required: true
  *         description: The initial budget set for future audits
- *         example: 10
+ *         example: '10'
  *       termsAndConditions:
  *         type: string
  *         required: true

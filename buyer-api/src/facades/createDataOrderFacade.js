@@ -7,9 +7,10 @@ import {
 } from './helpers';
 import { web3, dataExchange } from '../utils';
 import signingService from '../services/signingService';
-import { coercion } from '../utils/wibson-lib';
+import { coercion, coin } from '../utils/wibson-lib';
 
-const { toString, toInteger } = coercion;
+const { toString } = coercion;
+const { fromWib } = coin;
 
 /**
  * Builds DataOrder parameters.
@@ -36,8 +37,8 @@ const buildDataOrderParameters = ({
 }) => ({
   filters: JSON.stringify(filters),
   dataRequest: JSON.stringify(dataRequest),
-  price: toInteger(price),
-  initialBudgetForAudits: toInteger(initialBudgetForAudits),
+  price: fromWib(price),
+  initialBudgetForAudits: fromWib(initialBudgetForAudits),
   // TODO: remove before deploy to main net
   termsAndConditions: toString(termsAndConditions).substring(0, 100),
   buyerURL: JSON.stringify(buyerURL),
