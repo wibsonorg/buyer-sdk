@@ -72,7 +72,7 @@ const buyData = async (order, seller, dataResponseQueue) => {
     signingService.signIncreaseApproval,
     {
       spender: dataExchange.address,
-      addedValue: totalPrice, // TODO: This needs to be converted
+      addedValue: totalPrice,
     },
   );
 

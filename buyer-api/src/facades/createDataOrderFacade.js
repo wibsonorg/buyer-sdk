@@ -78,14 +78,14 @@ const createDataOrderFacade = async (
 
   const { address } = await signingService.getAccount();
 
-  if (params.initialBudgetForAudits > 0) {
+  if (Number(params.initialBudgetForAudits) > 0) {
     await performTransaction(
       web3,
       address,
       signingService.signIncreaseApproval,
       {
         spender: dataExchange.address,
-        addedValue: params.initialBudgetForAudits, // TODO: This needs to be converted
+        addedValue: fromWib(params.initialBudgetForAudits),
       },
     );
   }
