@@ -3,7 +3,7 @@ import { coin } from '../../../src/utils/wibson-lib';
 
 const { toWib, fromWib } = coin;
 
-describe.only('Coin helper', () => {
+describe('Coin helper', () => {
   describe('toWib', () => {
     it('returns the correct amount of wibcoins', () => {
       expect(toWib('0')).to.equal('0');
@@ -18,16 +18,16 @@ describe.only('Coin helper', () => {
     });
 
     it('returns NaN when an invalid number is specified', () => {
-      expect(toWib('10WIB')).to.be.NaN;
-      expect(toWib('10 WIB')).to.be.NaN;
-      expect(toWib('')).to.be.NaN;
-      expect(toWib(NaN)).to.be.NaN;
-      expect(toWib(undefined)).to.be.NaN;
-      expect(toWib(null)).to.be.NaN;
+      expect(() => toWib('10WIB')).to.throw('Argument is not a number');
+      expect(() => toWib('10 WIB')).to.throw('Argument is not a number');
+      expect(() => toWib('')).to.throw('Argument is not a number');
+      expect(() => toWib(NaN)).to.throw('Argument is not a number');
+      expect(() => toWib(undefined)).to.throw('Argument is not a number');
+      expect(() => toWib(null)).to.throw('Argument is not a number');
     });
 
     it('returns Infinity when number is out of range', () => {
-      expect(toWib('1e+19')).to.equal(Infinity);
+      expect(() => toWib('1e+19')).to.throw('Argument out of range');
     });
   });
 
@@ -45,16 +45,16 @@ describe.only('Coin helper', () => {
     });
 
     it('returns NaN when an invalid number is specified', () => {
-      expect(fromWib('10WIB')).to.be.NaN;
-      expect(fromWib('10 WIB')).to.be.NaN;
-      expect(fromWib('')).to.be.NaN;
-      expect(fromWib(NaN)).to.be.NaN;
-      expect(fromWib(undefined)).to.be.NaN;
-      expect(fromWib(null)).to.be.NaN;
+      expect(() => fromWib('10WIB')).to.throw('Argument is not a number');
+      expect(() => fromWib('10 WIB')).to.throw('Argument is not a number');
+      expect(() => fromWib('')).to.throw('Argument is not a number');
+      expect(() => fromWib(NaN)).to.throw('Argument is not a number');
+      expect(() => fromWib(undefined)).to.throw('Argument is not a number');
+      expect(() => fromWib(null)).to.throw('Argument is not a number');
     });
 
     it('returns Infinity when number is out of range', () => {
-      expect(fromWib('1e+10')).to.equal(Infinity);
+      expect(() => fromWib('1e+10')).to.throw('Argument out of range');
     });
   });
 });

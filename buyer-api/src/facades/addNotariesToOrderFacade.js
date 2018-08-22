@@ -4,9 +4,10 @@ import { extractEventArguments, performTransaction } from './helpers';
 import signingService from '../services/signingService';
 import notaryService from '../services/notaryService';
 import { logger, web3, dataExchange, DataOrderContract } from '../utils';
-import { coercion, collection } from '../utils/wibson-lib';
+import { coercion, coin, collection } from '../utils/wibson-lib';
 
 const { isPresent } = coercion;
+const { fromWib } = coin;
 const { partition } = collection;
 
 const buildNotariesParameters = async (
@@ -15,10 +16,10 @@ const buildNotariesParameters = async (
   orderAddress,
 ) => {
   const promises = notaries.map(async ({ notary, publicUrls: { api } }) => {
-    const response = await notaryService
+    const { notarizationFee, ...response } = await notaryService
       .consent(api, { buyerAddress, orderAddress });
 
-    return { ...response, notary };
+    return { ...response, notarizationFee: fromWib(notarizationFee), notary };
   });
 
   return Promise.all(promises);
