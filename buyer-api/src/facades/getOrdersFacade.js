@@ -2,9 +2,10 @@ import config from '../../config';
 import { logger, dataExchange, DataOrderContract } from '../utils';
 import { getElements } from './helpers/blockchain';
 import { dateOrNull } from './helpers/date';
-import { storage as offchainStorage } from '../utils/wibson-lib';
+import { storage as offchainStorage, coin } from '../utils/wibson-lib';
 
 const ordersTTL = Number(config.contracts.cache.ordersTTL);
+const { toWib } = coin;
 
 /**
  * @async
@@ -76,7 +77,7 @@ const getDataOrderDetails = async (order) => {
     termsAndConditions,
     buyerPublicURL: JSON.parse(buyerPublicURL),
     buyerPublicKey,
-    price,
+    price: toWib(price),
     createdAt: dateOrNull(dataOrderCreatedAt),
     transactionCompletedAt: dateOrNull(transactionCompletedAt),
     isClosed: !transactionCompletedAt.isZero(),

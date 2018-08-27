@@ -7,9 +7,10 @@ import {
 } from './helpers';
 import { web3, dataExchange } from '../utils';
 import signingService from '../services/signingService';
-import { coercion } from '../utils/wibson-lib';
+import { coercion, coin } from '../utils/wibson-lib';
 
-const { toString, toInteger } = coercion;
+const { toString } = coercion;
+const { fromWib } = coin;
 
 /**
  * Builds DataOrder parameters.
@@ -17,7 +18,7 @@ const { toString, toInteger } = coercion;
  * @param {Object} parameters.filters Target audience.
  * @param {String} parameters.dataRequest Requested data type (Geolocation,
  *                 Facebook, etc).
- * @param {Integer} parameters.price Price per Data Response added.
+ * @param {String} parameters.price Price per Data Response added.
  * @param {String} parameters.initialBudgetForAudits The initial budget set for
  *                 future audits.
  * @param {String} parameters.termsAndConditions Buyer's terms and conditions
@@ -36,8 +37,8 @@ const buildDataOrderParameters = ({
 }) => ({
   filters: JSON.stringify(filters),
   dataRequest: JSON.stringify(dataRequest),
-  price: toInteger(price),
-  initialBudgetForAudits: toInteger(initialBudgetForAudits),
+  price: fromWib(price),
+  initialBudgetForAudits: fromWib(initialBudgetForAudits),
   // TODO: remove before deploy to main net
   termsAndConditions: toString(termsAndConditions).substring(0, 100),
   buyerURL: JSON.stringify(buyerURL),
@@ -48,7 +49,7 @@ const buildDataOrderParameters = ({
  * @param {Object} parameters.filters Target audience.
  * @param {String} parameters.dataRequest Requested data type (Geolocation,
  *                 Facebook, etc).
- * @param {Integer} parameters.price Price per Data Response added.
+ * @param {String} parameters.price Price per Data Response added.
  * @param {String} parameters.initialBudgetForAudits The initial budget set for
  *                 future audits.
  * @param {String} parameters.termsAndConditions Buyer's terms and conditions
@@ -77,14 +78,14 @@ const createDataOrderFacade = async (
 
   const { address } = await signingService.getAccount();
 
-  if (params.initialBudgetForAudits > 0) {
+  if (Number(params.initialBudgetForAudits) > 0) {
     await performTransaction(
       web3,
       address,
       signingService.signIncreaseApproval,
       {
         spender: dataExchange.address,
-        addedValue: params.initialBudgetForAudits, // TODO: This needs to be converted
+        addedValue: fromWib(params.initialBudgetForAudits),
       },
     );
   }
