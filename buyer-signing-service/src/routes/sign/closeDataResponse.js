@@ -1,5 +1,5 @@
 import express from 'express';
-import { asyncError, validatePresence, isPresent } from '../../helpers';
+import { asyncError } from '../../helpers';
 import signCloseDataResponseFacade from '../../facades/sign/closeDataResponseFacade';
 
 const router = express.Router();
