@@ -65,8 +65,8 @@ const transactionResponse = async (web3, receipt) => {
   while (!response && iteration < maxIterations) {
     try {
       iteration += 1;
-      await delay(10 * 1000);
-      response = await getTransactionReceipt(web3, receipt);
+      await delay(10 * 1000); // eslint-disable-line no-await-in-loop
+      response = await getTransactionReceipt(web3, receipt); // eslint-disable-line no-await-in-loop
     } catch (error) {
       if (!error.pending) {
         throw error;
