@@ -14,15 +14,19 @@ const auditResult = async (notaryUrl, order, seller, buyer) => {
   const auditUrl = url.resolve(notaryUrl, `/buyers/audit/result/${buyer}/${order}`);
   const payload = { dataResponses: [{ seller }] };
   const response = await client.post(auditUrl, { json: payload, timeout: 1000 });
-  const res = response.dataResponses[0];
+  const { error, result, signature } = response.dataResponses[0];
 
-  if (res.result === 'in-progress') {
+  if (error) {
+    throw new Error(error);
+  }
+
+  if (result === 'in-progress') {
     throw new Error('Audit result is in progress');
   }
 
-  const wasAudited = res.result === 'success' || res.result === 'failure';
-  const isDataValid = res.result === 'success';
-  const notarySignature = res.signature;
+  const wasAudited = result === 'success' || result === 'failure';
+  const isDataValid = result === 'success';
+  const notarySignature = signature;
 
   return {
     orderAddr: order,
