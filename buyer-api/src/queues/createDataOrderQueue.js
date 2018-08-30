@@ -2,7 +2,7 @@ import { createQueue } from './createQueue';
 import { onDataOrderSent, addNotariesToOrderFacade } from '../facades';
 import { associateBuyerInfoToOrder } from '../services/buyerInfo';
 
-const createDataOrderQueue = ({ buyerInfos, buyerInfoPerOrder, notariesCache }) => {
+const createDataOrderQueue = ({ notariesCache }) => {
   const queue = createQueue('DataOrderQueue');
 
   // NOTE: The processing can be done in a separate process by specifying the
@@ -31,12 +31,7 @@ const createDataOrderQueue = ({ buyerInfos, buyerInfoPerOrder, notariesCache }) 
   queue.process('associateBuyerInfoToOrder', async (
     { data: { orderAddr, buyerInfoId } },
   ) => {
-    await associateBuyerInfoToOrder(
-      orderAddr,
-      buyerInfoId,
-      buyerInfoPerOrder,
-      buyerInfos,
-    );
+    await associateBuyerInfoToOrder(orderAddr, buyerInfoId);
   });
 
   return queue;

@@ -1,6 +1,9 @@
 import express from 'express';
 import { asyncError, cache, validateAddress } from '../../utils';
-import { getBuyerInfo, associateBuyerInfoToOrder } from '../../services/buyerInfo';
+import {
+  getOrderInfo,
+  associateBuyerInfoToOrder,
+} from '../../services/buyerInfo';
 
 const router = express.Router();
 
@@ -31,12 +34,9 @@ router.get(
   validateAddress('orderAddress'),
   asyncError(async (req, res) => {
     const { orderAddress } = req.params;
-    const {
-      stores: { buyerInfos, buyerInfoPerOrder },
-    } = req.app.locals;
 
     try {
-      const buyerInfo = await getBuyerInfo(orderAddress, buyerInfoPerOrder, buyerInfos);
+      const buyerInfo = await getOrderInfo(orderAddress);
       res.json(buyerInfo);
     } catch (err) {
       res.status(404).send();
@@ -75,12 +75,9 @@ router.post(
   asyncError(async (req, res) => {
     const { orderAddress } = req.params;
     const { buyerInfoId } = req.body;
-    const {
-      stores: { buyerInfos, buyerInfoPerOrder },
-    } = req.app.locals;
 
     try {
-      await associateBuyerInfoToOrder(orderAddress, buyerInfoId, buyerInfoPerOrder, buyerInfos);
+      await associateBuyerInfoToOrder(orderAddress, buyerInfoId);
       res.json({});
     } catch (err) {
       res.status(404).send();
