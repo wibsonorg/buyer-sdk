@@ -7,6 +7,7 @@ import {
 } from './helpers';
 import { web3, dataExchange } from '../utils';
 import signingService from '../services/signingService';
+import { getBuyerInfo } from '../services/buyerInfo';
 import { coercion, coin } from '../utils/wibson-lib';
 
 const { toString } = coercion;
@@ -21,7 +22,7 @@ const { fromWib } = coin;
  * @param {String} parameters.price Price per Data Response added.
  * @param {String} parameters.initialBudgetForAudits The initial budget set for
  *                 future audits.
- * @param {String} parameters.termsAndConditions Buyer's terms and conditions
+ * @param {String} parameters.termsAndConditions Terms and conditions hash
  *                 for the order.
  * @param {String} parameters.buyerURL Public URL of the buyer where the data
  *                 must be sent.
@@ -39,8 +40,7 @@ const buildDataOrderParameters = ({
   dataRequest: JSON.stringify(dataRequest),
   price: fromWib(price),
   initialBudgetForAudits: fromWib(initialBudgetForAudits),
-  // TODO: remove before deploy to main net
-  termsAndConditions: toString(termsAndConditions).substring(0, 100),
+  termsAndConditions: toString(termsAndConditions),
   buyerURL: JSON.stringify(buyerURL),
 });
 
@@ -52,8 +52,6 @@ const buildDataOrderParameters = ({
  * @param {String} parameters.price Price per Data Response added.
  * @param {String} parameters.initialBudgetForAudits The initial budget set for
  *                 future audits.
- * @param {String} parameters.termsAndConditions Buyer's terms and conditions
- *                 for the order.
  * @param {String} parameters.buyerURL Public URL of the buyer where the data
  *                 must be sent.
  * @param {Array} parameters.notaries Ethereum addresses of the notaries
@@ -66,10 +64,18 @@ const createDataOrderFacade = async (
   { notaries, buyerInfoId, ...parameters },
   dataOrderQueue,
 ) => {
-  const params = buildDataOrderParameters(parameters);
+  const { termsHash } = await getBuyerInfo(buyerInfoId);
+  const params = buildDataOrderParameters({
+    ...parameters,
+    termsAndConditions: termsHash,
+  });
 
   if (params.buyerURL.length === 0) {
     return new Response(null, ['Field \'buyerURL\' must be a valid URL']);
+  }
+
+  if (params.termsAndConditions.length === 0) {
+    return new Response(null, ['Field \'termsAndConditions\' is required']);
   }
 
   if (notaries.length === 0) {

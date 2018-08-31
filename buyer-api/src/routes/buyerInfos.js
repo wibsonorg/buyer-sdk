@@ -1,6 +1,11 @@
 import express from 'express';
 import apicache from 'apicache';
-import { asyncError, cache, listLevelValues } from '../utils';
+import { asyncError, cache } from '../utils';
+import {
+  getBuyerInfo,
+  listBuyerInfos,
+  storeBuyerInfo,
+} from '../services/buyerInfo';
 
 const router = express.Router();
 
@@ -22,10 +27,7 @@ router.get(
   cache('30 days'),
   asyncError(async (req, res) => {
     req.apicacheGroup = '/infos/*';
-    const {
-      stores: { buyerInfos },
-    } = req.app.locals;
-    const values = await listLevelValues(buyerInfos);
+    const values = await listBuyerInfos();
 
     res.json({
       infos: values.map(value => JSON.parse(value)),
@@ -72,6 +74,13 @@ router.get(
  *         required: true
  *         type: string
  *         in: body
+ *       - name: category.terms
+ *         description: |
+ *           Terms and Conditions to be published in data orders associated to
+ *           this buyer info
+ *         required: true
+ *         type: string
+ *         in: body
  *     responses:
  *       200:
  *         description: When the buyer info was created correctly.
@@ -84,20 +93,16 @@ router.post(
   '/',
   asyncError(async (req, res) => {
     const info = req.body;
-    const {
-      stores: { buyerInfos },
-    } = req.app.locals;
-
     let status = 200;
     let message = 'OK';
 
     try {
-      await buyerInfos.get(info.id);
+      await getBuyerInfo(info.id);
       status = 400;
       message = 'The ID already exists';
     } catch (err) {
       // no previous buyer info was found
-      await buyerInfos.put(info.id, JSON.stringify(info));
+      await storeBuyerInfo(info.id, info);
       apicache.clear('/infos/*');
     }
 
