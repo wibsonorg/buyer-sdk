@@ -228,18 +228,6 @@ class DataOrderCreate extends Component {
               }
             />
           </InfoItem>
-          <InfoItem>
-            <Label color="light-dark">URL to receive responses and data</Label>
-            <Text size="sm" color="regular">
-              {this.state.publicURL.storage}
-            </Text>
-          </InfoItem>
-          <InfoItem>
-            <Label color="light-dark">URL to receive requests</Label>
-            <Text size="sm" color="regular">
-              {this.state.publicURL.api}
-            </Text>
-          </InfoItem>
         </FormSection>
         <FormSection>
           <Button
