@@ -6,16 +6,18 @@ import { logger, delay } from '../../utils';
  *
  * Operation after error `Transaction was not mined within 50 blocks...` occurs
  * should be retried.
+ * Operation after error `known transaction` occurs should be retried
+ * (e.g., for an increaseApproval).
+ * Operation after error `replacement transaction underpriced` occurs should be
+ * retried (multiple tx intents will have the same nonce).
  *
  * @param {Error} error to check
  * @returns {Boolean} true if error should be retried, false otherwise.
  */
 const retryAfterError = (error) => {
-  const { message } = error;
+  const { failed } = error;
 
-  const retry = !(error.failed
-    || message === 'replacement transaction underpriced'
-    || message.startsWith('known transaction'));
+  const retry = !failed;
 
   return retry;
 };
