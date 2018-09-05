@@ -53,7 +53,8 @@ const storeBuyerInfo = async (id, payload) => {
  */
 const associateBuyerInfoToOrder = async (orderAddress, buyerInfoId) => {
   await buyerInfos.get(buyerInfoId); // we check existance
-  await buyerInfoPerOrder.put(orderAddress, buyerInfoId);
+  const key = orderAddress.toLowerCase();
+  await buyerInfoPerOrder.put(key, buyerInfoId);
 };
 
 /**
@@ -65,7 +66,8 @@ const associateBuyerInfoToOrder = async (orderAddress, buyerInfoId) => {
  * @returns {Promise} Promise which resolves to the buyer info of that Data Order.
  */
 const getOrderInfo = async (orderAddress) => {
-  const buyerInfoId = await buyerInfoPerOrder.get(orderAddress);
+  const key = orderAddress.toLowerCase();
+  const buyerInfoId = await buyerInfoPerOrder.get(key);
   const buyerInfo = await buyerInfos.get(buyerInfoId);
   return JSON.parse(buyerInfo);
 };
