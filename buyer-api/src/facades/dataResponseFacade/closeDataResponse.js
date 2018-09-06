@@ -1,6 +1,5 @@
 import web3Utils from 'web3-utils';
 import client from 'request-promise-native';
-import url from 'url';
 import signingService from '../../services/signingService';
 import {
   getTransactionReceipt,
@@ -11,7 +10,8 @@ import { getNotaryInfo } from '../notariesFacade';
 import { web3, DataOrderContract, logger } from '../../utils';
 
 const auditResult = async (notaryUrl, order, seller, buyer) => {
-  const auditUrl = url.resolve(notaryUrl, `/buyers/audit/result/${buyer}/${order}`);
+  const baseUri = notaryUrl.replace(/\/$/, '');
+  const auditUrl = `${baseUri}/buyers/audit/result/${buyer}/${order}`;
   const payload = { dataResponses: [{ seller }] };
   const response = await client.post(auditUrl, { json: payload, timeout: 1000 });
   const { error, result, signature } = response.dataResponses[0];
