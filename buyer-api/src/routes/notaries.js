@@ -2,8 +2,11 @@ import express from 'express';
 import { asyncError, cache, validateAddress } from '../utils';
 
 import { getNotaryInfo, getNotariesInfo } from '../facades/notariesFacade';
+import checkAuthorization from '../utils/checkAuthorization';
 
 const router = express.Router();
+router.use(checkAuthorization);
+
 
 /**
  * @swagger
