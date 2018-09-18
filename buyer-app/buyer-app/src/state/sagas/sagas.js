@@ -7,6 +7,7 @@ import dataOrdersAddressesSagas from "state/entities/dataOrdersAddresses/sagas";
 import notariesSagas from "state/entities/notaries/sagas";
 import accountSagas from "state/entities/account/sagas";
 import notificationsSagas from "state/entities/notifications/sagas";
+import authentication from "state/entities/authentication/sagas";
 
 import pollingSagas from "./polling";
 
@@ -19,6 +20,7 @@ export default function* rootSaga() {
     closeDataOrderSagas(),
     notariesSagas(),
     accountSagas(),
-    notificationsSagas()
+    notificationsSagas(),
+    authentication(),
   ]);
 }

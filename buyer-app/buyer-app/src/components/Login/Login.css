@@ -1,0 +1,25 @@
+.wibson-login-body {
+    background-image: linear-gradient(to bottom, #0a1f33, #0f2f4d);
+  }
+
+.wibson-login-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.wibson-login-logo {
+    width: 126px;
+    height: 24px;
+    margin-bottom: 80px;
+  }
+
+.wibson-login-button {
+    margin-top: 40px;
+}
+
+.wibson-login-button:hover {
+    background-color: aliceblue;
+}
