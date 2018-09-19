@@ -8,7 +8,6 @@ const router = express.Router();
 
 router.post('/', asyncError(async (req, res) => {
   const { jwt, passphrase } = config;
-  const cookieJwtOptions = { maxAge: 604800 };
   const { password } = req.body;
   if (!password || password !== passphrase) {
     return res.status(400).json({
@@ -20,9 +19,10 @@ router.post('/', asyncError(async (req, res) => {
   }
 
   const token = jsonwebtoken.sign({}, jwt.secret, { expiresIn: jwt.expiration });
-  res.status(200).cookie('accessJwt', token, cookieJwtOptions).json({
+  res.status(200).json({
     ok: true,
     authenticated: true,
+    token,
   });
 }));
 

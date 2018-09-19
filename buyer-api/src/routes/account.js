@@ -22,7 +22,6 @@ router.use(checkAuthorization);
  */
 router.get('/', cache('30 seconds'), asyncError(async (req, res) => {
   const { address } = await signingService.getAccount();
-
   const [balance, ethBalance] = await Promise.all([
     wibcoin.balanceOf.call(address),
     web3.eth.getBalance(address),

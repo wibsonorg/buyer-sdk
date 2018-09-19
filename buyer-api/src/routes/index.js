@@ -14,5 +14,6 @@ import health from './health';
 import notaries from './notaries';
 import dataOrders from './dataOrders';
 import dataResponses from './dataResponses';
+import verifyToken from './verifyToken';
 
-export { auth, account, buyerInfos, health, notaries, dataOrders, dataResponses };
+export { auth, account, buyerInfos, health, notaries, dataOrders, dataResponses, verifyToken };
