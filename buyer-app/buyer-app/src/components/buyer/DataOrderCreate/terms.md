@@ -1,309 +1,75 @@
-WIBSON ALPHA TERMS OF USE
+**Data User Terms of Use**
 
+THESE TERMS OF USE (&quot;TOU&quot;) ARE A LEGAL CONTRACT BETWEEN THE DATA PROVIDER (&quot;DATA PROVIDER&quot;), DATA USER (&quot;DATA USER&quot;) AND WIBSON LTD. (&quot;COMPANY&quot;) RELATING TO THE USE OF YOUR LICENSED DATA BY THE DATA USER.  DATA PROVIDER AND THE DATA USER ENTERED INTO THIS TERMS USING THE WIBSON MOBILE APPLICATION (&quot;MOBILE APPLICATION&quot;).  IF DATA PROVIDER DOES NOT AGREE WITH ANY OF THE TOU, DO NOT PROVIDE DATA PROVIDER&#39;S LICENSED DATA TO THE DATA USER.
 
-THESE TERMS OF USE (THE “TERMS”) ARE A LEGAL CONTRACT BETWEEN YOU AND
-WIBSON LTD. (THE “COMPANY”, “WE” OR “US”). THE TERMS EXPLAIN HOW YOU
-ARE PERMITTED TO USE THE WIBSON ALPHA MOBILE APPLICATION (THE “MOBILE
-APPLICATION”). UNLESS OTHERWISE SPECIFIED, ALL REFERENCES TO “MOBILE
-APPLICATION” INCLUDE THE CONTENT, SERVICES AVAILABLE THROUGH THIS
-MOBILE APPLICATION (THE “SERVICES”). BY USING THIS MOBILE APPLICATION,
-YOU ARE AGREEING TO ALL THE TERMS; IF YOU DO NOT AGREE WITH ANY OF
-THESE TERMS, DO NOT ACCESS OR OTHERWISE USE THIS MOBILE APPLICATION OR
-ANY INFORMATION CONTAINED ON THIS MOBILE APPLICATION.
+The Mobile Application provides a platform for transactions relating to the use of data of individuals Licensed Data (as defined below) by companies (&quot;Data User&quot;).  The TOU govern the transfer and use of the Licensed Data by Data Provider to the Data User.  The offer and acceptance of the terms to use the Licensed Data shall be performed on the Mobile Application, but the transfer of the Licensed Data does not use the Mobile Application and is completed directly between Data Provider and the Data User.
 
+1. **Definitions.**
+&quot;**Accepted**&quot; and/or &quot; **Accept**&quot; means the use of the MA Smart Contract embodying the Offer.
+&quot;**Accepted Offer**&quot; means the final version of the Offer from the Data User through the Mobile Application which Data Provider Accepted.  Data Provider may Accept multiple offers from either the same Data User or different Data Users, but each such Accepted Offer shall be considered a separate and independent agreement.
+&quot;**Affiliate**&quot; means any person or entity that, directly or indirectly owns, is controlled by, controlling or under common control with the Data User.  For the purposes of this definition, &quot;control&quot; shall mean beneficial ownership by the subject person or entity of a voting interest in the Data User of more than fifty percent (50%).  Voting interest means ownership, whether directly or indirectly, of voting interests of an entity entitled to vote in the election of directors (or, in the case of an entity that is not a corporation, of the election of the corresponding management authority) of such entity.
+&quot;**Company**&quot; means Wibson, Ltd.
+&quot;**Data Provider**&quot; means the individual who receives the Offer.
+&quot;**Data Provider&#39;s Device**&quot; means the device owned or controlled by Data Provider which will provide the Licensed Data to the Data User after Data Provider Accepts an Offer.  The Company Mobile Application shall provide the information needed to identify Data Provider&#39;s Device in the Mobile Application.  The Company may change the information needed to identify Data Provider&#39;s Device from time to time by making a change in the Mobile Application and such changes shall apply to all offers made after the changes are posted to the Mobile Application
+&quot;**Data Provider&#39;s Location**&quot; means Data Provider&#39;sphysical location when an Offer is Accepted.  Such Location must be in the Permitted Offer Countries.
+&quot;**Data Protection Legislation**&quot; means any and all applicable laws, regulation and/or regulatory guidance regulating the use and/or protection of personal data (and/or any similar and/or analogous information and/or concept) including, without limitation, and where applicable Regulation EU 2016/79 and the Data Protection Act 2004 of Gibraltar (as amended from time to time).
+&quot;**Data User&quot;** means (i) the person or entity making an Offer  and/or (ii) a person granted a License.
+&quot;**Data User Location&quot;** means the location included in the final version of the Offer which provides where the Licensed Data will be sent once such Offer is Accepted.  For example, a Data User may specify a particular IP address.
+&quot;**Fees&quot;** means the fees in the Accepted Offer for the use of the Licensed Data in the Accepted Offer.  The Fees shall be paid in Wibcoin, the cryptocurrency issued by the Company.
+&quot;**License**&quot; means the license granted under clause 3.1.
+&quot;**Licensed Categories**&quot; means the categories of use for the Licensed Data in the Accepted Offer and are defined in more detail in Exhibit A.
+&quot;**Licensed Countries**&quot; means the countries in which the data provided by Data Provider can be used in the Accepted Offer.  Licensed Countries cannot include any countries outside of Permitted Offer Countries.  For example, the Licensed Countries could be Spain, Italy and the UK.
+&quot;**Licensed Data**&quot; means the data provided by Data Provider which is described in the Accepted Offer.
+&quot;**Mobile Application**&quot; means the application developed by the Company to permit the licensing of Licensed Data to the potential Data User and made available by the Company.
+&quot;**MA Smart Contract**&quot; means the smart contract approved by the Notary in the Mobile Application which implements the transfer of the Licensed Data to the Data User upon an Accepted Offer.
+&quot;**Notary**&quot; means the individual or entity designated by the Company in the Mobile Application to approve the MA Smart Contract for an Accepted Offer.  Initially, the Company shall be the sole Notary.
+&quot;**Offer**&quot; means an offer to license data from individuals by the Data User through the Mobile Application.  The Offer must include all of the information and terms required in the Mobile Application for such offers .  The Company may change such information and terms required for an Offer in the Mobile Application from time to time by making a change in the Mobile Application and such changes shall apply to all offers made after the changes are posted to the Mobile Application.  The Offer shall be limited to the Permitted Offer Countries.
+&quot;**Permitted Offer Countries**&quot; means the countries in which a Data User can make an offer to individuals to use such individual&#39;s data,.    The Company may (to the extent permitted by and always subject to and in accordance with the Data Protection Legislation) change the Permitted Offer Countries from time to time by making a change in the list of Permitted Offer Countries in the Mobile Application and such changes shall apply to all offers made after the changes are posted to the Mobile Application.
+&quot;**Personal Data**&quot; shall have the definition ascribed in the Data Protection Act 2004 of Gibraltar (as amended from time to time).
+&quot;**Term**&quot; means the period during which the Licensed Data may be used as provided in the Accepted Offer.
+&quot;**TOU**&quot; means these Data User Terms of Use, including all exhibits.
+&quot;**Third Party**&quot; means any entity other than a Data User, its Affiliates, the Company and Data Provider.
 
-Changes.
+2. **ACCEPTANCE.**
+  2.1 Process.  The prospective Data User shall post an Offer on the Mobile Application.
+  2.2 Acceptance.  If the Data Provider Accepts the Offer, the Offer shall become an Accepted Offer and Data Provider will be obligated to provide the Licensed Data to the Data User Location after the approval of the MA Smart Contract by the Notary and receipt of the Fees in the Accepted Offer. The Notary may disapprove the MA Smart Contract for an Accepted Offer if the Notary reasonably determines that either of the parties is not complying with the terms of the TOU or that either party is not complying with any relevant laws.  The Licensed Data may only be used as provided Section 3.1.
+3. **GRANT OF LICENSES.**
+  3.1. License Grant.  Upon receipt of the Fees, Data Provider grants the Data User and its Affiliates a non-exclusive license to use the Licensed Data during the Term in the Licensed Categories in the Licensed Countries only.
+  3.2 Restrictions on Use.  Except for the license granted in Section 3.1, Data User (and its Affiliates) shall not use the Licensed Data for any purpose other than the Licensed Categories. Data User shall not use the Licensed Data in any country other than a Licensed Country. Data User (and its Affiliates) shall erase the Licensed Data on or before the last day of the Term.  Data User (and its Affiliates) shall not provide or disclose the Licensed Data to Third Party (including the public).
+  3.3 Records.  The Data User (and its Affiliates) shall maintain records of its use of the Licensed Data for a period of three years.  The Data User shall make such records available at the request by any of the following individuals or entities:  Data Provider, the Company and the Notary.
+4. **REPRESENTATIONS.**
+  4.1 Data Provider&#39;s Representations.  Data Provider represents and warrants that:  (a) Data Provider has the right to grant the license in Section 3.1 for the Licensed Data; and (b) the grant of the license in Section 3.1 does not breach any agreement, covenant, court order, judgement or decree.
+  4.2 Data User Representations.  Data User represents and warrants that:  (a) it (and its Affiliates to the extent that any Affiliate is using the Licensed Data) is qualified and registered to transact business in all locations where the performance of its obligations hereunder would require such qualification; (b) it (and its Affiliates to the extent that any Affiliate is using the Licensed Data) has and shall maintain all necessary rights, powers and authority; (c) the execution and performance of the TOU by it (and its Affiliates to the extent that any Affiliate is using the Licensed Data) shall not conflict with or violate any applicable law, rule, regulation, or governmental order and shall not breach any agreement, covenant, court order, judgment or decree to which it is a party or by which it is bound; and (d) Data User (and its Affiliates to the extent that any Affiliate is using the Licensed Data)  shall comply will all relevant privacy laws in the countries in which it uses the Licensed Data. Data User shall guarantee the obligations of its Affiliates for compliance with the TOU.
+5. **CONFIDENTIAL INFORMATION.**
+  5.1. Obligations.  Data User (and its Affiliates to the extent that any Affiliate is using the Licensed Data) acknowledges that the Licensed Data contains Data Provider&#39;s ** ** confidential information.  In addition to limiting its use of the Licensed Data as provided in Section 3.1, Data User (and its Affiliates to the extent that any Affiliate is using the Licensed Data) shall maintain the Licensed Data in confidence and not disclose or make available such Licensed Data to Third Parties.  Data User shall ensure that it has implemented and deployed appropriate safeguards  in relation to the Licensed Data to comply with the TOU. Data User (and its Affiliates to the extent that any Affiliate is using the Licensed Data) shall use the same procedures and degree of care in protecting the confidentiality of the Licensed Data that it uses for its own confidential information.
+  5.2. Compliance with laws **.** Data User (and its Affiliates to the extent that any Affiliate is using the Licensed Data) shall, in respect of the Licensed Data, (and Data User shall procure, to the extent applicable that Affiliates shall) comply with Data Protection Legislation.
+  5.3 Exceptions.  Nothing in the TOU shall prevent the disclosure of Licensed Data by Data User (and its Affiliates to the extent that any Affiliate is using the Licensed Data) to the extent that the Licensed Data:  (a) is in the public domain when received by Data User (and its Affiliates to the extent that any Affiliate is using the Licensed Data); (b) enters the public domain (except through a breach of the obligations in this provision by Data User or its Affiliates) after it was received; (c) was known to Data User (and its Affiliates to the extent that any Affiliate is using the Licensed Data) prior to receipt; (d) is received by Data User (and its Affiliates to the extent that any Affiliate is using the Licensed Data) from a Third Party without restrictions; or (e) is required to be disclosed by law or a court.  Data User (and its Affiliates to the extent that any Affiliate is using the Licensed Data) has the burden of proof of the application of these exceptions.
+  5.4 Notification and Mitigation.  In the event of any impermissible disclosure, loss, theft, access or use of the Licensed Data, Data User (and its Affiliates to the extent that any Affiliate is using the Licensed Data) shall (and, to the extent applicable, shall procure that its Affiliates shall) immediately notify the Data Provider in writing and take all steps and actions necessary to mitigate any and all potential harm or further disclosure, loss, theft, access, or use of the Licensed Data.
+6. **INDEMNIFICATION.**
+Data User (and its Affiliates to the extent that any Affiliate is using the Licensed Data) (the &quot; **Indemnifying Party**&quot;), to the maximum extent permitted by law, shall defend, protect, indemnify, keep indemnified and hold Data Provider harmless from and against any and all losses, demands, damages (including, without limitation, special, consequential and punitive damages awarded to Third Parties), claims, liabilities, interest, awards, actions or causes of action, suits, judgments, settlements and compromises relating thereto, and all reasonable attorney&#39;s fees and other fees and expenses resulting from or in connection therewith (&quot; **Losses**&quot;) which may be incurred by Data Provider, arising out of, due to, or in connection with, directly or indirectly, to the use of the Licensed Data except to the extent that such Losses are the result of gross negligence or willful misconduct of Data Provider.
 
-Company may make changes to the content and Services offered on the
-Mobile Application at any time. Company can change, update, or add or
-remove provisions of these Terms, at any time by posting the updated
-Terms on this Mobile Application. By using this Mobile Application
-after Company has updated the Terms, you are agreeing to all the
-updated Terms; if you do not agree with any of the updated Terms, you
-must stop using the Mobile Application.
+7. **TERM AND TERMINATION.**
+7.1 Term.  The right to use the Licensed Data for a particular Accepted Offer shall be governed by the TOU for such Accepted Offer.  Data Provider or Data User has the right to terminate the TOU for an Accepted Offer in the event that the other party commits a material breach of the TOU and fails to cure such breach within thirty (30) days following receipt of written notice of the breach from the non-breaching party. In addition, the Notary may terminate the MA Smart Contract as provided in Section 2.2 The TOU may also terminate to the extent required by applicable law or a government or regulatory authority or upon the mutual written consent of the parties.
+7.2 Rights and Duties on Termination.  Upon termination of the TOU for an Accepted Offer for any reason for a particular Accepted Offer:
+(a)the Data User (and its Affiliates to the extent that any Affiliate is using the Licensed Data)  shall cease all use of the Licensed Data for such Accepted Offer;
+(b)the Data User (and its Affiliates to the extent that any Affiliate is using the Licensed Data) shall return all copies of the Licensed Data for such Accepted Offer; provided that this obligation shall not require the return of the results of the use of such Licensed Data if the Licensed Data cannot be reverse engineered from such results;
+(c) Articles 4, 5, 6, 8, 9 and 10 shall survive the termination of the TOU for an Accepted Offer for any reason.
+8. **DISPUTE RESOLUTIONS.**
+Any controversy or claim arising out of or relating to the TOU, or the breach thereof, shall be resolved in in the courts of Gibraltar
+9. **DISCLAIMERS AND LIMITATION OF LIABILITY.**
+9.1 Disclaimer of Warranties and Limitation of Liability for Mobile Application:
+    (a) THE COMPANY, FOR ITSELF AND ITS LICENSORS, MAKES NO EXPRESS, IMPLIED OR STATUTORY REPRESENTATIONS, WARRANTIES, OR GUARANTEES IN CONNECTION WITH THIS MOBILE APPLICATION, OR ANY MATERIALS RELATING TO THE QUALITY, SUITABILITY, TRUTH, ACCURACY OR COMPLETENESS OF ANY INFORMATION OR MATERIAL CONTAINED OR PRESENTED ON THIS MOBILE APPLICATION TO DATA PROVIDER, DATA USER OR ITS AFFILIATES.  UNLESS OTHERWISE EXPLICITLY STATED, TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THIS MOBILE APPLICATION AND ANY INFORMATION OR MATERIAL CONTAINED OR PRESENTED ON THIS MOBILE APPLICATION IS PROVIDED TO DATA PROVIDER, DATA USER AND ITS AFFILIATES ON AN &quot;AS IS,&quot; &quot;AS AVAILABLE&quot; AND &quot;WHERE-IS&quot; BASIS WITH NO WARRANTY OF IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT OF THIRD-PARTY RIGHTS.  THE COMPANY DOES NOT PROVIDE ANY WARRANTIES AGAINST VIRUSES, SPYWARE OR MALWARE THAT MAY BE INSTALLED ON **DATA PROVIDER&#39;S** COMPUTER OR THE DATA USER&#39;S (OR AFFILIATE&#39;S) COMPUTER.
+    (b) TO THE EXTENT PERMITTED BY LAW, COMPANY (AFFILIATED ENTITIES OF THE COMPANY, DIRECTORS, OFFICERS, STOCKHOLDERS, EMPLOYEES, LICENSORS OR AGENTS) SHALL NOT BE LIABLE TO DATA PROVIDER, DATA USER OR AFFILIATE FOR ANY INDIRECT, EXTRAORDINARY, EXEMPLARY, PUNITIVE, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES (INCLUDING BUT NOT LIMITED TO LOSS OF DATA, REVENUE, PROFITS, USE OR OTHER ECONOMIC ADVANTAGE) DAMAGES RESULTING (A) FROM DISPLAYING, COPYING, OR DOWNLOADING ANY MATERIALS TO OR FROM THIS MOBILE APPLICATION; (B) MAKING OR ACCEPTING ANY OFFERS THROUGH THE MOBILE APPLICATION; OR (C) USE OR INABILITY TO USE THE MOBILE APPLICATION.  NOTHING IN THE TOU SHALL EXCLUDE OR IN ANY WAY LIMIT A PARTY&#39;S LIABILITY FOR FRAUD, DEATH OR PERSONAL INJURY CAUSED BY ITS NEGLIGENCE OR ANY OTHER LIABILITY TO THE EXTENT SUCH LIABILITY MAY NOT BE EXCLUDED OR LIMITED AS A MATTER OF LAW.  NOTWITHSTANDING ANYTHING TO THE CONTRARY IN THE TOU, IN NO EVENT WILL THE COMPANY&#39;S LIABILITY TO A PARTY EXCEED TEN GBP POUNDS, EVEN IN THE EVENT OF A FAILURE OF THE ESSENTIAL PURPOSE OR ANY LIMITED REMEDY UNDER THE TOU.
+9.2 Disclaimer of Warranties and Limitation of Liability for Licensed Data:
+    (a) DATA PROVIDER MAKE NO EXPRESS, IMPLIED OR STATUTORY REPRESENTATIONS, WARRANTIES, OR GUARANTEES IN CONNECTION WITH USE OF THE LICENSED DATA RELATING TO THE QUALITY, SUITABILITY, TRUTH, ACCURACY OR COMPLETENESS OF ANY INFORMATION CONTAINED IN THE LICENSED DATA.  UNLESS OTHERWISE EXPLICITLY STATED, TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE LICENSED DATA IS PROVIDED TO THE DATA USER OR ITS AFFILIATES ON AN &quot;AS IS,&quot; &quot;AS AVAILABLE&quot; AND &quot;WHERE-IS&quot; BASIS WITH NO WARRANTY OF IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT OF THIRD-PARTY RIGHTS.
+    (b) TO THE EXTENT PERMITTED BY LAW, DATA PROVIDER SHALL NOT BE LIABLE TO THE DATA USER OR ITS AFFILIATES FOR ANY INDIRECT, EXTRAORDINARY, EXEMPLARY, PUNITIVE, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES (INCLUDING BUT NOT LIMITED TO LOSS OF DATA, REVENUE, PROFITS, USE OR OTHER ECONOMIC ADVANTAGE) DAMAGES RESULTING (A) FROM DISPLAYING, COPYING, OR DOWNLOADING ANY LICENSED DATA; (B) DATA USERS MAKING ANY OFFERS THROUGH THE MOBILE APPLICATION; OR (C) THE USE OR INABILITY TO USE THE LICENSED DATA BY THE DATA USER (OR ITS AFFILIATES).  NOTHING IN THE TOU SHALL EXCLUDE OR IN ANY WAY LIMIT A LIABILITY FOR FRAUD, DEATH OR PERSONAL INJURY CAUSED BY ITS NEGLIGENCE OR ANY OTHER LIABILITY TO THE EXTENT SUCH LIABILITY MAY NOT BE EXCLUDED OR LIMITED AS A MATTER OF LAW.  NOTWITHSTANDING ANYTHING TO THE CONTRARY IN THE TOU, IN NO EVENT WILL DATA PROVIDER&#39;S LIABILITY TO THE DATA USER AND ITS AFFILIATES EXCEED TEN GBP POUNDS, EVEN IN THE EVENT OF A FAILURE OF THE ESSENTIAL PURPOSE OR ANY LIMITED REMEDY UNDER THE TOU.
+10. **LANGUAGE.**
+The parties hereto have expressly required that this TOU and all documents and notices relating thereto be drafted in the English language.The English language version of this TOU (and/or any other document referred to herein) shall prevail in the event of any dispute arising out of any translation made in respect of this TOU.
+11. **AMENDMENT.**
+The Company, Data User and Data Provider, upon their written agreement, may amend the provisions of the TOU for their license of Licensed Data.  However, the Company may amend the provisions of the TOU by changing the TOU in the Mobile Application but such changes shall only apply to offers made after the effective date of that amendment.
+12. **GENERAL.**
+This agreement and any dispute or claim arising out of or in connection with it or its subject matter or formation shall be governed by and construed and in accordance with the law of Gibraltar. Each party irrevocably agree that the Courts of Gibraltar shall have exclusive jurisdiction to settle any dispute or claim arising out of or in connection with this agreement or its subject matter or formation.  If any provision or part provision of the TOU becomes invalid, illegal or unenforceable, then such provisions shall be deemed deleted, but shall not affect the validity an enforceability of the rest of this agreement. If any provision or part-provision of this agreement is deemed deleted the parties shall negotiate in good faith to agree a replacement provision that, to the greatest extent possible, achieves the intended commercial result of the original provision.  The failure or delay to enforce any of the TOU by a party is not a waiver of such provision.  The TOU and the Mobile Application Terms and Conditions are the entire agreement between the Company, Data Provider, the Data User and its Affiliates and supersede all prior or contemporaneous negotiations, discussions or agreements between any of the parties.
 
-
-General Use.
-
-By using this Mobile Application, you represent, acknowledge and agree
-that you are at least the age of majority, or if you are under the age
-of majority but are at least 13 years old (a “Minor”), that you are
-using the Mobile Application with the consent of your parent or legal
-guardian and that you have received your parent’s or legal guardian’s
-permission to use the Mobile Application and agree to its Terms. If
-you are a parent or legal guardian of a Minor, you hereby agree to
-bind the Minor to these Terms and to fully indemnify and hold harmless
-Company if the Minor breaches any of these Terms. If you are not at
-least 13 years old, you may not use the Mobile Application at any time
-or in any manner or submit any information to the Company or the
-Mobile Application. Company provides content through the Mobile
-Application that is copyrighted and/or trademarked work of Company or
-Company’s third-party licensors and suppliers or other users of the
-Mobile Application (collectively, the “Materials”). Materials may
-include logos, graphics, video, images, software and other content. To
-use the Mobile Application, you must have a mobile device that is
-compatible with the mobile service. Company does not warrant that the
-Mobile Application will be compatible with your mobile device. Company
-hereby grants to you a non-exclusive, non-transferable, revocable
-license to use an object code copy of the Mobile Application for one
-registered account on one mobile device owned or leased solely by you,
-for your personal use. You may not: (i) modify, disassemble, decompile
-or reverse engineer the Mobile Application, except to the extent that
-such restriction is expressly prohibited by law; (ii) rent, lease,
-loan, resell, sublicense, distribute or otherwise transfer the Mobile
-Application to any third-party or use the Mobile Application to
-provide time sharing or similar services for any third-party; (iii)
-make any copies of the Mobile Application; (iv) remove, circumvent,
-disable, damage or otherwise interfere with security-related features
-of the Mobile Application, features that prevent or restrict use or
-copying of any content accessible through the Mobile Application, or
-features that enforce limitations on use of the Mobile Application; or
-(v) delete the copyright and other proprietary rights notices on the
-Mobile Application. You acknowledge that Company may from time to time
-issue upgraded versions of the Mobile Application, and may
-automatically electronically upgrade the version of the Mobile
-Application that you are using on your mobile device. You consent to
-such automatic upgrading on your mobile device, and agree that these
-Terms will apply to all such upgrades. The foregoing license grant is
-not a sale of the Mobile Application or any copy thereof, and Company
-and its third-party licensors or suppliers retain all right, title,
-and interest in and to the Mobile Application (and any copy of the
-Mobile Application). Standard carrier data charges may apply to your
-use of the Mobile Application. If you breach any of these Terms, the
-above license will terminate automatically. The following additional
-terms and conditions apply with respect to any Mobile Application that
-Company provides to you designed for use on an Apple iOS-powered
-mobile device (an “iOS App”): You acknowledge that these Terms are
-between you and Company only, and not with Apple, Inc. (“Apple”). Your
-use of Company’s iOS App must comply with Apple’s then-current App
-Store Terms of Service. Company, and not Apple, is solely responsible
-for our iOS App and the Services and content available thereon. You
-acknowledge that Apple has no obligation to provide maintenance and
-support services with respect to our iOS App. To the maximum extent
-permitted by applicable law, Apple will have no warranty obligation
-whatsoever with respect to our iOS App. You agree that Company, and
-not Apple, is responsible for addressing any claims by you or any
-third-party relating to our iOS App or your possession and/or use of
-our iOS App, including, but not limited to: (i) product liability
-claims; (ii) any claim that the iOS App fails to conform to any
-applicable legal or regulatory requirement; and (iii) claims arising
-under consumer protection or similar legislation, and all such claims
-are governed solely by these Terms and any law applicable to us as
-provider of the iOS App. You agree that Company, and not Apple, shall
-be responsible, to the extent required by these Terms, for the
-investigation, defense, settlement and discharge of any third-party
-intellectual property infringement claim related to our iOS App or
-your possession and use of our iOS App. You represent and warrant that
-(i) you are not located in a country that is subject to a U.S.
-Government embargo, or that has been designated by the U.S. Government
-as a “terrorist supporting” country; and (ii) You are not listed on
-any U.S. Government list of prohibited or restricted parties. You
-agree to comply with all applicable third-party terms of agreement
-when using our iOS App (e.g., you must not be in violation of your
-wireless data service terms of agreement when using the iOS App). The
-parties agree that Apple and Apple’s subsidiaries are third-party
-beneficiaries to these Terms as they relate to your license of
-Company’s iOS App. Upon your acceptance of these Terms, Apple will
-have the right (and will be deemed to have accepted the right) to
-enforce these Terms against you as they relate to your license of the
-iOS App as a third-party beneficiary thereof. The following additional
-terms and conditions apply with respect to any Mobile Application that
-Company provides to you designed for use on an Android-powered mobile
-device (an “Android App”): You acknowledge that these Terms are
-between you and Company only, and not with Google, Inc. (“Google”).
-Your use of Company’s Android App must comply with Google’s
-then-current Android Market Terms of Service. Google is only a
-provider of the Android Market where you obtained the Android App.
-Company, and not Google, is solely responsible for Company’s Android
-App and the Services and content available thereon. Google has no
-obligation or liability to you with respect to Company’s Android App
-or these Terms. You acknowledge and agree that Google is a third-party
-beneficiary to the Terms as they relate to Company’s Android App.
-
-
-In exchange for accepting data offers via the Mobile Application, you
-may receive points. While Company generally intends to allow users to
-exchange such points into digital rewards, Company reserves the right
-not to provide such rewards, and you acknowledge and agree that such
-points may not have any value to you now or in the future. You
-acknowledge and agree that the Mobile Application is in its alpha test
-phase and may contain, in Company’ sole discretion, more or fewer
-features or different licensing terms than a subsequent commercial
-release version of the Mobile Application and/or Services that may be
-offered through the Mobile Application. While Company generally
-intends to distribute commercial release versions of the Mobile
-Application and Materials on the Mobile Application, Company reserves
-the right not to release later commercial release versions of any
-Mobile Application. Without limiting any disclaimer of warranty or
-other limitation stated herein, you agree that any Mobile Application
-is not considered by Company to be suitable for commercial use, and
-that it may contain errors affecting its proper operation. BY
-ACCEPTING THESE TERMS, YOU ACKNOWLEDGE AND AGREE THAT USE OF THE
-MOBILE APPLICATION MAY EXHIBIT SPORADIC DISRUPTIONS THAT HAVE THE
-POTENTIAL TO DISRUPT YOUR USE OF THE MOBILE APPLICATION IN GENERAL AND
-ANY SERVICES THAT MAY BE OFFERED THROUGH THE MOBILE APPLICATION.
-COMPANY SPECIFICALLY DISCLAIMS ALL DAMAGES RESULTING FROM YOUR USE OF
-THE MOBILE APPLICATION.
-
-
-Privacy Notice.
-
-When using the Mobile Application, we will collect data that tells us
-about your app usage. We will use this usage data internally and only
-for research and development purposes. In addition, you will have the
-option to share with us different data contained in your mobile device
-or phone. Only the data that you agree to share will be collected
-through the interface that will appear on your screen. Please do not
-share with us sensitive data or data of third parties who have not
-given their consent. We collect this data to conduct internal testing
-of the Mobile Application and its use by you and other users for the
-purposes of research and state-of-the-art marketing. By delivering
-this data to us, you also authorize us to transfer it to Wibson Ltd.,
-and our academic partners for related purposes. You acknowledge and
-accept that our company and recipients of your data could be located
-in territories that, like the United States of America, do not offer
-in their laws a level of protection of privacy equivalent to the one
-applied in the European Union. You can exercise the data rights that
-the applicable law grants to you at any time through the electronic
-address privacy@wibson.org.
-
-
-Proprietary Rights.
-
-Wibson is a trademark of Company. Other trademarks, names and logos on
-this Mobile Application are the property of their respective owners.
-Unless otherwise specified in these Terms, all information and screens
-appearing on this Mobile Application, including documents, services,
-site design, text, graphics, logos, images and icons, as well as the
-arrangement thereof, are the sole property of Company, Copyright ©
-2018 Wibson Ltd. All rights not expressly granted herein are reserved.
-Except as otherwise required or limited by applicable law, any
-reproduction, distribution, modification, retransmission, or
-publication of any copyrighted material is strictly prohibited without
-the express written consent of the copyright owner or license. The
-Mobile Application and related documentation are “Commercial Items”,
-as that term is defined at 48 C.F.R. §2.101, consisting of “Commercial
-Computer Software” and “Commercial Computer Software Documentation”,
-as such terms are used in 48 C.F.R. §12.212 or 48 C.F.R. §227.7202, as
-applicable. Consistent with 48 C.F.R. §12.212 or 48 C.F.R. §227.7202-1
-through 227.7202-4, as applicable, if you are a government entity, the
-Commercial Computer Software and Commercial Computer Software
-Documentation are being licensed to U.S. Government end users (a) only
-as Commercial Items and (b) with only those rights as are granted to
-all other end users pursuant to the terms and conditions herein.
-Unpublished-rights reserved under applicable copyright laws.
-
-
-Disclaimer of Warranties.
-
-Your use of this Mobile Application is at your own risk. The Materials
-have not been verified or authenticated in whole or in part by
-Company, and they may include inaccuracies or typographical or other
-errors. Company does not warrant the accuracy of timeliness of the
-Materials contained on this Mobile Application. Company has no
-liability for any errors or omissions in the Materials, whether
-provided by Company, our licensors or suppliers or other users.
-COMPANY, FOR ITSELF AND ITS LICENSORS, MAKES NO EXPRESS, IMPLIED OR
-STATUTORY REPRESENTATIONS, WARRANTIES, OR GUARANTEES IN CONNECTION
-WITH THIS MOBILE APPLICATION, THE SERVICES, OR ANY MATERIALS RELATING
-TO THE QUALITY, SUITABILITY, TRUTH, ACCURACY OR COMPLETENESS OF ANY
-INFORMATION OR MATERIAL CONTAINED OR PRESENTED ON THIS MOBILE
-APPLICATION, INCLUDING WITHOUT LIMITATION THE MATERIALS. UNLESS
-OTHERWISE EXPLICITLY STATED, TO THE MAXIMUM EXTENT PERMITTED BY
-APPLICABLE LAW, THIS MOBILE APPLICATION, MATERIALS AND ANY INFORMATION
-OR MATERIAL CONTAINED OR PRESENTED ON THIS MOBILE APPLICATION IS
-PROVIDED TO YOU ON AN “AS IS,” “AS AVAILABLE” AND “WHERE-IS” BASIS
-WITH NO WARRANTY OF IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, OR NON-INFRINGEMENT OF THIRD-PARTY RIGHTS. COMPANY
-DOES NOT PROVIDE ANY WARRANTIES AGAINST VIRUSES, SPYWARE OR MALWARE
-THAT MAY BE INSTALLED ON YOUR COMPUTER.
-
-
-Limitation of Liability.
-
-YOUR SOLE AND EXCLUSIVE RIGHT AND REMEDY IN CASE OF DISSATISFACTION
-WITH THE MOBILE APPLICATION OR ANY OTHER GRIEVANCE SHALL BE YOUR
-TERMINATION AND DISCONTINUATION OF ACCESS TO, OR USE OF THE MOBILE
-APPLICATION. COMPANY SHALL NOT BE LIABLE TO YOU FOR ANY DAMAGES
-RESULTING FROM YOUR DISPLAYING, COPYING, OR DOWNLOADING ANY MATERIALS
-TO OR FROM THIS MOBILE APPLICATION OR ACCEPTING ANY DATA OFFERS
-THROUGH THE MOBILE APPLICATION. TO THE MAXIMUM EXTENT PERMITTED BY
-APPLICABLE LAW, IN NO EVENT SHALL COMPANY BE LIABLE TO YOU FOR ANY
-INDIRECT, EXTRAORDINARY, EXEMPLARY, PUNITIVE, SPECIAL, INCIDENTAL, OR
-CONSEQUENTIAL DAMAGES (INCLUDING LOSS OF DATA, REVENUE, PROFITS, USE
-OR OTHER ECONOMIC ADVANTAGE) HOWEVER ARISING, EVEN IF COMPANY KNOWS
-THERE IS A POSSIBILITY OF SUCH DAMAGE. NOTWITHSTANDING ANYTHING TO THE
-CONTRARY IN THIS AGREEMENT, IN NO EVENT WILL COMPANY’S LIABILITY TO
-YOU EXCEED TEN GIBRALTAR POUNDS, EVEN IN THE EVENT OF A FAILURE OF THE
-ESSENTIAL PURPOSE OR ANY LIMITED REMEDY UNDER THESE TERMS.
-
-
-Local Laws.
-
-Company controls and operates this Mobile Application from its
-headquarters in Gibraltar and the Materials may not be appropriate or
-available for use in other locations. If you use this Mobile
-Application outside Gibraltar, you are responsible for following
-applicable local laws.
-
-
-Feedback.
-
-If you send or transmit any communications, comments, questions,
-suggestions, or related materials to Company, whether by letter,
-email, telephone, or otherwise (collectively, “Feedback”), suggesting
-or recommending changes to the Mobile Application or Materials,
-including, without limitation, new features or functionality relating
-thereto, all such Feedback is, and will be treated as,
-non-confidential and non-proprietary. Except as prohibited by
-applicable law, you hereby assign all right, title, and interest in,
-and Company is free to use, without any attribution or compensation to
-you, any ideas, know-how, concepts, techniques, or other intellectual
-property and proprietary rights contained in the Feedback, whether or
-not patentable, for any purpose whatsoever, including but not limited
-to, developing, manufacturing, having manufactured, licensing,
-marketing, and selling, directly or indirectly, products and services
-using such Feedback. Where the foregoing assignment is prohibited by
-law, you hereby grant Us an exclusive, transferable, worldwide,
-royalty-free, fully paid up license (including the right to
-sublicense) to use and exploit all Feedback as We may determine in our
-sole discretion. Notwithstanding the foregoing, you understand and
-agree that Company is not obligated to use, display, reproduce, or
-distribute any such ideas, know-how, concepts, or techniques contained
-in the Feedback, and you have no right to compel such use, display,
-reproduction, or distribution.
-
-
-Language.
-
-The Parties hereto have expressly required that this agreement and all
-documents and notices relating thereto be drafted in the English
-language.
-
-
-General.
-
-Company prefers to advise you if we feel you are not complying with
-these Terms and to recommend any necessary corrective action. However,
-certain violations of these Terms, as determined by Company, may
-result in immediate termination of your access to this Mobile
-Application without prior notice to you. Gibraltar law, without regard
-to the choice or conflicts of law provisions, will govern these Terms.
-Foreign laws do not apply. Any disputes relating to these Terms or
-this Mobile Application will be heard in the courts located in
-Gibraltar. If any of these Terms is found to be inconsistent with
-applicable law, then such term shall be interpreted to reflect the
-intentions of the parties, and no other terms will be modified.
-Company’s failure to enforce any of these Terms is not a waiver of
-such term. These Terms are the entire agreement between you and
-Company and supersede all prior or contemporaneous negotiations,
-discussions or agreements between you and Company about this Mobile
-Application. The proprietary rights, disclaimer of warranties,
-representations made by you, indemnities, limitations of liability and
-general provisions shall survive any termination of these Terms.
-
-
-Contact Us.
-
-If you have any questions about these Terms or otherwise need to
-contact Company for any reason, you can reach us at info@wibson.org.
+Exhibit A
+Licensed Category
+Social Good &amp; Research means use that is for non-commercial purposes to encourage general societal improvement for internal purposes of the Data User
