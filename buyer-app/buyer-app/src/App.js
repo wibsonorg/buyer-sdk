@@ -1,18 +1,21 @@
 import React, { Component } from "react";
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
+
 import "./css/museo-sans.css";
 import "./css/open-sans.css";
 import "./App.css";
 
-import PrivateRoute from "./components/PrivateRoute";
 import Main from "./components/Main";
+import PrivateRoute from "./components/PrivateRoute";
+import Login from "./components/Login"
 
 class App extends Component {
   render() {
     return (
       <Router>
         <Switch>
-          <PrivateRoute exact path="/" component={Main} />
+          <Route path="/login" component={Login} />
+          <PrivateRoute path="/" component={Main} />
         </Switch>
       </Router>
     )
@@ -20,3 +23,4 @@ class App extends Component {
 }
 
 export default App;
+

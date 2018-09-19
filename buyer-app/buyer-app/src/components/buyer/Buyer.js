@@ -16,7 +16,7 @@ import { compose, withProps } from "recompose";
 import { connect } from "react-redux";
 import { Route, withRouter, Redirect } from "react-router-dom";
 
-import PrivateRoute from "../PrivateRoute"
+//import PrivateRoute from "../PrivateRoute"
 
 import * as DataOrdersByAddress from "state/entities/dataOrdersByAddress/selectors";
 import * as DataOrdersAddresses from "state/entities/dataOrdersAddresses/selectors";
@@ -143,28 +143,28 @@ class Buyer extends React.Component {
               </Button>
             </div>
           </div>
-          <PrivateRoute exact path="/" render={() => <Redirect to="/open-orders" />} />
-          <PrivateRoute
+          <Route exact path="/" render={() => <Redirect to="/open-orders" />} />
+          <Route
             path="/open-orders"
             render={() => (
               <div>
                 <OpenDataOrders dataOrders={activeDataOrders} />
-                <PrivateRoute
+                <Route
                   path="/open-orders/new-data-order"
                   render={DataOrderCreate}
                 />
               </div>
             )}
           />
-          <PrivateRoute
+          <Route
             path="/failed-orders"
             render={() => <FailedDataOrders dataOrders={failedDataOrders} />}
           />
-          <PrivateRoute
+          <Route
             path="/data-responses"
             render={() => <BoughtDataOrders dataOrders={boughtDataOrders} />}
           />
-          <PrivateRoute
+          <Route
             path="/closed-orders"
             render={() => <BoughtDataOrders dataOrders={closedDataOrders} />}
           />

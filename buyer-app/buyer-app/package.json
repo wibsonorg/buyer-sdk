@@ -76,6 +76,7 @@
     "store": "^2.0.12",
     "svg-react-loader": "^0.4.5",
     "truffle-contract": "^3.0.0",
+    "universal-cookie": "^3.0.4",
     "url": "^0.11.0"
   },
   "scripts": {

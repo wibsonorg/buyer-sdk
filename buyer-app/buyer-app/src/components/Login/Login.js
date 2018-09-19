@@ -8,6 +8,7 @@ const cx = cn.bind(styles);
 
 import Logo from 'base-app-src/components/Logo';
 import TextInput from 'base-app-src/components/TextInput';
+import Loading from 'base-app-src/components/Loading';
 import Button from 'base-app-src/components/Button';
 import * as authentication from "state/entities/authentication/selectors";
 import * as authenticationActions from "state/entities/authentication/actions";
@@ -31,20 +32,26 @@ class Login extends React.Component {
         <form onSubmit={this.onHandleSubmit} 
               className={cx("wibson-login-container")}>
           <Logo className={cx("wibson-login-logo")} />
+          {this.props.authentication&& !this.props.authentication.fulfilled && !this.props.authentication.pending ? 
+          <p className={cx("wibson-login-error")}>password incorrect</p> : null}
           <TextInput
             id={"password"}
             name={"password"}
             type={"password"}
             placeholder={"password"}
           />
-          <Button
-            type={"submit"}
-            buttonStyle={"outline"} 
-            className={cx("wibson-login-button")}
-            size={"lg"}
-            style={{"width":"20%", "textAlign":"center"}}
-          > <span> Submit </span>
-          </Button>
+          {this.props.authentication && this.props.authentication.pending ?
+            <Loading/>
+          : (
+            <Button
+              type={"submit"}
+              buttonStyle={"outline"} 
+              className={cx("wibson-login-button")}
+              size={"lg"}
+              style={{"width":"20%", "textAlign":"center"}}
+            > <span> Submit </span>
+            </Button>
+            ) }
         </form>
       </div>
     );

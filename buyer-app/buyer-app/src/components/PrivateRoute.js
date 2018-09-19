@@ -1,10 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Route } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 
 import * as authentication from "state/entities/authentication/selectors";
-
-import Login from "./Login";
 
 class PrivateRoute extends React.Component {
 
@@ -18,7 +16,7 @@ class PrivateRoute extends React.Component {
           this.props.authentication.authenticated ? (
             <Component {...props} />
           ) : (
-            <Login {...props} />
+            <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
           )
         }
       />
@@ -31,6 +29,5 @@ const mapStateToProps = state => ({
   });
   
 export default connect(
-  mapStateToProps,
-  null
+  mapStateToProps
 )(PrivateRoute);
