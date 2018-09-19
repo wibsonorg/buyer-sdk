@@ -6,19 +6,19 @@ const initialState = null;
 
 export default createReducer(
   {
-    [Actions.fetchAuthenticationFailed]: (state, payload) => ({
+    [Actions.logInUserFailed]: (state, payload) => ({
       pending: false,
       authenticated: undefined,
       error: payload,
       fulfilled: false
     }),
-    [Actions.fetchAuthenticationSucceed]: (state, payload) => ({
+    [Actions.logInUserSucceed]: (state, payload) => ({
       ...state,
       authenticated: payload.authenticated,
       pending: false,
       fulfilled: true
     }),
-    [Actions.fetchAuthenticationPending]: (state, payload) => ({
+    [Actions.logInUserPending]: (state, payload) => ({
       ...state,
       authenticated: undefined,
       pending: true,

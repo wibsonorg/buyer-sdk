@@ -2,7 +2,7 @@ import Config from "../../../config";
 
 const apiUrl = Config.get("api.url");
 
-async function fetchAuth(data) {
+async function loginUser(data) {
   const res = await fetch(`${apiUrl}/authentication`, {
     method: 'POST',
     headers:{
@@ -19,4 +19,4 @@ async function fetchAuth(data) {
   return res.json();
 };
 
-export { fetchAuth };
+export { loginUser };

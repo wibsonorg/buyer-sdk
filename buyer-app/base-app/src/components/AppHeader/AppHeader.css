@@ -26,6 +26,14 @@
   align-items: center;
 }
 
+.wibson-header .info-section2 {
+  height: 64px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
 .wibson-header .info-section .wibson-logo {
   width: 126px;
 	height: 24px;

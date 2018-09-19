@@ -35,7 +35,7 @@ import OpenDataOrders from "./OpenDataOrders";
 import BoughtDataOrders from "./BoughtDataOrders";
 import FailedDataOrders from "./FailedDataOrders";
 import DataOrderCreate from "./DataOrderCreate";
-
+import { removeCookie } from "../../utils/cookies"
 
 import R from "ramda";
 import queryString from 'query-string';
@@ -49,6 +49,11 @@ class Buyer extends React.Component {
     if (this.props.currentRoute !== value) {
       this.props.history.push(`/${value}`);
     }
+  };
+
+  handleLogOut = () => {
+    removeCookie('token')
+    window.location.reload();
   };
 
   renderSelect() {
@@ -117,7 +122,7 @@ class Buyer extends React.Component {
 
     return (
       <div>
-        <AppHeader userRole="buyer" account={account.address} panels={panels} />
+        <AppHeader userRole="buyer" account={account.address} panels={panels} logOut={this.handleLogOut} />
         <LoadingBar loading={this.isLoading()} />
         <AppNotifications />
         <div className={cx("page-content")}>
@@ -196,7 +201,7 @@ const mapDispatchToProps = (dispatch, props) => ({
         offset: Number(offset || -10)
       })
     );
-  }
+  },
 });
 
 export default compose(

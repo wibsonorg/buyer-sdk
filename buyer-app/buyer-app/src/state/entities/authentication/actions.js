@@ -5,14 +5,14 @@ import { createAction } from "redux-act";
 import { types } from 'redux-act';
 types.disableChecking();
 
-const fethAuthentication = createAction("AUTHENTICATION_FETCH");
-const fetchAuthenticationFailed = createAction("AUTHENTICATION_FETCH_FAILED");
-const fetchAuthenticationSucceed = createAction("AUTHENTICATION_FETCH_SUCCEED");
-const fetchAuthenticationPending = createAction("AUTHENTICATION_FETCH_PENDING");
+const logInUser = createAction("LOGIN_USER");
+const logInUserFailed = createAction("LOGIN_USER_FAILED");
+const logInUserSucceed = createAction("LOGIN_USER_SUCCEED");
+const logInUserPending = createAction("LOGIN_USER_PENDING");
 
 export { 
-	fethAuthentication, 
-	fetchAuthenticationFailed, 
-	fetchAuthenticationSucceed, 
-	fetchAuthenticationPending
+	logInUser, 
+	logInUserFailed, 
+	logInUserSucceed, 
+	logInUserPending,
 };

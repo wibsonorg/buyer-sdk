@@ -2,9 +2,28 @@ import React from "react";
 import { connect } from "react-redux";
 import { Route, Redirect } from "react-router-dom";
 
-import * as authentication from "state/entities/authentication/selectors";
+import * as verifyTokenActions from "state/entities/verifyToken/actions";
+import { getCookie } from "../utils/cookies"
 
 class PrivateRoute extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      token: getCookie('token')
+    };
+  }
+  
+  componentWillMount() {
+    const token = getCookie('token')
+    if (!token){
+      this.setState({
+        ...this.state,
+        token:false
+      })
+    }
+    this.props.verifyToken();
+  }
 
   render() {
     const { component: Component, ...rest } = this.props;
@@ -12,8 +31,7 @@ class PrivateRoute extends React.Component {
       <Route
         {...rest}
         render={props =>
-          this.props.authentication && 
-          this.props.authentication.authenticated ? (
+          this.state.token ? (
             <Component {...props} />
           ) : (
             <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
@@ -24,10 +42,10 @@ class PrivateRoute extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-    authentication: authentication.getAuthenticated(state)
-  });
-  
-export default connect(
-  mapStateToProps
-)(PrivateRoute);
+const mapDispatchToProps = (dispatch, props) => ({
+  verifyToken: () => {
+    dispatch(verifyTokenActions.verifyToken());
+  }
+});
+
+export default connect(null, mapDispatchToProps)(PrivateRoute);

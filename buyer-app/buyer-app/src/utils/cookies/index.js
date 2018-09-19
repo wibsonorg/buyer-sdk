@@ -1,4 +1,5 @@
 import getCookie from './getCookie';
 import setCookie from './setCookie';
+import removeCookie from './removeCookie';
 
-export {getCookie, setCookie}
+export {getCookie, setCookie, removeCookie}

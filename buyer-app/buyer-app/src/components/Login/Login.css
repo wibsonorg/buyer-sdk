@@ -26,6 +26,12 @@
 
 .wibson-login-error{
    color: red;
-   font-size: 24px;
-   font-weight: 400;
+   font-size: 20px;
+   font-weight: 300;
+   margin-top: 20px;
+   padding: 0;
+}
+
+.wibson-login-spiner{
+    margin-top: 50px;
 }

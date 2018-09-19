@@ -41,7 +41,9 @@ class Login extends React.Component {
             placeholder={"password"}
           />
           {this.props.authentication && this.props.authentication.pending ?
+          <div className={cx("wibson-login-spiner")}>
             <Loading/>
+          </div>
           : (
             <Button
               type={"submit"}
@@ -64,7 +66,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch, props) => ({
   logInUser: (data) => {
-    dispatch(authenticationActions.fethAuthentication(data));
+    dispatch(authenticationActions.logInUser(data));
   }
 });
 

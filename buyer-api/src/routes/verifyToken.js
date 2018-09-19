@@ -6,8 +6,8 @@ import checkAuthorization from '../utils/checkAuthorization';
 const router = express.Router();
 router.use(checkAuthorization);
 
-router.post('/', asyncError(async (req, res) => res.status(200).json({
-  ok: true,
+router.get('/', asyncError(async (req, res) => res.status(200).json({
+  valid: true,
 })));
 
 export default router;
