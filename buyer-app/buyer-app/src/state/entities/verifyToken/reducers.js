@@ -6,11 +6,7 @@ const initialState = null;
 
 export default createReducer(
   {
-    [Actions.verifyTokenFailed]: (state, payload) => ({
-      unAuthenticated: undefined,
-      error: payload,
-      fulfilled: false
-    }),
+    [Actions.verifyToken]: (state, payload) => payload
   },
   initialState
 );

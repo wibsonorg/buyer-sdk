@@ -32,14 +32,14 @@ class Login extends React.Component {
         <form onSubmit={this.onHandleSubmit} 
               className={cx("wibson-login-container")}>
           <Logo className={cx("wibson-login-logo")} />
-          {this.props.authentication&& !this.props.authentication.fulfilled && !this.props.authentication.pending ? 
-          <p className={cx("wibson-login-error")}>password incorrect</p> : null}
           <TextInput
             id={"password"}
             name={"password"}
             type={"password"}
             placeholder={"password"}
           />
+          {this.props.authentication&& !this.props.authentication.fulfilled && !this.props.authentication.pending ? 
+          <p className={cx("wibson-login-error")}>password is incorrect</p> : null}
           {this.props.authentication && this.props.authentication.pending ?
           <div className={cx("wibson-login-spiner")}>
             <Loading/>
@@ -51,7 +51,7 @@ class Login extends React.Component {
               className={cx("wibson-login-button")}
               size={"lg"}
               style={{"width":"20%", "textAlign":"center"}}
-            > <span> Submit </span>
+            > <span className={cx("wibson-login-textButton")}> Log In </span>
             </Button>
             ) }
         </form>

@@ -17,3 +17,4 @@ import dataResponses from './dataResponses';
 import verifyToken from './verifyToken';
 
 export { auth, account, buyerInfos, health, notaries, dataOrders, dataResponses, verifyToken };
+

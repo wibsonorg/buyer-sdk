@@ -11,22 +11,27 @@
 }
 
 .wibson-login-logo {
-    width: 126px;
-    height: 24px;
+    width: 136px;
+    height: 32px;
     margin-bottom: 80px;
   }
 
 .wibson-login-button {
     margin-top: 40px;
+    opacity: .6;
+}
+
+.wibson-login-textButton {
+    color:white;
 }
 
 .wibson-login-button:hover {
-    background-color: aliceblue;
+   opacity: .9;
 }
 
 .wibson-login-error{
    color: red;
-   font-size: 20px;
+   font-size: 18px;
    font-weight: 300;
    margin-top: 20px;
    padding: 0;

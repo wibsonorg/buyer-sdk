@@ -13,16 +13,11 @@ class PrivateRoute extends React.Component {
       token: getCookie('token')
     };
   }
-  
-  componentWillMount() {
-    const token = getCookie('token')
-    if (!token){
-      this.setState({
-        ...this.state,
-        token:false
-      })
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps !== this.props) {
+      this.props.verifyToken();
     }
-    this.props.verifyToken();
   }
 
   render() {

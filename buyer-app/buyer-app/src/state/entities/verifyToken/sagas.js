@@ -1,4 +1,5 @@
-import { put, takeEvery, all, call } from "redux-saga/effects";
+import { delay } from "redux-saga";
+import { takeLatest, all, call } from "redux-saga/effects";
 import { removeCookie } from "../../../utils/cookies"
 
 import * as Actions from "./actions";
@@ -6,19 +7,21 @@ import * as Actions from "./actions";
 import { veriToken } from "./helpers";
 
 function* verifyToken(action) {
-  try {
+  while (true) {
+    yield call(delay, 8000);
+
     const authenticated = yield call(veriToken);
-    const { valid } = authenticated;
-    if (!valid) {
+
+    const { invalid } = authenticated;
+    if (invalid) {
       removeCookie('token')
-    }
-  } catch (error) {
-    yield put(Actions.verifyTokenFailed(error));
+      window.location.reload();
+    };   
   }
 }
 
 function* watchverifyToken() {
-  yield takeEvery(Actions.verifyToken.getType(), verifyToken);
+  yield takeLatest(Actions.verifyToken.getType(), verifyToken);
 }
 
 // notice how we now only export the rootSaga
