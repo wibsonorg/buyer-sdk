@@ -18,7 +18,7 @@ router.post('/', asyncError(async (req, res) => {
     });
   }
 
-  const token = jsonwebtoken.sign({}, jwt.secret, { expiresIn: 60 * 1 });
+  const token = jsonwebtoken.sign({}, jwt.secret, { expiresIn: jwt.expiration });
   res.status(200).json({
     ok: true,
     authenticated: true,

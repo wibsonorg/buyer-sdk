@@ -48,7 +48,6 @@ const config = {
     bucket: env.STORAGE_BUCKET,
   },
   levelDirectory: env.LEVEL_DIRECTORY,
-  cookieJwtOptions: env.NODE_ENV === 'development' ? { ...JSON.parse(env.COOKIE_JWT), secure: false } : JSON.parse(env.COOKIE_JWT),
   jwt: JSON.parse(env.JWT_OPTIONS),
   passphrase: env.PASSPHRASE,
 };
