@@ -6,11 +6,8 @@ import {
   listBuyerInfos,
   storeBuyerInfo,
 } from '../services/buyerInfo';
-import checkAuthorization from '../utils/checkAuthorization';
 
 const router = express.Router();
-router.use(checkAuthorization);
-
 /**
  * @swagger
  * /infos:

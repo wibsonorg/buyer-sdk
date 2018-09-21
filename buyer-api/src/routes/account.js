@@ -2,11 +2,8 @@ import express from 'express';
 import web3Utils from 'web3-utils';
 import { web3, cache, asyncError, wibcoin } from '../utils';
 import signingService from '../services/signingService';
-import checkAuthorization from '../utils/checkAuthorization';
 
 const router = express.Router();
-router.use(checkAuthorization);
-
 /**
  * @swagger
  * /account:

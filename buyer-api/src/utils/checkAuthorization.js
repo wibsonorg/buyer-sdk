@@ -1,16 +1,15 @@
 import jwt from 'jsonwebtoken';
 import config from '../../config';
+import { fetchToken } from './';
 
 function checkAuthorization(req, res, next) {
-  const authorizationInHeaders = req && req.headers && req.headers.authorization;
-  const authorizationInCookies = req && req.cookies;
-  const token = authorizationInHeaders ? authorizationInHeaders.replace('Bearer ', '') : authorizationInCookies && authorizationInCookies.accessJwt;
+  const token = fetchToken(req);
   if (!token) {
-    return res.status(401).send({ auth: false, message: 'No token provided ' });
+    return res.boom.unauthorized('No token provided');
   }
   jwt.verify(token, config.jwt.secret, (err, decoded) => {
     if (err) {
-      return res.status(500).send({ auth: false, message: 'Failed to authenticate token ' });
+      return res.boom.unauthorized('Failed to authenticate token');
     }
     next();
   });

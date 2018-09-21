@@ -2,10 +2,8 @@ import express from 'express';
 import requestPromise from 'request-promise-native';
 import config from '../../config';
 import { web3, cache } from '../utils';
-import checkAuthorization from '../utils/checkAuthorization';
 
 const router = express.Router();
-router.use(checkAuthorization);
 /**
  * @swagger
  * /health:

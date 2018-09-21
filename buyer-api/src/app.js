@@ -55,19 +55,10 @@ app.use(bodyParser.urlencoded({
   extended: true,
 }));
 app.use(cookieParser());
-/* If you want to allow credentials then your Access-Control-Allow-Origin must not use *. 
-  You will have to specify the exact protocol + domain + port */
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Credentials', true);
-//   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, X-Prototype-Version, Origin, Allow, *');
-//   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS,HEAD');
-//   res.header('Access-Control-Allow-Origin', '*');
-//   res.header('Access-Control-Max-Age', 1728000);
-//   next();
-// });
 
 app.use('/authentication', auth);
-app.use('/verifyToken', verifyToken);
+// This middleware MUST always go after of authentication of fail
+app.use(checkAuthorization);
 app.use('/account', account);
 app.use('/health', health);
 app.use('/notaries', notaries);
