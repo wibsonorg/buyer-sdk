@@ -12,9 +12,8 @@ async function loginUser(data) {
     },
     body: JSON.stringify(data)
   });
-
   if (!res.ok) {
-    throw new Error("failed authentication");
+    throw new Error("Password is incorrect");
   }
 
   return res.json();

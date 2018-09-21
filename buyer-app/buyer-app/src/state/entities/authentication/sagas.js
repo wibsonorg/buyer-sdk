@@ -33,8 +33,7 @@ function* verifyToken(action) {
     const statusCode = authenticated && authenticated.statusCode;
     if (statusCode === 401) {
       removeCookie('token')
-      yield put(Actions.verifyTokenFailed(authenticated));
-      //window.location.reload();
+      yield put(Actions.logOutUser());
     };   
   }
 }

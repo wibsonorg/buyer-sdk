@@ -38,8 +38,8 @@ class Login extends React.Component {
             type={"password"}
             placeholder={"password"}
           />
-          {this.props.auth && this.props.auth.passwordError ? 
-          <p className={cx("wibson-login-error")}>password is incorrect</p> : null}
+          {this.props.auth && this.props.auth.logInError ? 
+          <p className={cx("wibson-login-error")}>{this.props.auth.logInError}</p> : null}
           {this.props.auth && this.props.auth.pending ?
           <div className={cx("wibson-login-spiner")}>
             <Loading/>

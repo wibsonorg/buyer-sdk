@@ -16,8 +16,6 @@ import { compose, withProps } from "recompose";
 import { connect } from "react-redux";
 import { Route, withRouter, Redirect } from "react-router-dom";
 
-//import PrivateRoute from "../PrivateRoute"
-
 import * as DataOrdersByAddress from "state/entities/dataOrdersByAddress/selectors";
 import * as DataOrdersAddresses from "state/entities/dataOrdersAddresses/selectors";
 import * as Account from "state/entities/account/selectors";
@@ -25,6 +23,7 @@ import * as Account from "state/entities/account/selectors";
 import * as PollingActions from "state/entities/polling/actions";
 
 import * as DataOrdersAddressesActions from "state/entities/dataOrdersAddresses/actions";
+import * as authenticationActions from "state/entities/authentication/actions";
 import { withNotaries } from "state/entities/notaries/hoc";
 
 import InfoPanel from "./headerPanels/InfoPanel";
@@ -53,7 +52,7 @@ class Buyer extends React.Component {
 
   handleLogOut = () => {
     removeCookie('token')
-    window.location.reload();
+    this.props.logOutUser();
   };
 
   renderSelect() {
@@ -201,6 +200,9 @@ const mapDispatchToProps = (dispatch, props) => ({
         offset: Number(offset || -10)
       })
     );
+  },
+  logOutUser: () => {
+    dispatch(authenticationActions.logOutUser());
   },
 });
 
