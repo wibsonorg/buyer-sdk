@@ -9,10 +9,14 @@ const logInUser = createAction("LOGIN_USER");
 const logInUserFailed = createAction("LOGIN_USER_FAILED");
 const logInUserSucceed = createAction("LOGIN_USER_SUCCEED");
 const logInUserPending = createAction("LOGIN_USER_PENDING");
+const verifyToken = createAction("VERIFICATION_TOKEN");
+const verifyTokenFailed = createAction("VERIFICATION_TOKEN_FAILED");
 
 export { 
 	logInUser, 
 	logInUserFailed, 
 	logInUserSucceed, 
 	logInUserPending,
+	verifyToken,
+	verifyTokenFailed
 };

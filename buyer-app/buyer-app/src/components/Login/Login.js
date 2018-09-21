@@ -24,7 +24,7 @@ class Login extends React.Component {
   };
 
   render() {
-    if (this.props.authentication && this.props.authentication.authenticated){
+    if (this.props.auth && this.props.auth.authenticated){
       return <Redirect to={{ pathname: "/" }} />
     }
     return (
@@ -38,9 +38,9 @@ class Login extends React.Component {
             type={"password"}
             placeholder={"password"}
           />
-          {this.props.authentication&& !this.props.authentication.fulfilled && !this.props.authentication.pending ? 
+          {this.props.auth && this.props.auth.passwordError ? 
           <p className={cx("wibson-login-error")}>password is incorrect</p> : null}
-          {this.props.authentication && this.props.authentication.pending ?
+          {this.props.auth && this.props.auth.pending ?
           <div className={cx("wibson-login-spiner")}>
             <Loading/>
           </div>
@@ -61,7 +61,7 @@ class Login extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  authentication: authentication.getAuthenticated(state)
+  auth: authentication.getAuthentication(state)
 });
 
 const mapDispatchToProps = (dispatch, props) => ({

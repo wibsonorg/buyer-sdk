@@ -2,7 +2,8 @@ import React from "react";
 import { connect } from "react-redux";
 import { Route, Redirect } from "react-router-dom";
 
-import * as verifyTokenActions from "state/entities/verifyToken/actions";
+import * as authentication from "state/entities/authentication/selectors";
+import * as authenticationActions from "state/entities/authentication/actions";
 import { getCookie } from "../utils/cookies"
 
 class PrivateRoute extends React.Component {
@@ -15,8 +16,11 @@ class PrivateRoute extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps !== this.props) {
-      this.props.verifyToken();
+    if (nextProps.authenticated !== this.props.authenticated) {
+      this.setState({
+       ...this.state,
+       token: false, 
+      })
     }
   }
 
@@ -37,10 +41,18 @@ class PrivateRoute extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  authenticated: authentication.getAuthentication(state),
+});
+
+
 const mapDispatchToProps = (dispatch, props) => ({
   verifyToken: () => {
-    dispatch(verifyTokenActions.verifyToken());
+    dispatch(authenticationActions.verifyToken());
   }
 });
 
-export default connect(null, mapDispatchToProps)(PrivateRoute);
+export default connect(
+  mapStateToProps, 
+  mapDispatchToProps
+)(PrivateRoute);

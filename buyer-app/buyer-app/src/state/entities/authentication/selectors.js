@@ -1,3 +1,3 @@
-const getAuthenticated = state => state.authentication;
+const getAuthentication = state => state.authentication;
 
-export { getAuthenticated };
+export { getAuthentication };

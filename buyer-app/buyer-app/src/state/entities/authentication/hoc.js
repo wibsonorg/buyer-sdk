@@ -2,7 +2,7 @@ import { lifecycle, compose } from "recompose";
 import { connect } from "react-redux";
 import * as Actions from "./actions";
 
-const withverifyTokePolling = compose(
+const withVerifyTokePolling = compose(
   connect(),
   lifecycle({
     componentWillMount() {
@@ -11,4 +11,4 @@ const withverifyTokePolling = compose(
   })
 );
 
-export { withverifyTokePolling };
+export { withVerifyTokePolling };

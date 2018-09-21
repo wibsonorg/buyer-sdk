@@ -9,7 +9,7 @@ export default createReducer(
     [Actions.logInUserFailed]: (state, payload) => ({
       pending: false,
       authenticated: undefined,
-      error: payload,
+      passwordError: true,
       fulfilled: false
     }),
     [Actions.logInUserSucceed]: (state, payload) => ({
@@ -22,6 +22,13 @@ export default createReducer(
       ...state,
       authenticated: undefined,
       pending: true,
+      fulfilled: false
+    }),
+    [Actions.verifyTokenFailed]: (state, payload) => ({
+      ...state,
+      authenticated: undefined,
+      pending: false,
+      tokenExpired: true,
       fulfilled: false
     })
   },

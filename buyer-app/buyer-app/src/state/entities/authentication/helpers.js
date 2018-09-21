@@ -1,4 +1,5 @@
 import Config from "../../../config";
+import authorization from "../../../utils/headers"
 
 const apiUrl = Config.get("api.url");
 
@@ -19,4 +20,16 @@ async function loginUser(data) {
   return res.json();
 };
 
-export { loginUser };
+async function veriToken() {
+  const res = await fetch(`${apiUrl}/authentication/verify-token`, {
+    headers: {
+      Authorization: authorization()
+    }
+  });
+  if (!res.ok) {
+    return res.json()
+  }
+  return
+};
+
+export { loginUser, veriToken };

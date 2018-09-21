@@ -4,7 +4,7 @@ import { compose } from "recompose";
 import Buyer from "./buyer/Buyer";
 
 import { withAccountPolling } from "state/entities/account/hoc";
-import { withverifyTokePolling } from "state/entities/verifyToken/hoc";
+import { withVerifyTokePolling } from "state/entities/authentication/hoc";
 
 
 const MainPage = props => {
@@ -13,4 +13,4 @@ const MainPage = props => {
   );
 };
 
-export default compose(withAccountPolling, withverifyTokePolling)(MainPage);
+export default compose(withAccountPolling, withVerifyTokePolling)(MainPage);
