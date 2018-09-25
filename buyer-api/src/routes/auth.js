@@ -10,7 +10,7 @@ router.post('/', asyncError(async (req, res) => {
   const { jwt, passphrase } = config;
   const { password } = req.body;
   if (!password || password !== passphrase) {
-    return res.boom.unauthorized();
+    return res.boom.unauthorized('password is incorrect', { authenticated: false });
   }
   const token = jsonwebtoken.sign({}, jwt.secret, { expiresIn: jwt.expiration });
   res.status(200).json({

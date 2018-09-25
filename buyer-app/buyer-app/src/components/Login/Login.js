@@ -24,8 +24,9 @@ class Login extends React.Component {
   };
 
   render() {
+    const { from } = this.props.location.state || { from: { pathname: "/" } };
     if (this.props.auth && this.props.auth.authenticated){
-      return <Redirect to={{ pathname: "/" }} />
+      return <Redirect to={from} />;
     }
     return (
       <div className={cx("wibson-login-body")}>      
@@ -49,9 +50,10 @@ class Login extends React.Component {
               type={"submit"}
               buttonStyle={"outline"} 
               className={cx("wibson-login-button")}
+              children={'Log In'}
               size={"lg"}
               style={{"width":"20%", "textAlign":"center"}}
-            > <span className={cx("wibson-login-textButton")}> Log In </span>
+            >
             </Button>
             ) }
         </form>
@@ -64,7 +66,7 @@ const mapStateToProps = state => ({
   auth: authentication.getAuthentication(state)
 });
 
-const mapDispatchToProps = (dispatch, props) => ({
+const mapDispatchToProps = (dispatch) => ({
   logInUser: (data) => {
     dispatch(authenticationActions.logInUser(data));
   }

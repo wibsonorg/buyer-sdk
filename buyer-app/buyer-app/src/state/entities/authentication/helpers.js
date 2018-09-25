@@ -3,7 +3,7 @@ import authorization from "../../../utils/headers"
 
 const apiUrl = Config.get("api.url");
 
-async function loginUser(data) {
+async function logInUser(data) {
   const res = await fetch(`${apiUrl}/authentication`, {
     method: 'POST',
     headers:{
@@ -13,13 +13,13 @@ async function loginUser(data) {
     body: JSON.stringify(data)
   });
   if (!res.ok) {
-    throw new Error("Password is incorrect");
+    return res.json();
   }
 
   return res.json();
 };
 
-async function veriToken() {
+async function verifyToken() {
   const res = await fetch(`${apiUrl}/authentication/verify-token`, {
     headers: {
       Authorization: authorization()
@@ -31,4 +31,4 @@ async function veriToken() {
   return
 };
 
-export { loginUser, veriToken };
+export { logInUser, verifyToken };

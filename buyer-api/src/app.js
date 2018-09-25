@@ -26,7 +26,6 @@ import {
   dataOrders,
   dataResponses,
   buyerInfos,
-  verifyToken,
 } from './routes';
 import checkAuthorization from './utils/checkAuthorization';
 
@@ -57,7 +56,7 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 
 app.use('/authentication', auth);
-// This middleware MUST always go after of authentication of fail
+// This middleware MUST always go after of authentication or fail
 app.use(checkAuthorization);
 app.use('/account', account);
 app.use('/health', health);
@@ -65,8 +64,8 @@ app.use('/notaries', notaries);
 app.use('/data-responses', dataResponses);
 app.use('/infos', buyerInfos);
 app.use('/orders', dataOrders);
-app.use('/api-docs', checkAuthorization, swaggerUi.serve, swaggerUi.setup(schema));
-app.get('/api-docs.json', checkAuthorization, (_req, res) => res.json(schema));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
+app.get('/api-docs.json', (_req, res) => res.json(schema));
 
 app.use(errorHandler); // This MUST always go after any other app.use(...)
 

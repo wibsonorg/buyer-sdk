@@ -12,7 +12,7 @@ const getAccount = async () => {
   });
 
   if (!res.ok) {
-    throw new Error("Could get data orders");
+    return res.json();
   }
 
   return await res.json();

@@ -10,16 +10,23 @@ import * as Actions from "./actions";
 function* updateAccount(action) {
   while (true) {
     yield call(delay, 5000);
-
-    const account = yield call(getAccount);
-
-    const lastAccount = yield select(Selectors.getAccount);
-
-    if (account.balance !== lastAccount.balance || account.ether !== lastAccount.ether) {
-      yield put(Actions.updateAccount(account));
-    }
-  }
-}
+    
+    try {
+      const account = yield call(getAccount);
+      
+      if (account.statusCode === 401) {
+        console.log(account.message)
+      } else {
+        const lastAccount = yield select(Selectors.getAccount);
+        if (account.balance !== lastAccount.balance || account.ether !== lastAccount.ether) {
+          yield put(Actions.updateAccount(account));
+        };
+      };
+    } catch(error) {
+      console.error(error);
+    };
+  };
+};
 
 function* watchStartUpdate() {
   yield takeLatest(Actions.startAccountPolling.getType(), updateAccount);

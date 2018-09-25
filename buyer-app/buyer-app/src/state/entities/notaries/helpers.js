@@ -5,7 +5,6 @@ import authorization from "../../../utils/headers"
 const apiUrl = Config.get("api.url");
 
 const getNotariesFromContract = async () => {
-  //const res = axios.get(`${apiUrl}/notaries`, {withCredentials: true})
   const res = await fetch(`${apiUrl}/notaries`,
   {
     headers: {

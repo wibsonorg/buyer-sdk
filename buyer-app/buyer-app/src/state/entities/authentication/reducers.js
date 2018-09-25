@@ -6,28 +6,31 @@ const initialState = null;
 
 export default createReducer(
   {
-    [Actions.logInUserFailed]: (state, payload) => ({
-      pending: false,
+    [Actions.logInUserPending]: (state, payload) => ({
+      pending: true,
       authenticated: undefined,
-      logInError: payload.message,
+      logInError: undefined,
       fulfilled: false
     }),
     [Actions.logInUserSucceed]: (state, payload) => ({
       ...state,
-      authenticated: payload.authenticated,
       pending: false,
+      authenticated: payload.authenticated,
+      logInError: undefined,
       fulfilled: true
     }),
-    [Actions.logInUserPending]: (state, payload) => ({
+    [Actions.logInUserFailed]: (state, payload) => ({
       ...state,
+      pending: false,
       authenticated: undefined,
-      pending: true,
+      logInError: payload,
       fulfilled: false
     }),
     [Actions.logOutUser]: (state, payload) => ({
       ...state,
-      authenticated: undefined,
       pending: false,
+      authenticated: undefined,
+      logInError: undefined,
       fulfilled: false
     })
   },
