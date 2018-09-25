@@ -10,7 +10,7 @@ const { isPresent } = coercion;
 const { fromWib } = coin;
 const { partition } = collection;
 
-const buildNotariesParameters = async (
+const fetchNotariesParameters = async (
   notaries,
   buyerAddress,
   orderAddress,
@@ -43,11 +43,11 @@ const takeOnlyNotariesToAdd = async (orderAddress, addresses) => {
   return notariesNotAdded;
 };
 
-const addNotaryToOrder = async (notaryParameters, buyerAddress) => {
+const addNotaryToOrder = async (notaryParameters, buyerAccount) => {
   try {
     const { logs } = await performTransaction(
       web3,
-      buyerAddress,
+      buyerAccount,
       signingService.signAddNotaryToOrder,
       notaryParameters,
     );
@@ -73,7 +73,7 @@ const addNotaryToOrder = async (notaryParameters, buyerAddress) => {
  * @param {Array} addresses Notaries' addresses
  * @returns {Response} The result of the operation.
  */
-const addNotariesToOrderFacade = async (orderAddress, addresses, notariesCache) => {
+const addNotariesToOrderFacade = async (orderAddress, buyerAccount, addresses, notariesCache) => {
   if (addresses.length === 0) {
     return new Response(null, ['Field \'notaries\' must contain at least one notary address']);
   }
@@ -88,11 +88,10 @@ const addNotariesToOrderFacade = async (orderAddress, addresses, notariesCache) 
     });
   }
 
-  const { address: buyerAddress } = await signingService.getAccount();
   const notariesInformation = await getNotariesInfo(notariesCache, notariesToAdd);
-  const notariesParameters = await buildNotariesParameters(
+  const notariesParameters = await fetchNotariesParameters(
     notariesInformation,
-    buyerAddress,
+    buyerAccount.address,
     orderAddress,
   );
 
@@ -103,7 +102,7 @@ const addNotariesToOrderFacade = async (orderAddress, addresses, notariesCache) 
     txs = [
       ...txs,
       // eslint-disable-next-line no-await-in-loop
-      await addNotaryToOrder(notaryParameters, buyerAddress),
+      await addNotaryToOrder(notaryParameters, buyerAccount),
     ];
   }
 

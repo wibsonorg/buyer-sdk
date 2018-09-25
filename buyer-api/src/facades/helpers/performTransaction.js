@@ -83,19 +83,20 @@ const transactionResponse = async (web3, receipt) => {
  * @async
  * @function sendTransaction
  * @param {Object} web3
- * @param {Sting} address issuer's ethereum address of the transaction
+ * @param {Object} issuer's account
  * @param {Function} signingFunc function used to sign the transaction
  * @param {Object} params data payload needed in the transaction
  * @returns {String} transaction receipt
  */
 const sendTransaction = async (
   web3,
-  address,
+  account,
   signingFunc,
   params,
 ) => {
-  const nonce = await web3.eth.getTransactionCount(address);
+  const nonce = await web3.eth.getTransactionCount(account.address);
   const payload = {
+    account: account.number,
     nonce,
     gasPrice: web3.eth.gasPrice.toNumber(),
     params,
@@ -115,7 +116,7 @@ const sendTransaction = async (
  * @async
  * @function performTransaction
  * @param {Object} web3
- * @param {Sting} address issuer's ethereum address of the transaction
+ * @param {Object} issuer's account
  * @param {Function} signingFunc function used to sign the transaction
  * @param {Object} params data payload needed in the transaction
  * @returns {Object} transaction object
@@ -123,13 +124,13 @@ const sendTransaction = async (
  */
 const performTransaction = async (
   web3,
-  address,
+  account,
   signingFunc,
   params,
 ) => {
   const receipt = await sendTransaction(
     web3,
-    address,
+    account,
     signingFunc,
     params,
   );

@@ -46,6 +46,7 @@ const buildDataOrderParameters = ({
 
 /**
  * @async
+ * @param {Object} parameters.account Account that sends the transaction.
  * @param {Object} parameters.filters Target audience.
  * @param {String} parameters.dataRequest Requested data type (Geolocation,
  *                 Facebook, etc).
@@ -57,15 +58,18 @@ const buildDataOrderParameters = ({
  * @param {Array} parameters.notaries Ethereum addresses of the notaries
  *                 involved.
  * @param {String} parameters.buyerInfoId The ID for the buyer info.
- * @param {Object} dataOrderQueue DataOrder's queue object
+ * @param {Function} addJob helper to enqueue another job.
  * @returns {Response} The result of the operation.
  */
 const createDataOrderFacade = async (
-  { notaries, buyerInfoId, ...parameters },
-  dataOrderQueue,
+  {
+    account, notaries, buyerInfoId, filters, ...parameters
+  },
+  addJob,
 ) => {
   const { termsHash } = await getBuyerInfo(buyerInfoId);
   const params = buildDataOrderParameters({
+    filters: [...filters, { filter: 'bucket', value: account.number }],
     ...parameters,
     termsAndConditions: termsHash,
   });
@@ -82,12 +86,10 @@ const createDataOrderFacade = async (
     return new Response(null, ['Field \'notaries\' must contain at least one notary address']);
   }
 
-  const { address } = await signingService.getAccount();
-
   if (Number(params.initialBudgetForAudits) > 0) {
     await performTransaction(
       web3,
-      address,
+      account,
       signingService.signIncreaseApproval,
       {
         spender: dataExchange.address,
@@ -98,16 +100,13 @@ const createDataOrderFacade = async (
 
   const receipt = await sendTransaction(
     web3,
-    address,
+    account,
     signingService.signNewOrder,
     params,
   );
 
-  dataOrderQueue.add('dataOrderSent', { receipt, notaries, buyerInfoId }, {
-    attempts: 20,
-    backoff: {
-      type: 'linear',
-    },
+  addJob('dataOrderSent', {
+    receipt, account, notaries, buyerInfoId,
   });
 
   return new Response({ status: 'pending', receipt });
@@ -122,9 +121,10 @@ const createDataOrderFacade = async (
  */
 const onDataOrderSent = async (
   receipt,
+  account,
   notaries,
   buyerInfoId,
-  dataOrderQueue,
+  addJob,
 ) => {
   const { logs } = await getTransactionReceipt(web3, receipt);
   const { orderAddr } = extractEventArguments(
@@ -133,25 +133,8 @@ const onDataOrderSent = async (
     dataExchange,
   );
 
-  dataOrderQueue.add('addNotariesToOrder', {
-    orderAddr,
-    notaries,
-  }, {
-    attempts: 20,
-    backoff: {
-      type: 'linear',
-    },
-  });
-
-  dataOrderQueue.add('associateBuyerInfoToOrder', {
-    orderAddr,
-    buyerInfoId,
-  }, {
-    attempts: 20,
-    backoff: {
-      type: 'linear',
-    },
-  });
+  addJob('addNotariesToOrder', { orderAddr, account, notaries });
+  addJob('associateBuyerInfoToOrder', { orderAddr, buyerInfoId });
 };
 
 export { createDataOrderFacade, onDataOrderSent };

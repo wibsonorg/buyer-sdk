@@ -19,7 +19,7 @@ const router = express.Router();
  *         description: When the fetch failed.
  */
 router.get('/', cache('30 seconds'), asyncError(async (req, res) => {
-  const { address } = await signingService.getAccount();
+  const { address } = await signingService.getAccount(0);
 
   const [balance, ethBalance] = await Promise.all([
     wibcoin.balanceOf.call(address),

@@ -1,7 +1,12 @@
 import web3Utils from 'web3-utils';
 import web3 from '../../utils/web3';
 import signingService from '../../services/signingService';
-import { getTransactionReceipt, sendTransaction, retryAfterError } from '../helpers';
+import {
+  getTransactionReceipt,
+  sendTransaction,
+  retryAfterError,
+  getBuyerAccount,
+} from '../helpers';
 import { getDataResponse } from '../../utils/wibson-lib/s3';
 import { dataExchange, DataOrderContract, logger } from '../../utils';
 
@@ -62,13 +67,13 @@ const buyData = async (order, seller, dataResponseQueue) => {
     throw new Error('Invalid notary');
   }
 
-  const { address } = await signingService.getAccount();
+  const buyerAccount = await getBuyerAccount(dataOrder);
 
-  const totalPrice = await getTotalPrice(address, dataOrder, notaryAccount);
+  const totalPrice = await getTotalPrice(buyerAccount.address, dataOrder, notaryAccount);
 
   const increaseApprovalReceipt = await sendTransaction(
     web3,
-    address,
+    buyerAccount,
     signingService.signIncreaseApproval,
     {
       spender: dataExchange.address,
@@ -98,11 +103,11 @@ const buyData = async (order, seller, dataResponseQueue) => {
 };
 
 const addDataResponse = async (order, seller, params, dataResponseQueue) => {
-  const { address } = await signingService.getAccount();
+  const buyerAccount = await getBuyerAccount(DataOrderContract.at(order));
 
   const receipt = await sendTransaction(
     web3,
-    address,
+    buyerAccount,
     signingService.signAddDataResponse,
     params,
   );

@@ -5,6 +5,7 @@ import {
   getTransactionReceipt,
   sendTransaction,
   retryAfterError,
+  getBuyerAccount,
 } from '../helpers';
 import { getNotaryInfo } from '../notariesFacade';
 import { web3, DataOrderContract, logger } from '../../utils';
@@ -55,11 +56,11 @@ const closeDataResponse = async (order, seller, notariesCache, dataResponseQueue
 
   const params = await auditResult(notaryApi, order, seller, dataOrder.buyer());
 
-  const { address } = await signingService.getAccount();
+  const buyerAccount = await getBuyerAccount(dataOrder);
 
   const receipt = await sendTransaction(
     web3,
-    address,
+    buyerAccount,
     signingService.signCloseDataResponse,
     params,
   );

@@ -7,3 +7,4 @@ export {
   getTransactionReceipt,
   retryAfterError,
 } from './performTransaction';
+export { getBuyerAccount } from './getBuyerAccount';

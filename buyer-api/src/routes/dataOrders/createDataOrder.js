@@ -25,7 +25,7 @@ router.get(
   asyncError(async (req, res) => {
     req.apicacheGroup = '/orders/*';
     const { offset, limit } = req.query;
-    const { address } = await signingService.getAccount();
+    const { address } = await signingService.getAccount(0);
 
     const { stores: { ordersCache } } = req.app.locals;
 
@@ -175,15 +175,18 @@ router.post(
     if (errors.length > 0) {
       res.boom.badData('Validation failed', { validation: errors });
     } else {
-      const response = await createDataOrderFacade(dataOrder, queue);
+      const accounts = await signingService.getAccounts();
+      accounts.map(account => queue.add('createDataOrder', {
+        account,
+        ...dataOrder,
+      }, {
+        attempts: 20,
+        backoff: {
+          type: 'linear',
+        },
+      }));
 
-      if (response.success()) {
-        res.json(response.result);
-      } else {
-        res.boom.badData('Operation failed', {
-          errors: response.errors,
-        });
-      }
+      res.json({ status: 'pending' });
     }
   }),
 );

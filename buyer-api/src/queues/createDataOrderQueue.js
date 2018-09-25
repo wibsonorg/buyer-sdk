@@ -1,5 +1,9 @@
 import { createQueue } from './createQueue';
-import { onDataOrderSent, addNotariesToOrderFacade } from '../facades';
+import {
+  createDataOrderFacade,
+  onDataOrderSent,
+  addNotariesToOrderFacade,
+} from '../facades';
 import { associateBuyerInfoToOrder } from '../services/buyerInfo';
 
 const createDataOrderQueue = ({ notariesCache }) => {
@@ -8,17 +12,47 @@ const createDataOrderQueue = ({ notariesCache }) => {
   // NOTE: The processing can be done in a separate process by specifying the
   //       path to a module instead of function.
   // @see https://github.com/OptimalBits/bull#separate-processes
-  queue.process('dataOrderSent', async (
-    { data: { receipt, notaries, buyerInfoId } },
+  queue.process('createDataOrder', async (
+    { data },
   ) => {
-    await onDataOrderSent(receipt, notaries, buyerInfoId, queue);
+    await createDataOrderFacade(data, (jobName, params) => {
+      queue.add(jobName, params, {
+        priority: 100,
+        attempts: 20,
+        backoff: {
+          type: 'linear',
+        },
+      });
+    });
+  });
+
+  queue.process('dataOrderSent', async (
+    {
+      data: {
+        receipt, account, notaries, buyerInfoId,
+      },
+    },
+  ) => {
+    await onDataOrderSent(
+      receipt, account, notaries, buyerInfoId,
+      (jobName, params) => {
+        queue.add(jobName, params, {
+          priority: 10,
+          attempts: 20,
+          backoff: {
+            type: 'linear',
+          },
+        });
+      },
+    );
   });
 
   queue.process('addNotariesToOrder', async (
-    { data: { orderAddr, notaries } },
+    { data: { orderAddr, account, notaries } },
   ) => {
     const response = await addNotariesToOrderFacade(
       orderAddr,
+      account,
       notaries,
       notariesCache,
     );

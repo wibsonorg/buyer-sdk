@@ -12,7 +12,7 @@ const router = express.Router();
  *       # Wibson's Protocol final step
  *       ## The Buyer closes the DataOrder it had created on the first step.
  *     parameters:
- *       - in: params
+ *       - in: path
  *         name: orderAddress
  *         type: string
  *         required: true

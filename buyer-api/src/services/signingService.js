@@ -16,10 +16,17 @@ const timeout = 1000;
 
 const getHealth = () => client.get(`${url}/health`, { timeout });
 
-const getAccount = () => client.get(`${url}/account`, {
-  json: true,
-  timeout,
-});
+const getAccount = account =>
+  client.get(`${url}/accounts/${account}`, {
+    json: true,
+    timeout,
+  });
+
+const getAccounts = () =>
+  client.get(`${url}/accounts`, {
+    json: true,
+    timeout,
+  });
 
 const signNewOrder = payload => client.post(
   `${url}/sign/new-order`,
@@ -72,6 +79,7 @@ const signCloseOrder = payload => client.post(
 const signinService = {
   getHealth,
   getAccount,
+  getAccounts,
   signNewOrder,
   signAddNotaryToOrder,
   signIncreaseApproval,
