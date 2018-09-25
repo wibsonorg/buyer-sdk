@@ -1,5 +1,5 @@
 import express from 'express';
-import { createDataOrderFacade, getOrdersForBuyer } from '../../facades';
+import { getOrdersForBuyer } from '../../facades';
 import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 
@@ -25,6 +25,7 @@ router.get(
   asyncError(async (req, res) => {
     req.apicacheGroup = '/orders/*';
     const { offset, limit } = req.query;
+    // TODO: Improve DataOrder agregates
     const { address } = await signingService.getAccount(0);
 
     const { stores: { ordersCache } } = req.app.locals;
