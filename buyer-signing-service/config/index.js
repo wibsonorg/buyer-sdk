@@ -36,7 +36,8 @@ const config = {
     },
   },
   buyer: {
-    privateKey: env.BUYER_PRIVATE_KEY,
+    seed: env.BUYER_SEED,
+    buckets: env.BUYER_BUCKETS,
   },
 };
 
