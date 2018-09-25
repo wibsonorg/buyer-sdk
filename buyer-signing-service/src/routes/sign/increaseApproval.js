@@ -1,5 +1,6 @@
 import express from 'express';
-import { asyncError, validatePresence, isPresent } from '../../helpers';
+import { isPresent } from '../../utils/wibson-lib';
+import { asyncError } from '../../helpers';
 import increaseApprovalFacade from '../../facades/sign/increaseApprovalFacade';
 
 const router = express.Router();
@@ -31,6 +32,11 @@ const validateParameters = ({ spender, addedValue }) => {
  *     produces:
  *       - application/json
  *     parameters:
+ *       - in: body
+ *         name: account
+ *         type: integer
+ *         description: The account index to use for the signature
+ *         required: true
  *       - in: body
  *         name: nonce
  *         type: integer
@@ -64,8 +70,10 @@ const validateParameters = ({ spender, addedValue }) => {
  */
 router.post('/increase-approval', asyncError(async (req, res) => {
   const { contracts: { wibcoin } } = req.app.locals;
-  const { nonce, gasPrice, params } = req.body;
-  const errors = validatePresence({ nonce, params }, validateParameters);
+  const {
+    account, nonce, gasPrice, params,
+  } = req.body;
+  const errors = validateParameters(params);
 
   if (errors.length > 0) {
     res.boom.badData('Validation failed', { validation: errors });
@@ -74,7 +82,7 @@ router.post('/increase-approval', asyncError(async (req, res) => {
       _spender: params.spender,
       _addedValue: Number(params.addedValue),
     };
-    const response = increaseApprovalFacade(nonce, gasPrice, txParams, wibcoin);
+    const response = increaseApprovalFacade(account, nonce, gasPrice, txParams, wibcoin);
 
     if (response.success()) {
       res.json({ signedTransaction: response.result });

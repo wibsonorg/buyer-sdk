@@ -17,6 +17,11 @@ const router = express.Router();
  *       - application/json
  *     parameters:
  *       - in: body
+ *         name: account
+ *         type: integer
+ *         description: The account index to use for the signature
+ *         required: true
+ *       - in: body
  *         name: nonce
  *         type: integer
  *         description: |
@@ -83,9 +88,12 @@ const router = express.Router();
  */
 router.post('/add-notary-to-order', asyncError(async (req, res) => {
   const { contracts: { dataExchange } } = req.app.locals;
-  const { nonce, gasPrice, params } = req.body;
+  const {
+    account, nonce, gasPrice, params,
+  } = req.body;
 
   const response = addNotaryToOrderFacade(
+    account,
     nonce,
     gasPrice,
     params,

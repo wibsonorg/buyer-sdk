@@ -1,4 +1,5 @@
 import express from 'express';
+import validateSigningParams from '../../middlewares/validateSigningParams';
 import newOrder from './newOrder';
 import addNotaryToOrder from './addNotaryToOrder';
 import increaseApproval from './increaseApproval';
@@ -8,6 +9,7 @@ import closeOrder from './closeOrder';
 
 const router = express.Router();
 
+router.use(validateSigningParams);
 router.use(newOrder);
 router.use(addNotaryToOrder);
 router.use(increaseApproval);

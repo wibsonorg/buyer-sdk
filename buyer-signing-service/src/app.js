@@ -8,7 +8,7 @@ import swaggerUi from 'swagger-ui-express';
 import config from '../config';
 import logger from './utils/logger';
 import schema from './schema';
-import { data, health, account, sign } from './routes';
+import { data, health, accounts, sign } from './routes';
 import errorHandler from './middlewares/errorHandler';
 import { dataExchange, wibcoin } from './contracts';
 
@@ -29,7 +29,7 @@ app.use(boom());
 
 app.use('/health', health);
 app.use('/data', data);
-app.use('/account', account);
+app.use('/accounts', accounts);
 app.use('/sign', sign);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
 app.get('/api-docs.json', (_req, res) => res.json(schema));

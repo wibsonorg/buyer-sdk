@@ -16,6 +16,11 @@ const router = express.Router();
  *       - application/json
  *     parameters:
  *       - in: body
+ *         name: account
+ *         type: integer
+ *         description: The account index to use for the signature
+ *         required: true
+ *       - in: body
  *         name: nonce
  *         type: integer
  *         description: |
@@ -48,8 +53,10 @@ const router = express.Router();
  */
 router.post('/close-order', asyncError(async (req, res) => {
   const { contracts: { dataExchange } } = req.app.locals;
-  const { nonce, gasPrice, params } = req.body;
-  const response = signCloseOrderFacade(nonce, gasPrice, params, dataExchange);
+  const {
+    account, nonce, gasPrice, params,
+  } = req.body;
+  const response = signCloseOrderFacade(account, nonce, gasPrice, params, dataExchange);
 
   if (response.success()) {
     res.json({ signedTransaction: response.result });

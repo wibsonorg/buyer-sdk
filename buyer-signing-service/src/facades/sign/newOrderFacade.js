@@ -1,9 +1,8 @@
 import Response from '../Response';
-import { buyer } from '../../helpers';
+import { accounts } from '../../helpers';
 import {
   createDataBuilder,
   signTransaction,
-  isPresent,
 } from '../../utils/wibson-lib';
 import config from '../../../config';
 
@@ -11,7 +10,7 @@ const {
   getAddress,
   getPublicKey,
   getPrivateKey,
-} = buyer;
+} = accounts;
 
 /**
  * Generates a signed transaction for DataExchange.newOrder ready to be sent to
@@ -23,18 +22,10 @@ const {
  * @param {Object} contract DataExchange contract instance
  * @returns {Response} with the result of the operation
  */
-const newOrderFacade = (nonce, gasPrice, params, contract) => {
+const newOrderFacade = (account, nonce, gasPrice, params, contract) => {
   const build = createDataBuilder(contract, 'newOrder');
-  const response = build({ ...params, publicKey: getPublicKey() });
-  let { errors } = response;
-
-  if (!isPresent(nonce)) {
-    errors = [...errors, 'Field \'nonce\' is required'];
-  }
-
-  if (!isPresent(gasPrice)) {
-    errors = [...errors, 'Field \'gasPrice\' is required'];
-  }
+  const response = build({ ...params, publicKey: getPublicKey(account) });
+  const { errors } = response;
 
   if (errors.length > 0) {
     return new Response(null, errors);
@@ -48,8 +39,8 @@ const newOrderFacade = (nonce, gasPrice, params, contract) => {
     },
   } = config.contracts;
 
-  const result = signTransaction(getPrivateKey(), {
-    from: getAddress(),
+  const result = signTransaction(getPrivateKey(account), {
+    from: getAddress(account),
     to: address,
     nonce,
     gasPrice,

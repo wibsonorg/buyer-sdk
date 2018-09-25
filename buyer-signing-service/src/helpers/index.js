@@ -1,14 +1,11 @@
 import asyncError from './asyncError';
-import * as buyer from './buyer';
+import * as accounts from './accounts';
 import { generateData, encodeFunctionCall, signTransaction } from './ethereum';
-import { validatePresence, isPresent } from './signValidations';
 
 export {
   asyncError,
-  buyer,
+  accounts,
   generateData,
   encodeFunctionCall,
   signTransaction,
-  validatePresence,
-  isPresent,
 };
