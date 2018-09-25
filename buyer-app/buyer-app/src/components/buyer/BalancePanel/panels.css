@@ -1,3 +1,16 @@
+.panel-balance {
+  display: flex;
+  flex-direction: column;
+  min-width: 380px;
+  min-height: 100px;
+  justify-content: space-between;
+}
+
+.panel-text-balance {
+  font-size: 22px;
+  font-weight: 200;
+}
+
 .panel-text {
   font-size: 35px;
 	font-weight: 300;

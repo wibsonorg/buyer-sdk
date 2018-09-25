@@ -12,9 +12,7 @@ import { connect } from "react-redux";
 
 import * as AccountSelectors from "state/entities/account/selectors";
 
-
 import {
-  tradeDataTokenAtRate,
   shortenLargeNumber
 } from "base-app-src/lib/balance";
 
@@ -26,46 +24,55 @@ class BalancePanel extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showTooltip: false
+      showTooltipWib: false,
+      showTooltipEther: false,
     };
   }
 
-  handleToggleTooltip = () => {
-    this.setState({ showTooltip: !this.state.showTooltip });
+  handleToggleTooltip = (showTooltip) => {
+    if (showTooltip === 'showTooltipWib'){
+      this.setState({ showTooltipWib: !this.state.showTooltipWib, showTooltipEther: false });
+    }
+    if (showTooltip === 'showTooltipEther'){
+      this.setState({ showTooltipWib: false, showTooltipEther: !this.state.showTooltipEther });
+    }
   };
 
   render() {
     let balance = "N/A";
     let balanceScaled = balance;
-    let balanceUSD = balance;
+    let ether = "N/A";
 
     const { history } = this.props;
 
     if (typeof this.props.balance !== "undefined") {
       balance = this.props.balance;
       balanceScaled = shortenLargeNumber(this.props.balance);
-      balanceUSD =
-        "$" +
-        tradeDataTokenAtRate(this.props.balance, this.props.tokenDollarRate);
     }
 
-    const style = this.state.showTooltip ? {} : { display: "none" };
+    if (typeof this.props.ether !== "undefined") {
+      ether = this.props.ether;
+    }
+
+    const styleWib = this.state.showTooltipWib ? {} : { display: "none" };
+    const styleEther = this.state.showTooltipEther ? {} : { display: "none" };
 
     return (
       <Panel title="Balance">
+      <div className={cx("panel-balance")}>
         <div
-          onMouseEnter={this.handleToggleTooltip}
-          onMouseLeave={this.handleToggleTooltip}
+          onMouseEnter={()=>(this.handleToggleTooltip("showTooltipWib"))}
+          onMouseLeave={()=>(this.handleToggleTooltip("showTooltipWib"))}
         >
-          <span className={cx("panel-text")}>{balanceUSD}</span>
+          <span className={cx("panel-text-balance")}>{`WIB ${balance}`}</span>
           <span className={cx("panel-note")}>
             {"(" + balanceScaled + " WIB)"}
           </span>
           <div style={{ position: "relative" }}>
             <Tooltip
-              direction="down"
-              position={{ top: 0, left: 0, position: "absolute" }}
-              style={style}
+              direction="up left"
+              position={{ top: -55, left: 50, position: "absolute" }}
+              style={styleWib}
             >
               <Text color="light-dark" size="sm">
                 {balance + " Wibson Coins"}
@@ -73,9 +80,27 @@ class BalancePanel extends React.Component {
             </Tooltip>
           </div>
         </div>
+        <div
+          onMouseEnter={()=>(this.handleToggleTooltip("showTooltipEther"))}
+          onMouseLeave={()=>(this.handleToggleTooltip("showTooltipEther"))}
+        >
+          <span className={cx("panel-text-balance")}>{`ETH ${ether}`}</span>
+          <div style={{ position: "relative" }}>
+            <Tooltip
+              direction="down"
+              position={{ top: 0, left: 85, position: "absolute" }}
+              style={styleEther}
+            >
+              <Text color="light-dark" size="sm">
+                {ether + " Ether"}
+              </Text>
+            </Tooltip>
+          </div>
+        </div>
         <Link color="light-dark" onClick={() => history.push("/cash-out")}>
           Cash out <Icon icon="ArrowRight" />
         </Link>
+      </div>
       </Panel>
     );
   }
@@ -89,8 +114,9 @@ BalancePanel.propTypes = {
   balance: React.PropTypes.number
 };
 
-const mapStateToProps = state => {
-  return { balance: AccountSelectors.getTokensBalance(state) };
-};
+const mapStateToProps = state => ({
+  balance: AccountSelectors.getTokensBalance(state),
+  ether: AccountSelectors.getTokensEther(state),
+});
 
 export default compose(withRouter, connect(mapStateToProps))(BalancePanel);
