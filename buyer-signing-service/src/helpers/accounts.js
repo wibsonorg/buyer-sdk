@@ -1,21 +1,29 @@
-import EthCrypto from 'eth-crypto';
+import hdkey from 'ethereumjs-wallet/hdkey';
 import config from '../../config';
 
-const privateKeys = [config.buyer.privateKey];
+const buyerHD = hdkey.fromMasterSeed(config.buyer.seed);
 
-export const getPrivateKey = account => privateKeys[account];
+const childWallet = childId => buyerHD.deriveChild(childId).getWallet();
 
-export const getPublicKey = account =>
-  EthCrypto.publicKeyByPrivateKey(getPrivateKey(account));
+export const getPrivateKey = childId => childWallet(childId).getPrivateKeyString();
 
-export const getAddress = account =>
-  EthCrypto.publicKey.toAddress(getPublicKey(account));
+export const getPublicKey = childId => childWallet(childId).getPublicKeyString();
 
-export const getAccount = account => ({
-  number: account,
-  address: getAddress(account),
-  publicKey: getPublicKey(account),
+export const getAddress = childId => childWallet(childId).getAddressString();
+
+export const getAccount = childId => ({
+  number: childId,
+  address: getAddress(childId),
+  publicKey: getPublicKey(childId),
 });
 
-export const getAccounts = () =>
-  privateKeys.map((_, account) => getAccount(account));
+export const getAccounts = () => {
+  const numAccounts = Number(config.buyer.buckets);
+  const accounts = [];
+
+  for (let i = 0; i < numAccounts; i += 1) {
+    accounts.push(getAccount(i));
+  }
+
+  return accounts;
+};
