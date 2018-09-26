@@ -1,6 +1,7 @@
 import express from 'express';
+import { BigNumber } from 'bignumber.js';
 import web3Utils from 'web3-utils';
-import { web3, cache, asyncError, wibcoin } from '../utils';
+import { web3, cache, asyncError, wibcoin, coin } from '../utils';
 import signingService from '../services/signingService';
 
 const router = express.Router();
@@ -26,11 +27,14 @@ router.get('/', cache('30 seconds'), asyncError(async (req, res) => {
     web3.eth.getBalance(address),
   ]);
   const ether = web3Utils.fromWei(ethBalance.toString(), 'ether');
+  const wib = coin.toWib(balance);
+  const BN = BigNumber.clone({ DECIMAL_PLACES: 2 });
 
   res.json({
     address,
     balance: Number(balance),
     ether: Number(ether),
+    wib: (new BN(wib)).toFormat(2, BN.ROUND_DOWN),
   });
 }));
 

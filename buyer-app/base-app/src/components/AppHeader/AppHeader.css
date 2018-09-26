@@ -67,7 +67,7 @@
   display: flex;
 }
 
-.wibson-header .panels-section > * {
+.wibson-header .panels-section > *:not(:first-child) {
   flex: 1;
 }
 

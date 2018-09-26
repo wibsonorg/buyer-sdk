@@ -39,15 +39,20 @@ class BalancePanel extends React.Component {
   };
 
   render() {
-    let balance = "N/A";
+    let balance ="N/A";
     let balanceScaled = balance;
     let ether = "N/A";
+    let wib = "N/A";
 
     const { history } = this.props;
 
     if (typeof this.props.balance !== "undefined") {
       balance = this.props.balance;
-      balanceScaled = shortenLargeNumber(this.props.balance);
+      balanceScaled = shortenLargeNumber(balance, 2);
+    }
+
+    if (typeof this.props.wib !== "undefined") {
+      wib = this.props.wib;
     }
 
     if (typeof this.props.ether !== "undefined") {
@@ -64,18 +69,18 @@ class BalancePanel extends React.Component {
           onMouseEnter={()=>(this.handleToggleTooltip("showTooltipWib"))}
           onMouseLeave={()=>(this.handleToggleTooltip("showTooltipWib"))}
         >
-          <span className={cx("panel-text-balance")}>{`WIB ${balance}`}</span>
+          <span className={cx("panel-text-balance")}>{`WIB ${wib}`}</span>
           <span className={cx("panel-note")}>
             {"(" + balanceScaled + " WIB)"}
           </span>
           <div style={{ position: "relative" }}>
             <Tooltip
               direction="up left"
-              position={{ top: -55, left: 50, position: "absolute" }}
+              position={{ top: -60, left: 50, position: "absolute" }}
               style={styleWib}
             >
               <Text color="light-dark" size="sm">
-                {balance + " Wibson Coins"}
+                {balance + " Wibson tokens"}
               </Text>
             </Tooltip>
           </div>
@@ -84,11 +89,11 @@ class BalancePanel extends React.Component {
           onMouseEnter={()=>(this.handleToggleTooltip("showTooltipEther"))}
           onMouseLeave={()=>(this.handleToggleTooltip("showTooltipEther"))}
         >
-          <span className={cx("panel-text-balance")}>{`ETH ${ether}`}</span>
+          <span className={cx("panel-text-eth-balance")}>{`ETH ${ether.toFixed(4)}`}</span>
           <div style={{ position: "relative" }}>
             <Tooltip
               direction="down"
-              position={{ top: 0, left: 85, position: "absolute" }}
+              position={{ top: 0, left: 55, position: "absolute" }}
               style={styleEther}
             >
               <Text color="light-dark" size="sm">
@@ -107,16 +112,19 @@ class BalancePanel extends React.Component {
 }
 
 BalancePanel.defaultProps = {
-  balance: undefined
+  balance: undefined,
+  ether: undefined,
 };
 
 BalancePanel.propTypes = {
-  balance: React.PropTypes.number
+  balance: React.PropTypes.number,
+  ether: React.PropTypes.number
 };
 
 const mapStateToProps = state => ({
   balance: AccountSelectors.getTokensBalance(state),
   ether: AccountSelectors.getTokensEther(state),
+  wib: AccountSelectors.getTokensWib(state),
 });
 
 export default compose(withRouter, connect(mapStateToProps))(BalancePanel);
