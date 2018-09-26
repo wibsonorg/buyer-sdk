@@ -1,6 +1,6 @@
 import { delay } from "redux-saga";
 import { put, takeEvery, all, call, fork } from "redux-saga/effects";
-import { setCookie, removeCookie } from "../../../utils/cookies"
+import { setCookie, removeCookie, getCookie } from "../../../utils/cookies"
 
 import * as Actions from "./actions";
 
@@ -50,6 +50,15 @@ function* verifyTokenWorker(action) {
   }
 }
 
+function* verifyCookieWorker(action) {
+  while (true) {
+    yield call(delay, 5000);
+    if (getCookie('token') === undefined){
+      yield put(Actions.logOutUser());
+    };
+  }
+};
+
 function* watchLogInUser() {
   yield takeEvery(Actions.logInUser.getType(), logInUserWorker);
 }
@@ -62,9 +71,13 @@ function* watchlogOutUser() {
   yield takeEvery(Actions.logOutUser.getType(), logOutUserWorker);
 }
 
+function* watchVerifyCookie() {
+  yield takeEvery(Actions.verifyCookie.getType(), verifyCookieWorker);
+}
+
 // notice how we now only export the rootSaga
 // single entry point to start all Sagas at once
 export default function* rootSaga() {
-  yield all([watchLogInUser(), watchVerifyToken()]);
+  yield all([watchLogInUser(), watchVerifyToken(), watchVerifyCookie()]);
   yield [fork(watchlogOutUser)]
 }

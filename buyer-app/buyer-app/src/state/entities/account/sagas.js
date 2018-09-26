@@ -1,5 +1,6 @@
 import { delay } from "redux-saga";
 import { select, put, takeLatest, all, call } from "redux-saga/effects";
+import { getCookie } from "../../../utils/cookies";
 
 import * as Selectors from "./selectors";
 
@@ -8,7 +9,8 @@ import { getAccount } from "./helpers";
 import * as Actions from "./actions";
 
 function* updateAccount(action) {
-  while (true) {
+  
+  while (getCookie('token')) {
     yield call(delay, 5000);
     
     try {

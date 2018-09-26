@@ -7,6 +7,7 @@ const withVerifyTokePolling = compose(
   lifecycle({
     componentWillMount() {
       this.props.dispatch(Actions.verifyToken());
+      this.props.dispatch(Actions.verifyCookie());
     }
   })
 );

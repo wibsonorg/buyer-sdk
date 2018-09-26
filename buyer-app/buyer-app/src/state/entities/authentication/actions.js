@@ -10,6 +10,7 @@ const logInUserFailed = createAction("LOGIN_USER_FAILED");
 const logInUserSucceed = createAction("LOGIN_USER_SUCCEED");
 const logInUserPending = createAction("LOGIN_USER_PENDING");
 const verifyToken = createAction("VERIFICATION_TOKEN");
+const verifyCookie = createAction("VERIFICATION_COOKIE");
 const logOutUser = createAction("LOG_OUT_USER");
 
 export { 
@@ -18,5 +19,6 @@ export {
 	logInUserSucceed, 
 	logInUserPending,
 	verifyToken,
+	verifyCookie,
 	logOutUser
 };
