@@ -16,9 +16,9 @@ const oneWibcoin = new BN(1e9);
  * @throws When argument is not a number or of it is out of range
  * @returns {String} amount of Wibcoins
  */
-export const toWib = (bigNumber, base = 10) => {
+export const toWib = (bigNumber, opts = {}) => {
   const bn = new BN(bigNumber);
-
+  const { base = 10, decimals } = opts;
   if (bn.isGreaterThan(wibcoinSupply)) {
     throw new Error('Argument out of range');
   }
@@ -27,7 +27,7 @@ export const toWib = (bigNumber, base = 10) => {
     throw new Error('Argument is not a number');
   }
 
-  return bn.dividedBy(oneWibcoin).toString(base);
+  return bn.dividedBy(oneWibcoin).toFormat(decimals, BN.ROUND_DOWN).toString(base);
 };
 
 /**
