@@ -25,7 +25,7 @@ const signTransaction = (privateKey, {
   if (chainId) rawTransaction = { ...rawTransaction, chainId: Number(chainId) };
 
   const tx = new EthTx(rawTransaction);
-  tx.sign(Buffer.from(privateKey.replace('/^0x/', ''), 'hex'));
+  tx.sign(Buffer.from(privateKey, 'hex'));
 
   return tx.serialize().toString('hex');
 };

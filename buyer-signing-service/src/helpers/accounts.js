@@ -5,9 +5,15 @@ const buyerHD = hdkey.fromMasterSeed(config.buyer.seed);
 
 const childWallet = childId => buyerHD.deriveChild(childId).getWallet();
 
-export const getPrivateKey = childId => childWallet(childId).getPrivateKeyString();
+export const getPrivateKey = childId =>
+  childWallet(childId).getPrivateKeyString()
+    .replace(/^0x/, '')
+    .toLowerCase();
 
-export const getPublicKey = childId => childWallet(childId).getPublicKeyString();
+export const getPublicKey = childId =>
+  childWallet(childId).getPublicKeyString()
+    .replace(/^0x/, '')
+    .toLowerCase();
 
 export const getAddress = childId => childWallet(childId).getAddressString();
 
