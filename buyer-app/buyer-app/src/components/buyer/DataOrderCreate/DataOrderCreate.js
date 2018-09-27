@@ -24,7 +24,6 @@ import NumberInput from "base-app-src/components/NumberInput";
 import Select, { SelectItem } from "base-app-src/components/Select";
 import Label from "base-app-src/components/Label";
 
-import Text from "base-app-src/components/Text";
 import Subtitle from "base-app-src/components/Subtitle";
 
 import Loading from "base-app-src/components/Loading";
@@ -32,9 +31,7 @@ import Loading from "base-app-src/components/Loading";
 import AudiencePicker from "./AudiencePicker";
 import Config from "../../../config";
 
-import authorization from "../../../utils/headers"
-
-import terms from './terms.md';
+import authorization from "../../../utils/headers";
 
 import "./DataOrderCreate.css";
 
