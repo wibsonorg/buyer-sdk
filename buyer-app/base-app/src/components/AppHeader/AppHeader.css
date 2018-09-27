@@ -18,15 +18,7 @@
   background-image: linear-gradient(to bottom, #0a1f33, #0f2f4d);
 }
 
-.wibson-header .log-out {
-  height: 64px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.wibson-header .log-out .wibson-logo {
+.wibson-header .info-section .wibson-logo {
   width: 126px;
 	height: 24px;
 }
@@ -35,8 +27,13 @@
   height: 64px;
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
-  align-items: flex-end;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wibson-header .info-section .account-info {
+  flex: 10;
+  margin-right: 20px;
 }
 
 .wibson-header .info-section .account-info .account-name {

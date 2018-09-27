@@ -22,20 +22,8 @@ class AppHeader extends React.Component {
     const theme = userRole ? userRole.toLowerCase() : 'seller';
     return (
       <header className={cx('wibson-header', theme)}>
-        <div className={cx('log-out')}>
-          <Logo className={cx("wibson-logo")}/>
-          <div className={cx('account-info')}>
-            <Button
-              onClick={() => {logOut()}}
-              size={'sm'}
-              buttonStyle={'outline'}
-              className={cx('wibson-header-button')}
-            >
-            <span className={cx('wibson-header-textButton')}>Log Out</span>
-            </Button>           
-          </div>
-        </div>
         <div className={cx('info-section')}>
+          <Logo className={cx("wibson-logo")}/>
           <div className={cx('account-info')}>
             <div className={cx('account-name')}>
               {description}
@@ -43,7 +31,17 @@ class AppHeader extends React.Component {
             <div className={cx('account-address')}>
               <span>{account}</span>
               <Icon size="xs" icon="Copy" onClick={this.handleCopyClick} />
-            </div>            
+            </div>
+          </div>
+          <div className={cx('log-out')}>
+            <Button
+              onClick={() => {logOut()}}
+              size={'sm'}
+              buttonStyle={'outline'}
+              className={cx('wibson-header-button')}
+            >
+            <span className={cx('wibson-header-textButton')}>Log Out</span>
+            </Button>
           </div>
         </div>
 
