@@ -5,6 +5,7 @@ import signingService from '../services/signingService';
 import notaryService from '../services/notaryService';
 import { logger, web3, dataExchange, DataOrderContract } from '../utils';
 import { coercion, coin, collection } from '../utils/wibson-lib';
+import config from '../../config';
 
 const { isPresent } = coercion;
 const { fromWib } = coin;
@@ -50,6 +51,7 @@ const addNotaryToOrder = async (notaryParameters, buyerAddress) => {
       buyerAddress,
       signingService.signAddNotaryToOrder,
       notaryParameters,
+      config.contracts.gasPrice.standard,
     );
 
     const { notary: notaryAddress } = extractEventArguments(

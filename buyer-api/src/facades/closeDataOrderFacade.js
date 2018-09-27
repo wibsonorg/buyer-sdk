@@ -3,6 +3,7 @@ import { getSellersInfo } from './sellersFacade';
 import { sendTransaction } from './helpers';
 import { web3, DataOrderContract } from '../utils';
 import signingService from '../services/signingService';
+import config from '../../config';
 
 /**
  * @async
@@ -40,6 +41,7 @@ const closeDataOrderFacade = async (orderAddr) => {
     address,
     signingService.signCloseOrder,
     { orderAddr },
+    config.contracts.gasPrice.standard,
   );
 
   return new Response({ status: 'pending', receipt });
