@@ -75,7 +75,6 @@ class DataOrderCreate extends Component {
       // requestedNotaries: [],
       requestedNotary: null,
       publicURL: Config.get("buyerPublicURL"),
-      conditions: terms,
       errors: {},
       loading: false,
       creationError: undefined,
@@ -122,7 +121,6 @@ class DataOrderCreate extends Component {
       requestedData,
       requestedNotary,
       publicURL,
-      conditions,
       price,
       buyerId
     } = this.state;
@@ -145,7 +143,6 @@ class DataOrderCreate extends Component {
       data,
       notaries,
       publicURL,
-      conditions,
       price,
       buyerId
     );
@@ -289,7 +286,6 @@ const mapDispatchToProps = dispatch => ({
     requestedData,
     notaries,
     publicURL,
-    conditions,
     price,
     buyerId
   ) => {
@@ -299,7 +295,6 @@ const mapDispatchToProps = dispatch => ({
         requestedData,
         notaries,
         publicURL,
-        conditions,
         price,
         buyerId
       })

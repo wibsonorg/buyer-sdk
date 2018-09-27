@@ -50,8 +50,6 @@ router.get(
  * @param {String} parameters.price Price per Data Response added.
  * @param {String} parameters.initialBudgetForAudits The initial budget set for
  *                 future audits.
- * @param {String} parameters.termsAndConditions Buyer's terms and conditions
- *                 for the order.
  * @param {String} parameters.buyerURL Public URL of the buyer where the data
  *                 must be sent.
  * @returns {array} Error messages
@@ -61,7 +59,6 @@ const validate = ({
   dataRequest,
   price,
   initialBudgetForAudits,
-  termsAndConditions,
   buyerURL,
   notaries,
   buyerInfoId,
@@ -71,7 +68,6 @@ const validate = ({
     dataRequest,
     price,
     initialBudgetForAudits,
-    termsAndConditions,
     buyerURL,
     notaries,
     buyerInfoId,
@@ -143,11 +139,6 @@ const validate = ({
  *         required: true
  *         description: The initial budget set for future audits
  *         example: '10'
- *       termsAndConditions:
- *         type: string
- *         required: true
- *         description: The initial budget set for future audits
- *         example: 'Terms and Conditions'
  *       buyerURL:
  *         type: string
  *         required: true
