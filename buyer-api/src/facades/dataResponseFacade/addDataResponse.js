@@ -1,9 +1,14 @@
 import web3Utils from 'web3-utils';
-import web3 from '../../utils/web3';
 import signingService from '../../services/signingService';
 import { sendTransaction, retryAfterError } from '../helpers';
 import { getDataResponse } from '../../utils/wibson-lib/s3';
-import { dataExchange, wibcoin, DataOrderContract, logger } from '../../utils';
+import {
+  web3,
+  dataExchange,
+  wibcoin,
+  DataOrderContract,
+  logger,
+} from '../../utils';
 import config from '../../../config';
 
 const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
@@ -26,17 +31,6 @@ const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
 
 const getAllowance = myAddress =>
   Number(wibcoin.allowance(myAddress, dataExchange.address));
-
-// const increaseApprovalReceipt = await sendTransaction(
-//   web3,
-//   address,
-//   signingService.signIncreaseApproval,
-//   {
-//     spender: dataExchange.address,
-//     addedValue: totalPrice,
-//   },
-//   config.contracts.gasPrice.fast,
-// );
 
 const addDataResponse = async (order, seller, params, addDataResponseSent) => {
   const { address } = await signingService.getAccount();

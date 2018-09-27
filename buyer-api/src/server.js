@@ -3,6 +3,7 @@ import app from './app';
 import config from '../config';
 import { logger, attachContractEventSubscribers } from './utils';
 import contractEventSubscribers from './contractEventSubscribers';
+import { checkAllowance } from './facades';
 
 const server = () => {
   const { port, host, env } = config;
@@ -10,6 +11,11 @@ const server = () => {
     logger.info(`Buyer API listening on port ${port} and host ${host} in ${env} mode`));
 
   attachContractEventSubscribers(contractEventSubscribers, app.locals.stores);
+
+  setInterval(
+    () => checkAllowance(app.locals.queues),
+    Number(config.buyData.interval),
+  );
 };
 
 export default server;

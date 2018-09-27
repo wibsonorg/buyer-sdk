@@ -51,6 +51,11 @@ const config = {
   levelDirectory: env.LEVEL_DIRECTORY,
   jwt: JSON.parse(env.JWT_OPTIONS),
   passphrase: env.PASSPHRASE,
+  buyData: {
+    interval: env.BUY_DATA_INTERVAL,
+    minimumAllowance: env.BUY_DATA_MIN_ALLOWANCE,
+    multiplier: env.BUY_DATA_MULTIPLIER,
+  },
 };
 
 exports.default = config;
