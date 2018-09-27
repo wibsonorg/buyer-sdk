@@ -24,6 +24,7 @@ const config = {
       notaryTTL: env.CONTRACTS_CACHE_NOTARY_TTL,
       ordersTTL: env.CONTRACTS_CACHE_ORDERS_TTL,
     },
+    gasPrice: {},
   },
   cache: {
     enabled: env.CACHE === 'enabled',
