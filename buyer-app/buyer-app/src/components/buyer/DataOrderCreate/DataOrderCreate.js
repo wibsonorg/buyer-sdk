@@ -32,6 +32,8 @@ import Loading from "base-app-src/components/Loading";
 import AudiencePicker from "./AudiencePicker";
 import Config from "../../../config";
 
+import authorization from "../../../utils/headers"
+
 import terms from './terms.md';
 
 import "./DataOrderCreate.css";
@@ -96,12 +98,16 @@ class DataOrderCreate extends Component {
 
   async componentDidMount() {
     try {
-      const res = await fetch(`${apiUrl}/infos`);
+      const res = await fetch(`${apiUrl}/infos`,  {
+        headers: {
+          Authorization: authorization()
+        }
+      });
       const result = await res.json();
       this.setState({ buyerInfos: result.infos });
     } catch(error) {
       console.log(error);
-    }
+    };
   }
 
   componentWillReceiveProps(nextProps) {

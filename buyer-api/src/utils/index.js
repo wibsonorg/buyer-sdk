@@ -1,9 +1,10 @@
 import web3 from './web3';
 import cache from './cache';
 import logger from './logger';
+import fetchToken from './fetchToken';
 import attachContractEventSubscribers from './attachContractEventSubscribers';
 
-export { web3, cache, logger, attachContractEventSubscribers };
+export { web3, cache, logger, attachContractEventSubscribers, fetchToken };
 export {
   createRedisStore,
   createLevelStore,

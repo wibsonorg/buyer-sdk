@@ -48,6 +48,8 @@ const config = {
     bucket: env.STORAGE_BUCKET,
   },
   levelDirectory: env.LEVEL_DIRECTORY,
+  jwt: JSON.parse(env.JWT_OPTIONS),
+  passphrase: env.PASSPHRASE,
 };
 
 exports.default = config;

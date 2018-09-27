@@ -2,7 +2,6 @@ import express from 'express';
 import { asyncError } from '../utils';
 
 const router = express.Router();
-
 /**
  * @swagger
  * /data-responses:

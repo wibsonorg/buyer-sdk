@@ -1,0 +1,37 @@
+.wibson-text-input {
+  border: 2px solid #dfdfdf;
+  border-radius: 40px;
+  width: 30%;
+  height: 38px;
+  font-size: 24px !important;
+  text-align: center
+}
+
+.wibson-text-input:focus{
+  border-color: #2e9afd;
+  outline: none;
+}
+
+.wibson-text-input.sm {
+  height: 35px;
+  width: 20%;
+}
+
+.wibson-text-input.md {
+  height: 40px;
+  width: 40%;
+  font-size: 14px !important;
+}
+
+.wibson-text-input.lg {
+  height: 45px;
+  width: 60%;
+  font-size: 18px !important;
+}
+
+.wibson-text-input.disabled {
+  opacity: .5;
+  pointer-events: none;
+  background-color: #c2c2c2;
+  cursor: not-allowed !important;
+}

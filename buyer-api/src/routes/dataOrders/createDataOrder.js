@@ -4,7 +4,6 @@ import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 
 const router = express.Router();
-
 /**
  * @swagger
  * /orders:
