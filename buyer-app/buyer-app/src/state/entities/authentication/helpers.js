@@ -12,10 +12,6 @@ async function logInUser(data) {
     },
     body: JSON.stringify(data)
   });
-  if (!res.ok) {
-    return res.json();
-  }
-
   return res.json();
 };
 
@@ -25,10 +21,7 @@ async function verifyToken() {
       Authorization: authorization()
     }
   });
-  if (!res.ok) {
-    return res.json()
-  }
-  return
+  return res.json();
 };
 
 export { logInUser, verifyToken };

@@ -1,26 +1,27 @@
-import React, { Component } from "react";
-import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
-import "./css/museo-sans.css";
-import "./css/open-sans.css";
-import "./App.css";
+import './css/museo-sans.css';
+import './css/open-sans.css';
+import './App.css';
 
-import Main from "./components/Main";
-import PrivateRoute from "./components/PrivateRoute";
-import Login from "./components/Login"
+import Main from './components/Main';
+import Login from './components/Login';
+
+import * as authentication from 'state/entities/authentication/selectors';
 
 class App extends Component {
   render() {
-    return (
-      <Router>
-        <Switch>
-          <Route path="/login" component={Login} />
-          <PrivateRoute path="/" component={Main} />
-        </Switch>
-      </Router>
-    )
+    return this.props.auth.authenticated ? (
+      <Main {...this.props} />
+    ) : (
+      <Login {...this.props} />
+    );
   }
 }
 
-export default App;
+const mapStateToProps = state => ({
+  auth: authentication.getAuthentication(state),
+});
 
+export default connect(mapStateToProps, null)(App);
