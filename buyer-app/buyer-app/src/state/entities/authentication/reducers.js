@@ -1,8 +1,14 @@
 import { createReducer } from "redux-act";
 
 import * as Actions from "./actions";
+import { getCookie } from '../../../utils/cookies';
 
-const initialState = null;
+const initialState = {
+  pending: false,
+  authenticated: getCookie('token') !== undefined,
+  logInError: undefined,
+  fulfilled: false
+};
 
 export default createReducer(
   {

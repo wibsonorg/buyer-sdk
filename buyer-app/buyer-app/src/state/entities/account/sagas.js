@@ -1,21 +1,21 @@
 import { delay } from "redux-saga";
 import { select, put, takeLatest, all, call } from "redux-saga/effects";
-import { getCookie } from "../../../utils/cookies";
 
 import * as Selectors from "./selectors";
+import * as AuthenticationSelectors from "../authentication/selectors";
 
 import { getAccount } from "./helpers";
 
 import * as Actions from "./actions";
 
 function* updateAccount(action) {
-  
-  while (getCookie('token')) {
+  let loggedIn = true;
+  while (loggedIn) {
     yield call(delay, 5000);
-    
+
     try {
       const account = yield call(getAccount);
-      
+
       if (account.statusCode === 401) {
         console.log(account.message)
       } else {
@@ -27,6 +27,8 @@ function* updateAccount(action) {
     } catch(error) {
       console.error(error);
     };
+    const auth = yield select(AuthenticationSelectors.getAuthentication);
+    loggedIn = auth.authenticated;
   };
 };
 
