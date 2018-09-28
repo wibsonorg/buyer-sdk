@@ -11,15 +11,25 @@ import {
   createDataOrderFacade,
   onDataOrderSent,
 } from './createDataOrderFacade';
-import addNotariesToOrderFacade from './addNotariesToOrderFacade';
+import {
+  addNotariesToOrderFacade,
+  addNotaryToOrder,
+  onAddNotaryToOrderSent,
+} from './addNotariesToOrderFacade';
 import closeDataOrderFacade from './closeDataOrderFacade';
 import { getOrdersForBuyer, fetchAndCacheDataOrder } from './getOrdersFacade';
 
-export { getNotaryInfo, getNotariesInfo, fetchAndCacheNotary } from './notariesFacade';
+export {
+  getNotaryInfo,
+  getNotariesInfo,
+  fetchAndCacheNotary,
+} from './notariesFacade';
 
 export {
   createDataOrderFacade,
   addNotariesToOrderFacade,
+  addNotaryToOrder,
+  onAddNotaryToOrderSent,
   getOrdersForBuyer,
   addDataResponse,
   closeDataResponse,
