@@ -2,7 +2,6 @@ import Response from './Response';
 import {
   getTransactionReceipt,
   extractEventArguments,
-  performTransaction,
   sendTransaction,
 } from './helpers';
 import { web3, dataExchange } from '../utils';
