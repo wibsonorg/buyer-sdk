@@ -51,7 +51,7 @@ const addNotaryToOrder = async (notaryParameters, buyerAddress) => {
       buyerAddress,
       signingService.signAddNotaryToOrder,
       notaryParameters,
-      config.contracts.gasPrice.standard,
+      config.contracts.gasPrice.fast,
     );
 
     const { notary: notaryAddress } = extractEventArguments(

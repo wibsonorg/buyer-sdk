@@ -20,6 +20,10 @@ const config = {
       wibcoin: env.WIBCOIN_ADDRESS,
       dataExchange: env.DATA_EXCHANGE_ADDRESS,
     },
+    gasPrice: {
+      standard: env.GAS_PRICE_STANDARD,
+      fast: env.GAS_PRICE_FAST,
+    },
     cache: {
       notaryTTL: env.CONTRACTS_CACHE_NOTARY_TTL,
       ordersTTL: env.CONTRACTS_CACHE_ORDERS_TTL,
