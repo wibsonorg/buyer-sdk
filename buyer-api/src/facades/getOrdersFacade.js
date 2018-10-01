@@ -137,7 +137,7 @@ const getOrdersForBuyer = async (
   limit = undefined,
 ) => {
   const orderAddresses = await dataExchange.getOrdersForBuyer(buyerAddress);
-  const upperBound = limit && offset > 0 ? offset + limit : orderAddresses.length;
+  const upperBound = limit && offset >= 0 ? offset + limit : orderAddresses.length;
   const ordersPage = orderAddresses.slice(offset, upperBound);
 
   const dataOrders = ordersPage.map(orderAddress =>

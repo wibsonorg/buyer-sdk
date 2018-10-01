@@ -37,11 +37,27 @@ import DataOrderCreate from "./DataOrderCreate";
 import { removeCookie } from "../../utils/cookies"
 
 import R from "ramda";
-import queryString from 'query-string';
+
+const limit = 1;
 
 class Buyer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentOffset: 0,
+    };
+  }
+
+  componentDidMount() {
+    window.addEventListener('scroll', this.handleScroll, true);
+  }
+
   componentWillMount() {
     this.props.fetchDataOrders();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
   }
 
   handleSelectClick = value => {
@@ -54,6 +70,15 @@ class Buyer extends React.Component {
     removeCookie('token')
     this.props.logOutUser();
   };
+
+  handleScroll = () =>{
+    if(this.isLoading()) return;
+    console.log('[SCROLLLLLLL!!]');
+      this.setState((state, props) => ({
+        currentOffset: state.currentOffset + 1,
+      }));
+      this.props.fetchDataOrders(this.state);
+  }
 
   renderSelect() {
     return (
@@ -133,7 +158,7 @@ class Buyer extends React.Component {
             <div className={cx("action-buttons")}>
               <Button
                 onClick={() => {
-                  this.props.fetchDataOrders();
+                  this.props.fetchDataOrders(this.state);
                 }}
               >
                 Refresh
@@ -192,12 +217,16 @@ const mapDispatchToProps = (dispatch, props) => ({
   startPollingDataOrders: () => {
     dispatch(PollingActions.startPollingDataOrders());
   },
-  fetchDataOrders: () => {
-    const { limit, offset } = queryString.parse(props.location.search);
+  fetchDataOrders: (params) => {
+    const { currentOffset } = params || {};
+    console.log({
+      limit: Number(limit),
+      offset: Number(currentOffset || 0)
+    });
     dispatch(
       DataOrdersAddressesActions.fetchDataOrdersAddresses({
-        limit: Number(limit || 10),
-        offset: Number(offset || -10)
+        limit: Number(limit),
+        offset: Number(currentOffset || 0)
       })
     );
   },
