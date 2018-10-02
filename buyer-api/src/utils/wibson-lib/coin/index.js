@@ -27,6 +27,10 @@ export const toWib = (bigNumber, opts = {}) => {
     throw new Error('Argument is not a number');
   }
 
+  if (bn.dividedBy(oneWibcoin).dp() === 0) {
+    return bn.dividedBy(oneWibcoin).toFormat().toString(base);
+  }
+
   return bn.dividedBy(oneWibcoin).toFormat(decimals, BN.ROUND_DOWN).toString(base);
 };
 
