@@ -18,11 +18,13 @@ import { Route, withRouter, Redirect } from "react-router-dom";
 
 import * as DataOrdersByAddress from "state/entities/dataOrdersByAddress/selectors";
 import * as DataOrdersAddresses from "state/entities/dataOrdersAddresses/selectors";
+import * as DataOrdersAddressesAmount from "state/entities/dataOrdersAddressesAmount/selectors";
 import * as Account from "state/entities/account/selectors";
 
 import * as PollingActions from "state/entities/polling/actions";
 
 import * as DataOrdersAddressesActions from "state/entities/dataOrdersAddresses/actions";
+import * as DataOrdersAddressesAmountActions from "state/entities/dataOrdersAddressesAmount/actions";
 import * as authenticationActions from "state/entities/authentication/actions";
 import { withNotaries } from "state/entities/notaries/hoc";
 
@@ -54,6 +56,7 @@ class Buyer extends React.Component {
 
   componentWillMount() {
     this.props.fetchDataOrders();
+    this.props.fetchDataOrdersAmount();
   }
 
   componentWillUnmount() {
@@ -71,13 +74,23 @@ class Buyer extends React.Component {
     this.props.logOutUser();
   };
 
-  handleScroll = () =>{
-    if(this.isLoading()) return;
-    console.log('[SCROLLLLLLL!!]');
+  handleScroll = (e) =>{
+    // const bottom = e.target.scrollingElement.scrollHeight - e.target.scrollingElement.scrollTop === e.target.scrollingElement.clientHeight;
+    const bottom = window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight;
+    const {
+      activeDataOrders,
+      dataOrdersAddressAmount,
+      closedDataOrders,
+    } = this.props;
+    console.log(activeDataOrders);
+    const loadedOrders = Object.entries(activeDataOrders) + Object.entries(closedDataOrders);
+    if (bottom && !this.isLoading() && loadedOrders < dataOrdersAddressAmount)
+    {
       this.setState((state, props) => ({
         currentOffset: state.currentOffset + 1,
       }));
       this.props.fetchDataOrders(this.state);
+    }
   }
 
   renderSelect() {
@@ -109,17 +122,20 @@ class Buyer extends React.Component {
     const {
       history,
       activeDataOrders,
+      dataOrdersAddressAmount,
       boughtDataOrders,
       closedDataOrders,
       failedDataOrders,
       account
     } = this.props;
 
-    const aviableDataResponsesCount = R.compose(
+    const availableDataResponsesCount = R.compose(
       R.sum,
       R.map(item => (item.data && item.data.offChain ? item.data.offChain.dataResponsesCount : 0)),
       R.values
     )(activeDataOrders);
+
+    const openOrders = dataOrdersAddressAmount.data? dataOrdersAddressAmount.data.openOrdersLength : 0;
 
     const panels = [
       <BalancePanel
@@ -134,12 +150,12 @@ class Buyer extends React.Component {
       <InfoPanel
         key={3}
         title="Open Data Orders"
-        data={R.values(activeDataOrders).length}
+        data={openOrders}
       />,
       <InfoPanel
         key={4}
         title="Active Data Responses"
-        data={aviableDataResponsesCount}
+        data={availableDataResponsesCount}
         units="Responses"
       />
     ];
@@ -209,6 +225,7 @@ const mapStateToProps = state => ({
   boughtDataOrders: DataOrdersByAddress.getBoughtDataOrders(state),
   closedDataOrders: DataOrdersByAddress.getClosedDataOrders(state),
   dataOrdersAddress: DataOrdersAddresses.getDataOrdersAddresses(state),
+  dataOrdersAddressAmount: DataOrdersAddressesAmount.getDataOrdersAddressesAmount(state),
   isFetching: DataOrdersByAddress.isFetching(state),
   account: Account.getAccount(state)
 });
@@ -219,15 +236,16 @@ const mapDispatchToProps = (dispatch, props) => ({
   },
   fetchDataOrders: (params) => {
     const { currentOffset } = params || {};
-    console.log({
-      limit: Number(limit),
-      offset: Number(currentOffset || 0)
-    });
     dispatch(
       DataOrdersAddressesActions.fetchDataOrdersAddresses({
         limit: Number(limit),
         offset: Number(currentOffset || 0)
       })
+    );
+  },
+  fetchDataOrdersAmount: () => {
+    dispatch(
+      DataOrdersAddressesAmountActions.fetchDataOrdersAddressesAmount({})
     );
   },
   logOutUser: () => {
