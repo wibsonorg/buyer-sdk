@@ -1,5 +1,5 @@
 import express from 'express';
-import { createDataOrderFacade, getOrdersForBuyer } from '../../facades';
+import { createDataOrderFacade, getOrdersForBuyer, getOrdersAmountForBuyer } from '../../facades';
 import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 
@@ -38,6 +38,42 @@ router.get(
     ]);
 
     res.json({ orders, minimumInitialBudgetForAudits });
+  }),
+);
+
+/**
+ * @swagger
+ * /orders/total:
+ *   get:
+ *     description: Returns an object that shows the amount of open and closed data orders
+ *       created by the buyer in the Data Exchange.
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: When the orders have been fetched correctly.
+ *       500:
+ *         description: When the fetch failed.
+ */
+router.get(
+  '/total',
+  cache('10 minutes'),
+  asyncError(async (req, res) => {
+    req.apicacheGroup = '/orders/*';
+    const { address } = await signingService.getAccount();
+
+    const { stores: { ordersCache } } = req.app.locals;
+
+    const ordersResult = getOrdersAmountForBuyer(address, ordersCache);
+
+    const [orders] = await Promise.all([
+      ordersResult,
+    ]);
+
+    const closedOrdersLength = orders.filter(order => order.isClosed).length;
+    const openOrdersLength = orders.filter(order => !order.isClosed).length;
+
+    res.json({ closedOrdersLength, openOrdersLength });
   }),
 );
 
