@@ -51,6 +51,7 @@ const getDataOrderDetails = async (order) => {
     filters,
     dataRequest,
     notaries,
+    sellers,
     termsAndConditions,
     buyerPublicURL,
     buyerPublicKey,
@@ -61,6 +62,7 @@ const getDataOrderDetails = async (order) => {
     order.filters(),
     order.dataRequest(),
     getElements(order, 'notaries'),
+    getElements(order, 'sellers'),
     order.termsAndConditions(),
     order.buyerURL(),
     order.buyerPublicKey(),
@@ -74,6 +76,7 @@ const getDataOrderDetails = async (order) => {
     audience: JSON.parse(filters),
     requestedData: JSON.parse(dataRequest),
     notaries,
+    responsesBought: sellers.length,
     termsAndConditions,
     buyerPublicURL: JSON.parse(buyerPublicURL),
     buyerPublicKey,
@@ -95,9 +98,9 @@ const getDataOrderDetails = async (order) => {
 const fetchAndCacheDataOrder = async (orderAddress, ordersCache) => {
   const order = DataOrderContract.at(orderAddress);
   const dataOrder = await getDataOrderDetails(order);
+  console.log(dataOrder)
   const fullDataOrder = await addOffChainInfo(dataOrder);
   await addOrderToCache(fullDataOrder, ordersCache);
-
   return dataOrder;
 };
 
