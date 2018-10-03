@@ -1,0 +1,24 @@
+.wibson-checkbox {
+    cursor: pointer;
+    user-select: none;
+}
+
+.wibson-checkbox-unchecked {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    background-color: #ffffff;
+    border: solid 1px #d8e2eb;
+}
+
+.wibson-checkbox-checked {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    background-color: #2e9afd;
+    border: solid 1px transparent;
+}
+
+.wibson-checkbox-checked-icon {
+    margin: 3px;
+}

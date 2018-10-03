@@ -1,0 +1,115 @@
+import React, { Component } from "react";
+
+import R from "ramda";
+
+import { compose } from "recompose";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
+
+import Label from "base-app-src/components/Label";
+import DataTable from "base-app-src/components/DataTable";
+import DateDetail from "base-app-src/components/DateDetail";
+import NotariesDetail from "base-app-src/components/NotariesDetail";
+import RequestedDataDetail from "base-app-src/components/RequestedDataDetail";
+
+import * as OntologySelectors from "base-app-src/state/ontologies/selectors";
+import * as NotariesSelectors from "state/entities/notaries/selectors";
+
+import "./BoughtDataOrders.css";
+
+import compareDesc from "date-fns/compare_desc";
+
+/**
+ * Returns data orders as needed for the table.
+ * It ignores pending and error data orders for now.
+ */
+const flattenDataOrders = R.compose(
+  R.map(({ offChain, ...onChain }) => ({ ...onChain, ...offChain })),
+  R.pluck("data"),
+  R.filter(R.prop("data")),
+  R.values
+);
+
+class OpenDataOrders extends Component {
+  render() {
+    const {
+      dataOntology,
+      dataOrders,
+      availableNotaries
+    } = this.props;
+
+    const flatDataOrdersList = flattenDataOrders(dataOrders);
+
+    return (
+      <div>
+        <DataTable
+          data={flatDataOrdersList}
+          defaultSortBy="createdAt"
+          defaultSortDirection={-1}
+          columns={[
+            {
+              name: "createdAt",
+              label: "Date",
+              width: "250",
+              sortable: true,
+              sortFunction: compareDesc,
+              renderer: value => <DateDetail value={value} />
+            },
+            {
+              name: "orderAddress",
+              label: "Order",
+              width: "250",
+              sortable: false,
+              renderer: value => <Label color="light-dark">{value}</Label>
+            },
+            {
+              name: "notaries",
+              label: "Notaries",
+              width: "150",
+              renderer: value => (
+                <NotariesDetail
+                  value={value}
+                  notariesSchema={availableNotaries.list}
+                />
+              )
+            },
+            {
+              name: "requestedData",
+              label: "Requested Data",
+              width: "234",
+              renderer: value => (
+                <RequestedDataDetail
+                  requestedData={value}
+                  requestableData={dataOntology}
+                />
+              )
+            },
+            {
+              name: "price",
+              label: "Price",
+              width: "150",
+              renderer: value => <Label>{value || 0}</Label>
+            },
+            {
+              name: "dataResponsesCount",
+              label: "Responses",
+              width: "245",
+              renderer: value => <Label>{value || 0}</Label>
+            },
+          ]}
+        />
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = state => ({
+  dataOntology: OntologySelectors.getDataOntology(state),
+  audienceOntology: OntologySelectors.getAudienceOntology(state),
+  availableNotaries: NotariesSelectors.getNotaries(state)
+});
+
+export default compose(
+  withRouter,
+  connect(mapStateToProps)
+)(OpenDataOrders);

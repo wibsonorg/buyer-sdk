@@ -1,0 +1,19 @@
+.wibson-title {
+  color: #1c2331;
+  font-family: MuseoSans;
+  font-size: 25px;
+  font-weight: bold;
+  display: block;
+}
+
+.wibson-title.color-dark {
+  color: #1c2331 !important;
+}
+
+.wibson-title.color-light-dark {
+  color: #7b8289 !important;
+}
+
+.wibson-title.color-light {
+  color: #fff !important;
+}

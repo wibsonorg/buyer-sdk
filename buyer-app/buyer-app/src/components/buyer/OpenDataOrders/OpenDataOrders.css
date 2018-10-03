@@ -1,0 +1,28 @@
+/*.orders-header th {
+  font-weight: 600;
+  border-bottom: 1px solid rgba(0,0,0,.35);
+}
+
+.order-rows > tr {
+  vertical-align: initial;
+  border-bottom: 1px solid rgba(0,0,0,.15);
+}
+
+.order-rows ul {
+  margin-bottom: 0px;
+  margin-left: 18px;
+}
+
+.order-rows li > ul {
+  margin-bottom: 0.3rem;
+  margin-left: 1.5rem;
+}
+*/
+
+.wibson-bought-data-orders-actions {
+  display: flex;
+  flex-direction: row;
+}
+.wibson-bought-data-orders-actions > *:not(:first-child)  {
+  margin-left: 12px;
+}

@@ -1,0 +1,88 @@
+.wibson-tooltip {
+  position:fixed;
+  padding: 6px;
+  background: #0a1f33;
+  border-radius: 4px;
+  box-shadow: 0 0 10px 0 color(black alpha(10%));
+  font-size: 12px;
+  color: #fff;
+  opacity: 0;
+  cursor: initial;
+  pointer-events: none;
+}
+
+.wibson-tooltip:after {
+  position: absolute;
+  display: block;
+  content: "";
+  width: 0;
+  height: 0;
+  margin: auto;
+}
+
+.wibson-tooltip.left:after {
+  top: 10px;
+  right: -4px;
+  border-top: solid 6px transparent;
+  border-left: solid 4px #0a1f33;
+  border-bottom: solid 6px transparent;
+}
+
+.wibson-tooltip.right:after {
+  top: 10px;
+  left: -4px;
+  border-top: solid 6px transparent;
+  border-right: solid 4px #0a1f33;
+  border-bottom: solid 6px transparent;
+}
+
+.wibson-tooltip.up:after {
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  border-left: solid 6px transparent;
+  border-right: solid 6px transparent;
+  border-top: solid 4px #0a1f33;
+}
+
+.wibson-tooltip.down:after {
+  top: -4px;
+  left: 0;
+  right: 0;
+  border-left: solid 6px transparent;
+  border-right: solid 6px transparent;
+  border-bottom: solid 4px #0a1f33;
+}
+
+.wibson-tooltip.up.left:after {
+  right: 10px;
+  bottom: -10px;
+  left: auto;
+  top: auto;
+}
+
+.wibson-tooltip.up.right:after {
+  left: 10px;
+  bottom: -10px;
+  right: auto;
+  top: auto;
+}
+
+.wibson-tooltip.down.left:after {
+  right: 10px;
+  top: -10px;
+  left: auto;
+  bottom: auto;
+}
+
+.wibson-tooltip.down.right:after {
+  left: 10px;
+  top: -10px;
+  right: auto;
+  bottom: auto;
+}
+
+.wibson-tooltip.visible {
+  opacity: 1;
+  pointer-events: all;
+}

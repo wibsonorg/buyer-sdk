@@ -1,0 +1,68 @@
+{
+  "name": "buyer-signing-service",
+  "version": "1.0.0",
+  "description": "Buyer Signing Service",
+  "author": "Wibson Development Team",
+  "main": "src/app.js",
+  "scripts": {
+    "build": "babel src -d dist",
+    "serve": "node dist/index.js",
+    "start": "babel-node src/index.js",
+    "test": "scripts/test.sh",
+    "test:coverage": "nyc scripts/test.sh",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.188.0",
+    "babel-polyfill": "^6.26.0",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "dotenv": "^6.0.0",
+    "eth-crypto": "^1.2.3",
+    "ethereumjs-tx": "^1.3.6",
+    "ethereumjs-util": "^5.2.0",
+    "express": "^4.16.3",
+    "express-boom": "^2.0.0",
+    "glob": "^7.1.2",
+    "helmet": "^3.12.1",
+    "level": "^4.0.0",
+    "morgan": "^1.9.0",
+    "node-forge": "^0.7.1",
+    "openpgp": "3.1.0",
+    "read": "1.0.7",
+    "safe-buffer": "^5.1.2",
+    "swagger-jsdoc": "^1.9.7",
+    "swagger-ui-express": "^3.0.10",
+    "web3-eth-abi": "^1.0.0-beta.34",
+    "web3-utils": "1.0.0-beta.34",
+    "winston": "^3.0.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.12.0",
+    "ganache-cli": "^6.1.3",
+    "mocha": "^5.2.0",
+    "nyc": "12.0.2",
+    "sinon": "^6.1.0",
+    "supertest": "^3.1.0"
+  },
+  "nyc": {
+    "check-coverage": true,
+    "lines": 70,
+    "cache": false,
+    "reporter": [
+      "html",
+      "text"
+    ],
+    "exclude": [
+      "src/utils/logger.js"
+    ]
+  }
+}

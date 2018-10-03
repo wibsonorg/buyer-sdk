@@ -1,0 +1,7 @@
+{
+	"api.url": "http://localhost:9100",
+	"buyerPublicURL": {
+		"api": "http://localhost:9100",
+		"storage": "s3://AKIAIA5RQNSW6PO65WVA:kgKwMYSl3ZE6kCVoF3rZhjXN4Z3lUT922RUphbAL@wibson-storage"
+	}
+}
