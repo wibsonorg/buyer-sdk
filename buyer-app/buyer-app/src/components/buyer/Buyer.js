@@ -76,7 +76,7 @@ class Buyer extends React.Component {
 
   handleScroll = (e) =>{
     // const bottom = e.target.scrollingElement.scrollHeight - e.target.scrollingElement.scrollTop === e.target.scrollingElement.clientHeight;
-    const bottom = window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight;
+    const bottom = window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight;
     const {
       activeDataOrders,
       dataOrdersAddressAmount,
