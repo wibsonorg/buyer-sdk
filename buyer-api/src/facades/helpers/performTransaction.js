@@ -93,11 +93,12 @@ const sendTransaction = async (
   address,
   signingFunc,
   params,
+  gasPrice,
 ) => {
   const nonce = await web3.eth.getTransactionCount(address);
   const payload = {
     nonce,
-    gasPrice: web3.eth.gasPrice.toNumber(),
+    gasPrice: gasPrice || web3.eth.gasPrice.toNumber(),
     params,
   };
 
@@ -126,12 +127,14 @@ const performTransaction = async (
   address,
   signingFunc,
   params,
+  gasPrice,
 ) => {
   const receipt = await sendTransaction(
     web3,
     address,
     signingFunc,
     params,
+    gasPrice,
   );
 
   const response = await transactionResponse(web3, receipt);

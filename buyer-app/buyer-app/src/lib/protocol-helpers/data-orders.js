@@ -1,4 +1,5 @@
 import Config from '../../config';
+import authorization from '../../utils/headers';
 
 const apiUrl = Config.get('api.url');
 
@@ -7,8 +8,12 @@ const apiUrl = Config.get('api.url');
  * @return {[type]} [description]
  */
 async function listBuyerDataOrders(limit, offset) {
-  const res = await fetch(`${apiUrl}/orders?limit=${limit}&offset=${offset}`);
-
+  const res = await fetch(`${apiUrl}/orders?limit=${limit}&offset=${offset}`,
+  {
+    headers: {
+      Authorization: authorization()
+    }
+  });
   if (!res.ok) {
     throw new Error('Could get data orders');
   }
@@ -22,7 +27,6 @@ async function createBuyerDataOrder(
   filters,
   dataRequest,
   buyerURL,
-  termsAndConditions,
   price,
   initialBudgetForAudits,
   notaries,
@@ -32,6 +36,7 @@ async function createBuyerDataOrder(
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      Authorization: authorization()
     },
     method: 'POST',
     body: JSON.stringify({
@@ -39,7 +44,6 @@ async function createBuyerDataOrder(
         filters,
         dataRequest,
         buyerURL,
-        termsAndConditions,
         price,
         initialBudgetForAudits,
         notaries,
@@ -60,6 +64,7 @@ const addNotariesToOrder = async (orderAddress, notariesAddresses) => {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      Authorization: authorization()
     },
     method: 'POST',
     body: JSON.stringify({ notariesAddresses }),
@@ -75,6 +80,7 @@ const closeOrder = async orderAddress => {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      Authorization: authorization()
     },
     method: 'POST',
   });

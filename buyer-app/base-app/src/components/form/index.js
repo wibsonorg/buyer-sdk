@@ -18,9 +18,9 @@ const InlineItem = ({ children, className }) => (
 );
 
 const Form = ({ children, className }) => (
-  <div className={classnames("wibson-form-container", className)}>
+  <form className={classnames("wibson-form-container", className)}>
     {children}
-  </div>
+  </form>
 );
 
 export { InfoItem, FormSection, InlineItem, Form };

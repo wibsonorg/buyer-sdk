@@ -4,7 +4,6 @@ import config from '../../config';
 import { web3, cache } from '../utils';
 
 const router = express.Router();
-
 /**
  * @swagger
  * /health:

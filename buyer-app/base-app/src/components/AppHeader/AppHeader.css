@@ -18,6 +18,11 @@
   background-image: linear-gradient(to bottom, #0a1f33, #0f2f4d);
 }
 
+.wibson-header .info-section .wibson-logo {
+  width: 126px;
+	height: 24px;
+}
+
 .wibson-header .info-section {
   height: 64px;
   display: flex;
@@ -26,9 +31,9 @@
   align-items: center;
 }
 
-.wibson-header .info-section .wibson-logo {
-  width: 126px;
-	height: 24px;
+.wibson-header .info-section .account-info {
+  flex: 10;
+  margin-right: 20px;
 }
 
 .wibson-header .info-section .account-info .account-name {
@@ -73,4 +78,16 @@
 
 .wibson-header .panels-section > *:not(:last-child) {
   margin-right: 24px;
+}
+
+.wibson-header-button {
+  opacity: .6;
+}
+
+.wibson-header-textButton {
+  color:white;
+}
+
+.wibson-header-button:hover {
+ opacity: .9;
 }

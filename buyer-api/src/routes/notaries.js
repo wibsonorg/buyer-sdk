@@ -4,7 +4,6 @@ import { asyncError, cache, validateAddress } from '../utils';
 import { getNotaryInfo, getNotariesInfo } from '../facades/notariesFacade';
 
 const router = express.Router();
-
 /**
  * @swagger
  * /notaries:

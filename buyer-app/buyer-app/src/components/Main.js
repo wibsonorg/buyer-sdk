@@ -1,9 +1,11 @@
 import React from "react";
 import { HashRouter as Router } from "react-router-dom";
+import { compose } from "recompose";
 
 import Buyer from "./buyer/Buyer";
 
 import { withAccountPolling } from "state/entities/account/hoc";
+import { withVerifyTokenPolling } from "state/entities/authentication/hoc";
 
 
 const MainPage = props => {
@@ -14,4 +16,4 @@ const MainPage = props => {
   );
 };
 
-export default withAccountPolling(MainPage);
+export default compose(withAccountPolling, withVerifyTokenPolling)(MainPage);

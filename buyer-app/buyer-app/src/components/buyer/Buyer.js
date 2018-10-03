@@ -23,6 +23,7 @@ import * as Account from "state/entities/account/selectors";
 import * as PollingActions from "state/entities/polling/actions";
 
 import * as DataOrdersAddressesActions from "state/entities/dataOrdersAddresses/actions";
+import * as authenticationActions from "state/entities/authentication/actions";
 import { withNotaries } from "state/entities/notaries/hoc";
 
 import InfoPanel from "./headerPanels/InfoPanel";
@@ -33,7 +34,7 @@ import OpenDataOrders from "./OpenDataOrders";
 import BoughtDataOrders from "./BoughtDataOrders";
 import FailedDataOrders from "./FailedDataOrders";
 import DataOrderCreate from "./DataOrderCreate";
-
+import { removeCookie } from "../../utils/cookies"
 
 import R from "ramda";
 import queryString from 'query-string';
@@ -47,6 +48,11 @@ class Buyer extends React.Component {
     if (this.props.currentRoute !== value) {
       this.props.history.push(`/${value}`);
     }
+  };
+
+  handleLogOut = () => {
+    removeCookie('token')
+    this.props.logOutUser();
   };
 
   renderSelect() {
@@ -115,7 +121,7 @@ class Buyer extends React.Component {
 
     return (
       <div>
-        <AppHeader userRole="buyer" account={account.address} panels={panels} />
+        <AppHeader userRole="buyer" account={account.address} panels={panels} logOut={this.handleLogOut} />
         <LoadingBar loading={this.isLoading()} />
         <AppNotifications />
         <div className={cx("page-content")}>
@@ -194,7 +200,10 @@ const mapDispatchToProps = (dispatch, props) => ({
         offset: Number(offset || -10)
       })
     );
-  }
+  },
+  logOutUser: () => {
+    dispatch(authenticationActions.logOutUser());
+  },
 });
 
 export default compose(

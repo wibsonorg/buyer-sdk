@@ -1,5 +1,5 @@
 import express from 'express';
-import { asyncError, cache, validateAddress } from '../../utils';
+import { asyncError, cache, validateAddress, checkAuthorization } from '../../utils';
 import {
   getOrderInfo,
   associateBuyerInfoToOrder,
@@ -71,6 +71,7 @@ router.get(
  */
 router.post(
   '/:orderAddress/info',
+  checkAuthorization,
   validateAddress('orderAddress'),
   asyncError(async (req, res) => {
     const { orderAddress } = req.params;

@@ -8,6 +8,7 @@ import {
 } from '../helpers';
 import { getNotaryInfo } from '../notariesFacade';
 import { web3, DataOrderContract, logger } from '../../utils';
+import config from '../../../config';
 
 const auditResult = async (notaryUrl, order, seller, buyer) => {
   const baseUri = notaryUrl.replace(/\/$/, '');
@@ -62,6 +63,7 @@ const closeDataResponse = async (order, seller, notariesCache, dataResponseQueue
     address,
     signingService.signCloseDataResponse,
     params,
+    config.contracts.gasPrice.fast,
   );
 
   dataResponseQueue.add('closeDataResponseSent', {

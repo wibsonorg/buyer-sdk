@@ -8,7 +8,6 @@ import {
 } from '../services/buyerInfo';
 
 const router = express.Router();
-
 /**
  * @swagger
  * /infos:
