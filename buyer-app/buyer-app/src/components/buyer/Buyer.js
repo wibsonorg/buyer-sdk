@@ -40,7 +40,7 @@ import { removeCookie } from "../../utils/cookies"
 
 import R from "ramda";
 
-const limit = 1;
+const limit = 12;
 
 class Buyer extends React.Component {
   constructor(props) {
@@ -82,12 +82,11 @@ class Buyer extends React.Component {
       dataOrdersAddressAmount,
       closedDataOrders,
     } = this.props;
-    console.log(activeDataOrders);
     const loadedOrders = Object.entries(activeDataOrders) + Object.entries(closedDataOrders);
     if (bottom && !this.isLoading() && loadedOrders < dataOrdersAddressAmount)
     {
       this.setState((state, props) => ({
-        currentOffset: state.currentOffset + 1,
+        currentOffset: state.currentOffset + limit,
       }));
       this.props.fetchDataOrders(this.state);
     }
