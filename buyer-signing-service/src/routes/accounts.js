@@ -15,7 +15,31 @@ const router = express.Router();
  *         description: When accounts information is available
  */
 router.get('/', asyncError(async (_req, res) => {
-  res.json(accounts.getAccounts());
+  res.json({
+    root: accounts.getRootAccount(),
+    children: accounts.getAccounts(),
+  });
+}));
+
+/**
+ * @swagger
+ * /accounts/root:
+ *   get:
+ *     description: Returns root account information
+ *     parameters:
+ *       - in: path
+ *         name: account
+ *         type: integer
+ *         description: The account index
+ *         required: true
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: When account info is available
+ */
+router.get('/root', asyncError(async (_req, res) => {
+  res.json(accounts.getRootAccount());
 }));
 
 /**
@@ -37,10 +61,10 @@ router.get('/', asyncError(async (_req, res) => {
  */
 router.get('/:account', asyncError(async (req, res) => {
   const account = Number(req.params.account);
-  if (!Number.isInteger(account)) {
-    res.boom.notFound();
-  } else {
+  if (Number.isInteger(account)) {
     res.json(accounts.getAccount(account));
+  } else {
+    res.boom.notFound();
   }
 }));
 

@@ -17,6 +17,11 @@ export const getPublicKey = childId =>
 
 export const getAddress = childId => childWallet(childId).getAddressString();
 
+export const getRootAccount = () => ({
+  address: buyerHD.getWallet().getAddressString(),
+  publicKey: buyerHD.getWallet().getPublicKeyString(),
+});
+
 export const getAccount = childId => ({
   number: childId,
   address: getAddress(childId),
