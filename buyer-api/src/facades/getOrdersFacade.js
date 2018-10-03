@@ -25,7 +25,11 @@ const addOrderToCache = (dataOrder, ordersCache) =>
  */
 const addOffChainInfo = async (dataOrder) => {
   const dataResponsesCount = await offchainStorage.countDataResponses(dataOrder);
+  console.log("dataResponsesCount")
+  console.log(dataResponsesCount)
   const dataCount = await offchainStorage.countData(dataOrder);
+  console.log("dataCount")
+  console.log(dataCount)
 
   const offChain = {
     dataResponsesCount,
@@ -51,6 +55,7 @@ const getDataOrderDetails = async (order) => {
     filters,
     dataRequest,
     notaries,
+    sellers,
     termsAndConditions,
     buyerPublicURL,
     buyerPublicKey,
@@ -61,6 +66,7 @@ const getDataOrderDetails = async (order) => {
     order.filters(),
     order.dataRequest(),
     getElements(order, 'notaries'),
+    getElements(order, 'sellers'),
     order.termsAndConditions(),
     order.buyerURL(),
     order.buyerPublicKey(),
@@ -74,6 +80,7 @@ const getDataOrderDetails = async (order) => {
     audience: JSON.parse(filters),
     requestedData: JSON.parse(dataRequest),
     notaries,
+    responseBought: sellers.length,
     termsAndConditions,
     buyerPublicURL: JSON.parse(buyerPublicURL),
     buyerPublicKey,
@@ -96,8 +103,7 @@ const fetchAndCacheDataOrder = async (orderAddress, ordersCache) => {
   const order = DataOrderContract.at(orderAddress);
   const dataOrder = await getDataOrderDetails(order);
   const fullDataOrder = await addOffChainInfo(dataOrder);
-  await addOrderToCache(fullDataOrder, ordersCache);
-
+  await addOrderToCache(fullDataOrder, ordersCache)
   return dataOrder;
 };
 
