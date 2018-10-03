@@ -1,19 +1,25 @@
 import { web3, wibcoin } from '.';
 import config from '../../config';
+import signingService from '../services/signingService';
 
 const checkRootBuyerFunds = () => {
-  const childAccountCount = getChildAccounts.count
-  const wibBalance = wibcoin.balanceOf.call(buyerRootAddress);
-  const gweiBalance = web3.eth.getBalance(buyerRootAddress);
+  const { root, children } = signingService.getAccounts();
 
-  const requiredWib = childAccountCount * config.buyerChild.minWib;
-  const requiredGwei = childAccountCount * config.buyerChild.minGwei;
+  const childrenCount = children.count;
+  const currentWib = wibcoin.balanceOf.call(root);
+  const currentGwei = web3.eth.getBalance(root);
+
+  const requiredWib = childrenCount * config.buyerChild.minWib;
+  const requiredGwei = childrenCount * config.buyerChild.minGwei;
 
   return {
-    rootBuyerAddress,
+    rootBuyerAddress: root,
+    childrenCount,
     currentWib,
     requiredWib,
     currentGwei,
     requiredGwei,
   };
 };
+
+export { checkRootBuyerFunds };

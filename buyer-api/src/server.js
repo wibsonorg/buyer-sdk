@@ -31,7 +31,7 @@ const checkConfig = (conf) => {
 const checkFunds = () => {
   const {
     rootBuyerAddress,
-    childAccountCount,
+    childrenCount,
     currentWib,
     requiredWib,
     currentGwei,
@@ -43,14 +43,14 @@ const checkFunds = () => {
 
   if (insufficientWib) {
     logger.error(`
-    Root Buyer (${rootBuyerAddress}) does not have enough WIB to fund ${childAccountCount} child accounts.
+    Root Buyer (${rootBuyerAddress}) does not have enough WIB to fund ${childrenCount} child accounts.
     Current balance: ${currentWib} WIB
     Required balance: ${requiredWib} WIB
     `);
   }
   if (insufficientEth) {
     logger.error(`
-    Root Buyer (${rootBuyerAddress}) does not have enough ETH to fund ${childAccountCount} child accounts.
+    Root Buyer (${rootBuyerAddress}) does not have enough ETH to fund ${childrenCount} child accounts.
     Current balance: ${currentGwei} GWei
     Required balance: ${requiredGwei} GWei
     (The required balance does not take into account transaction costs)
