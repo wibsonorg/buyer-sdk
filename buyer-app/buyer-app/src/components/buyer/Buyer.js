@@ -134,7 +134,7 @@ class Buyer extends React.Component {
       R.values
     )(activeDataOrders);
 
-    const openOrders = dataOrdersAddressAmount.data? dataOrdersAddressAmount.data.openOrdersLength : 0;
+    const openOrders = dataOrdersAddressAmount.data? dataOrdersAddressAmount.data.totalOpenOrders : 0;
 
     const panels = [
       <BalancePanel

@@ -64,16 +64,12 @@ router.get(
 
     const { stores: { ordersCache } } = req.app.locals;
 
-    const ordersResult = getOrdersAmountForBuyer(address, ordersCache);
+    const orders = await getOrdersAmountForBuyer(address, ordersCache);
 
-    const [orders] = await Promise.all([
-      ordersResult,
-    ]);
+    const totalClosedOrders = orders.filter(order => order.isClosed).length;
+    const totalOpenOrders = orders.filter(order => !order.isClosed).length;
 
-    const closedOrdersLength = orders.filter(order => order.isClosed).length;
-    const openOrdersLength = orders.filter(order => !order.isClosed).length;
-
-    res.json({ closedOrdersLength, openOrdersLength });
+    res.json({ totalClosedOrders, totalOpenOrders });
   }),
 );
 
