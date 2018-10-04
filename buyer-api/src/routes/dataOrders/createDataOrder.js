@@ -26,18 +26,17 @@ router.get(
     req.apicacheGroup = '/orders/*';
     const { offset, limit } = req.query;
     // TODO: Improve DataOrder agregates
-    const { address } = await signingService.getAccount(0);
 
     const { stores: { ordersCache } } = req.app.locals;
 
-    const ordersResult = getOrdersForBuyer(address, ordersCache, Number(offset), Number(limit));
+    const { children } = await signingService.getAccounts();
 
-    const minimumBudget = dataExchange.minimumInitialBudgetForAudits();
+    const ordersResult = children
+      .map(({ address }) => getOrdersForBuyer(address, ordersCache, Number(offset), Number(limit)));
 
-    const [orders, minimumInitialBudgetForAudits] = await Promise.all([
-      ordersResult,
-      minimumBudget,
-    ]);
+    const minimumInitialBudgetForAudits = await dataExchange.minimumInitialBudgetForAudits();
+
+    const orders = [].concat(...await Promise.all(ordersResult));
 
     res.json({ orders, minimumInitialBudgetForAudits });
   }),
@@ -176,8 +175,8 @@ router.post(
     if (errors.length > 0) {
       res.boom.badData('Validation failed', { validation: errors });
     } else {
-      const accounts = await signingService.getAccounts();
-      accounts.map(account => queue.add('createDataOrder', {
+      const { children } = await signingService.getAccounts();
+      children.map(account => queue.add('createDataOrder', {
         account,
         ...dataOrder,
       }, {
