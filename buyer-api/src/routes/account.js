@@ -19,14 +19,14 @@ const router = express.Router();
  *         description: When the fetch failed.
  */
 router.get('/', cache('30 seconds'), asyncError(async (req, res) => {
-  const accounts = await signingService.getAccounts();
+  const { root, children } = await signingService.getAccounts();
 
-  const tokenBalancePromises = accounts
+  const tokenBalancePromises = children.concat(root)
     .map(({ address }) => wibcoin.balanceOf.call(address));
   const tokenBalances = await Promise.all(tokenBalancePromises);
-  const balance = tokenBalances.reduce((accum, item) => item + accum, 0);
+  const tokenBalance = tokenBalances.reduce((accum, item) => item.plus(accum), 0);
 
-  const ethBalancePromises = accounts
+  const ethBalancePromises = children.concat(root)
     .map(({ address }) => web3.eth.getBalance(address));
   const ethBalances = await Promise.all(ethBalancePromises);
   const ethBalance = ethBalances.reduce((accum, item) => item.plus(accum), 0);
@@ -34,8 +34,8 @@ router.get('/', cache('30 seconds'), asyncError(async (req, res) => {
   const ether = web3Utils.fromWei(ethBalance.toString(), 'ether');
 
   res.json({
-    address: accounts[0].address,
-    balance: Number(balance),
+    address: root.address,
+    balance: Number(tokenBalance),
     ether: Number(ether),
   });
 }));
