@@ -76,6 +76,22 @@ const signCloseOrder = payload => client.post(
   },
 );
 
+const signWIBTransfer = payload => client.post(
+  `${url}/sign/transfer/wib`,
+  {
+    json: payload,
+    timeout,
+  },
+);
+
+const signETHTransfer = payload => client.post(
+  `${url}/sign/transfer/eth`,
+  {
+    json: payload,
+    timeout,
+  },
+);
+
 const signinService = {
   getHealth,
   getAccount,
@@ -86,6 +102,8 @@ const signinService = {
   signAddDataResponse,
   signCloseDataResponse,
   signCloseOrder,
+  signWIBTransfer,
+  signETHTransfer,
 };
 
 export default signinService;
