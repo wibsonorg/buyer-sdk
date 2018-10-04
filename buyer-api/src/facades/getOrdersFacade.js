@@ -25,11 +25,7 @@ const addOrderToCache = (dataOrder, ordersCache) =>
  */
 const addOffChainInfo = async (dataOrder) => {
   const dataResponsesCount = await offchainStorage.countDataResponses(dataOrder);
-  console.log("dataResponsesCount")
-  console.log(dataResponsesCount)
   const dataCount = await offchainStorage.countData(dataOrder);
-  console.log("dataCount")
-  console.log(dataCount)
 
   const offChain = {
     dataResponsesCount,

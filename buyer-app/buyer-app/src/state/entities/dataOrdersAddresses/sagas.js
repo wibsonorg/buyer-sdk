@@ -13,7 +13,7 @@ export function* fetchDataOrdersAddresses(action) {
     const { limit, offset } = action.payload;
 
     const fullDataOrders = yield call(DataOrdersHelpers.listBuyerDataOrders, limit, offset);
-
+    
     yield put(
       DataOrdersAddressesActions.fetchDataOrdersAddressesSucceed({
         data: R.pluck("orderAddress", fullDataOrders.orders)

@@ -30,7 +30,6 @@ router.get(
     const { stores: { ordersCache } } = req.app.locals;
 
     const ordersResult = getOrdersForBuyer(address, ordersCache, Number(offset), Number(limit));
-
     const minimumBudget = dataExchange.minimumInitialBudgetForAudits();
 
     const [orders, minimumInitialBudgetForAudits] = await Promise.all([

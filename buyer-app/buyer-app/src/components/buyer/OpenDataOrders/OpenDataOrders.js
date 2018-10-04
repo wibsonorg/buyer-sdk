@@ -141,7 +141,13 @@ class OpenDataOrders extends Component {
             },
             {
               name: "dataResponsesCount",
-              label: "Responses",
+              label: "Responses Received",
+              width: "245",
+              renderer: value => <Label>{value || 0}</Label>
+            },
+            {
+              name: "responseBought",
+              label: "Responses Bought",
               width: "245",
               renderer: value => <Label>{value || 0}</Label>
             },
