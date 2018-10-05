@@ -1,3 +1,4 @@
+import uuid from 'uuid/v4';
 import { createLevelStore, listLevelKeys } from '../utils';
 import config from '../../config';
 
@@ -13,11 +14,11 @@ const listBatchIds = async () => listLevelKeys(ordersPerBatch);
 
 /**
  * @function createBatchId
- * @returns {Integer} A new Id for the batch of orders
+ * @returns {String} A new Id for the batch of orders
  */
 // eslint-disable-next-line
 const createBatch = async (payload = []) => {
-  const id = (new Date()).getTime();
+  const id = uuid();
   await ordersPerBatch.put(id, JSON.stringify(payload));
   return id;
 };
