@@ -28,18 +28,18 @@ const checkConfig = (conf) => {
   }
 };
 
-const checkFunds = () => {
+const checkFunds = async () => {
   const {
     rootBuyerAddress,
     childrenCount,
     currentWib,
     requiredWib,
-    currentGwei,
-    requiredGwei,
-  } = rootBuyerFunds();
+    currentWei,
+    requiredWei,
+  } = await rootBuyerFunds();
 
-  const insufficientWib = currentWib < requiredWib;
-  const insufficientEth = currentGwei < requiredGwei;
+  const insufficientWib = currentWib.isLessThan(requiredWib);
+  const insufficientEth = currentWei.isLessThan(requiredWei);
 
   if (insufficientWib) {
     logger.error(`
@@ -51,8 +51,8 @@ const checkFunds = () => {
   if (insufficientEth) {
     logger.error(`
     Root Buyer (${rootBuyerAddress}) does not have enough ETH to fund ${childrenCount} child accounts.
-    Current balance: ${currentGwei} GWei
-    Required balance: ${requiredGwei} GWei
+    Current balance: ${currentWei} Wei
+    Required balance: ${requiredWei} Wei
     (The required balance does not take into account transaction costs)
     `);
   }
@@ -62,9 +62,9 @@ const checkFunds = () => {
   }
 };
 
-const server = () => {
+const server = async () => {
   checkConfig(config);
-  checkFunds();
+  await checkFunds();
 
   const { port, host, env } = config;
   app.listen({ port, host }, () =>

@@ -49,7 +49,7 @@ const config = {
   },
   buyerChild: {
     minWib: env.BUYER_CHILD_MIN_WIB,
-    minGwei: env.BUYER_CHILD_MIN_GWEI,
+    minWei: env.BUYER_CHILD_MIN_WEI,
   },
   levelDirectory: env.LEVEL_DIRECTORY,
 };

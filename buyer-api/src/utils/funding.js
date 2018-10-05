@@ -1,25 +1,30 @@
+import { BigNumber } from 'bignumber.js';
 import { web3, wibcoin } from '.';
 import config from '../../config';
 import signingService from '../services/signingService';
+import { coin } from '../utils/wibson-lib';
 
-const checkRootBuyerFunds = () => {
-  const { root, children } = signingService.getAccounts();
+const rootBuyerFunds = async () => {
+  const { root, children } = await signingService.getAccounts();
 
-  const childrenCount = children.count;
-  const currentWib = wibcoin.balanceOf.call(root);
-  const currentGwei = web3.eth.getBalance(root);
+  const childrenCount = BigNumber(children.length);
+  const currentWibUnits = await wibcoin.balanceOf.call(root.address);
+  const currentWib = BigNumber(coin.toWib(currentWibUnits));
 
-  const requiredWib = childrenCount * config.buyerChild.minWib;
-  const requiredGwei = childrenCount * config.buyerChild.minGwei;
+  const currentWeiBalance = await web3.eth.getBalance(root.address);
+  const currentWei = BigNumber(currentWeiBalance);
+
+  const requiredWib = childrenCount.times(BigNumber(config.buyerChild.minWib));
+  const requiredWei = childrenCount.times(BigNumber(config.buyerChild.minWei));
 
   return {
-    rootBuyerAddress: root,
+    rootBuyerAddress: root.address,
     childrenCount,
     currentWib,
     requiredWib,
-    currentGwei,
-    requiredGwei,
+    currentWei,
+    requiredWei,
   };
 };
 
-export { checkRootBuyerFunds };
+export { rootBuyerFunds };
