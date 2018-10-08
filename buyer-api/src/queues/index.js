@@ -1,4 +1,4 @@
 export { createDataOrderQueue } from './createDataOrderQueue';
 export { createDataResponseQueue } from './createDataResponseQueue';
-export { createFundingQueue } from './createFundingQueue';
+export { fundingQueue } from './fundingQueue';
 

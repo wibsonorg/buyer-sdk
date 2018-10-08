@@ -11,12 +11,11 @@ import {
   logger,
   errorHandler,
   createRedisStore,
-  createLevelStore,
 } from './utils';
 import {
   createDataOrderQueue,
   createDataResponseQueue,
-  createFundingQueue,
+  fundingQueue,
 } from './queues';
 import {
   account,
@@ -28,9 +27,8 @@ import {
 } from './routes';
 
 const app = express();
+
 app.locals.stores = {
-  redis: createRedisStore('sample'),
-  level: createLevelStore(`${config.levelDirectory}/sample_level`),
   ordersCache: createRedisStore('orders.cache'),
   notariesCache: createRedisStore('notaries.cache'),
 };
@@ -38,7 +36,7 @@ app.locals.stores = {
 app.locals.queues = {
   dataOrder: createDataOrderQueue(app.locals.stores),
   dataResponse: createDataResponseQueue(app.locals.stores),
-  funding: createFundingQueue(),
+  funding: fundingQueue,
 };
 
 app.use(helmet());

@@ -1,20 +1,25 @@
 import { expect } from 'chai';
-import { toBN, transferParams } from '../../src/facades/transferFacade';
+import { web3 } from '../../src/utils';
+import { checkAndTransfer } from '../../src/facades/transferFacade';
+
+const toBN = num => web3.toBigNumber(num);
 
 describe.only('transferFacade', () => {
-  describe('#transferParams', () => {
-    const subject = (balance, min = toBN(10), max = toBN(20)) =>
-      transferParams('0x1234', balance, { min, max });
+  const child = { number: 0, address: web3.eth.accounts[2] };
 
-    it('returns false when balance is within ranges', () => {
-      expect(subject(toBN(15))).to.be.false;
+  describe('#checkAndTransfer', () => {
+    const subject = async (balance, min = toBN(10), max = toBN(20)) =>
+      checkAndTransfer(child, () => balance, params => params, min, max);
+
+    it('returns false when balance is above the required minimum', async () => {
+      expect(await subject(toBN(10))).to.be.false;
+      expect(await subject(toBN(15))).to.be.false;
+      expect(await subject(toBN(20))).to.be.false;
+      expect(await subject(toBN(30))).to.be.false;
     });
 
-    it('returns with the corresponding params when balance is below the minimum', () => {
-      expect(subject(toBN(9))).to.eql({
-        _to: '0x1234',
-        _value: '11',
-      });
+    it('returns a truthy when balance is below the required minimum', async () => {
+      expect(subject(toBN(9))).to.not.be.false;
     });
   });
 });

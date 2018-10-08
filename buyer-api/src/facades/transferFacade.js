@@ -1,32 +1,19 @@
-import { sendTransaction } from './helpers';
-import signingService from '../services/signingService';
-import { web3, token } from '../utils';
+/**
+ * Checks destinatary's balance and transfers funds if needed.
+ *
+ * @async
+ * @param {Object} root Buyer's root account
+ * @param {String} child Buyer's child account ethereum address
+ * @param {Function} getBalance Balance getter
+ * @param {Number} min Minimum required balance
+ * @param {Number} max Maximum allowed balance
+ */
+export const checkAndTransfer = (child, getBalance, send, min, max) => {
+  const balance = getBalance(child.address);
+  if (balance.greaterThanOrEqualTo(min)) return false;
 
-const { signWIBTransfer, signETHTransfer } = signingService;
-
-export const toBN = num => web3.toBigNumber(num);
-
-export const transferParams = (destinatary, balance, { min, max }) => {
-  if (balance.greaterThan(min)) return false;
-
-  return {
-    _to: destinatary,
+  return send({
+    _to: child.address,
     _value: max.minus(balance).toString(),
-  };
-};
-
-export const transferWIB = async (root, destinatary, config) => {
-  const balance = token.balanceOf(destinatary);
-  const params = transferParams(destinatary, balance, config);
-  if (!params) return false;
-
-  return sendTransaction(web3, root, signWIBTransfer, params);
-};
-
-export const transferETH = async (root, destinatary, config) => {
-  const balance = web3.eth.getBalance(destinatary);
-  const params = transferParams(destinatary, balance, config);
-  if (!params) return false;
-
-  return sendTransaction(web3, root, signETHTransfer, params);
+  });
 };
