@@ -29,14 +29,12 @@ export const getRootAccount = () => ({
   number: 'root',
   address: getRootAccountAddress(),
   publicKey: buyerHD.getWallet().getPublicKeyString(),
-  // privateKey: getRootAccountPrivateKey(),
 });
 
 export const getAccount = childId => ({
   number: childId,
   address: getAddress(childId),
   publicKey: getPublicKey(childId),
-  // privateKey: getPrivateKey(childId),
 });
 
 export const getAccounts = () => {

@@ -7,6 +7,17 @@ const {
   getRootAccountAddress,
 } = accounts;
 
+/**
+ * Generates a signed transaction to transfer Ether ready to be sent to
+ * the network.
+ *
+ * @param {Number} nonce sender's transaction count
+ * @param {String} gasPrice ethereum's current gas price
+ * @param {Object} params transaction params
+ * @param {Object} contract WIBToken contract instance
+ * @param {Object} defaults transaction defaults
+ * @returns {Response} with the result of the operation
+ */
 const transferETHFacade = (nonce, gasPrice, params, contract, defaults) => {
   const { _to, _value } = params;
 

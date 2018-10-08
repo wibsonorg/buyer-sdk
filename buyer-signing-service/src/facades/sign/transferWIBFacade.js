@@ -10,6 +10,17 @@ const {
   getRootAccountAddress,
 } = accounts;
 
+/**
+ * Generates a signed transaction for WIBToken.transfer ready to be sent to
+ * the network.
+ *
+ * @param {Number} nonce sender's transaction count
+ * @param {String} gasPrice ethereum's current gas price
+ * @param {Object} params transaction params
+ * @param {Object} contract WIBToken contract instance
+ * @param {Object} defaults transaction defaults
+ * @returns {Response} with the result of the operation
+ */
 const transferWIBFacade = (nonce, gasPrice, params, contract, defaults) => {
   const build = createDataBuilder(contract, 'transfer');
   const { errors, data } = build(params);
