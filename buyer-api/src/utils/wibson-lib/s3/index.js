@@ -36,7 +36,7 @@ const getS3Objects = async (namespace, justSnippets = false) => {
 // //
 
 const countObjects = async (dataOrder, type) => {
-  const namespace = `${prefix}/${dataOrder.orderAddress}/${type}/`;
+  const namespace = `${prefix}/${dataOrder.address}/${type}/`;
   const objects = await getS3Objects(namespace, true);
   return objects.length;
 };

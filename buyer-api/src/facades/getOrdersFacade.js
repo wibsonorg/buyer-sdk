@@ -15,7 +15,7 @@ const { toWib } = coin;
  * @returns {Promise} Promise which resolves to redis result
  */
 const addOrderToCache = (dataOrder, ordersCache) =>
-  ordersCache.set(dataOrder.orderAddress, JSON.stringify(dataOrder), 'EX', ordersTTL);
+  ordersCache.set(dataOrder.address, JSON.stringify(dataOrder), 'EX', ordersTTL);
 
 /**
  * @async
@@ -23,20 +23,13 @@ const addOrderToCache = (dataOrder, ordersCache) =>
  * @param {Object} dataOrder the already-fetched data order
  * @returns {Promise} Promise which resolves to the offchain data
  */
-const addOffChainInfo = async (dataOrder) => {
-  const dataResponsesCount = await offchainStorage.countDataResponses(dataOrder);
-  const dataCount = await offchainStorage.countData(dataOrder);
-
-  const offChain = {
-    dataResponsesCount,
-    dataCount,
-  };
-
-  return {
-    ...dataOrder,
-    offChain,
-  };
-};
+const addOffChainInfo = async dataOrder => ({
+  ...dataOrder,
+  offChain: {
+    dataResponsesCount: await offchainStorage.countDataResponses(dataOrder),
+    dataCount: await offchainStorage.countData(dataOrder),
+  },
+});
 
 /**
  * @async
@@ -72,7 +65,7 @@ const getDataOrderDetails = async (order) => {
   ]);
 
   return {
-    orderAddress: order.address,
+    address: order.address,
     audience: JSON.parse(filters),
     requestedData: JSON.parse(dataRequest),
     notaries,
@@ -99,8 +92,8 @@ const fetchAndCacheDataOrder = async (orderAddress, ordersCache) => {
   const order = DataOrderContract.at(orderAddress);
   const dataOrder = await getDataOrderDetails(order);
   const fullDataOrder = await addOffChainInfo(dataOrder);
-  await addOrderToCache(fullDataOrder, ordersCache)
-  return dataOrder;
+  await addOrderToCache(fullDataOrder, ordersCache);
+  return fullDataOrder;
 };
 
 /**
