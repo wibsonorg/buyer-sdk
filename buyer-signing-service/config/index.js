@@ -22,16 +22,19 @@ const config = {
   contracts: {
     chainId: env.CHAIN_ID,
     dataExchange: {
-      address: env.DATA_EXCHANGE_CONTRACT_ADDRESS,
+      address: env.DATA_EXCHANGE_ADDRESS,
       newOrder: { gasLimit: env.TX_NEW_ORDER_GAS_LIMIT },
       addNotaryToOrder: { gasLimit: env.TX_ADD_NOTARY_TO_ORDER_GAS_LIMIT },
       addDataResponseToOrder: { gasLimit: env.TX_ADD_DATA_RESPONSE_TO_ORDER_GAS_LIMIT },
       closeOrder: { gasLimit: env.TX_CLOSE_ORDER_GAS_LIMIT },
     },
     wibcoin: {
-      address: env.WIBCOIN_CONTRACT_ADDRESS,
+      address: env.WIBCOIN_ADDRESS,
       increaseApproval: {
         gasLimit: env.TX_INCREASE_APPROVAL_GAS_LIMIT,
+      },
+      transfer: {
+        gasLimit: env.TX_TRANSFER_GAS_LIMIT,
       },
     },
   },
