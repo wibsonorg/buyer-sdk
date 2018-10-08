@@ -2,7 +2,7 @@ import express from 'express';
 import { getOrdersForBuyer } from '../../facades';
 import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
-import createBatch from '../../services/batchInfo';
+import { createBatch } from '../../services/batchInfo';
 
 const router = express.Router();
 
@@ -178,7 +178,7 @@ router.post(
     } else {
       const { children } = await signingService.getAccounts();
 
-      const batchId = createBatch();
+      const batchId = await createBatch();
 
       children.map(account => queue.add('createDataOrder', {
         account,
