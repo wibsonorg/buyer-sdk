@@ -1,6 +1,7 @@
 import express from 'express';
 import { asyncError, cache } from '../../utils';
-import { listBatchIds, getBatchInfo, listBatchPairs } from '../../services/batchInfo';
+import { getBatchInfo } from '../../services/batchInfo';
+import { getBatches } from '../../facades/getBatchesFacade';
 
 const router = express.Router();
 
@@ -22,9 +23,9 @@ router.get(
   '/batches',
   cache('10 minutes'),
   asyncError(async (req, res) => {
+    const { stores: { ordersCache, batchesCache } } = req.app.locals;
     req.apicacheGroup = '/batches/*';
-    // const batches = await listBatchIds();
-    const batches = await listBatchPairs();
+    const batches = await getBatches(ordersCache, batchesCache);
 
     res.json({
       batches,

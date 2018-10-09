@@ -31,6 +31,7 @@ app.locals.stores = {
   redis: createRedisStore('sample'),
   level: createLevelStore(`${config.levelDirectory}/sample_level`),
   ordersCache: createRedisStore('orders.cache'),
+  batchesCache: createRedisStore('batches.cache'),
   notariesCache: createRedisStore('notaries.cache'),
 };
 
