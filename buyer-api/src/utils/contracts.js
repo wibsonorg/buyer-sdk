@@ -14,7 +14,6 @@ const dataExchange = DataExchangeContract.at(config.contracts.addresses.dataExch
 
 export {
   wibcoin,
-  wibcoin as token,
   WibcoinContract,
   DataOrderContract,
   dataExchange,

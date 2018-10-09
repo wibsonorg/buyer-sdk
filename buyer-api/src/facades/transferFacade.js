@@ -2,7 +2,6 @@
  * Checks destinatary's balance and transfers funds if needed.
  *
  * @async
- * @param {Object} root Buyer's root account
  * @param {String} child Buyer's child account ethereum address
  * @param {Function} getBalance Balance getter
  * @param {Number} min Minimum required balance

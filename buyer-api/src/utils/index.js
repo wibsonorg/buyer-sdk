@@ -12,5 +12,5 @@ export {
   listLevelValues,
 } from './storage';
 export { errorHandler, asyncError, validateAddress } from './routes';
-export { wibcoin, token, dataExchange, DataOrderContract } from './contracts';
+export { wibcoin, dataExchange, DataOrderContract } from './contracts';
 export { delay } from './delay';

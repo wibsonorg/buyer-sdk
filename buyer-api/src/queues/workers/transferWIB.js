@@ -2,7 +2,7 @@ import { fundingQueue } from '../fundingQueue';
 import signingService from '../../services/signingService';
 import { checkAndTransfer } from '../../facades/transferFacade';
 import { sendTransaction } from '../../facades/helpers';
-import { web3, token } from '../../utils';
+import { web3, wibcoin } from '../../utils';
 
 const { signWIBTransfer, getAccounts } = signingService;
 
@@ -23,7 +23,7 @@ export default async ({ name, data: { accountNumber, config } }) => {
   // gas used: 51769
   const receipt = await checkAndTransfer(
     child,
-    token.balanceOf,
+    wibcoin.balanceOf,
     params => sendTransaction(web3, root, signWIBTransfer, params),
     toBN(config.wib.min),
     toBN(config.wib.max),
