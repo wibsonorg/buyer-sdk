@@ -48,6 +48,10 @@ const config = {
     password: env.STORAGE_PASSWORD,
     bucket: env.STORAGE_BUCKET,
   },
+  buyerChild: {
+    minWib: env.BUYER_CHILD_MIN_WIB,
+    minWei: env.BUYER_CHILD_MIN_WEI,
+  },
   levelDirectory: env.LEVEL_DIRECTORY,
 };
 
