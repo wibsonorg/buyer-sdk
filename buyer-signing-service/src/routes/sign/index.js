@@ -6,6 +6,7 @@ import increaseApproval from './increaseApproval';
 import addDataResponse from './addDataResponse';
 import closeDataResponse from './closeDataResponse';
 import closeOrder from './closeOrder';
+import transfer from './transfer';
 
 const router = express.Router();
 
@@ -16,5 +17,6 @@ router.use(increaseApproval);
 router.use(addDataResponse);
 router.use(closeDataResponse);
 router.use(closeOrder);
+router.use(transfer);
 
 export default router;

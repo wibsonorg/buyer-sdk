@@ -1,5 +1,4 @@
 import request from 'supertest';
-import config from '../../../config';
 import app from '../../../src/app';
 
 describe('/sign', () => {
@@ -10,20 +9,17 @@ describe('/sign', () => {
   const initialBudgetForAudits = 10;
   const termsAndConditions = 'T&C';
   const buyerURL = 'https://buyer.com';
-
-  beforeEach(() => {
-    config.contracts.chainId = 9697;
-    config.contracts.dataExchange.address = '0xf3b435d66a6156622e1b3c1a974d25cdbf6032aa';
-    config.contracts.dataExchange.newOrder.gasLimit = 30000;
-    config.buyer.privateKey = '123fa47078166dd487b92f856bfb4685dac280f486670248267450f10062f6e8';
-  });
+  const gasPrice = 1000000000; // 1 gwei
+  const account = { number: 'root' };
 
   describe('POST /new-order', () => {
     it('responds with an Unprocessable Entity status when nonce is not present', (done) => {
       request(app)
         .post('/sign/new-order')
         .send({
-          newOrderParameters: {
+          account,
+          gasPrice,
+          params: {
             filters,
             dataRequest,
             price,
@@ -35,7 +31,7 @@ describe('/sign', () => {
         .expect(422, {
           statusCode: 422,
           error: 'Unprocessable Entity',
-          message: 'Validation failed',
+          message: 'Parameters missing',
           validation: [
             "Field 'nonce' is required",
           ],
@@ -46,8 +42,10 @@ describe('/sign', () => {
       request(app)
         .post('/sign/new-order')
         .send({
+          account,
+          gasPrice,
           nonce,
-          newOrderParameters: {
+          params: {
             dataRequest,
             price,
             initialBudgetForAudits,
@@ -58,10 +56,8 @@ describe('/sign', () => {
         .expect(422, {
           statusCode: 422,
           error: 'Unprocessable Entity',
-          message: 'Validation failed',
-          validation: [
-            "Field 'filters' is required",
-          ],
+          message: 'Operation failed',
+          errors: ['Field \'filters\' is required'],
         }, done);
     });
 
@@ -69,8 +65,10 @@ describe('/sign', () => {
       request(app)
         .post('/sign/new-order')
         .send({
+          account,
+          gasPrice,
           nonce,
-          newOrderParameters: {
+          params: {
             filters,
             price,
             initialBudgetForAudits,
@@ -81,10 +79,8 @@ describe('/sign', () => {
         .expect(422, {
           statusCode: 422,
           error: 'Unprocessable Entity',
-          message: 'Validation failed',
-          validation: [
-            "Field 'dataRequest' is required",
-          ],
+          message: 'Operation failed',
+          errors: ['Field \'dataRequest\' is required'],
         }, done);
     });
 
@@ -92,8 +88,10 @@ describe('/sign', () => {
       request(app)
         .post('/sign/new-order')
         .send({
+          account,
+          gasPrice,
           nonce,
-          newOrderParameters: {
+          params: {
             filters,
             dataRequest,
             initialBudgetForAudits,
@@ -104,10 +102,8 @@ describe('/sign', () => {
         .expect(422, {
           statusCode: 422,
           error: 'Unprocessable Entity',
-          message: 'Validation failed',
-          validation: [
-            "Field 'price' is required",
-          ],
+          message: 'Operation failed',
+          errors: ['Field \'price\' is required'],
         }, done);
     });
 
@@ -115,8 +111,10 @@ describe('/sign', () => {
       request(app)
         .post('/sign/new-order')
         .send({
+          account,
+          gasPrice,
           nonce,
-          newOrderParameters: {
+          params: {
             filters,
             dataRequest,
             price,
@@ -127,10 +125,8 @@ describe('/sign', () => {
         .expect(422, {
           statusCode: 422,
           error: 'Unprocessable Entity',
-          message: 'Validation failed',
-          validation: [
-            "Field 'initialBudgetForAudits' is required",
-          ],
+          message: 'Operation failed',
+          errors: ['Field \'initialBudgetForAudits\' is required'],
         }, done);
     });
 
@@ -138,8 +134,10 @@ describe('/sign', () => {
       request(app)
         .post('/sign/new-order')
         .send({
+          account,
+          gasPrice,
           nonce,
-          newOrderParameters: {
+          params: {
             filters,
             dataRequest,
             price,
@@ -150,10 +148,8 @@ describe('/sign', () => {
         .expect(422, {
           statusCode: 422,
           error: 'Unprocessable Entity',
-          message: 'Validation failed',
-          validation: [
-            "Field 'termsAndConditions' is required",
-          ],
+          message: 'Operation failed',
+          errors: ['Field \'termsAndConditions\' is required'],
         }, done);
     });
 
@@ -161,8 +157,10 @@ describe('/sign', () => {
       request(app)
         .post('/sign/new-order')
         .send({
+          account,
+          gasPrice,
           nonce,
-          newOrderParameters: {
+          params: {
             filters,
             dataRequest,
             price,
@@ -173,10 +171,8 @@ describe('/sign', () => {
         .expect(422, {
           statusCode: 422,
           error: 'Unprocessable Entity',
-          message: 'Validation failed',
-          validation: [
-            "Field 'buyerURL' is required",
-          ],
+          message: 'Operation failed',
+          errors: ['Field \'buyerURL\' is required'],
         }, done);
     });
 
@@ -184,8 +180,10 @@ describe('/sign', () => {
       request(app)
         .post('/sign/new-order')
         .send({
+          account,
+          gasPrice,
           nonce,
-          newOrderParameters: {
+          params: {
             filters,
             dataRequest,
             price,
@@ -194,7 +192,7 @@ describe('/sign', () => {
             buyerURL,
           },
         })
-        .expect(200, { signedTransaction: 'f902e5808082753094f3b435d66a6156622e1b3c1a974d25cdbf6032aa80b90284e0ffe8e300000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000001a000000000000000000000000000000000000000000000000000000000000001e0000000000000000000000000000000000000000000000000000000000000001865794a685a3255694f69497a4d4334754d7a556966513d3d0000000000000000000000000000000000000000000000000000000000000000000000000000000f67656f6c6f63616c697a6174696f6e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000035426430000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001168747470733a2f2f62757965722e636f6d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008036353832633033353936623264653265363736383261353266633735656665353737343036353130393634623435376332623264313039633664303433346636626631343432333834346166633739386364646135663131393262616166623732383162323064353039306333646565333163373164356538656332373033631ca041ff1cb842c3c29842895f4b81ad2358d3b43357a11b8f1019b295042d6fe820a0140851d6c881e8c15aff598adc6813c50c1e99b6aaceadba45005a3e47d1e1bf' }, done);
+        .expect(200, { signedTransaction: 'f902e980843b9aca008094f3b435d66a6156622e1b3c1a974d25cdbf6032aa80b90284e0ffe8e300000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000001a000000000000000000000000000000000000000000000000000000000000001e0000000000000000000000000000000000000000000000000000000000000001865794a685a3255694f69497a4d4334754d7a556966513d3d0000000000000000000000000000000000000000000000000000000000000000000000000000000f67656f6c6f63616c697a6174696f6e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000035426430000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001168747470733a2f2f62757965722e636f6d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000803865306233353036383730393961353132363336646632343063636634386663616464393161376437323330303333356232626535373631333130643437616361366339373734663065623532653332626439636663663635613230646433353539633862653639613630383162326466373265626135313533346336373336824be6a0339d4eb6dd5548b70324843713898abf60a358e14a7228b0d74f744713788c5da0238b4ffe20244c5c43186e11a72f35c9a7fde173dc451fc96a37b2b85bb34971' }, done);
     });
   });
 });

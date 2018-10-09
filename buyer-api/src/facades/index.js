@@ -15,6 +15,7 @@ import closeDataOrderFacade from './closeDataOrderFacade';
 import { getOrdersForBuyer, fetchAndCacheDataOrder } from './getOrdersFacade';
 
 export { getNotaryInfo, getNotariesInfo, fetchAndCacheNotary } from './notariesFacade';
+export { checkAndTransfer } from './transferFacade';
 
 export {
   createDataOrderFacade,

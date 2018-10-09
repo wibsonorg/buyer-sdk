@@ -13,17 +13,17 @@ const createQueue = (queueName) => {
     },
   });
 
-  queue.on('failed', ({
-    id, name, failedReason: reason,
-  }) => {
-    const fullJobId = `${PREFIX}:${queueName}:${id}`;
-    logger.error(`[${fullJobId}][${name}] reason: ${reason}`);
+  const formatLog = ({ id, name }) => `[${PREFIX}:${queueName}:${id}][${name}]`;
+
+  queue.on('failed', (job) => {
+    logger.error(`${formatLog(job)} reason: ${job.failedReason}`);
   });
 
-  queue.on('completed', ({ id, name }) => {
-    const fullJobId = `${PREFIX}:${queueName}:${id}`;
-    logger.info(`[${fullJobId}][${name}] completed`);
+  queue.on('completed', (job) => {
+    logger.info(`${formatLog(job)} completed`);
   });
+
+  queue.formatLog = formatLog;
 
   return queue;
 };

@@ -9,12 +9,13 @@ import config from '../config';
 import logger from './utils/logger';
 import schema from './schema';
 import { data, health, accounts, sign } from './routes';
-import errorHandler from './middlewares/errorHandler';
+import { errorHandler, fourOhFourHandler } from './middlewares';
 import { dataExchange, wibcoin } from './contracts';
 
 const app = express();
 app.locals.contracts = {
   wibcoin,
+  token: wibcoin,
   dataExchange,
 };
 
@@ -34,6 +35,8 @@ app.use('/sign', sign);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
 app.get('/api-docs.json', (_req, res) => res.json(schema));
 
-app.use(errorHandler); // This MUST always go after any other app.use(...)
+// This MUST always go at the end.
+app.use(fourOhFourHandler);
+app.use(errorHandler);
 
 export default app;
