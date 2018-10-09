@@ -1,5 +1,5 @@
 import express from 'express';
-import { getOrdersForBuyer, getBatches } from '../../facades';
+import { getBatches } from '../../facades';
 import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 import { createBatch } from '../../services/batchInfo';
@@ -38,7 +38,8 @@ router.get(
     // const { children } = await signingService.getAccounts();
     //
     // const ordersResult = children
-    //   .map(({ address }) => getOrdersForBuyer(address, ordersCache, Number(offset), Number(limit)));
+    //   .map(({ address }) =>
+    // getOrdersForBuyer(address, ordersCache, Number(offset), Number(limit)));
 
     const minimumInitialBudgetForAudits = await dataExchange.minimumInitialBudgetForAudits();
 
