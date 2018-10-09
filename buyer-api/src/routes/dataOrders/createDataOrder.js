@@ -185,7 +185,7 @@ router.post(
 
       const batchId = await createBatch();
 
-      children.map(account => queue.add('createDataOrder', {
+      children.forEach(account => queue.add('createDataOrder', {
         account,
         batchId,
         ...dataOrder,
