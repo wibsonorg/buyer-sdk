@@ -27,10 +27,10 @@ const addBatchToCache = (batch, batchesCache) =>
 const fetchAndCacheBatch = async (batchId, orderAddresses, ordersCache, batchesCache) => {
   const firstOrder = await getDataOrder(orderAddresses[0], ordersCache);
   // Removing orderAddress since they are grouped in orderAddresses
-  const { orderAddress: deletedKey, ...otherKeys } = firstOrder;
+  const { orderAddress: deletedKey, ...orderProperties } = firstOrder;
 
-  await addBatchToCache({ batchId, ...otherKeys }, batchesCache);
-  return { batchId, ...otherKeys, orderAddresses };
+  await addBatchToCache({ batchId, ...orderProperties, orderAddresses }, batchesCache);
+  return { batchId, ...orderProperties, orderAddresses };
 };
 
 /**
