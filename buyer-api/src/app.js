@@ -24,6 +24,7 @@ import {
   dataOrders,
   dataResponses,
   buyerInfos,
+  metrics,
 } from './routes';
 
 const app = express();
@@ -54,6 +55,7 @@ app.use('/notaries', notaries);
 app.use('/data-responses', dataResponses);
 app.use('/infos', buyerInfos);
 app.use('/orders', dataOrders);
+app.use('/metrics', metrics);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
 app.get('/api-docs.json', (_req, res) => res.json(schema));
 

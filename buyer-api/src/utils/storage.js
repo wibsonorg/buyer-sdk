@@ -5,8 +5,10 @@ import config from '../../config';
 
 const redisSocket = config.redis.socket;
 
+const prefix = ns => `buyer-api:${ns}`;
+
 export const createRedisStore = ns =>
-  asyncRedis.decorate(redis.createClient(redisSocket, { prefix: ns }));
+  asyncRedis.decorate(redis.createClient(redisSocket, { prefix: prefix(ns) }));
 
 export const createLevelStore = ns =>
   level(ns, (err, db) => {

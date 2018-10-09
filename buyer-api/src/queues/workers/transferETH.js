@@ -1,8 +1,9 @@
 import { fundingQueue } from '../fundingQueue';
 import signingService from '../../services/signingService';
+import { storeAccountMetrics } from '../../facades/metricsFacade';
 import { checkAndTransfer } from '../../facades/transferFacade';
 import { sendTransaction } from '../../facades/helpers';
-import { web3 } from '../../utils';
+import { web3, logger } from '../../utils';
 
 const { signETHTransfer, getAccounts } = signingService;
 
@@ -16,7 +17,7 @@ const options = {
   },
 };
 
-export default async ({ name, data: { accountNumber, config } }) => {
+export default async ({ data: { accountNumber, config } }) => {
   const { root, children } = await getAccounts();
   const child = children[accountNumber];
 
@@ -29,5 +30,14 @@ export default async ({ name, data: { accountNumber, config } }) => {
     toBN(config.eth.max),
   );
 
-  fundingQueue.add('checkStatus', { name, receipt }, options);
+  await storeAccountMetrics(child, {
+    'ETH:balance': web3.eth.getBalance(child.address).toString(),
+    'ETH:balanceDate': Date.now(),
+  });
+
+  fundingQueue.add('checkStatus', {
+    currency: 'ETH',
+    account: child,
+    receipt,
+  }, options);
 };

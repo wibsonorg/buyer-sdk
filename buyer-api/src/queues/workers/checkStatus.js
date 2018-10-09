@@ -1,10 +1,15 @@
 import { fundingQueue } from '../fundingQueue';
+import {
+  storeAccountMetrics,
+  incrementAccountCounter,
+} from '../../facades/metricsFacade';
 import { getTransactionReceipt, retryAfterError } from '../../facades/helpers';
 import { web3, logger } from '../../utils';
 
 export default async ({
   data: {
-    name,
+    currency,
+    account,
     receipt,
     enqueueAfterConfirmation: {
       jobName,
@@ -14,8 +19,12 @@ export default async ({
   },
 }) => {
   try {
+    logger.info('[checkStatus]', { currency, receipt });
+
     if (receipt) {
       await getTransactionReceipt(web3, receipt);
+      await incrementAccountCounter(account, `${currency}:timesSucceded`);
+      await storeAccountMetrics(account, { [`${currency}:lastFund`]: Date.now() });
     }
 
     if (jobName) {
@@ -23,8 +32,11 @@ export default async ({
     }
   } catch (error) {
     if (!retryAfterError(error)) {
-      logger.error(`Transaction ${name} failed (it will not be retried)` +
+      logger.error(`Could not transfer ${currency} failed (it will not be retried)` +
         ` | reason: ${error.message}`);
+      await incrementAccountCounter(account, `${currency}:timesFailed`);
+    } else {
+      throw error;
     }
   }
 };
