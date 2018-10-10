@@ -50,7 +50,9 @@ const config = {
   },
   buyerChild: {
     minWib: env.BUYER_CHILD_MIN_WIB,
+    maxWib: env.BUYER_CHILD_MIN_WIB,
     minWei: env.BUYER_CHILD_MIN_WEI,
+    maxWei: env.BUYER_CHILD_MIN_WEI,
   },
   levelDirectory: env.LEVEL_DIRECTORY,
 };

@@ -1,7 +1,7 @@
 import 'babel-polyfill';
 import app from './app';
 import config from '../config';
-import { logger, attachContractEventSubscribers, checkRootBuyerFunds } from './utils';
+import { logger, attachContractEventSubscribers, checkInitialRootBuyerFunds } from './utils';
 import contractEventSubscribers from './contractEventSubscribers';
 
 const checkConfig = (conf) => {
@@ -30,7 +30,10 @@ const checkConfig = (conf) => {
 
 const server = async () => {
   checkConfig(config);
-  await checkRootBuyerFunds();
+  const enoughFunds = await checkInitialRootBuyerFunds();
+  if (!enoughFunds) {
+    process.exit(1);
+  }
 
   const { port, host, env } = config;
   app.listen({ port, host }, () =>
@@ -39,16 +42,6 @@ const server = async () => {
   attachContractEventSubscribers(contractEventSubscribers, app.locals.stores);
 
   // TODO: This is going to be replaced by the monitoring recurring function.
-  setInterval(() => {
-    const { funding } = app.locals.queues;
-    funding.add('sendFunds', {
-      accountNumber: 2,
-      config: {
-        wib: { min: '1e+10', max: '1e+12' }, // Que lo saque en runtime de config
-        eth: { min: '1e+18', max: '2e+18' },
-      },
-    });
-  }, 1000 * 60 * 1);
 };
 
 export default server;

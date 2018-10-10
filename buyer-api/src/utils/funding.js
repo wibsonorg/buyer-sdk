@@ -1,4 +1,5 @@
-import { web3, wibcoin, logger } from '.';
+import { wibcoin, logger } from '.';
+import web3 from './web3';
 import config from '../../config';
 import signingService from '../services/signingService';
 import { coin } from '../utils/wibson-lib';
@@ -44,8 +45,8 @@ const checkInitialRootBuyerFunds = async () => {
   const requiredWib = childrenCount.times(minWib);
   const requiredWei = childrenCount.times(minWei);
 
-  const insufficientWib = rootFunds.wib.isLessThan(requiredWib);
-  const insufficientEth = rootFunds.wei.isLessThan(requiredWei);
+  const insufficientWib = rootFunds.wib.lessThan(requiredWib);
+  const insufficientEth = rootFunds.wei.lessThan(requiredWei);
 
   if (insufficientWib) {
     logger.alert(`
