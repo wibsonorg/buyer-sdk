@@ -1,0 +1,42 @@
+.wibson-login-body {
+    background-image: linear-gradient(to bottom, #0a1f33, #0f2f4d);
+  }
+
+.wibson-login-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.wibson-login-logo {
+    width: 136px;
+    height: 32px;
+    margin-bottom: 80px;
+  }
+
+.wibson-login-button {
+    margin-top: 40px;
+    opacity: .6;
+}
+
+.wibson-login-textButton {
+    color:white;
+}
+
+.wibson-login-button:hover {
+   opacity: .9;
+}
+
+.wibson-login-error{
+   color: red;
+   font-size: 18px;
+   font-weight: 300;
+   margin-top: 20px;
+   padding: 0;
+}
+
+.wibson-login-spiner{
+    margin-top: 45px;
+}

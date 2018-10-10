@@ -4,6 +4,7 @@ import signingService from '../../services/signingService';
 import { getTransactionReceipt, sendTransaction, retryAfterError } from '../helpers';
 import { getDataResponse } from '../../utils/wibson-lib/s3';
 import { dataExchange, DataOrderContract, logger } from '../../utils';
+import config from '../../../config';
 
 const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
   const [
@@ -74,6 +75,7 @@ const buyData = async (order, seller, dataResponseQueue) => {
       spender: dataExchange.address,
       addedValue: totalPrice,
     },
+    config.contracts.gasPrice.fast,
   );
 
   dataResponseQueue.add('increaseApprovalSent', {
@@ -105,6 +107,7 @@ const addDataResponse = async (order, seller, params, dataResponseQueue) => {
     address,
     signingService.signAddDataResponse,
     params,
+    config.contracts.gasPrice.fast,
   );
 
   dataResponseQueue.add('addDataResponseSent', {

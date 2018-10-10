@@ -1,4 +1,5 @@
 import Config from '../../config';
+import authorization from '../../utils/headers';
 
 const apiUrl = Config.get('api.url');
 
@@ -7,10 +8,14 @@ const apiUrl = Config.get('api.url');
  * @return {[type]} [description]
  */
 async function listBuyerDataOrders(limit, offset) {
-  const res = await fetch(`${apiUrl}/orders?limit=${limit}&offset=${offset}`);
-
+  const res = await fetch(`${apiUrl}/orders?limit=${limit}&offset=${offset}`,
+  {
+    headers: {
+      Authorization: authorization()
+    }
+  });
   if (!res.ok) {
-    throw new Error('Could get data orders');
+    throw new Error('Could not get data orders');
   }
 
   const orders = await res.json();
@@ -18,11 +23,26 @@ async function listBuyerDataOrders(limit, offset) {
   return orders;
 }
 
+async function getBuyerDataOrdersAmount() {
+  const res = await fetch(`${apiUrl}/orders/total`,
+  {
+    headers: {
+      Authorization: authorization()
+    }
+  });
+  if (!res.ok) {
+    throw new Error('Could not get data orders');
+  }
+
+  const ordersAmount = await res.json();
+
+  return ordersAmount;
+}
+
 async function createBuyerDataOrder(
   filters,
   dataRequest,
   buyerURL,
-  termsAndConditions,
   price,
   initialBudgetForAudits,
   notaries,
@@ -32,6 +52,7 @@ async function createBuyerDataOrder(
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      Authorization: authorization()
     },
     method: 'POST',
     body: JSON.stringify({
@@ -39,7 +60,6 @@ async function createBuyerDataOrder(
         filters,
         dataRequest,
         buyerURL,
-        termsAndConditions,
         price,
         initialBudgetForAudits,
         notaries,
@@ -60,6 +80,7 @@ const addNotariesToOrder = async (orderAddress, notariesAddresses) => {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      Authorization: authorization()
     },
     method: 'POST',
     body: JSON.stringify({ notariesAddresses }),
@@ -75,6 +96,7 @@ const closeOrder = async orderAddress => {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      Authorization: authorization()
     },
     method: 'POST',
   });
@@ -87,6 +109,7 @@ const closeOrder = async orderAddress => {
 export {
   listBuyerDataOrders,
   createBuyerDataOrder,
+  getBuyerDataOrdersAmount,
   addNotariesToOrder,
   closeOrder,
 };

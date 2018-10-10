@@ -1,10 +1,9 @@
 import express from 'express';
-import { createDataOrderFacade, getOrdersForBuyer } from '../../facades';
+import { createDataOrderFacade, getOrdersForBuyer, getOrdersAmountForBuyer } from '../../facades';
 import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 
 const router = express.Router();
-
 /**
  * @swagger
  * /orders:
@@ -42,6 +41,38 @@ router.get(
 );
 
 /**
+ * @swagger
+ * /orders/total:
+ *   get:
+ *     description: Returns an object that shows the amount of open and closed data orders
+ *       created by the buyer in the Data Exchange.
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: When the orders have been fetched correctly.
+ *       500:
+ *         description: When the fetch failed.
+ */
+router.get(
+  '/total',
+  cache('10 minutes'),
+  asyncError(async (req, res) => {
+    req.apicacheGroup = '/orders/*';
+    const { address } = await signingService.getAccount();
+
+    const { stores: { ordersCache } } = req.app.locals;
+
+    const orders = await getOrdersAmountForBuyer(address, ordersCache);
+
+    const totalClosedOrders = orders.filter(order => order.isClosed).length;
+    const totalOpenOrders = orders.filter(order => !order.isClosed).length;
+
+    res.json({ totalClosedOrders, totalOpenOrders });
+  }),
+);
+
+/**
  * Checks that every field is present.
  *
  * @param {Object} parameters.filters Target audience.
@@ -50,8 +81,6 @@ router.get(
  * @param {String} parameters.price Price per Data Response added.
  * @param {String} parameters.initialBudgetForAudits The initial budget set for
  *                 future audits.
- * @param {String} parameters.termsAndConditions Buyer's terms and conditions
- *                 for the order.
  * @param {String} parameters.buyerURL Public URL of the buyer where the data
  *                 must be sent.
  * @returns {array} Error messages
@@ -61,7 +90,6 @@ const validate = ({
   dataRequest,
   price,
   initialBudgetForAudits,
-  termsAndConditions,
   buyerURL,
   notaries,
   buyerInfoId,
@@ -71,7 +99,6 @@ const validate = ({
     dataRequest,
     price,
     initialBudgetForAudits,
-    termsAndConditions,
     buyerURL,
     notaries,
     buyerInfoId,
@@ -143,11 +170,6 @@ const validate = ({
  *         required: true
  *         description: The initial budget set for future audits
  *         example: '10'
- *       termsAndConditions:
- *         type: string
- *         required: true
- *         description: The initial budget set for future audits
- *         example: 'Terms and Conditions'
  *       buyerURL:
  *         type: string
  *         required: true

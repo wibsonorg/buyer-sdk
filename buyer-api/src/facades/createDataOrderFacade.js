@@ -9,6 +9,7 @@ import { web3, dataExchange } from '../utils';
 import signingService from '../services/signingService';
 import { getBuyerInfo } from '../services/buyerInfo';
 import { coercion, coin } from '../utils/wibson-lib';
+import config from '../../config';
 
 const { toString } = coercion;
 const { fromWib } = coin;
@@ -101,6 +102,7 @@ const createDataOrderFacade = async (
     address,
     signingService.signNewOrder,
     params,
+    config.contracts.gasPrice.fast,
   );
 
   dataOrderQueue.add('dataOrderSent', { receipt, notaries, buyerInfoId }, {
