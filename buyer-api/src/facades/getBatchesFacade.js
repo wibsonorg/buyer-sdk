@@ -18,7 +18,7 @@ const addBatchToCache = (batch, batchesCache) =>
 
 /**
  * @async
- * @function fetchAndCacheDataOrder
+ * @function fetchAndCacheBatch
  * @param {String} orderAddress the ethereum address for the Data Order
  * @param {Object} ordersCache store used for Order caching
  * @throws When can not connect to blockchain or cache is not set up correctly.

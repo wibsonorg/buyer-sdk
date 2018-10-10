@@ -23,7 +23,6 @@ const listBatchPairs = async () => listLevelPairs(ordersPerBatch);
  * @function createBatchId
  * @returns {String} A new Id for the batch of orders
  */
-// eslint-disable-next-line
 const createBatch = async (payload = []) => {
   const id = uuid();
   await ordersPerBatch.put(id, JSON.stringify(payload));

@@ -49,7 +49,7 @@ router.get(
  *       200:
  *         description: When the information could be fetched correctly.
  *       404:
- *         description: When the Data Order was not created by the buyer.
+ *         description: When the batch was not found.
  *       500:
  *         description: When the fetch failed.
  */
