@@ -63,7 +63,7 @@ const buildDataOrderParameters = ({
  */
 const createDataOrderFacade = async (
   {
-    account, notaries, buyerInfoId, filters, ...parameters
+    account, notaries, buyerInfoId, batchId, filters, ...parameters
   },
   addJob,
 ) => {
@@ -106,7 +106,7 @@ const createDataOrderFacade = async (
   );
 
   addJob('dataOrderSent', {
-    receipt, account, notaries, buyerInfoId,
+    receipt, account, notaries, buyerInfoId, batchId,
   });
 
   return new Response({ status: 'pending', receipt });
@@ -124,6 +124,7 @@ const onDataOrderSent = async (
   account,
   notaries,
   buyerInfoId,
+  batchId,
   addJob,
 ) => {
   const { logs } = await getTransactionReceipt(web3, receipt);
@@ -135,6 +136,7 @@ const onDataOrderSent = async (
 
   addJob('addNotariesToOrder', { orderAddr, account, notaries });
   addJob('associateBuyerInfoToOrder', { orderAddr, buyerInfoId });
+  addJob('associateOrderToBatch', { batchId, orderAddr });
 };
 
 export { createDataOrderFacade, onDataOrderSent };

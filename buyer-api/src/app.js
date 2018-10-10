@@ -30,6 +30,7 @@ const app = express();
 
 app.locals.stores = {
   ordersCache: createRedisStore('orders.cache'),
+  batchesCache: createRedisStore('batches.cache'),
   notariesCache: createRedisStore('notaries.cache'),
 };
 
