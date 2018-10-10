@@ -21,7 +21,7 @@ const derive = (privateKeyA, publicKeyB) => {
 };
 
 /**
- * It decrypts a signed message.
+ * It decrypts a message.
  * @param {string} targetPublicKey Ethereum public key of the target account.
  * @param {string} encrypted the signed message to decrypt.
  * @public
