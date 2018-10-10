@@ -11,8 +11,7 @@ const { privateKey } = config.buyer;
  * /data/decrypt:
  *   post:
  *     description: |
- *       The main use case of this endpoint is to decrypt the data and check
- *       if it was signed by the expected sender
+ *       The main use case of this endpoint is to decrypt the data.
  *     produces:
  *       - application/json
  *     responses:
@@ -20,9 +19,9 @@ const { privateKey } = config.buyer;
  *         description: When the data could be correctly decrypted
  */
 router.post('/decrypt', async (req, res) => {
-  const { encryptedData, senderAddress } = req.body;
+  const { encryptedData } = req.body;
 
-  const message = await cryptography.decryptSignedMessage(senderAddress, privateKey, encryptedData);
+  const message = await cryptography.decryptWithPrivateKey(privateKey, encryptedData);
   res.json({ message });
 });
 
