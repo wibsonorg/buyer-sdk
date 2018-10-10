@@ -71,7 +71,7 @@ const missingChildBuyerFundsWei = async (address) => {
   const currentWei = await getWeiBalance(address);
 
   if (currentWei.greaterThan(maxWei)) {
-    logger.alert(`TODO`);
+    logger.alert(`Child account ${address} exceeds maximum ETH balance. Max: ${maxWei} WEI | Current: ${currentWei} WEI`);
   } else if (currentWei.lessThan(minWei)) {
     return maxWei.minus(currentWei);
   }
@@ -83,7 +83,7 @@ const missingChildBuyerFundsWib = async (address) => {
   const currentWib = await getWibBalance(address);
 
   if (currentWib.greaterThan(maxWib)) {
-    logger.alert(`TODO`);
+    logger.alert(`Child account ${address} exceeds maximum WIB balance. Max: ${maxWib} | Current: ${currentWib}`);
   } else if (currentWib.lessThan(minWib)) {
     return maxWib.minus(currentWib);
   }
@@ -92,6 +92,7 @@ const missingChildBuyerFundsWib = async (address) => {
 };
 
 const monitorFunds = async () => {
+  logger.info('Starting funds monitor');
   const { root, children } = await signingService.getAccounts();
 
   let neededWei = web3.toBigNumber(0);
@@ -116,11 +117,20 @@ const monitorFunds = async () => {
   const rootBuyerFunds = await getFunds(root.address);
 
   if (rootBuyerFunds.wei.lessThan(neededWei)) {
-    logger.alert(`TODO`);
+    logger.alert(`
+    Root Buyer (${root.address} is unable to fund ${childrenToFundWei.length} child accounts:
+    Needed ETH: ${neededWei} WEI
+    Root Buyer available ETH: ${rootBuyerFunds.wei} WEI
+    (The needed ETH does not take into account transaction costs)
+    `);
   }
 
   if (rootBuyerFunds.wib.lessThan(neededWib)) {
-    logger.alert(`TODO`);
+    logger.alert(`
+    Root Buyer (${root.address} is unable to fund ${childrenToFundWib.length} child accounts:
+    Needed WIB: ${neededWib}
+    Root Buyer available WIB: ${rootBuyerFunds.wib}
+    `);
   }
 
   childrenToFundWei.forEach(child => fundingQueue.add('transferETH', { accountNumber: child.number }));

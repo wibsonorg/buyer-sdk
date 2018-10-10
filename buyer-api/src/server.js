@@ -1,7 +1,7 @@
 import 'babel-polyfill';
 import app from './app';
 import config from '../config';
-import { logger, attachContractEventSubscribers, checkInitialRootBuyerFunds } from './utils';
+import { logger, attachContractEventSubscribers, checkInitialRootBuyerFunds, monitorFunds } from './utils';
 import contractEventSubscribers from './contractEventSubscribers';
 
 const checkConfig = (conf) => {
@@ -30,10 +30,7 @@ const checkConfig = (conf) => {
 
 const server = async () => {
   checkConfig(config);
-  const enoughFunds = await checkInitialRootBuyerFunds();
-  if (!enoughFunds) {
-    process.exit(1);
-  }
+  await checkInitialRootBuyerFunds();
 
   const { port, host, env } = config;
   app.listen({ port, host }, () =>
@@ -41,7 +38,7 @@ const server = async () => {
 
   attachContractEventSubscribers(contractEventSubscribers, app.locals.stores);
 
-  // TODO: This is going to be replaced by the monitoring recurring function.
+  setInterval(() => monitorFunds(), 120000);
 };
 
 export default server;
