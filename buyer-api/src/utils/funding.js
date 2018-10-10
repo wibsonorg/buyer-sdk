@@ -1,4 +1,3 @@
-import { BigNumber } from 'bignumber.js';
 import { web3, wibcoin, logger } from '.';
 import config from '../../config';
 import signingService from '../services/signingService';
@@ -67,21 +66,16 @@ const checkInitialRootBuyerFunds = async () => {
   return !(insufficientWib || insufficientEth);
 };
 
-const enoughChildBuyerFundsWib = async (address) => {
-  const currentWib = await getWibBalance(address);
-  currentWib.greaterThanOrEqualTo(minWib);
-};
-
 const missingChildBuyerFundsWei = async (address) => {
   const currentWei = await getWeiBalance(address);
 
   if (currentWei.greaterThan(maxWei)) {
     logger.alert(`TODO`);
-    return web3.toBigNumber(0);
   } else if (currentWei.lessThan(minWei)) {
-    // fundingQueue.add('transferETH', { accountNumber: child.number });
     return maxWei.minus(currentWei);
   }
+
+  return web3.toBigNumber(0);
 };
 
 const missingChildBuyerFundsWib = async (address) => {
@@ -89,11 +83,11 @@ const missingChildBuyerFundsWib = async (address) => {
 
   if (currentWib.greaterThan(maxWib)) {
     logger.alert(`TODO`);
-    return web3.toBigNumber(0);
   } else if (currentWib.lessThan(minWib)) {
-    // fundingQueue.add('transferETH', { accountNumber: child.number });
     return maxWib.minus(currentWib);
   }
+
+  return web3.toBigNumber(0);
 };
 
 const monitorFunds = async () => {
@@ -101,10 +95,10 @@ const monitorFunds = async () => {
 
   let neededWei = web3.toBigNumber(0);
   let neededWib = web3.toBigNumber(0);
-  let childrenToFundWei = [];
-  let childrenToFundWib = [];
+  const childrenToFundWei = [];
+  const childrenToFundWib = [];
 
-  children.forEach(child => {
+  children.forEach(async (child) => {
     const missingWei = await missingChildBuyerFundsWei(child.address);
     if (missingWei.greaterThan(0)) {
       neededWei = neededWei.plus(missingWei);
