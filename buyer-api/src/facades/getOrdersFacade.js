@@ -15,7 +15,7 @@ const { toWib } = coin;
  * @returns {Promise} Promise which resolves to redis result
  */
 const addOrderToCache = (dataOrder, ordersCache) =>
-  ordersCache.set(dataOrder.address, JSON.stringify(dataOrder), 'EX', ordersTTL);
+  ordersCache.set(dataOrder.orderAddress, JSON.stringify(dataOrder), 'EX', ordersTTL);
 
 /**
  * @async
@@ -65,7 +65,7 @@ const getDataOrderDetails = async (order) => {
   ]);
 
   return {
-    address: order.address,
+    orderAddress: order.address,
     audience: JSON.parse(filters),
     requestedData: JSON.parse(dataRequest),
     notaries,
