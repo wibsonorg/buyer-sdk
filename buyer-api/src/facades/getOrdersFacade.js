@@ -140,7 +140,7 @@ const getOrdersForBuyer = async (
   limit = undefined,
 ) => {
   const orderAddresses = await dataExchange.getOrdersForBuyer(buyerAddress);
-  const upperBound = limit && offset > 0 ? offset + limit : orderAddresses.length;
+  const upperBound = limit && offset >= 0 ? offset + limit : orderAddresses.length;
   const ordersPage = orderAddresses.slice(offset, upperBound);
 
   const dataOrders = ordersPage.map(orderAddress =>
@@ -149,4 +149,24 @@ const getOrdersForBuyer = async (
   return Promise.all(dataOrders);
 };
 
-export { getDataOrder, getOrdersForBuyer, fetchAndCacheDataOrder };
+/**
+ * @async
+ * @function getOrdersAmountForBuyer
+ * @param {Object} buyerAddress the buyer's Ethereum address.
+ * @param {Object} ordersCache Redis storage used for orders caching
+ * @throws When can not connect to blockchain or cache is not set up correctly.
+ * @returns {Promise} Promise which resolves to the list of orders.
+ */
+const getOrdersAmountForBuyer = async (
+  buyerAddress,
+  ordersCache,
+) => {
+  const orderAddresses = await dataExchange.getOrdersForBuyer(buyerAddress);
+
+  const dataOrders = orderAddresses.map(orderAddress =>
+    getDataOrder(orderAddress, ordersCache));
+
+  return Promise.all(dataOrders);
+};
+
+export { getDataOrder, getOrdersForBuyer, fetchAndCacheDataOrder, getOrdersAmountForBuyer };
