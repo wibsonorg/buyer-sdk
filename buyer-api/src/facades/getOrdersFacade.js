@@ -23,20 +23,13 @@ const addOrderToCache = (dataOrder, ordersCache) =>
  * @param {Object} dataOrder the already-fetched data order
  * @returns {Promise} Promise which resolves to the offchain data
  */
-const addOffChainInfo = async (dataOrder) => {
-  const dataResponsesCount = await offchainStorage.countDataResponses(dataOrder);
-  const dataCount = await offchainStorage.countData(dataOrder);
-
-  const offChain = {
-    dataResponsesCount,
-    dataCount,
-  };
-
-  return {
-    ...dataOrder,
-    offChain,
-  };
-};
+const addOffChainInfo = async dataOrder => ({
+  ...dataOrder,
+  offChain: {
+    dataResponsesCount: await offchainStorage.countDataResponses(dataOrder),
+    dataCount: await offchainStorage.countData(dataOrder),
+  },
+});
 
 /**
  * @async
@@ -98,10 +91,10 @@ const getDataOrderDetails = async (order) => {
 const fetchAndCacheDataOrder = async (orderAddress, ordersCache) => {
   const order = DataOrderContract.at(orderAddress);
   const dataOrder = await getDataOrderDetails(order);
-  console.log(dataOrder)
+
   const fullDataOrder = await addOffChainInfo(dataOrder);
   await addOrderToCache(fullDataOrder, ordersCache);
-  return dataOrder;
+  return fullDataOrder;
 };
 
 /**

@@ -130,7 +130,7 @@ class Buyer extends React.Component {
 
     const availableDataResponsesCount = R.compose(
       R.sum,
-      R.map(item => (item.data && item.data.offChain ? item.data.offChain.dataResponsesCount : 0)),
+      R.map(R.pathOr(0, ['data', 'offChain', 'dataResponsesCount'])),
       R.values
     )(activeDataOrders);
 
