@@ -1,6 +1,9 @@
 # Babel build
 dist/
 
+# Node xmlHttpRequest
+.node-xmlhttprequest*
+
 # Logs
 logs
 *.log

@@ -67,54 +67,35 @@ const checkInitialRootBuyerFunds = async () => {
   return !(insufficientWib || insufficientEth);
 };
 
-const missingChildBuyerFundsWei = async (address) => {
-  const currentWei = await getWeiBalance(address);
+const missingChildFunds = async (child) => {
+  const currentWib = await getWibBalance(child.address);
+  const currentWei = await getWeiBalance(child.address);
 
   if (currentWei.greaterThan(maxWei)) {
-    logger.alert(`Child account ${address} exceeds maximum ETH balance. Max: ${maxWei} WEI | Current: ${currentWei} WEI`);
-  } else if (currentWei.lessThan(minWei)) {
-    return maxWei.minus(currentWei);
+    logger.alert(`Child account ${child.address} exceeds maximum ETH balance. Max: ${maxWei} WEI | Current: ${currentWei} WEI`);
   }
-
-  return web3.toBigNumber(0);
-};
-
-const missingChildBuyerFundsWib = async (address) => {
-  const currentWib = await getWibBalance(address);
-
   if (currentWib.greaterThan(maxWib)) {
-    logger.alert(`Child account ${address} exceeds maximum WIB balance. Max: ${maxWib} | Current: ${currentWib}`);
-  } else if (currentWib.lessThan(minWib)) {
-    return maxWib.minus(currentWib);
+    logger.alert(`Child account ${child.address} exceeds maximum WIB balance. Max: ${maxWib} | Current: ${currentWib}`);
   }
 
-  return web3.toBigNumber(0);
+  const missingWei = currentWei.lessThan(minWei) ? maxWei.minus(currentWei) : web3.toBigNumber(0);
+  const missingWib = currentWib.lessThan(minWib) ? maxWib.minus(currentWib) : web3.toBigNumber(0);
+
+  return { child, missingWei, missingWib };
 };
 
 const monitorFunds = async () => {
   logger.info('Starting funds monitor');
   const { root, children } = await signingService.getAccounts();
-
-  let neededWei = web3.toBigNumber(0);
-  let neededWib = web3.toBigNumber(0);
-  const childrenToFundWei = [];
-  const childrenToFundWib = [];
-
-  children.forEach(async (child) => {
-    const missingWei = await missingChildBuyerFundsWei(child.address);
-    if (missingWei.greaterThan(0)) {
-      neededWei = neededWei.plus(missingWei);
-      childrenToFundWei.push(child);
-    }
-
-    const missingWib = await missingChildBuyerFundsWib(child.address);
-    if (missingWib.greaterThan(0)) {
-      neededWib = neededWib.plus(missingWib);
-      childrenToFundWib.push(child);
-    }
-  });
-
   const rootBuyerFunds = await getFunds(root.address);
+
+  const missingFunds = await Promise.all(children.map(child => missingChildFunds(child)));
+
+  const neededWei = missingFunds.map(x => x.missingWei).reduce((x, y) => x.plus(y));
+  const neededWib = missingFunds.map(x => x.missingWib).reduce((x, y) => x.plus(y));
+
+  const childrenToFundWei = missingFunds.filter(x => x.missingWei.greaterThan(0));
+  const childrenToFundWib = missingFunds.filter(x => x.missingWib.greaterThan(0));
 
   if (rootBuyerFunds.wei.lessThan(neededWei)) {
     logger.alert(`
@@ -133,8 +114,8 @@ const monitorFunds = async () => {
     `);
   }
 
-  childrenToFundWei.forEach(child => fundingQueue.add('transferETH', { accountNumber: child.number }));
-  childrenToFundWib.forEach(child => fundingQueue.add('transferWIB', { accountNumber: child.number }));
+  childrenToFundWei.forEach(x => fundingQueue.add('transferETH', { accountNumber: x.child.number }));
+  childrenToFundWib.forEach(x => fundingQueue.add('transferWIB', { accountNumber: x.child.number }));
 };
 
 export { checkInitialRootBuyerFunds, monitorFunds };
