@@ -17,6 +17,14 @@ const options = {
   },
 };
 
+/**
+ * Sends WIB to Buyer's child account and enqueues another job to check
+ * the status of that transaction. When the transaction's status is checked
+ * a `transferETH` job is enqueued.
+ *
+ * @params {Number} data.accountNumber Child account number.
+ * @params {Object} data.config Configuration to check for required balance.
+ */
 export default async ({ data: { accountNumber, config } }) => {
   const { root, children } = await getAccounts();
   const child = children[accountNumber];

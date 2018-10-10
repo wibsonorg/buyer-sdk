@@ -11,20 +11,19 @@ export default async ({
     currency,
     account,
     receipt,
-    enqueueAfterConfirmation: {
-      jobName,
-      payload,
-      options,
-    } = {},
+    enqueueAfterConfirmation = {},
   },
 }) => {
-  try {
-    logger.info('[checkStatus]', { currency, receipt });
+  const { jobName, payload, options } = enqueueAfterConfirmation;
 
+  try {
     if (receipt) {
       await getTransactionReceipt(web3, receipt);
-      await incrementAccountCounter(account, `${currency}:timesSucceded`);
-      await storeAccountMetrics(account, { [`${currency}:lastFund`]: Date.now() });
+      const timesSucceeded = await incrementAccountCounter(account, `${currency}:timesSucceeded`);
+      await storeAccountMetrics(account, {
+        [`${currency}:lastFund`]: Date.now(),
+        [`${currency}:timesSucceeded`]: timesSucceeded,
+      });
     }
 
     if (jobName) {
@@ -32,9 +31,13 @@ export default async ({
     }
   } catch (error) {
     if (!retryAfterError(error)) {
-      logger.error(`Could not transfer ${currency} failed (it will not be retried)` +
+      logger.error(`Transfer of ${currency} failed (it will not be retried)` +
         ` | reason: ${error.message}`);
-      await incrementAccountCounter(account, `${currency}:timesFailed`);
+      const timesFailed = await incrementAccountCounter(account, `${currency}:timesFailed`);
+      await storeAccountMetrics(account, {
+        [`${currency}:lastFund`]: Date.now(),
+        [`${currency}:timesFailed`]: timesFailed,
+      });
     } else {
       throw error;
     }
