@@ -67,14 +67,18 @@ router.get(
   cache('10 minutes'),
   asyncError(async (req, res) => {
     req.apicacheGroup = '/orders/*';
-    const { address } = await signingService.getAccount();
 
-    const { stores: { ordersCache } } = req.app.locals;
+    const { stores: { ordersCache, batchesCache } } = req.app.locals;
 
-    const orders = await getOrdersAmountForBuyer(address, ordersCache);
+    // const { address } = await signingService.getAccount();
+    // FIXME: When implementing close of orders/batches
+    const batches = await getBatches(ordersCache, batchesCache);
 
-    const totalClosedOrders = orders.filter(order => order.isClosed).length;
-    const totalOpenOrders = orders.filter(order => !order.isClosed).length;
+    // const totalClosedOrders = batches.filter(order => order.isClosed).length;
+    // const totalOpenOrders = orders.filter(order => !order.isClosed).length;
+
+    const totalClosedOrders = 0;
+    const totalOpenOrders = batches.length;
 
     res.json({ totalClosedOrders, totalOpenOrders });
   }),

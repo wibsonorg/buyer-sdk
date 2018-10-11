@@ -39,9 +39,11 @@ const createBatch = async (payload = []) => {
  */
 const associateOrderToBatch = async (batchId, orderAddress) => {
   try {
-    const raw = await ordersPerBatch.get(batchId);
-    const orderAddresses = JSON.parse(raw);
-    await ordersPerBatch.put(batchId, JSON.stringify(orderAddresses.concat(orderAddress)));
+    if (orderAddress) {
+      const raw = await ordersPerBatch.get(batchId);
+      const orderAddresses = JSON.parse(raw);
+      await ordersPerBatch.put(batchId, JSON.stringify(orderAddresses.concat(orderAddress)));
+    }
   } catch (err) {
     if (err.notFound) {
       await ordersPerBatch.put(batchId, [orderAddress]);
