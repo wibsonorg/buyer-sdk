@@ -87,10 +87,15 @@ const getBatchInfo = async (batchId, orderAddresses, ordersCache, batchesCache) 
 const getBatches = async (
   ordersCache,
   batchesCache,
+  offset,
+  limit,
 ) => {
   const batchesRaw = await listBatchPairs();
 
-  const batches = await Promise.all(batchesRaw.map(batch =>
+  const upperBound = limit && offset >= 0 ? offset + limit : batchesRaw.length;
+  const batchesPage = batchesRaw.slice(offset, upperBound);
+
+  const batches = await Promise.all(batchesPage.map(batch =>
     getBatchInfo(batch.key, JSON.parse(batch.value), ordersCache, batchesCache)));
 
   return batches;
