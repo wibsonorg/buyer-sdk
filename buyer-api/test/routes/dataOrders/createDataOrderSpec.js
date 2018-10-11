@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { mockStorage, restoreMocks, requireApp } from '../../helpers';
 
-describe('/orders', () => {
+describe.skip('/orders', () => {
   let app;
 
   const dataOrder = {

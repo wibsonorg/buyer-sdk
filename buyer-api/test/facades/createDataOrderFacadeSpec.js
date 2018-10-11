@@ -4,7 +4,7 @@ import signingService from '../../src/services/signingService';
 import web3 from '../../src/utils/web3';
 import { createDataOrderFacade } from '../../src/facades';
 
-describe('createDataOrderFacade', () => {
+describe.skip('createDataOrderFacade', () => {
   const filters = { age: '30..35' };
   const dataRequest = 'data request';
   const price = 20;
