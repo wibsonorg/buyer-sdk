@@ -16,9 +16,9 @@ const oneWibcoin = new BN(1e9);
  * @throws When argument is not a number or of it is out of range
  * @returns {String} amount of Wibcoins
  */
-export const toWib = (bigNumber, opts = {}) => {
+export const toWib = (bigNumber, base = 10) => {
   const bn = new BN(bigNumber);
-  const { base = 10, decimals } = opts;
+
   if (bn.isGreaterThan(wibcoinSupply)) {
     throw new Error('Argument out of range');
   }
@@ -27,10 +27,7 @@ export const toWib = (bigNumber, opts = {}) => {
     throw new Error('Argument is not a number');
   }
 
-  let result = bn.dividedBy(oneWibcoin);
-  result = result.toFormat(decimals || 0, BN.ROUND_DOWN);
-
-  return result.toString(base);
+  return bn.dividedBy(oneWibcoin).toString(base);
 };
 
 /**
@@ -41,7 +38,7 @@ export const toWib = (bigNumber, opts = {}) => {
  *
  * @param {Number|String|BigNumber} wib amount of Wibcoins
  * @throws When argument is not a number or of it is out of range
- * @returns {String} BigNumber converted units
+ * @returns {String} Converted units
  */
 export const fromWib = (wib, base = 10) => {
   let bn = new BN(wib);
@@ -56,4 +53,21 @@ export const fromWib = (wib, base = 10) => {
   }
 
   return bn.toString(base);
+};
+
+/**
+ * Formats an amount of Wibcoins.
+ *
+ * Example:
+ *   formatWib('10', { decimals: 2 }) #=> '10.00'
+ *
+ * @param {Number|String|BigNumber} wib amount of Wibcoins
+ * @param {Object} opts.decimals number of decimals to include in the output
+ * @returns {String} formatted amount
+ */
+export const formatWib = (wib, opts = {}) => {
+  const { decimals = 0 } = opts;
+  const bn = new BN(wib);
+
+  return bn.toFormat(decimals, BN.ROUND_DOWN);
 };

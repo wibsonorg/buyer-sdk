@@ -51,22 +51,6 @@ describe('/health', () => {
     });
   });
 
-  describe('GET /redis', () => {
-    it('responds with an OK status', (done) => {
-      request(app)
-        .get('/health/redis')
-        .expect(200, { foo: 'bar' }, done);
-    });
-  });
-
-  describe('GET /level', () => {
-    it('responds with an OK status', (done) => {
-      request(app)
-        .get('/health/level')
-        .expect(200, { foz: 'baz' }, done);
-    });
-  });
-
   describe('GET /cache', () => {
     it('responds with an OK status', (done) => {
       request(app)
