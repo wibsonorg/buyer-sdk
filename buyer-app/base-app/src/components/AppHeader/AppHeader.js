@@ -8,6 +8,7 @@ import styles from './AppHeader.css';
 const cx = cn.bind(styles);
 
 import Logo from "../Logo";
+import Button from "../Button"
 
 import Icon from '../Icon';
 
@@ -15,7 +16,7 @@ class AppHeader extends React.Component {
   handleCopyClick = () => copy(this.props.account)
 
   render() {
-    const { name, account, userRole, panels } = this.props;
+    const { name, account, userRole, panels, logOut } = this.props;
 
     const description = name ? `${name} (${userRole})` : userRole;
     const theme = userRole ? userRole.toLowerCase() : 'seller';
@@ -31,6 +32,16 @@ class AppHeader extends React.Component {
               <span>{account}</span>
               <Icon size="xs" icon="Copy" onClick={this.handleCopyClick} />
             </div>
+          </div>
+          <div className={cx('log-out')}>
+            <Button
+              onClick={() => {logOut()}}
+              size={'sm'}
+              buttonStyle={'outline'}
+              className={cx('wibson-header-button')}
+            >
+            <span className={cx('wibson-header-textButton')}>Log Out</span>
+            </Button>
           </div>
         </div>
 

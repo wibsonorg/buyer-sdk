@@ -7,6 +7,7 @@
  *     name: X-API-Key
  */
 
+import auth from './auth';
 import account from './account';
 import buyerInfos from './buyerInfos';
 import health from './health';
@@ -16,6 +17,7 @@ import dataResponses from './dataResponses';
 import metrics from './metrics';
 
 export {
+  auth,
   account,
   buyerInfos,
   health,

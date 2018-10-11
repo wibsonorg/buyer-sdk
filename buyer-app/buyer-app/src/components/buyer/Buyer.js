@@ -18,11 +18,14 @@ import { Route, withRouter, Redirect } from "react-router-dom";
 
 import * as DataOrdersByAddress from "state/entities/dataOrdersByAddress/selectors";
 import * as DataOrdersAddresses from "state/entities/dataOrdersAddresses/selectors";
+import * as DataOrdersAddressesAmount from "state/entities/dataOrdersAddressesAmount/selectors";
 import * as Account from "state/entities/account/selectors";
 
 import * as PollingActions from "state/entities/polling/actions";
 
 import * as DataOrdersAddressesActions from "state/entities/dataOrdersAddresses/actions";
+import * as DataOrdersAddressesAmountActions from "state/entities/dataOrdersAddressesAmount/actions";
+import * as authenticationActions from "state/entities/authentication/actions";
 import { withNotaries } from "state/entities/notaries/hoc";
 
 import InfoPanel from "./headerPanels/InfoPanel";
@@ -33,14 +36,31 @@ import OpenDataOrders from "./OpenDataOrders";
 import BoughtDataOrders from "./BoughtDataOrders";
 import FailedDataOrders from "./FailedDataOrders";
 import DataOrderCreate from "./DataOrderCreate";
-
+import { removeCookie } from "../../utils/cookies"
 
 import R from "ramda";
-import queryString from 'query-string';
+
+const limit = 12;
 
 class Buyer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentOffset: 0,
+    };
+  }
+
+  componentDidMount() {
+    window.addEventListener('scroll', this.handleScroll, true);
+  }
+
   componentWillMount() {
     this.props.fetchDataOrders();
+    this.props.fetchDataOrdersAmount();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
   }
 
   handleSelectClick = value => {
@@ -48,6 +68,29 @@ class Buyer extends React.Component {
       this.props.history.push(`/${value}`);
     }
   };
+
+  handleLogOut = () => {
+    removeCookie('token')
+    this.props.logOutUser();
+  };
+
+  handleScroll = (e) =>{
+    // const bottom = e.target.scrollingElement.scrollHeight - e.target.scrollingElement.scrollTop === e.target.scrollingElement.clientHeight;
+    const bottom = window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight;
+    const {
+      activeDataOrders,
+      dataOrdersAddressAmount,
+      closedDataOrders,
+    } = this.props;
+    const loadedOrders = Object.entries(activeDataOrders) + Object.entries(closedDataOrders);
+    if (bottom && !this.isLoading() && loadedOrders < dataOrdersAddressAmount)
+    {
+      this.setState((state, props) => ({
+        currentOffset: state.currentOffset + limit,
+      }));
+      this.props.fetchDataOrders(this.state);
+    }
+  }
 
   renderSelect() {
     return (
@@ -78,17 +121,20 @@ class Buyer extends React.Component {
     const {
       history,
       activeDataOrders,
+      dataOrdersAddressAmount,
       boughtDataOrders,
       closedDataOrders,
       failedDataOrders,
       account
     } = this.props;
 
-    const aviableDataResponsesCount = R.compose(
+    const availableDataResponsesCount = R.compose(
       R.sum,
-      R.map(item => (item.data && item.data.offChain ? item.data.offChain.dataResponsesCount : 0)),
+      R.map(R.pathOr(0, ['data', 'offChain', 'dataResponsesCount'])),
       R.values
     )(activeDataOrders);
+
+    const openOrders = dataOrdersAddressAmount.data? dataOrdersAddressAmount.data.totalOpenOrders : 0;
 
     const panels = [
       <BalancePanel
@@ -103,19 +149,19 @@ class Buyer extends React.Component {
       <InfoPanel
         key={3}
         title="Open Data Orders"
-        data={R.values(activeDataOrders).length}
+        data={openOrders}
       />,
       <InfoPanel
         key={4}
         title="Active Data Responses"
-        data={aviableDataResponsesCount}
+        data={availableDataResponsesCount}
         units="Responses"
       />
     ];
 
     return (
       <div>
-        <AppHeader userRole="buyer" account={account.address} panels={panels} />
+        <AppHeader userRole="buyer" account={account.address} panels={panels} logOut={this.handleLogOut} />
         <LoadingBar loading={this.isLoading()} />
         <AppNotifications />
         <div className={cx("page-content")}>
@@ -127,7 +173,7 @@ class Buyer extends React.Component {
             <div className={cx("action-buttons")}>
               <Button
                 onClick={() => {
-                  this.props.fetchDataOrders();
+                  this.props.fetchDataOrders(this.state);
                 }}
               >
                 Refresh
@@ -178,6 +224,7 @@ const mapStateToProps = state => ({
   boughtDataOrders: DataOrdersByAddress.getBoughtDataOrders(state),
   closedDataOrders: DataOrdersByAddress.getClosedDataOrders(state),
   dataOrdersAddress: DataOrdersAddresses.getDataOrdersAddresses(state),
+  dataOrdersAddressAmount: DataOrdersAddressesAmount.getDataOrdersAddressesAmount(state),
   isFetching: DataOrdersByAddress.isFetching(state),
   account: Account.getAccount(state)
 });
@@ -186,15 +233,23 @@ const mapDispatchToProps = (dispatch, props) => ({
   startPollingDataOrders: () => {
     dispatch(PollingActions.startPollingDataOrders());
   },
-  fetchDataOrders: () => {
-    const { limit, offset } = queryString.parse(props.location.search);
+  fetchDataOrders: (params) => {
+    const { currentOffset } = params || {};
     dispatch(
       DataOrdersAddressesActions.fetchDataOrdersAddresses({
-        limit: Number(limit || 10),
-        offset: Number(offset || -10)
+        limit: Number(limit),
+        offset: Number(currentOffset || 0)
       })
     );
-  }
+  },
+  fetchDataOrdersAmount: () => {
+    dispatch(
+      DataOrdersAddressesAmountActions.fetchDataOrdersAddressesAmount({})
+    );
+  },
+  logOutUser: () => {
+    dispatch(authenticationActions.logOutUser());
+  },
 });
 
 export default compose(

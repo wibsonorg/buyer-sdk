@@ -1,10 +1,9 @@
 import express from 'express';
 import web3Utils from 'web3-utils';
-import { web3, cache, asyncError, wibcoin } from '../utils';
+import { web3, cache, asyncError, wibcoin, coin } from '../utils';
 import signingService from '../services/signingService';
 
 const router = express.Router();
-
 /**
  * @swagger
  * /account:
@@ -32,11 +31,13 @@ router.get('/', cache('30 seconds'), asyncError(async (req, res) => {
   const ethBalance = ethBalances.reduce((accum, item) => item.plus(accum), 0);
 
   const ether = web3Utils.fromWei(ethBalance.toString(), 'ether');
-
+  const wib = coin.toWib(tokenBalance, { decimals: 2 });
+  
   res.json({
     address: root.address,
     balance: Number(tokenBalance),
     ether: Number(ether),
+    wib,
   });
 }));
 

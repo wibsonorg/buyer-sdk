@@ -35,19 +35,19 @@ const getS3Objects = async (namespace, justSnippets = false) => {
 
 // //
 
-const countObjects = (dataOrder, type) => {
-  const namespace = `${prefix}/${dataOrder.address}/${type}/`;
-  const objects = getS3Objects(namespace, true);
+const countObjects = async (dataOrder, type) => {
+  const namespace = `${prefix}/${dataOrder.orderAddress}/${type}/`;
+  const objects = await getS3Objects(namespace, true);
   return objects.length;
 };
 
 const listObjects = (dataOrder, type) => {
-  const namespace = `${prefix}/${dataOrder.address}/${type}/`;
+  const namespace = `${prefix}/${dataOrder.orderAddress}/${type}/`;
   return getS3Objects(namespace);
 };
 
 const getObject = (dataOrder, seller, type) => {
-  const name = `${prefix}/${dataOrder.address}/${type}/${seller}.json`;
+  const name = `${prefix}/${dataOrder.orderAddress}/${type}/${seller}.json`;
   return getS3Object(name);
 };
 

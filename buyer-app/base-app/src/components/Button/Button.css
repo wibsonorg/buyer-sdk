@@ -73,3 +73,7 @@
   background-color: #0d8aff;
   cursor: not-allowed !important;
 }
+
+.wibson-button > span {
+  color: white;
+}

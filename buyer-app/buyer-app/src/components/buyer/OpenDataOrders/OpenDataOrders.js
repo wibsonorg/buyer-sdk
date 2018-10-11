@@ -48,7 +48,6 @@ class OpenDataOrders extends Component {
 
     const fullOrder = dataOrders[order.orderAddress];
 
-
     const closeDisabled =
       // eslint-disable-next-line eqeqeq
       order.dataCount == 0 ||
@@ -77,6 +76,7 @@ class OpenDataOrders extends Component {
     } = this.props;
 
     const flatDataOrdersList = flattenDataOrders(dataOrders);
+    console.log(flatDataOrdersList)
 
     return (
       <div>
@@ -141,7 +141,13 @@ class OpenDataOrders extends Component {
             },
             {
               name: "dataResponsesCount",
-              label: "Responses",
+              label: "Responses Received",
+              width: "245",
+              renderer: value => <Label>{value || 0}</Label>
+            },
+            {
+              name: "responsesBought",
+              label: "Responses Bought",
               width: "245",
               renderer: value => <Label>{value || 0}</Label>
             },

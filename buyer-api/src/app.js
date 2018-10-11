@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import swaggerUi from 'swagger-ui-express';
+import cookieParser from 'cookie-parser';
 import config from '../config';
 import schema from './schema';
 import {
@@ -18,6 +19,7 @@ import {
   fundingQueue,
 } from './queues';
 import {
+  auth,
   account,
   health,
   notaries,
@@ -26,6 +28,7 @@ import {
   buyerInfos,
   metrics,
 } from './routes';
+import checkAuthorization from './utils/checkAuthorization';
 
 const app = express();
 
@@ -49,16 +52,23 @@ app.use(morgan(config.logType || 'combined', {
 }));
 app.use(cors());
 app.use(boom());
+app.use(bodyParser.urlencoded({
+  extended: true,
+}));
+app.use(cookieParser());
 
-app.use('/account', account);
+app.use('/authentication', auth);
 app.use('/health', health);
-app.use('/notaries', notaries);
 app.use('/data-responses', dataResponses);
-app.use('/infos', buyerInfos);
-app.use('/orders', dataOrders);
-app.use('/metrics', metrics);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
 app.get('/api-docs.json', (_req, res) => res.json(schema));
+app.use('/orders', dataOrders);
+// This middleware MUST always go after of authentication or fail
+app.use(checkAuthorization);
+app.use('/account', account);
+app.use('/notaries', notaries);
+app.use('/infos', buyerInfos);
+app.use('/metrics', metrics);
 
 app.use(errorHandler); // This MUST always go after any other app.use(...)
 

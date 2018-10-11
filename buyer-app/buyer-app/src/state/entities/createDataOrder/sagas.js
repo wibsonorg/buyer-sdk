@@ -14,7 +14,6 @@ function* createDataOrderSaga(action) {
     requestedData,
     notaries,
     publicURL,
-    conditions,
     price,
     buyerId
   } = action.payload;
@@ -28,7 +27,6 @@ function* createDataOrderSaga(action) {
       audience,
       requestedData,
       publicURL,
-      conditions,
       price,
       initialBudgetForAudits,
       notaries,
@@ -42,7 +40,6 @@ function* createDataOrderSaga(action) {
           audience,
           requestedData: [requestedData], // It is an array of requested data, even if right now we only use one.
           notaries,
-          conditions,
           publicURL,
           createdAt: formatDate(Date.now()),
           transactionCompleted: false,

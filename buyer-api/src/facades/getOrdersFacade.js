@@ -23,20 +23,13 @@ const addOrderToCache = (dataOrder, ordersCache) =>
  * @param {Object} dataOrder the already-fetched data order
  * @returns {Promise} Promise which resolves to the offchain data
  */
-const addOffChainInfo = async (dataOrder) => {
-  const dataResponsesCount = await offchainStorage.countDataResponses(dataOrder);
-  const dataCount = await offchainStorage.countData(dataOrder);
-
-  const offChain = {
-    dataResponsesCount,
-    dataCount,
-  };
-
-  return {
-    ...dataOrder,
-    offChain,
-  };
-};
+const addOffChainInfo = async dataOrder => ({
+  ...dataOrder,
+  offChain: {
+    dataResponsesCount: await offchainStorage.countDataResponses(dataOrder),
+    dataCount: await offchainStorage.countData(dataOrder),
+  },
+});
 
 /**
  * @async
@@ -51,6 +44,7 @@ const getDataOrderDetails = async (order) => {
     filters,
     dataRequest,
     notaries,
+    sellers,
     termsAndConditions,
     buyerPublicURL,
     buyerPublicKey,
@@ -61,6 +55,7 @@ const getDataOrderDetails = async (order) => {
     order.filters(),
     order.dataRequest(),
     getElements(order, 'notaries'),
+    getElements(order, 'sellers'),
     order.termsAndConditions(),
     order.buyerURL(),
     order.buyerPublicKey(),
@@ -74,6 +69,7 @@ const getDataOrderDetails = async (order) => {
     audience: JSON.parse(filters),
     requestedData: JSON.parse(dataRequest),
     notaries,
+    responsesBought: sellers.length,
     termsAndConditions,
     buyerPublicURL: JSON.parse(buyerPublicURL),
     buyerPublicKey,
@@ -95,10 +91,10 @@ const getDataOrderDetails = async (order) => {
 const fetchAndCacheDataOrder = async (orderAddress, ordersCache) => {
   const order = DataOrderContract.at(orderAddress);
   const dataOrder = await getDataOrderDetails(order);
+
   const fullDataOrder = await addOffChainInfo(dataOrder);
   await addOrderToCache(fullDataOrder, ordersCache);
-
-  return dataOrder;
+  return fullDataOrder;
 };
 
 /**
@@ -137,7 +133,7 @@ const getOrdersForBuyer = async (
   limit = undefined,
 ) => {
   const orderAddresses = await dataExchange.getOrdersForBuyer(buyerAddress);
-  const upperBound = limit && offset > 0 ? offset + limit : orderAddresses.length;
+  const upperBound = limit && offset >= 0 ? offset + limit : orderAddresses.length;
   const ordersPage = orderAddresses.slice(offset, upperBound);
 
   const dataOrders = ordersPage.map(orderAddress =>
@@ -146,4 +142,24 @@ const getOrdersForBuyer = async (
   return Promise.all(dataOrders);
 };
 
-export { getDataOrder, getOrdersForBuyer, fetchAndCacheDataOrder };
+/**
+ * @async
+ * @function getOrdersAmountForBuyer
+ * @param {Object} buyerAddress the buyer's Ethereum address.
+ * @param {Object} ordersCache Redis storage used for orders caching
+ * @throws When can not connect to blockchain or cache is not set up correctly.
+ * @returns {Promise} Promise which resolves to the list of orders.
+ */
+const getOrdersAmountForBuyer = async (
+  buyerAddress,
+  ordersCache,
+) => {
+  const orderAddresses = await dataExchange.getOrdersForBuyer(buyerAddress);
+
+  const dataOrders = orderAddresses.map(orderAddress =>
+    getDataOrder(orderAddress, ordersCache));
+
+  return Promise.all(dataOrders);
+};
+
+export { getDataOrder, getOrdersForBuyer, fetchAndCacheDataOrder, getOrdersAmountForBuyer };

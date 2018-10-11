@@ -4,13 +4,15 @@ import addNotariesToOrder from './addNotariesToOrder';
 import batches from './batches';
 import closeDataOrder from './closeDataOrder';
 import ordersInfo from './ordersInfo';
+import checkAuthorization from '../../utils/checkAuthorization';
 
 const router = express.Router();
 
+router.use(ordersInfo);
+router.use(checkAuthorization);
 router.use(createDataOrder);
 router.use(addNotariesToOrder);
 router.use(batches);
 router.use(closeDataOrder);
-router.use(ordersInfo);
 
 export default router;

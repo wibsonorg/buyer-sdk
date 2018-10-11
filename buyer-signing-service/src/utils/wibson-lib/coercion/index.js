@@ -9,3 +9,8 @@ export const toString = (value, defaultValue = '') => {
 
 export const toInteger = (value, defaultValue = 0) =>
   (isPresent(value) ? parseInt(value, 10) : defaultValue);
+
+export const removeLeading0x = (str) => {
+  if (str.startsWith('0x')) return str.substring(2);
+  return str;
+};
