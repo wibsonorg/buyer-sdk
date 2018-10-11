@@ -16,6 +16,23 @@ const batchesTTL = Number(config.contracts.cache.ordersTTL);
 const addBatchToCache = (batch, batchesCache) =>
   batchesCache.set(batch.batchId, JSON.stringify(batch), 'EX', batchesTTL);
 
+const consolidateResponses = async (orderAddresses, ordersCache) => {
+  const dataOrders =
+    await Promise.all(orderAddresses.map(order => getDataOrder(order, ordersCache)));
+
+  const dataCount = dataOrders
+    .map(order => order.offChain.dataCount)
+    .reduce((accum, dataOrderCount) => accum + Number(dataOrderCount));
+  const dataResponsesCount = dataOrders
+    .map(order => order.offChain.dataResponsesCount)
+    .reduce((accum, dataOrderCount) => accum + Number(dataOrderCount));
+  const responsesBought = dataOrders
+    .map(order => order.responsesBought)
+    .reduce((accum, responses) => accum + Number(responses));
+
+  return { offChain: { dataCount, dataResponsesCount }, responsesBought };
+};
+
 /**
  * @async
  * @function fetchAndCacheBatch
@@ -28,9 +45,14 @@ const fetchAndCacheBatch = async (batchId, orderAddresses, ordersCache, batchesC
   const firstOrder = await getDataOrder(orderAddresses[0], ordersCache);
   // Removing orderAddress since they are grouped in orderAddresses
   const { orderAddress: deletedKey, ...orderProperties } = firstOrder;
+  const { offChain, responsesBought } = await consolidateResponses(orderAddresses, ordersCache);
 
-  await addBatchToCache({ batchId, ...orderProperties, orderAddresses }, batchesCache);
-  return { batchId, ...orderProperties, orderAddresses };
+  const newBatch = {
+    batchId, ...orderProperties, offChain, responsesBought, orderAddresses,
+  };
+
+  await addBatchToCache(newBatch, batchesCache);
+  return newBatch;
 };
 
 /**
@@ -65,10 +87,15 @@ const getBatchInfo = async (batchId, orderAddresses, ordersCache, batchesCache) 
 const getBatches = async (
   ordersCache,
   batchesCache,
+  offset,
+  limit,
 ) => {
   const batchesRaw = await listBatchPairs();
 
-  const batches = await Promise.all(batchesRaw.map(batch =>
+  const upperBound = limit && offset >= 0 ? offset + limit : batchesRaw.length;
+  const batchesPage = batchesRaw.slice(offset, upperBound);
+
+  const batches = await Promise.all(batchesPage.map(batch =>
     getBatchInfo(batch.key, JSON.parse(batch.value), ordersCache, batchesCache)));
 
   return batches;
