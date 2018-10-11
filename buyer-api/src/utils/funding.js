@@ -10,10 +10,8 @@ const maxWib = web3.toBigNumber(config.buyerChild.maxWib);
 const minWei = web3.toBigNumber(config.buyerChild.minWei);
 const maxWei = web3.toBigNumber(config.buyerChild.maxWei);
 
-const getWeiBalance = async (address) => {
-  const wei = await web3.eth.getBalance(address);
-  return web3.toBigNumber(wei);
-};
+const getWeiBalance = async address =>
+  web3.eth.getBalance(address);
 
 const getWibBalance = async (address) => {
   const wibUnits = await wibcoin.balanceOf.call(address);
