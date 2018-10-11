@@ -1,7 +1,8 @@
 import 'babel-polyfill';
 import app from './app';
 import config from '../config';
-import { logger, attachContractEventSubscribers, checkInitialRootBuyerFunds, monitorFunds } from './utils';
+import { logger, attachContractEventSubscribers } from './utils';
+import { checkInitialRootBuyerFunds, monitorFunds } from './facades';
 import contractEventSubscribers from './contractEventSubscribers';
 
 const checkConfig = (conf) => {
