@@ -42,12 +42,12 @@ const countObjects = async (dataOrder, type) => {
 };
 
 const listObjects = (dataOrder, type) => {
-  const namespace = `${prefix}/${dataOrder.address}/${type}/`;
+  const namespace = `${prefix}/${dataOrder.orderAddress}/${type}/`;
   return getS3Objects(namespace);
 };
 
 const getObject = (dataOrder, seller, type) => {
-  const name = `${prefix}/${dataOrder.address}/${type}/${seller}.json`;
+  const name = `${prefix}/${dataOrder.orderAddress}/${type}/${seller}.json`;
   return getS3Object(name);
 };
 

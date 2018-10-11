@@ -47,7 +47,7 @@ const newOrderFacade = (nonce, gasPrice, params, contract) => {
       newOrder: { gasLimit },
     },
   } = config.contracts;
-  
+
   const result = signTransaction(getPrivateKey(), {
     from: getAddress(),
     to: address,
