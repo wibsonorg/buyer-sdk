@@ -6,7 +6,7 @@ import { sendTransaction } from '../../facades/helpers';
 import { web3 } from '../../utils';
 import config from '../../../config';
 
-const { signETHTransfer, getAccounts } = signingService;
+const { signETHTransfer } = signingService;
 
 const toBN = num => web3.toBigNumber(num);
 
@@ -22,12 +22,10 @@ const options = {
  * Sends ETH to Buyer's child account and enqueues another job to check
  * the status of that transaction.
  *
- * @params {Number} data.accountNumber Child account number.
- * @params {Object} data.config Configuration to check for required balance.
+ * @params {Object} job Job payload.
  */
-export default async ({ data: { accountNumber } }) => {
-  const { root, children } = await getAccounts();
-  const child = children[accountNumber];
+export default async (job) => {
+  const { root, child } = job.data;
 
   // gas used: 21000
   const receipt = await checkAndTransfer(

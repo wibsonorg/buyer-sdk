@@ -6,7 +6,7 @@ import { sendTransaction } from '../../facades/helpers';
 import { web3, wibcoin } from '../../utils';
 import config from '../../../config';
 
-const { signWIBTransfer, getAccounts } = signingService;
+const { signWIBTransfer } = signingService;
 
 const toBN = num => web3.toBigNumber(num);
 
@@ -23,12 +23,10 @@ const options = {
  * the status of that transaction. When the transaction's status is checked
  * a `transferETH` job is enqueued.
  *
- * @params {Number} data.accountNumber Child account number.
- * @params {Object} data.config Configuration to check for required balance.
+ * @params {Object} job Job payload.
  */
-export default async ({ data: { accountNumber } }) => {
-  const { root, children } = await getAccounts();
-  const child = children[accountNumber];
+export default async (job) => {
+  const { root, child } = job.data;
 
   // gas used: 51769
   const receipt = await checkAndTransfer(
