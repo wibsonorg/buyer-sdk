@@ -3,7 +3,7 @@ import web3 from '../utils/web3';
 import config from '../../config';
 import signingService from '../services/signingService';
 import { coin } from '../utils/wibson-lib';
-import { fundingQueue } from '../queues';
+import { fundingQueue } from '../queues/fundingQueue';
 
 const minWib = web3.toBigNumber(config.buyerChild.minWib);
 const maxWib = web3.toBigNumber(config.buyerChild.maxWib);
