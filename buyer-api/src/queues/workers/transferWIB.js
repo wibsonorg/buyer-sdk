@@ -3,6 +3,7 @@ import signingService from '../../services/signingService';
 import { checkAndTransfer } from '../../facades/transferFacade';
 import { sendTransaction } from '../../facades/helpers';
 import { web3, wibcoin } from '../../utils';
+import config from '../../../config';
 
 const { signWIBTransfer, getAccounts } = signingService;
 
@@ -16,7 +17,7 @@ const options = {
   },
 };
 
-export default async ({ name, data: { accountNumber, config } }) => {
+export default async ({ name, data: { accountNumber } }) => {
   const { root, children } = await getAccounts();
   const child = children[accountNumber];
 
@@ -25,17 +26,9 @@ export default async ({ name, data: { accountNumber, config } }) => {
     child,
     wibcoin.balanceOf,
     params => sendTransaction(web3, root, signWIBTransfer, params),
-    toBN(config.wib.min),
-    toBN(config.wib.max),
+    toBN(config.buyerChild.minWib),
+    toBN(config.buyerChild.maxWib),
   );
 
-  fundingQueue.add('checkStatus', {
-    name,
-    receipt,
-    enqueueAfterConfirmation: {
-      jobName: 'transferETH',
-      payload: { accountNumber, config },
-      options,
-    },
-  }, options);
+  fundingQueue.add('checkStatus', { name, receipt }, options);
 };

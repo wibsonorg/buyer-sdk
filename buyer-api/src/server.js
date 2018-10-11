@@ -1,7 +1,8 @@
 import 'babel-polyfill';
 import app from './app';
 import config from '../config';
-import { logger, attachContractEventSubscribers, rootBuyerFunds } from './utils';
+import { logger, attachContractEventSubscribers } from './utils';
+import { checkInitialRootBuyerFunds, monitorFunds } from './facades';
 import contractEventSubscribers from './contractEventSubscribers';
 
 const checkConfig = (conf) => {
@@ -28,49 +29,17 @@ const checkConfig = (conf) => {
   }
 };
 
-const checkFunds = async () => {
-  const {
-    rootBuyerAddress,
-    childrenCount,
-    currentWib,
-    requiredWib,
-    currentWei,
-    requiredWei,
-  } = await rootBuyerFunds();
-
-  const insufficientWib = currentWib.isLessThan(requiredWib);
-  const insufficientEth = currentWei.isLessThan(requiredWei);
-
-  if (insufficientWib) {
-    logger.error(`
-    Root Buyer (${rootBuyerAddress}) does not have enough WIB to fund ${childrenCount} child accounts.
-    Current balance: ${currentWib} WIB
-    Required balance: ${requiredWib} WIB
-    `);
-  }
-  if (insufficientEth) {
-    logger.error(`
-    Root Buyer (${rootBuyerAddress}) does not have enough ETH to fund ${childrenCount} child accounts.
-    Current balance: ${currentWei} Wei
-    Required balance: ${requiredWei} Wei
-    (The required balance does not take into account transaction costs)
-    `);
-  }
-
-  if (insufficientWib || insufficientEth) {
-    process.exit(1);
-  }
-};
-
 const server = async () => {
   checkConfig(config);
-  await checkFunds();
+  await checkInitialRootBuyerFunds();
 
   const { port, host, env } = config;
   app.listen({ port, host }, () =>
     logger.info(`Buyer API listening on port ${port} and host ${host} in ${env} mode`));
 
   attachContractEventSubscribers(contractEventSubscribers, app.locals.stores);
+
+  setInterval(() => monitorFunds(), 60000 * Number(config.fundingInterval));
 };
 
 export default server;

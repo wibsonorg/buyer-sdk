@@ -3,6 +3,7 @@ import signingService from '../../services/signingService';
 import { checkAndTransfer } from '../../facades/transferFacade';
 import { sendTransaction } from '../../facades/helpers';
 import { web3 } from '../../utils';
+import config from '../../../config';
 
 const { signETHTransfer, getAccounts } = signingService;
 
@@ -16,7 +17,7 @@ const options = {
   },
 };
 
-export default async ({ name, data: { accountNumber, config } }) => {
+export default async ({ name, data: { accountNumber } }) => {
   const { root, children } = await getAccounts();
   const child = children[accountNumber];
 
@@ -25,8 +26,8 @@ export default async ({ name, data: { accountNumber, config } }) => {
     child,
     web3.eth.getBalance,
     params => sendTransaction(web3, root, signETHTransfer, params),
-    toBN(config.eth.min),
-    toBN(config.eth.max),
+    toBN(config.buyerChild.minWei),
+    toBN(config.buyerChild.maxWei),
   );
 
   fundingQueue.add('checkStatus', { name, receipt }, options);
