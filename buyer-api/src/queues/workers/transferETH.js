@@ -3,7 +3,8 @@ import signingService from '../../services/signingService';
 import { storeAccountMetrics } from '../../facades/metricsFacade';
 import { checkAndTransfer } from '../../facades/transferFacade';
 import { sendTransaction } from '../../facades/helpers';
-import { web3, logger } from '../../utils';
+import { web3 } from '../../utils';
+import config from '../../../config';
 
 const { signETHTransfer, getAccounts } = signingService;
 
@@ -24,7 +25,7 @@ const options = {
  * @params {Number} data.accountNumber Child account number.
  * @params {Object} data.config Configuration to check for required balance.
  */
-export default async ({ data: { accountNumber, config } }) => {
+export default async ({ data: { accountNumber } }) => {
   const { root, children } = await getAccounts();
   const child = children[accountNumber];
 
@@ -33,8 +34,8 @@ export default async ({ data: { accountNumber, config } }) => {
     child,
     web3.eth.getBalance,
     params => sendTransaction(web3, root, signETHTransfer, params),
-    toBN(config.eth.min),
-    toBN(config.eth.max),
+    toBN(config.buyerChild.minWei),
+    toBN(config.buyerChild.maxWei),
   );
 
   await storeAccountMetrics(child, {

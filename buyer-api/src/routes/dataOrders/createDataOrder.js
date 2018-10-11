@@ -1,7 +1,8 @@
 import express from 'express';
-import { getOrdersForBuyer } from '../../facades';
+import { getBatches } from '../../facades';
 import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
+import { createBatch } from '../../services/batchInfo';
 
 const router = express.Router();
 
@@ -24,20 +25,25 @@ router.get(
   cache('10 minutes'),
   asyncError(async (req, res) => {
     req.apicacheGroup = '/orders/*';
-    const { offset, limit } = req.query;
+    // const { offset, limit } = req.query;
     // TODO: Improve DataOrder agregates
-    const { address } = await signingService.getAccount(0);
 
-    const { stores: { ordersCache } } = req.app.locals;
+    const { stores: { ordersCache, batchesCache } } = req.app.locals;
 
-    const ordersResult = getOrdersForBuyer(address, ordersCache, Number(offset), Number(limit));
+    const orders = await getBatches(ordersCache, batchesCache);
 
-    const minimumBudget = dataExchange.minimumInitialBudgetForAudits();
+    // HACK: This is just to fit what buyer-app is expecting
+    orders.forEach((o) => { o.orderAddress = o.batchId; }); //eslint-disable-line
 
-    const [orders, minimumInitialBudgetForAudits] = await Promise.all([
-      ordersResult,
-      minimumBudget,
-    ]);
+    // const { children } = await signingService.getAccounts();
+    //
+    // const ordersResult = children
+    //   .map(({ address }) =>
+    // getOrdersForBuyer(address, ordersCache, Number(offset), Number(limit)));
+
+    const minimumInitialBudgetForAudits = await dataExchange.minimumInitialBudgetForAudits();
+
+    // const orders = [].concat(...await Promise.all(ordersResult));
 
     res.json({ orders, minimumInitialBudgetForAudits });
   }),
@@ -176,9 +182,13 @@ router.post(
     if (errors.length > 0) {
       res.boom.badData('Validation failed', { validation: errors });
     } else {
-      const accounts = await signingService.getAccounts();
-      accounts.map(account => queue.add('createDataOrder', {
+      const { children } = await signingService.getAccounts();
+
+      const batchId = await createBatch();
+
+      children.forEach(account => queue.add('createDataOrder', {
         account,
+        batchId,
         ...dataOrder,
       }, {
         attempts: 20,

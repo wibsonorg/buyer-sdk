@@ -5,6 +5,7 @@ import {
   addNotariesToOrderFacade,
 } from '../facades';
 import { associateBuyerInfoToOrder } from '../services/buyerInfo';
+import { associateOrderToBatch } from '../services/batchInfo';
 
 const createDataOrderQueue = ({ notariesCache }) => {
   const queue = createQueue('DataOrderQueue');
@@ -29,12 +30,12 @@ const createDataOrderQueue = ({ notariesCache }) => {
   queue.process('dataOrderSent', async (
     {
       data: {
-        receipt, account, notaries, buyerInfoId,
+        receipt, account, notaries, buyerInfoId, batchId,
       },
     },
   ) => {
     await onDataOrderSent(
-      receipt, account, notaries, buyerInfoId,
+      receipt, account, notaries, buyerInfoId, batchId,
       (jobName, params) => {
         queue.add(jobName, params, {
           priority: 10,
@@ -66,6 +67,12 @@ const createDataOrderQueue = ({ notariesCache }) => {
     { data: { orderAddr, buyerInfoId } },
   ) => {
     await associateBuyerInfoToOrder(orderAddr, buyerInfoId);
+  });
+
+  queue.process('associateOrderToBatch', async (
+    { data: { batchId, orderAddr } },
+  ) => {
+    await associateOrderToBatch(batchId, orderAddr);
   });
 
   return queue;
