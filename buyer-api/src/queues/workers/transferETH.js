@@ -14,7 +14,7 @@ const options = {
   priority: 10,
   attempts: 20,
   backoff: {
-    type: 'linear',
+    type: 'exponential',
   },
 };
 
