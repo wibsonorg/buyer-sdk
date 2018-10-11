@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import { expect } from 'chai';
 import { web3 } from '../../src/utils';
 import { checkAndTransfer } from '../../src/facades/transferFacade';

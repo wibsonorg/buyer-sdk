@@ -1,5 +1,5 @@
 import express from 'express';
-import { getBatches, createDataOrderFacade, getOrdersForBuyer, getOrdersAmountForBuyer } from '../../facades';
+import { getBatches, getOrdersAmountForBuyer } from '../../facades';
 import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 import { createBatch } from '../../services/batchInfo';
