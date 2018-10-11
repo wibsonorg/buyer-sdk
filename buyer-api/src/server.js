@@ -38,7 +38,7 @@ const server = async () => {
 
   attachContractEventSubscribers(contractEventSubscribers, app.locals.stores);
 
-  setInterval(() => monitorFunds(), 120000);
+  setInterval(() => monitorFunds(), 60000 * Number(config.fundingInterval));
 };
 
 export default server;

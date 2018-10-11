@@ -54,6 +54,7 @@ const config = {
     minWei: env.BUYER_CHILD_MIN_WEI,
     maxWei: env.BUYER_CHILD_MAX_WEI,
   },
+  fundingInterval: env.FUNDING_INTERVAL,
   levelDirectory: env.LEVEL_DIRECTORY,
 };
 

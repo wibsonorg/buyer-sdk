@@ -99,7 +99,7 @@ const monitorFunds = async () => {
 
   if (rootBuyerFunds.wei.lessThan(neededWei)) {
     logger.alert(`
-    Root Buyer (${root.address} is unable to fund ${childrenToFundWei.length} child accounts:
+    Root Buyer (${root.address}) is unable to fund ${childrenToFundWei.length} child accounts:
     Needed ETH: ${neededWei} WEI
     Root Buyer available ETH: ${rootBuyerFunds.wei} WEI
     (The needed ETH does not take into account transaction costs)
@@ -108,7 +108,7 @@ const monitorFunds = async () => {
 
   if (rootBuyerFunds.wib.lessThan(neededWib)) {
     logger.alert(`
-    Root Buyer (${root.address} is unable to fund ${childrenToFundWib.length} child accounts:
+    Root Buyer (${root.address}) is unable to fund ${childrenToFundWib.length} child accounts:
     Needed WIB: ${neededWib}
     Root Buyer available WIB: ${rootBuyerFunds.wib}
     `);
