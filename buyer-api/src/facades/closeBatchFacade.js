@@ -52,7 +52,7 @@ const closeBatch = async (batchId, ordersCache) => {
         web3,
         account[0],
         signingService.signCloseOrder,
-        { order },
+        { orderAddr: order.orderAddress },
         config.contracts.gasPrice.fast,
       );
     }
