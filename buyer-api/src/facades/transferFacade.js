@@ -134,8 +134,8 @@ const monitorFunds = async () => {
     `);
   }
 
-  childrenToFundWei.forEach(x => fundingQueue.add('transferETH', { root, child: x.child }));
-  childrenToFundWib.forEach(x => fundingQueue.add('transferWIB', { root, child: x.child }));
+  childrenToFundWei.forEach(x => fundingQueue.add('transferFunds', { root, child: x.child, currency: 'ETH' }));
+  childrenToFundWib.forEach(x => fundingQueue.add('transferFunds', { root, child: x.child, currency: 'WIB' }));
 };
 
 export {
