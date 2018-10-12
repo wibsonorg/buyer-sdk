@@ -16,6 +16,7 @@ import { getOrdersForBuyer, fetchAndCacheDataOrder, getOrdersAmountForBuyer } fr
 import { getBatches } from './getBatchesFacade';
 
 export { getNotaryInfo, getNotariesInfo, fetchAndCacheNotary } from './notariesFacade';
+export { closeBatch } from './closeBatchFacade';
 export { checkAndTransfer, checkInitialRootBuyerFunds, monitorFunds } from './transferFacade';
 
 export {
