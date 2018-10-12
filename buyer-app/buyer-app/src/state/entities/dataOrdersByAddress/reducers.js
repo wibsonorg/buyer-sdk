@@ -67,17 +67,6 @@ export default createReducer(
         }
       };
     },
-    [DataOrdersActions.createDataOrderSucceed]: (state, { dataOrder }) => {
-      return {
-        ...state,
-        [dataOrder.orderAddress]: {
-          data: dataOrder,
-          pending: false,
-          fulfilled: true,
-          error: false
-        }
-      };
-    },
     // CLOSE
     [CloseDataOrderActions.closeDataOrderSucceed]: (
       state,
