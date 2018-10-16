@@ -43,9 +43,9 @@ router.post(
   // validateAddress('orderAddress'),
   asyncError(async (req, res) => {
     const { batchId } = req.params;
-    const { stores: { ordersCache } } = req.app.locals;
+    const { stores: { ordersCache, closedDataOrdersCache }, queues: { closeDataOrder: queue } } = req.app.locals;
 
-    const response = await closeBatch(batchId, ordersCache);
+    const response = await closeBatch(batchId, ordersCache, closedDataOrdersCache, queue);
 
     if (response.success()) {
       res.json(response.result);

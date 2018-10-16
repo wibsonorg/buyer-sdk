@@ -7,6 +7,13 @@ import { web3, DataOrderContract } from '../utils';
 import signingService from '../services/signingService';
 import config from '../../config';
 
+const batchTTL = Number(config.contracts.cache.ordersTTL);
+
+const addClosedOrderToCache = (closedOrder, closedDataOrdersCache) =>
+  closedDataOrdersCache.set(batchId, JSON.stringify(batch), 'EX', batchesTTL);
+
+  const cachedBatch = await batchesCache.get(batchId);
+
 /**
  * @async
  * @param {String} orderAddresses that will be closed
@@ -32,7 +39,7 @@ const validate = async (orderAddresses) => {
  * @param {Object} ordersCache to retrieve orders info
  * @returns {Response} The result of the operation.
  */
-const closeBatch = async (batchId, ordersCache) => {
+const closeBatch = async (batchId, ordersCache, closedDataOrdersCache, queue) => {
   const ordersOfBatch = await getBatchInfo(batchId);
   const errors = await validate(ordersOfBatch);
 
@@ -48,18 +55,50 @@ const closeBatch = async (batchId, ordersCache) => {
   const receipts = dataOrders.map((order) => {
     const account = children.filter(child => child.address === order.buyerAddress);
     if (account.length > 0) {
-      return sendTransaction(
-        web3,
-        account[0],
-        signingService.signCloseOrder,
-        { orderAddr: order.orderAddress },
-        config.contracts.gasPrice.fast,
-      );
+      queue.add('closeDataOrder', {
+        orderAddr: order.orderAddress,
+        account,
+        batchId,
+        batchLength: ordersOfBatch.length
+      }, {
+        attempts: 20,
+        backoff: {
+          type: 'linear',
+        },
+      });
     }
     return undefined;
   });
 
   return new Response({ status: 'pending', receipts });
 };
+
+// TODO: onDataOrderClosed to check if all orders of batch were closed
+// /**
+//  * @async
+//  * @param {String} receipt Transaction hash.
+//  * @param {Array} notaries Ethereum addresses of the notaries involved.
+//  * @param {String} buyerInfoId The ID for the buyer info.
+//  * @param {Object} dataOrderQueue DataOrder's queue object.
+//  */
+// const onDataOrderSent = async (
+//   receipt,
+//   account,
+//   notaries,
+//   buyerInfoId,
+//   batchId,
+//   addJob,
+// ) => {
+//   const { logs } = await getTransactionReceipt(web3, receipt);
+//   const { orderAddr } = extractEventArguments(
+//     'NewOrder',
+//     logs,
+//     dataExchange,
+//   );
+//
+//   addJob('addNotariesToOrder', { orderAddr, account, notaries });
+//   addJob('associateBuyerInfoToOrder', { orderAddr, buyerInfoId });
+//   addJob('associateOrderToBatch', { batchId, orderAddr });
+// };
 
 export { closeBatch };
