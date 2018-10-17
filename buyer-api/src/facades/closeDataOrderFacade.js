@@ -57,15 +57,14 @@ const closeDataOrderFacade = async (orderAddr, account, batchId, batchLength, ad
 const onDataOrderClosed = async (
   batchId, batchLength, closedDataOrdersCache,
 ) => {
-  closedDataOrdersCache.incr(batchId, (err, count) => {
-    let response;
-    if (err) {
-      // TODO: Error
-      response = new Response({ status: 'pending', batchId });
-    } else if (Number(count) === batchLength) {
-      response = new Response({ status: 'done', batchId });
+  try {
+    const count = await closedDataOrdersCache.incr(batchId);
+    if (Number(count) === batchLength) {
+      return new Response({ status: 'done', batchId });
     }
-    return response;
-  });
+    return new Response({ status: 'pending', batchId });
+  } catch (err) {
+    return new Response({ status: 'pending', batchId });
+  }
 };
 export { closeDataOrderFacade, onDataOrderClosed };

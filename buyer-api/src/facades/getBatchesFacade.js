@@ -41,14 +41,15 @@ const consolidateResponses = async (orderAddresses, ordersCache) => {
  * @throws When can not connect to blockchain or cache is not set up correctly.
  * @returns {Promise} Promise which resolves to the Data Order.
  */
-const fetchAndCacheBatch = async (batchId, orderAddresses, ordersCache, batchesCache) => {
+const fetchAndCacheBatch = async (batchId, batchInfo, ordersCache, batchesCache) => {
+  const { orderAddresses } = batchInfo;
   const firstOrder = await getDataOrder(orderAddresses[0], ordersCache);
   // Removing orderAddress since they are grouped in orderAddresses
   const { orderAddress: deletedKey, ...orderProperties } = firstOrder;
   const { offChain, responsesBought } = await consolidateResponses(orderAddresses, ordersCache);
 
   const newBatch = {
-    batchId, ...orderProperties, offChain, responsesBought, orderAddresses,
+    batchId, ...orderProperties, offChain, responsesBought, ...batchInfo,
   };
 
   await addBatchToCache(newBatch, batchesCache);
@@ -64,14 +65,14 @@ const fetchAndCacheBatch = async (batchId, orderAddresses, ordersCache, batchesC
  * @throws When can not connect to blockchain or cache is not set up correctly.
  * @returns {Promise} Promise which resolves to the Data Order.
  */
-const getBatchInfo = async (batchId, orderAddresses, ordersCache, batchesCache) => {
+const getBatchInfo = async (batchId, batchInfo, ordersCache, batchesCache) => {
   const cachedBatch = await batchesCache.get(batchId);
   if (cachedBatch) {
     logger.debug('Batch :: Cache Hit ::', { batchId });
     return JSON.parse(cachedBatch);
   }
   logger.debug('Batch :: Cache Miss :: Fetching from Level... ::', { batchId });
-  return fetchAndCacheBatch(batchId, orderAddresses, ordersCache, batchesCache);
+  return fetchAndCacheBatch(batchId, batchInfo, ordersCache, batchesCache);
 };
 
 /**

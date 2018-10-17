@@ -31,8 +31,8 @@ const validate = async (orderAddresses) => {
  * @returns {Response} The result of the operation.
  */
 const closeOrdersOfBatch = async (batchId, ordersCache, closedDataOrdersCache, queue) => {
-  const ordersOfBatch = await getBatchInfo(batchId);
-  const errors = await validate(ordersOfBatch);
+  const { orderAddresses } = await getBatchInfo(batchId);
+  const errors = await validate(orderAddresses);
 
   const { children } = await signingService.getAccounts();
 
@@ -41,16 +41,16 @@ const closeOrdersOfBatch = async (batchId, ordersCache, closedDataOrdersCache, q
   }
 
   const dataOrders =
-  await Promise.all(ordersOfBatch.map(order => getDataOrder(order, ordersCache)));
+  await Promise.all(orderAddresses.map(order => getDataOrder(order, ordersCache)));
 
   const receipts = dataOrders.map((order) => {
     const account = children.filter(child => child.address === order.buyerAddress);
     if (account.length > 0) {
       queue.add('closeDataOrder', {
         orderAddr: order.orderAddress,
-        account,
+        account: account[0],
         batchId,
-        batchLength: ordersOfBatch.length,
+        batchLength: orderAddresses.length,
       }, {
         attempts: 20,
         backoff: {
