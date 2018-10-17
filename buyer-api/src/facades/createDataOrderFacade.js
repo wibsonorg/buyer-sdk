@@ -49,6 +49,7 @@ const buildDataOrderParameters = ({
 /**
  * @async
  * @param {Object} parameters.account Account that sends the transaction.
+ * @param {Object} parameters.totalAccounts Number of children accounts.
  * @param {Object} parameters.filters Target audience.
  * @param {String} parameters.dataRequest Requested data type (Geolocation,
  *                 Facebook, etc).
@@ -83,8 +84,8 @@ const createDataOrderFacade = async (
         values: {
           totalBuckets: totalAccounts,
           bucketNumber: account.number,
-        }
-      }
+        },
+      },
     ],
     ...parameters,
     termsAndConditions: termsHash,
