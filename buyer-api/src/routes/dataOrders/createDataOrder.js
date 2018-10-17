@@ -1,5 +1,5 @@
 import express from 'express';
-import { getBatches, getOrdersAmountForBuyer } from '../../facades';
+import { getBatches } from '../../facades';
 import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 import { createBatch } from '../../services/batchInfo';
@@ -24,25 +24,16 @@ router.get(
   cache('10 minutes'),
   asyncError(async (req, res) => {
     req.apicacheGroup = '/orders/*';
-    // const { offset, limit } = req.query;
-    // TODO: Improve DataOrder agregates
+    const { offset, limit } = req.query;
 
     const { stores: { ordersCache, batchesCache } } = req.app.locals;
 
-    const orders = await getBatches(ordersCache, batchesCache);
+    const orders = await getBatches(ordersCache, batchesCache, offset, limit);
 
     // HACK: This is just to fit what buyer-app is expecting
     orders.forEach((o) => { o.orderAddress = o.batchId; }); //eslint-disable-line
 
-    // const { children } = await signingService.getAccounts();
-    //
-    // const ordersResult = children
-    //   .map(({ address }) =>
-    // getOrdersForBuyer(address, ordersCache, Number(offset), Number(limit)));
-
     const minimumInitialBudgetForAudits = await dataExchange.minimumInitialBudgetForAudits();
-
-    // const orders = [].concat(...await Promise.all(ordersResult));
 
     res.json({ orders, minimumInitialBudgetForAudits });
   }),
@@ -67,14 +58,13 @@ router.get(
   cache('10 minutes'),
   asyncError(async (req, res) => {
     req.apicacheGroup = '/orders/*';
-    const { address } = await signingService.getAccount();
 
-    const { stores: { ordersCache } } = req.app.locals;
+    const { stores: { ordersCache, batchesCache } } = req.app.locals;
 
-    const orders = await getOrdersAmountForBuyer(address, ordersCache);
+    const batches = await getBatches(ordersCache, batchesCache);
 
-    const totalClosedOrders = orders.filter(order => order.isClosed).length;
-    const totalOpenOrders = orders.filter(order => !order.isClosed).length;
+    const totalClosedOrders = 0;
+    const totalOpenOrders = batches.length;
 
     res.json({ totalClosedOrders, totalOpenOrders });
   }),
@@ -210,6 +200,7 @@ router.post(
 
       children.forEach(account => queue.add('createDataOrder', {
         account,
+        totalAccounts: children.length,
         batchId,
         ...dataOrder,
       }, {

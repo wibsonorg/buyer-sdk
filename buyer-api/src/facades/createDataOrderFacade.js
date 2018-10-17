@@ -37,7 +37,8 @@ const buildDataOrderParameters = ({
   termsAndConditions,
   buyerURL,
 }) => ({
-  filters: JSON.stringify(filters),
+  filters: JSON.stringify(filters.reduce((accum, { filter, values }) =>
+    ({ ...accum, [filter]: values }), {})),
   dataRequest: JSON.stringify(dataRequest),
   price: fromWib(price),
   initialBudgetForAudits: fromWib(initialBudgetForAudits),
@@ -48,6 +49,7 @@ const buildDataOrderParameters = ({
 /**
  * @async
  * @param {Object} parameters.account Account that sends the transaction.
+ * @param {Object} parameters.totalAccounts Number of children accounts.
  * @param {Object} parameters.filters Target audience.
  * @param {String} parameters.dataRequest Requested data type (Geolocation,
  *                 Facebook, etc).
@@ -64,13 +66,27 @@ const buildDataOrderParameters = ({
  */
 const createDataOrderFacade = async (
   {
-    account, notaries, buyerInfoId, batchId, filters, ...parameters
+    account,
+    totalAccounts,
+    notaries,
+    buyerInfoId,
+    batchId,
+    filters,
+    ...parameters
   },
   addJob,
 ) => {
   const { termsHash } = await getBuyerInfo(buyerInfoId);
   const params = buildDataOrderParameters({
-    filters: [...filters, { filter: 'bucket', value: account.number }],
+    filters: [
+      ...filters, {
+        filter: 'ethAddress',
+        values: {
+          totalBuckets: totalAccounts,
+          bucketNumber: account.number,
+        },
+      },
+    ],
     ...parameters,
     termsAndConditions: termsHash,
   });

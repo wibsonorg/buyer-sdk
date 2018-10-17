@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { addNotariesToOrderFacade } from '../../src/facades';
 
-describe('addNotariesToOrderFacade', () => {
+describe.skip('addNotariesToOrderFacade', () => {
   const orderAddress = '0xa662a5c63079009d79740f4e638a404f7917f93a';
   const notaries = [];
 

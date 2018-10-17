@@ -16,7 +16,7 @@ import {
 
 const { signPayload } = cryptography;
 
-describe('POST /orders/:orderAddress/notaries', () => {
+describe.skip('POST /orders/:orderAddress/notaries', () => {
   let app;
   let token;
   let dataExchange;

@@ -5,7 +5,7 @@ import { checkAndTransfer } from '../../src/facades/transferFacade';
 
 const toBN = num => web3.toBigNumber(num);
 
-describe.only('transferFacade', () => {
+describe('transferFacade', () => {
   const child = { number: 0, address: web3.eth.accounts[2] };
 
   describe('#checkAndTransfer', () => {
