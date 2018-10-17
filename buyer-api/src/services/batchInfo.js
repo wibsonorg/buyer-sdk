@@ -21,6 +21,7 @@ const listBatchPairs = async () => listLevelPairs(ordersPerBatch);
 
 /**
  * @function createBatchId
+ * @param {String} orderAddresses initial orders if apply
  * @returns {String} A new Id for the batch of orders
  */
 const createBatch = async (orderAddresses = []) => {
@@ -28,6 +29,22 @@ const createBatch = async (orderAddresses = []) => {
   const newBatch = { isOpen: true, orderAddresses };
   await ordersPerBatch.put(id, JSON.stringify(newBatch));
   return id;
+};
+
+/**
+ * @function closeBatch
+ * @param {String} batchId a uuid
+ * @returns {String} A new Id for the batch of orders
+ */
+const closeBatch = async (batchId) => {
+  const batch = await ordersPerBatch.get(batchId);
+  if (batch) {
+    const { orderAddresses } = JSON.parse(batch);
+    const newBatch = { isOpen: false, orderAddresses };
+    await ordersPerBatch.put(batchId, JSON.stringify(newBatch));
+    return true;
+  }
+  return false;
 };
 
 /**
@@ -77,4 +94,5 @@ export {
   createBatch,
   associateOrderToBatch,
   getBatchInfo,
+  closeBatch,
 };

@@ -34,8 +34,6 @@ const closeDataOrderFacade = async (orderAddr, account, batchId, batchLength, ad
     return new Response(null, errors);
   }
 
-  // const { address } = await signingService.getAccount();
-
   const receipt = await sendTransaction(
     web3,
     account,
@@ -65,7 +63,6 @@ const onDataOrderClosed = async (
       // TODO: Error
       response = new Response({ status: 'pending', batchId });
     } else if (Number(count) === batchLength) {
-      // TODO: Finished
       response = new Response({ status: 'done', batchId });
     }
     return response;

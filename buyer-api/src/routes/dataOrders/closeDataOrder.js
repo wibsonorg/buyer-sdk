@@ -1,7 +1,7 @@
 import express from 'express';
 // import { closeDataOrderFacade } from '../../facades';
-import { closeBatch } from '../../facades';
-import { validateAddress, asyncError } from '../../utils';
+import { closeOrdersOfBatch } from '../../facades';
+import { asyncError } from '../../utils';
 
 const router = express.Router();
 
@@ -43,9 +43,14 @@ router.post(
   // validateAddress('orderAddress'),
   asyncError(async (req, res) => {
     const { batchId } = req.params;
-    const { stores: { ordersCache, closedDataOrdersCache }, queues: { closeDataOrder: queue } } = req.app.locals;
+    const {
+      stores:
+      { ordersCache, closedDataOrdersCache },
+      queues:
+      { closeDataOrder: queue },
+    } = req.app.locals;
 
-    const response = await closeBatch(batchId, ordersCache, closedDataOrdersCache, queue);
+    const response = await closeOrdersOfBatch(batchId, ordersCache, closedDataOrdersCache, queue);
 
     if (response.success()) {
       res.json(response.result);

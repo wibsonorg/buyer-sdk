@@ -11,12 +11,12 @@ import {
   onDataOrderSent,
 } from './createDataOrderFacade';
 import addNotariesToOrderFacade from './addNotariesToOrderFacade';
-import closeDataOrderFacade from './closeDataOrderFacade';
+import { closeDataOrderFacade, onDataOrderClosed } from './closeDataOrderFacade';
 import { getOrdersForBuyer, fetchAndCacheDataOrder, getOrdersAmountForBuyer } from './getOrdersFacade';
 import { getBatches } from './getBatchesFacade';
 
 export { getNotaryInfo, getNotariesInfo, fetchAndCacheNotary } from './notariesFacade';
-export { closeBatch } from './closeBatchFacade';
+export { closeOrdersOfBatch } from './closeBatchFacade';
 export { checkAndTransfer, checkInitialRootBuyerFunds, monitorFunds } from './transferFacade';
 
 export {
@@ -27,6 +27,7 @@ export {
   addDataResponse,
   closeDataResponse,
   closeDataOrderFacade,
+  onDataOrderClosed,
   onDataOrderSent,
   onBuyData,
   onIncreaseApprovalSent,
