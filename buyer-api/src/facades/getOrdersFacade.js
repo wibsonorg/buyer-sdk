@@ -27,7 +27,6 @@ const addOffChainInfo = async dataOrder => ({
   ...dataOrder,
   offChain: {
     dataResponsesCount: await offchainStorage.countDataResponses(dataOrder.orderAddress),
-    dataCount: await offchainStorage.countData(dataOrder.orderAddress),
   },
 });
 

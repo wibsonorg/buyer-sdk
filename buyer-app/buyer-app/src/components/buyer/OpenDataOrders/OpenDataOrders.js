@@ -48,11 +48,7 @@ class OpenDataOrders extends Component {
 
     const fullOrder = dataOrders[order.orderAddress];
 
-    const closeDisabled =
-      // eslint-disable-next-line eqeqeq
-      order.dataCount == 0 ||
-      fullOrder.data.transactionCompleted ||
-      fullOrder.closePending;
+    const closeDisabled = fullOrder.data.transactionCompleted || fullOrder.closePending;
 
     return (
       <div className="wibson-bought-data-orders-actions">
