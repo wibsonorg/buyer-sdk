@@ -55,6 +55,44 @@ const getTransactionReceipt = (web3, receipt) =>
     });
   });
 
+const getTransaction = (web3, receipt) =>
+  new Promise((resolve, reject) => {
+    web3.eth.getTransactionReceipt(receipt, (err, result) => {
+      if (err) {
+        reject(err);
+      } else if (!result) {
+        resolve({ status: 'pending' });
+      } else if (typeof result === 'object') {
+        if (
+          web3Utils.isHex(result.status) &&
+          web3Utils.hexToNumber(result.status) === 1
+        ) {
+          resolve({ ...result, status: 'success' });
+        } else {
+          resolve({ ...result, status: 'failure' });
+        }
+      } else {
+        reject(new Error(`Unknown error for tx: ${receipt}`));
+      }
+    });
+  });
+
+const waitForExecution = async (web3, receipt, opts = {}) => {
+  const { maxIterations = 20, Interval = 30 } = opts;
+  let transaction = { status: 'pending' };
+  let iteration = 0;
+
+  while (transaction.status === 'pending' && iteration < maxIterations) {
+    iteration += 1;
+    // eslint-disable-next-line no-await-in-loop
+    await delay(Interval * 1000);
+    // eslint-disable-next-line no-await-in-loop
+    transaction = await getTransaction(web3, receipt);
+  }
+
+  return transaction;
+};
+
 /**
  * NOTE: There is an alternative to handle this with `filters`.
  * See https://goo.gl/VXv3zK (from ethereum.stackexchange.com)
@@ -148,4 +186,6 @@ export {
   sendTransaction,
   getTransactionReceipt,
   retryAfterError,
+  getTransaction,
+  waitForExecution,
 };

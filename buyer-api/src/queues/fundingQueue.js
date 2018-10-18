@@ -1,10 +1,15 @@
 import { createQueue } from './createQueue';
 import logger from '../utils/logger';
+import transferFunds from './workers/transferFunds';
 
-const fundingQueue = createQueue('FundingQueue');
+const fundingQueue = createQueue('FundingQueue', {
+  limiter: {
+    max: 1,
+    duration: 10000,
+  },
+});
 
-fundingQueue.process('transferFunds', 2, `${__dirname}/workers/transferFunds.js`);
-fundingQueue.process('checkStatus', 2, `${__dirname}/workers/checkStatus.js`);
+fundingQueue.process('transferFunds', 1, transferFunds);
 
 fundingQueue.on('active', async (job) => {
   if (!job.name.startsWith('transfer')) {

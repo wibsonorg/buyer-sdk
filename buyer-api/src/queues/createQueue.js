@@ -3,7 +3,7 @@ import { logger } from '../utils';
 
 const PREFIX = 'buyer-api:jobs';
 
-const createQueue = (queueName) => {
+const createQueue = (queueName, opts = {}) => {
   const queue = new Queue(queueName, {
     prefix: PREFIX,
     settings: {
@@ -11,6 +11,7 @@ const createQueue = (queueName) => {
         linear: attemptsMade => attemptsMade * 10 * 1000,
       },
     },
+    ...opts,
   });
 
   const formatLog = ({ id, name }) => `[${PREFIX}:${queueName}:${id}][${name}]`;

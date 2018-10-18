@@ -10,17 +10,16 @@ const maxWib = web3.toBigNumber(config.buyerChild.maxWib);
 const minWei = web3.toBigNumber(config.buyerChild.minWei);
 const maxWei = web3.toBigNumber(config.buyerChild.maxWei);
 
-const getWeiBalance = async address =>
-  web3.eth.getBalance(address);
+const getWeiBalance = address => web3.eth.getBalance(address);
 
-const getWibBalance = async (address) => {
-  const wibUnits = await wibcoin.balanceOf.call(address);
+const getWibBalance = (address) => {
+  const wibUnits = wibcoin.balanceOf.call(address);
   return web3.toBigNumber(coin.toWib(wibUnits));
 };
 
-const getFunds = async (address) => {
-  const currentWib = await getWibBalance(address);
-  const currentWei = await getWeiBalance(address);
+const getFunds = (address) => {
+  const currentWib = getWibBalance(address);
+  const currentWei = getWeiBalance(address);
 
   return {
     wib: currentWib,
@@ -28,23 +27,30 @@ const getFunds = async (address) => {
   };
 };
 
-const missingChildFunds = async (child) => {
-  const currentWib = await getWibBalance(child.address);
-  const currentWei = await getWeiBalance(child.address);
+const missingChildFunds = (child) => {
+  const currentWib = getWibBalance(child.address);
+  const currentWei = getWeiBalance(child.address);
 
   if (currentWei.greaterThan(maxWei)) {
-    logger.alert(`Child account ${child.address} exceeds maximum ETH balance. Max: ${maxWei} WEI | Current: ${currentWei} WEI`);
+    logger.alert(`Child account ${
+      child.address
+    } exceeds maximum ETH balance. Max: ${maxWei} WEI | Current: ${currentWei} WEI`);
   }
   if (currentWib.greaterThan(maxWib)) {
-    logger.alert(`Child account ${child.address} exceeds maximum WIB balance. Max: ${maxWib} | Current: ${currentWib}`);
+    logger.alert(`Child account ${
+      child.address
+    } exceeds maximum WIB balance. Max: ${maxWib} | Current: ${currentWib}`);
   }
 
-  const missingWei = currentWei.lessThan(minWei) ? maxWei.minus(currentWei) : web3.toBigNumber(0);
-  const missingWib = currentWib.lessThan(minWib) ? maxWib.minus(currentWib) : web3.toBigNumber(0);
+  const missingWei = currentWei.lessThan(minWei)
+    ? maxWei.minus(currentWei)
+    : web3.toBigNumber(0);
+  const missingWib = currentWib.lessThan(minWib)
+    ? maxWib.minus(currentWib)
+    : web3.toBigNumber(0);
 
   return { child, missingWei, missingWib };
 };
-
 
 /**
  * Checks destinatary's balance and transfers funds if needed.
@@ -57,11 +63,15 @@ const missingChildFunds = async (child) => {
  */
 const checkAndTransfer = (child, getBalance, send, min, max) => {
   const balance = getBalance(child.address);
+  console.log('[checkAndTransfer]', {
+    balance: balance.toString(),
+    min: min.toString(),
+  });
   if (balance.greaterThanOrEqualTo(min)) return false;
 
   return send({
     _to: child.address,
-    _value: max.minus(balance).toString(),
+    _value: coin.fromWib(max.minus(balance).toString()),
   });
 };
 
@@ -83,14 +93,18 @@ const checkInitialRootBuyerFunds = async () => {
 
   if (insufficientWib) {
     logger.alert(`
-    Root Buyer (${root.address}) does not have enough WIB to fund ${childrenCount} child accounts.
+    Root Buyer (${
+  root.address
+}) does not have enough WIB to fund ${childrenCount} child accounts.
     Current balance: ${rootFunds.wib} WIB
     Required balance: ${requiredWib} WIB
     `);
   }
   if (insufficientEth) {
     logger.alert(`
-    Root Buyer (${root.address}) does not have enough ETH to fund ${childrenCount} child accounts.
+    Root Buyer (${
+  root.address
+}) does not have enough ETH to fund ${childrenCount} child accounts.
     Current balance: ${rootFunds.wei} Wei
     Required balance: ${requiredWei} Wei
     (The required balance does not take into account transaction costs)
@@ -99,7 +113,6 @@ const checkInitialRootBuyerFunds = async () => {
 
   return !(insufficientWib || insufficientEth);
 };
-
 
 /**
  * Monitors accounts balances and dispatches funding jobs if needed.
@@ -111,15 +124,23 @@ const monitorFunds = async () => {
 
   const missingFunds = await Promise.all(children.map(child => missingChildFunds(child)));
 
-  const neededWei = missingFunds.map(x => x.missingWei).reduce((x, y) => x.plus(y));
-  const neededWib = missingFunds.map(x => x.missingWib).reduce((x, y) => x.plus(y));
+  const neededWei = missingFunds
+    .map(x => x.missingWei)
+    .reduce((x, y) => x.plus(y));
+  const neededWib = missingFunds
+    .map(x => x.missingWib)
+    .reduce((x, y) => x.plus(y));
 
-  const childrenToFundWei = missingFunds.filter(x => x.missingWei.greaterThan(0));
-  const childrenToFundWib = missingFunds.filter(x => x.missingWib.greaterThan(0));
+  const childrenToFundWei = missingFunds.filter(x =>
+    x.missingWei.greaterThan(0));
+  const childrenToFundWib = missingFunds.filter(x =>
+    x.missingWib.greaterThan(0));
 
   if (rootBuyerFunds.wei.lessThan(neededWei)) {
     logger.alert(`
-    Root Buyer (${root.address}) is unable to fund ${childrenToFundWei.length} child accounts:
+    Root Buyer (${root.address}) is unable to fund ${
+  childrenToFundWei.length
+} child accounts:
     Needed ETH: ${neededWei} WEI
     Root Buyer available ETH: ${rootBuyerFunds.wei} WEI
     (The needed ETH does not take into account transaction costs)
@@ -128,18 +149,24 @@ const monitorFunds = async () => {
 
   if (rootBuyerFunds.wib.lessThan(neededWib)) {
     logger.alert(`
-    Root Buyer (${root.address}) is unable to fund ${childrenToFundWib.length} child accounts:
+    Root Buyer (${root.address}) is unable to fund ${
+  childrenToFundWib.length
+} child accounts:
     Needed WIB: ${neededWib}
     Root Buyer available WIB: ${rootBuyerFunds.wib}
     `);
   }
 
-  childrenToFundWei.forEach(x => fundingQueue.add('transferFunds', { root, child: x.child, currency: 'ETH' }));
-  childrenToFundWib.forEach(x => fundingQueue.add('transferFunds', { root, child: x.child, currency: 'WIB' }));
+  // childrenToFundWei.forEach(x =>
+  //   fundingQueue.add('transferFunds', { root, child: x.child, currency: 'ETH' }) );
+  childrenToFundWib.forEach(x =>
+    fundingQueue.add('transferFunds', { root, child: x.child, currency: 'WIB' }));
 };
 
 export {
   checkAndTransfer,
   checkInitialRootBuyerFunds,
   monitorFunds,
+  getWeiBalance,
+  getWibBalance,
 };
