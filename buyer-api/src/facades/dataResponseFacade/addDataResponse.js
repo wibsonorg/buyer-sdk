@@ -69,6 +69,9 @@ const buyData = async (order, seller, dataResponseQueue) => {
   }
 
   const buyerAccount = await getBuyerAccount(dataOrder);
+  if (!buyerAccount) {
+    throw new Error('No buyer account found to buy data');
+  }
 
   const totalPrice = await getTotalPrice(buyerAccount.address, dataOrder, notaryAccount);
 
@@ -106,6 +109,9 @@ const buyData = async (order, seller, dataResponseQueue) => {
 
 const addDataResponse = async (order, seller, params, dataResponseQueue) => {
   const buyerAccount = await getBuyerAccount(DataOrderContract.at(order));
+  if (!buyerAccount) {
+    throw new Error('No buyer account found to add DataResponse');
+  }
 
   const receipt = await sendTransaction(
     web3,
