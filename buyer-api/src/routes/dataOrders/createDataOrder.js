@@ -198,6 +198,7 @@ router.post(
 
       children.forEach(account => queue.add('createDataOrder', {
         account,
+        totalAccounts: children.length,
         batchId,
         ...dataOrder,
       }, {
