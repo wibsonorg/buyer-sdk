@@ -1,5 +1,5 @@
 import express from 'express';
-import { getBatches } from '../../facades';
+import { getBatches, getBatchesTotal } from '../../facades';
 import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 import { createBatch } from '../../services/batchInfo';
@@ -59,12 +59,10 @@ router.get(
   asyncError(async (req, res) => {
     req.apicacheGroup = '/orders/*';
 
-    const { stores: { ordersCache, batchesCache } } = req.app.locals;
+    const { openBatches, closedBatches } = await getBatchesTotal();
 
-    const batches = await getBatches(ordersCache, batchesCache);
-
-    const totalClosedOrders = 0;
-    const totalOpenOrders = batches.length;
+    const totalClosedOrders = closedBatches;
+    const totalOpenOrders = openBatches;
 
     res.json({ totalClosedOrders, totalOpenOrders });
   }),
