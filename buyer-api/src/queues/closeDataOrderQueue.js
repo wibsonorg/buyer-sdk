@@ -38,7 +38,6 @@ const closeDataOrderQueue = ({ closedDataOrdersCache }) => {
   ) => {
     const finishedStatus = await onDataOrderClosed(batchId, batchLength, closedDataOrdersCache);
     const { result: { status } } = finishedStatus;
-    console.log({ status });
     if (status === 'done') {
       await onBatchClosed(batchId);
     }

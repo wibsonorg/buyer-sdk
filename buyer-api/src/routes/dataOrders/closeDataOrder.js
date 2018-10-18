@@ -38,9 +38,7 @@ const router = express.Router();
  *         description: Problem on our side
  */
 router.post(
-  // '/:orderAddress/close',
   '/:batchId/close',
-  // validateAddress('orderAddress'),
   asyncError(async (req, res) => {
     const { batchId } = req.params;
     const {

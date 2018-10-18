@@ -26,8 +26,8 @@ const addBatchToCache = (batch, batchesCache) =>
 const getBatchesTotal = async () => {
   const batchesRaw = await listBatchPairs();
   const batchesInfo = batchesRaw.map(b => JSON.parse(b.value));
-  const openBatches = batchesInfo.filter(b => b.isOpen).length;
-  const closedBatches = batchesInfo.filter(b => !b.isOpen).length;
+  const openBatches = batchesInfo.filter(b => b.status === 'open').length;
+  const closedBatches = batchesInfo.filter(b => b.status !== 'open').length;
   return { openBatches, closedBatches };
 };
 
@@ -64,14 +64,15 @@ const consolidateResponses = async (orderAddresses, ordersCache) => {
  * @returns {Promise} Promise which resolves to the Data Order.
  */
 const fetchAndCacheBatch = async (batchId, batchInfo, ordersCache, batchesCache) => {
-  const { orderAddresses } = batchInfo;
+  const { status, orderAddresses } = batchInfo;
   const firstOrder = await getDataOrder(orderAddresses[0], ordersCache);
   // Removing orderAddress since they are grouped in orderAddresses
-  const { orderAddress: deletedKey, ...orderProperties } = firstOrder;
+  // Removing isClosed since the batch has its own status
+  const { orderAddress: deletedKey, isClosed: deletedKey2, ...orderProperties } = firstOrder;
   const { offChain, responsesBought } = await consolidateResponses(orderAddresses, ordersCache);
 
   const newBatch = {
-    batchId, ...orderProperties, offChain, responsesBought, ...batchInfo,
+    batchId, ...orderProperties, isClosed: (status !== 'open'), offChain, responsesBought, ...batchInfo,
   };
 
   await addBatchToCache(newBatch, batchesCache);

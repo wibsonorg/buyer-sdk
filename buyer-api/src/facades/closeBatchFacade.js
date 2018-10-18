@@ -1,7 +1,8 @@
+import apicache from 'apicache';
 import Response from './Response';
 import { getSellersInfo } from './sellersFacade';
 import { getDataOrder } from './getOrdersFacade';
-import { getBatchInfo, closeBatch } from '../services/batchInfo';
+import { getBatchInfo, closeBatch, startClosingOfBatch } from '../services/batchInfo';
 import { web3, DataOrderContract } from '../utils';
 import signingService from '../services/signingService';
 
@@ -40,6 +41,8 @@ const closeOrdersOfBatch = async (batchId, ordersCache, closedDataOrdersCache, q
     return new Response(null, errors);
   }
 
+  await startClosingOfBatch(batchId);
+
   const dataOrders =
   await Promise.all(orderAddresses.map(order => getDataOrder(order, ordersCache)));
 
@@ -75,6 +78,7 @@ const onBatchClosed = async (
   batchId,
 ) => {
   await closeBatch(batchId);
+  apicache.clear('/batches/*');
 };
 
 export { closeOrdersOfBatch, onBatchClosed };
