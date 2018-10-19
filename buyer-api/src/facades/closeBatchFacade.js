@@ -1,7 +1,7 @@
 import apicache from 'apicache';
 import Response from './Response';
-import { getSellersInfo } from './sellersFacade';
-import { getDataOrder } from './getOrdersFacade';
+import { getSellersInfo, getDataOrder, fetchAndCacheBatch } from './';
+
 import { getBatchInfo, closeBatch, startClosingOfBatch } from '../services/batchInfo';
 import { web3, DataOrderContract } from '../utils';
 import signingService from '../services/signingService';
@@ -47,11 +47,11 @@ const closeOrdersOfBatch = async (batchId, ordersCache, closedDataOrdersCache, q
   await Promise.all(orderAddresses.map(order => getDataOrder(order, ordersCache)));
 
   const receipts = dataOrders.map((order) => {
-    const account = children.filter(child => child.address === order.buyerAddress);
-    if (account.length > 0) {
+    const account = children.find(child => child.address === order.buyerAddress);
+    if (account) {
       queue.add('closeDataOrder', {
         orderAddr: order.orderAddress,
-        account: account[0],
+        account,
         batchId,
         batchLength: orderAddresses.length,
       }, {
@@ -76,7 +76,12 @@ const closeOrdersOfBatch = async (batchId, ordersCache, closedDataOrdersCache, q
  */
 const onBatchClosed = async (
   batchId,
+  batchesCache,
+  ordersCache,
 ) => {
+  // Fetching and caching for ensuring latest version of batch
+  const batchInfo = await getBatchInfo(batchId);
+  await fetchAndCacheBatch(batchId, batchInfo, ordersCache, batchesCache);
   await closeBatch(batchId);
   apicache.clear('/batches/*');
 };

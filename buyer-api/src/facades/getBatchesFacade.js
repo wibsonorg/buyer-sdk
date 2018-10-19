@@ -83,8 +83,9 @@ const fetchAndCacheBatch = async (batchId, batchInfo, ordersCache, batchesCache)
  * @async
  * @function getBatchInfo
  * @param {String} batchId a timestamp
- * @param {String} orderAddresses the ethereum addresses for the Data Orders
+ * @param {Object} batchInfo contains associated orders and batch status
  * @param {Object} ordersCache Redis storage used for orders caching
+ * @param {Object} batchesCache Redis storage used for batches caching
  * @throws When can not connect to blockchain or cache is not set up correctly.
  * @returns {Promise} Promise which resolves to the Data Order.
  */
@@ -125,4 +126,4 @@ const getBatches = async (
   return batches;
 };
 
-export { getBatches, getBatchInfo, getBatchesTotal };
+export { getBatches, getBatchInfo, getBatchesTotal, fetchAndCacheBatch };

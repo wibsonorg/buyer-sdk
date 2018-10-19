@@ -5,7 +5,7 @@ import {
   onBatchClosed,
 } from '../facades';
 
-const closeDataOrderQueue = ({ closedDataOrdersCache }) => {
+const closeDataOrderQueue = ({ closedDataOrdersCache, batchesCache, ordersCache }) => {
   const queue = createQueue('CloseDataOrderQueue');
 
   // NOTE: The processing can be done in a separate process by specifying the
@@ -39,7 +39,7 @@ const closeDataOrderQueue = ({ closedDataOrdersCache }) => {
     const finishedStatus = await onDataOrderClosed(batchId, batchLength, closedDataOrdersCache);
     const { result: { status } } = finishedStatus;
     if (status === 'done') {
-      await onBatchClosed(batchId);
+      await onBatchClosed(batchId, batchesCache, ordersCache);
     }
   });
 
