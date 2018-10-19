@@ -76,6 +76,9 @@ const closeDataResponse = async (order, seller, notariesCache, dataResponseQueue
   const params = await auditResult(notaryApi, order, seller, buyer);
 
   const buyerAccount = await getBuyerAccount(dataOrder);
+  if (!buyerAccount) {
+    throw new Error('No buyer account found to close DataResponse');
+  }
 
   const receipt = await sendTransaction(
     web3,
