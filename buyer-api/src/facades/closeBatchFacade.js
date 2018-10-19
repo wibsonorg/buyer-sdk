@@ -46,7 +46,7 @@ const closeOrdersOfBatch = async (batchId, ordersCache, closedDataOrdersCache, q
   const dataOrders =
   await Promise.all(orderAddresses.map(order => getDataOrder(order, ordersCache)));
 
-  const receipts = dataOrders.map((order) => {
+  dataOrders.forEach((order) => {
     const account = children.find(child => child.address === order.buyerAddress);
     if (account) {
       queue.add('closeDataOrder', {
@@ -61,10 +61,9 @@ const closeOrdersOfBatch = async (batchId, ordersCache, closedDataOrdersCache, q
         },
       });
     }
-    return undefined;
   });
 
-  return new Response({ status: 'pending', receipts });
+  return new Response({ status: 'pending' });
 };
 
 /**
