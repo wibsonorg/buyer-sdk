@@ -26,8 +26,8 @@ const addBatchToCache = (batch, batchesCache) =>
 const getBatchesTotal = async () => {
   const batchesRaw = await listBatchPairs();
   const batchesInfo = batchesRaw.map(b => JSON.parse(b.value));
-  const openBatches = batchesInfo.filter(b => b.status === 'open').length;
-  const closedBatches = batchesInfo.filter(b => b.status !== 'open').length;
+  const openBatches = batchesInfo.filter(b => b.status !== 'closed').length;
+  const closedBatches = batchesInfo.filter(b => b.status === 'closed').length;
   return { openBatches, closedBatches };
 };
 
