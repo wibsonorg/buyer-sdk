@@ -21,12 +21,46 @@ const listBatchPairs = async () => listLevelPairs(ordersPerBatch);
 
 /**
  * @function createBatchId
+ * @param {String} orderAddresses initial orders if apply
  * @returns {String} A new Id for the batch of orders
  */
-const createBatch = async (payload = []) => {
+const createBatch = async (orderAddresses = []) => {
   const id = uuid();
-  await ordersPerBatch.put(id, JSON.stringify(payload));
+  const newBatch = { status: 'open', orderAddresses };
+  await ordersPerBatch.put(id, JSON.stringify(newBatch));
   return id;
+};
+
+/**
+ * @function startClosingOfBatch
+ * @param {String} batchId a uuid
+ * @returns {Promise} true if it started successfully
+ */
+const startClosingOfBatch = async (batchId) => {
+  const batch = await ordersPerBatch.get(batchId);
+  if (batch) {
+    const { orderAddresses } = JSON.parse(batch);
+    const updatedBatch = { status: 'closing', orderAddresses };
+    await ordersPerBatch.put(batchId, JSON.stringify(updatedBatch));
+    return true;
+  }
+  return false;
+};
+
+/**
+ * @function closeBatch
+ * @param {String} batchId a uuid
+ * @returns {Promise} true if closed successfully
+ */
+const closeBatch = async (batchId) => {
+  const batch = await ordersPerBatch.get(batchId);
+  if (batch) {
+    const { orderAddresses } = JSON.parse(batch);
+    const newBatch = { status: 'closed', orderAddresses };
+    await ordersPerBatch.put(batchId, JSON.stringify(newBatch));
+    return true;
+  }
+  return false;
 };
 
 /**
@@ -41,12 +75,18 @@ const associateOrderToBatch = async (batchId, orderAddress) => {
   try {
     if (orderAddress) {
       const raw = await ordersPerBatch.get(batchId);
-      const orderAddresses = JSON.parse(raw);
-      await ordersPerBatch.put(batchId, JSON.stringify(orderAddresses.concat(orderAddress)));
+      const { status, orderAddresses } = JSON.parse(raw);
+      await ordersPerBatch.put(
+        batchId,
+        JSON.stringify({ status, orderAddresses: orderAddresses.concat(orderAddress) }),
+      );
     }
   } catch (err) {
     if (err.notFound) {
-      await ordersPerBatch.put(batchId, [orderAddress]);
+      await ordersPerBatch.put(
+        batchId,
+        JSON.stringify({ status: 'open', orderAddresses: [orderAddress] }),
+      );
     } else { throw err; }
   }
 };
@@ -60,8 +100,8 @@ const associateOrderToBatch = async (batchId, orderAddress) => {
  * @returns {Promise} Promise which resolves to the buyer info of that Data Order.
  */
 const getBatchInfo = async (batchId) => {
-  const orders = await ordersPerBatch.get(batchId);
-  return JSON.parse(orders);
+  const batch = await ordersPerBatch.get(batchId);
+  return JSON.parse(batch);
 };
 
 export {
@@ -70,4 +110,6 @@ export {
   createBatch,
   associateOrderToBatch,
   getBatchInfo,
+  closeBatch,
+  startClosingOfBatch,
 };

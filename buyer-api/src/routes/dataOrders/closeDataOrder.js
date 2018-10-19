@@ -1,27 +1,28 @@
 import express from 'express';
-import { closeDataOrderFacade } from '../../facades';
-import { validateAddress, asyncError } from '../../utils';
+// import { closeDataOrderFacade } from '../../facades';
+import { closeOrdersOfBatch } from '../../facades';
+import { asyncError } from '../../utils';
 
 const router = express.Router();
 
 /**
  * @swagger
- * /orders/{orderAddress}/close:
+ * /orders/{batchId}/close:
  *   post:
  *     description: |
  *       # Wibson's Protocol final step
- *       ## The Buyer closes the DataOrder it had created on the first step.
+ *       ## The Buyer closes the DataOrders within a Batch that were created on the first step.
  *     parameters:
  *       - in: path
- *         name: orderAddress
+ *         name: batchId
  *         type: string
  *         required: true
- *         description: The order address that will be closed
+ *         description: The batchId which orders will be closed
  *     produces:
  *       - application/json
  *     responses:
  *       200:
- *         description: When the order is closed successfully
+ *         description: When the orders are closed successfully
  *         schema:
  *           type: object
  *           properties:
@@ -37,12 +38,17 @@ const router = express.Router();
  *         description: Problem on our side
  */
 router.post(
-  '/:orderAddress/close',
-  validateAddress('orderAddress'),
+  '/:batchId/close',
   asyncError(async (req, res) => {
-    const { orderAddress } = req.params;
+    const { batchId } = req.params;
+    const {
+      stores:
+      { ordersCache, closedDataOrdersCache },
+      queues:
+      { closeDataOrder: queue },
+    } = req.app.locals;
 
-    const response = await closeDataOrderFacade(orderAddress);
+    const response = await closeOrdersOfBatch(batchId, ordersCache, closedDataOrdersCache, queue);
 
     if (response.success()) {
       res.json(response.result);

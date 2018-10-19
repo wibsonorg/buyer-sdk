@@ -17,6 +17,7 @@ import {
   createDataOrderQueue,
   createDataResponseQueue,
   fundingQueue,
+  closeDataOrderQueue,
 } from './queues';
 import {
   auth,
@@ -34,6 +35,7 @@ const app = express();
 
 app.locals.stores = {
   ordersCache: createRedisStore('orders.cache'),
+  closedDataOrdersCache: createRedisStore('closedDataOrders.cache'),
   batchesCache: createRedisStore('batches.cache'),
   notariesCache: createRedisStore('notaries.cache'),
 };
@@ -41,6 +43,7 @@ app.locals.stores = {
 app.locals.queues = {
   dataOrder: createDataOrderQueue(app.locals.stores),
   dataResponse: createDataResponseQueue(app.locals.stores),
+  closeDataOrder: closeDataOrderQueue(app.locals.stores),
   funding: fundingQueue,
 };
 

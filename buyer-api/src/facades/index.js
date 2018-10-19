@@ -1,4 +1,6 @@
-import {
+import addNotariesToOrderFacade from './addNotariesToOrderFacade';
+
+export {
   onBuyData,
   onIncreaseApprovalSent,
   addDataResponse,
@@ -6,31 +8,20 @@ import {
   closeDataResponse,
   onCloseDataResponseSent,
 } from './dataResponseFacade';
-import {
-  createDataOrderFacade,
-  onDataOrderSent,
-} from './createDataOrderFacade';
-import addNotariesToOrderFacade from './addNotariesToOrderFacade';
-import closeDataOrderFacade from './closeDataOrderFacade';
-import { getOrdersForBuyer, fetchAndCacheDataOrder, getOrdersAmountForBuyer } from './getOrdersFacade';
-import { getBatches } from './getBatchesFacade';
-
-export { getNotaryInfo, getNotariesInfo, fetchAndCacheNotary } from './notariesFacade';
-export { checkAndTransfer, checkInitialRootBuyerFunds, monitorFunds } from './transferFacade';
 
 export {
   createDataOrderFacade,
-  addNotariesToOrderFacade,
-  getOrdersForBuyer,
-  getBatches,
-  addDataResponse,
-  closeDataResponse,
-  closeDataOrderFacade,
   onDataOrderSent,
-  onBuyData,
-  onIncreaseApprovalSent,
-  onAddDataResponseSent,
-  onCloseDataResponseSent,
-  fetchAndCacheDataOrder,
-  getOrdersAmountForBuyer,
-};
+} from './createDataOrderFacade';
+
+export { closeDataOrderFacade, onDataOrderClosed } from './closeDataOrderFacade';
+
+export { getDataOrder, getOrdersForBuyer, fetchAndCacheDataOrder, getOrdersAmountForBuyer } from './getOrdersFacade';
+export { getBatches, getBatchInfo, getBatchesTotal, fetchAndCacheBatch } from './getBatchesFacade';
+
+export { getNotaryInfo, getNotariesInfo, fetchAndCacheNotary } from './notariesFacade';
+export { closeOrdersOfBatch, onBatchClosed } from './closeBatchFacade';
+export { checkAndTransfer, checkInitialRootBuyerFunds, monitorFunds } from './transferFacade';
+export { getSellerInfo, getSellersInfo } from './sellersFacade';
+
+export { addNotariesToOrderFacade };

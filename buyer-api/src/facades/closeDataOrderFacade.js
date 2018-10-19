@@ -7,12 +7,12 @@ import config from '../../config';
 
 /**
  * @async
- * @param {String} orderAddres
+ * @param {String} orderAddress
  * @returns {Array} Error messages
  */
-const validate = async (orderAddres) => {
+const validate = async (orderAddress) => {
   let errors = [];
-  const dataOrder = DataOrderContract.at(orderAddres);
+  const dataOrder = DataOrderContract.at(orderAddress);
   const sellers = await getSellersInfo(web3, dataOrder);
 
   if (!sellers.every(({ status }) => status === 'TransactionCompleted')) {
@@ -27,24 +27,44 @@ const validate = async (orderAddres) => {
  * @param {String} orderAddr Order address to be closed.
  * @returns {Response} The result of the operation.
  */
-const closeDataOrderFacade = async (orderAddr) => {
+const closeDataOrderFacade = async (orderAddr, account, batchId, batchLength, addJob) => {
   const errors = await validate(orderAddr);
 
   if (errors.length > 0) {
     return new Response(null, errors);
   }
 
-  const { address } = await signingService.getAccount();
-
   const receipt = await sendTransaction(
     web3,
-    address,
+    account,
     signingService.signCloseOrder,
     { orderAddr },
     config.contracts.gasPrice.fast,
   );
 
+  addJob('dataOrderClosed', {
+    batchId, batchLength,
+  });
+
   return new Response({ status: 'pending', receipt });
 };
 
-export default closeDataOrderFacade;
+/**
+ * @async
+ * @param {String} orderAddr Order address to be closed.
+ * @param {String} batchId The ID for the batch.
+ */
+const onDataOrderClosed = async (
+  batchId, batchLength, closedDataOrdersCache,
+) => {
+  try {
+    const count = await closedDataOrdersCache.incr(batchId);
+    if (Number(count) === batchLength) {
+      return new Response({ status: 'done', batchId });
+    }
+    return new Response({ status: 'pending', batchId });
+  } catch (err) {
+    return new Response({ status: 'pending', batchId });
+  }
+};
+export { closeDataOrderFacade, onDataOrderClosed };
