@@ -113,7 +113,7 @@ class DataOrderCreate extends Component {
       };
     });
 
-    const data = requestedData ? [requestedData] : undefined;
+    const data = requestedData ? [requestedData.value] : undefined;
 
     const notaries = requestedNotaries.map((notaries)=> notaries.value);
 
