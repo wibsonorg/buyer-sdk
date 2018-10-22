@@ -4,17 +4,23 @@ import config from '../../config';
 import signingService from '../services/signingService';
 import { coin } from '../utils/wibson-lib';
 import { fundingQueue } from '../queues/fundingQueue';
+import { waitForExecution, sendTransaction } from './helpers';
+import { storeAccountMetrics, incrementAccountCounter } from './metricsFacade';
 
-const minWib = web3.toBigNumber(config.buyerChild.minWib);
-const maxWib = web3.toBigNumber(config.buyerChild.maxWib);
-const minWei = web3.toBigNumber(config.buyerChild.minWei);
-const maxWei = web3.toBigNumber(config.buyerChild.maxWei);
+const { signETHTransfer, signWIBTransfer } = signingService;
+
+const toBN = num => web3.toBigNumber(num);
+
+const minWib = toBN(config.buyerChild.minWib);
+const maxWib = toBN(config.buyerChild.maxWib);
+const minWei = toBN(config.buyerChild.minWei);
+const maxWei = toBN(config.buyerChild.maxWei);
 
 const getWeiBalance = address => web3.eth.getBalance(address);
 
 const getWibBalance = (address) => {
   const wibUnits = wibcoin.balanceOf.call(address);
-  return web3.toBigNumber(coin.toWib(wibUnits));
+  return toBN(coin.toWib(wibUnits));
 };
 
 const getFunds = (address) => {
@@ -44,35 +50,12 @@ const missingChildFunds = (child) => {
 
   const missingWei = currentWei.lessThan(minWei)
     ? maxWei.minus(currentWei)
-    : web3.toBigNumber(0);
+    : toBN(0);
   const missingWib = currentWib.lessThan(minWib)
     ? maxWib.minus(currentWib)
-    : web3.toBigNumber(0);
+    : toBN(0);
 
   return { child, missingWei, missingWib };
-};
-
-/**
- * Checks destinatary's balance and transfers funds if needed.
- *
- * @async
- * @param {String} child Buyer's child account ethereum address
- * @param {Function} getBalance Balance getter
- * @param {Number} min Minimum required balance
- * @param {Number} max Maximum allowed balance
- */
-const checkAndTransfer = (child, getBalance, send, min, max) => {
-  const balance = getBalance(child.address);
-  console.log('[checkAndTransfer]', {
-    balance: balance.toString(),
-    min: min.toString(),
-  });
-  if (balance.greaterThanOrEqualTo(min)) return false;
-
-  return send({
-    _to: child.address,
-    _value: coin.fromWib(max.minus(balance).toString()),
-  });
 };
 
 /**
@@ -163,8 +146,87 @@ const monitorFunds = async () => {
     fundingQueue.add('transferFunds', { root, child: x.child, currency: 'WIB' }));
 };
 
+/**
+ *
+ * @param {*} root
+ * @param {*} child
+ * @param {*} currency
+ * @param {*} amounts
+ */
+const transfer = async (root, child, currency, amounts) => {
+  const [balanceFx, transferFx, minFunds, maxFunds] =
+    currency === 'WIB'
+      ? [getWibBalance, signWIBTransfer, amounts.minWib, amounts.maxWib]
+      : [getWeiBalance, signETHTransfer, amounts.minWei, amounts.maxWei];
+
+  const balance = balanceFx(child.address);
+  if (balance.greaterThanOrEqualTo(minFunds)) return false;
+
+  const receipt = await sendTransaction(web3, root, transferFx, {
+    _to: child.address,
+    _value: coin.fromWib(maxFunds.minus(balance).toString()), // FIX THIS FOR ETH
+  });
+
+  const metrics = {};
+  metrics[`${currency}:balance`] = balanceFx(child.address).toString();
+  metrics[`${currency}:balanceDate`] = Date.now();
+  await storeAccountMetrics(child, metrics);
+
+  if (receipt) {
+    logger.debug(`Funding Queue :: transfer(${currency}) :: Child #${child.number} :: waiting ...`);
+    const waitOptions = { maxIterations: 30, interval: 30 };
+    const transaction = await waitForExecution(web3, receipt, waitOptions);
+    const currentBalance = balance.toString();
+
+    switch (transaction.status) {
+      case 'success': {
+        logger.debug(`Funding Queue :: transfer(${currency}) :: Child #${child.number} :: SUCCESS`);
+        const timesSucceeded = await incrementAccountCounter(
+          child,
+          `${currency}:timesSucceeded`,
+        );
+        await storeAccountMetrics(child, {
+          [`${currency}:lastFundDate`]: Date.now(),
+          [`${currency}:timesSucceeded`]: timesSucceeded,
+        });
+        break;
+      }
+      case 'failure': {
+        logger.debug(`Funding Queue :: transfer(${currency}) :: Child #${child.number} :: FAILURE`);
+        const message = `
+        Transfer of ${currency} failed (it will not be retried).
+        Root Buyer (${root.address}) couldn't send funds to ${child.address}.
+        Current balance: ${currentBalance} ${currency}
+        `;
+        logger.alert(message);
+        break;
+      }
+      case 'pending': {
+        logger.debug(`Funding Queue :: transfer(${currency}) :: Child #${child.number} :: PENDING`);
+        const message = `
+        Transfer of ${currency} did not finished.
+        Root Buyer (${root.address}) couldn't send funds to ${child.address}.
+        Current balance: ${currentBalance} ${currency}.
+        Wait configuration: ${JSON.stringify(waitOptions)}
+        `;
+        throw new Error(message);
+      }
+      default: {
+        const message = `
+        Transfer of ${currency} failed.
+        Root Buyer (${root.address}) couldn't send funds to ${child.address}.
+        Current balance: ${currentBalance} ${currency}.
+        Unknown transaction status.
+        `;
+        logger.alert(message);
+        throw new Error(message);
+      }
+    }
+  }
+};
+
 export {
-  checkAndTransfer,
+  transfer,
   checkInitialRootBuyerFunds,
   monitorFunds,
   getWeiBalance,
