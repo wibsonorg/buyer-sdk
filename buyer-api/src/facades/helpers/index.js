@@ -6,5 +6,6 @@ export {
   sendTransaction,
   getTransactionReceipt,
   retryAfterError,
+  transactionResponse,
 } from './performTransaction';
 export { getBuyerAccount } from './getBuyerAccount';

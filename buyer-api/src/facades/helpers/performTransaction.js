@@ -145,6 +145,7 @@ const performTransaction = async (
 
 export {
   performTransaction,
+  transactionResponse,
   sendTransaction,
   getTransactionReceipt,
   retryAfterError,
