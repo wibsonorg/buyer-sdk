@@ -71,7 +71,7 @@ const buyData = async (order, seller, addDataResponseSent) => {
 
   let dataResponse;
   try {
-    dataResponse = await getDataResponse(dataOrder, seller);
+    dataResponse = await getDataResponse(dataOrder.address, seller);
   } catch (err) {
     logger.error(err);
     throw new Error('Could not retrieve data response from storage');

@@ -27,7 +27,7 @@
   font-stretch: normal;
   line-height: normal;
   letter-spacing: normal;
-  text-align: left;
+  text-align: center;
   color: #030f1a;
 }
 
@@ -52,6 +52,7 @@
 .wibson-data-table td {
   padding: 16px;
   vertical-align: top;
+  text-align: center;
 }
 
 .wibson-data-table tbody {

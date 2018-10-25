@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+/* eslint-disable no-unused-vars */
 import jwt from 'jsonwebtoken';
 import config from '../../config';
 import { fetchToken } from './';
