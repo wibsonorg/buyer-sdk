@@ -35,6 +35,7 @@ app.locals.stores = {
   level: createLevelStore(`${config.levelDirectory}/sample_level`),
   ordersCache: createRedisStore('orders.cache'),
   notariesCache: createRedisStore('notaries.cache'),
+  undead: createRedisStore('undead::'),
 };
 
 app.locals.queues = {
