@@ -3,6 +3,7 @@ import { select, put, takeLatest, all, call } from "redux-saga/effects";
 
 import * as Selectors from "./selectors";
 import * as AuthenticationSelectors from "../authentication/selectors";
+import * as AuthenticationActions from "../authentication/actions";
 
 import { getAccount } from "./helpers";
 
@@ -17,7 +18,7 @@ function* updateAccount(action) {
       const account = yield call(getAccount);
 
       if (account.statusCode === 401) {
-        console.log(account.message)
+        yield put(AuthenticationActions.logOut());
       } else {
         const lastAccount = yield select(Selectors.getAccount);
         if (account.balance !== lastAccount.balance || account.ether !== lastAccount.ether) {

@@ -72,7 +72,6 @@ class OpenDataOrders extends Component {
     } = this.props;
 
     const flatDataOrdersList = flattenDataOrders(dataOrders);
-    console.log(flatDataOrdersList)
 
     return (
       <div>
