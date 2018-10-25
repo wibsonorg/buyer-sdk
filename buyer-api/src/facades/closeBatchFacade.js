@@ -80,8 +80,8 @@ const onBatchClosed = async (
 ) => {
   // Fetching and caching for ensuring latest version of batch
   const batchInfo = await getBatchInfo(batchId);
-  await fetchAndCacheBatch(batchId, batchInfo, ordersCache, batchesCache);
   await closeBatch(batchId);
+  await fetchAndCacheBatch(batchId, batchInfo, ordersCache, batchesCache);
   apicache.clear('/batches/*');
 };
 
