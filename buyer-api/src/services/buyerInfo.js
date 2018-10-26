@@ -1,10 +1,5 @@
-import { web3, createLevelStore, listLevelValues } from '../utils';
-import config from '../../config';
-
-const buyerInfos =
-  createLevelStore(`${config.levelDirectory}/buyer_infos`);
-const buyerInfoPerOrder =
-  createLevelStore(`${config.levelDirectory}/buyer_info_per_order`);
+import { web3, listLevelValues } from '../utils';
+import { buyerInfos, buyerInfoPerOrder } from '../utils/stores';
 
 /**
  * @async
