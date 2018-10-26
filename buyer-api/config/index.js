@@ -29,6 +29,9 @@ const config = {
       ordersTTL: env.CONTRACTS_CACHE_ORDERS_TTL,
     },
   },
+  notary: {
+    demandAuditsFrom: env.NOTARY_DEMAND_AUDITS_FROM,
+  },
   cache: {
     enabled: env.CACHE === 'enabled',
     adapter: env.CACHE_ADAPTER,
