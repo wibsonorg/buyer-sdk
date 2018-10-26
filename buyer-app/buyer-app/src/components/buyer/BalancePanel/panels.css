@@ -1,3 +1,20 @@
+.panel-balance {
+  display: flex;
+  flex-direction: column;
+  min-width: 270px;
+  min-height: 100px;
+  justify-content: space-between;
+}
+
+.panel-text-balance {
+  font-size: 30px;
+  font-weight: 200;
+}
+
+.panel-text-eth-balance {
+  font-size: 18px;
+}
+
 .panel-text {
   font-size: 35px;
 	font-weight: 300;
@@ -10,6 +27,7 @@
 }
 
 .panel-note {
+  font-size: 18px;
   margin-left: 12px;
 }
 

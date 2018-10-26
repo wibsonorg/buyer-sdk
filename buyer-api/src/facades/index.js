@@ -17,7 +17,7 @@ import {
   onAddNotaryToOrderSent,
 } from './addNotariesToOrderFacade';
 import closeDataOrderFacade from './closeDataOrderFacade';
-import { getOrdersForBuyer, fetchAndCacheDataOrder } from './getOrdersFacade';
+import { getOrdersForBuyer, fetchAndCacheDataOrder, getOrdersAmountForBuyer } from './getOrdersFacade';
 
 export {
   getNotaryInfo,
@@ -41,4 +41,5 @@ export {
   checkAllowance,
   onIncreaseApprovalSent,
   fetchAndCacheDataOrder,
+  getOrdersAmountForBuyer,
 };

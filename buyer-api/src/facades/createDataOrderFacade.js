@@ -89,7 +89,7 @@ const createDataOrderFacade = async (
     address,
     signingService.signNewOrder,
     params,
-    config.contracts.gasPrice.standard,
+    config.contracts.gasPrice.fast,
   );
 
   dataOrderQueue.add('dataOrderSent', { receipt, notaries, buyerInfoId }, {

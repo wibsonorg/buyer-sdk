@@ -41,7 +41,7 @@ const closeDataOrderFacade = async (orderAddr) => {
     address,
     signingService.signCloseOrder,
     { orderAddr },
-    config.contracts.gasPrice.standard,
+    config.contracts.gasPrice.fast,
   );
 
   return new Response({ status: 'pending', receipt });

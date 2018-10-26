@@ -10,12 +10,28 @@ import { getNotaryInfo } from '../notariesFacade';
 import { web3, DataOrderContract, logger } from '../../utils';
 import config from '../../../config';
 
-const auditResult = async (notaryUrl, order, seller, buyer) => {
-  const baseUri = notaryUrl.replace(/\/$/, '');
-  const auditUrl = `${baseUri}/buyers/audit/result/${buyer}/${order}`;
+const buildUri = (rootUrl, path) => {
+  const baseUri = rootUrl.replace(/\/$/, '');
+  const trimmedPath = path.replace(/^\//, '');
+  return `${baseUri}/${trimmedPath}`;
+};
+
+const postAudit = async (notaryUrl, order, seller, buyer, step) => {
+  const auditUrl = buildUri(notaryUrl, `buyers/audit/${step}/${buyer}/${order}`);
   const payload = { dataResponses: [{ seller }] };
   const response = await client.post(auditUrl, { json: payload, timeout: 1000 });
-  const { error, result, signature } = response.dataResponses[0];
+  return response.dataResponses[0];
+};
+
+const demandAudit = async (notaryUrl, order, seller, buyer) => {
+  const { error } = await postAudit(notaryUrl, order, seller, buyer, 'on-demand');
+  if (error) {
+    throw new Error(error);
+  }
+};
+
+const auditResult = async (notaryUrl, order, seller, buyer) => {
+  const { error, result, signature } = await postAudit(notaryUrl, order, seller, buyer, 'result');
 
   if (error) {
     throw new Error(error);
@@ -59,7 +75,9 @@ const closeDataResponse = async (
   const notaryInfo = await getNotaryInfo(notaryAddress, notariesCache);
   const notaryApi = notaryInfo.publicUrls.api;
 
-  const params = await auditResult(notaryApi, order, seller, dataOrder.buyer());
+  const buyer = dataOrder.buyer();
+  await demandAudit(notaryApi, order, seller, buyer);
+  const params = await auditResult(notaryApi, order, seller, buyer);
 
   const { address } = await signingService.getAccount();
 

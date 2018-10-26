@@ -3,6 +3,8 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
+import { default as ReactSelect } from 'react-select';
+
 import * as OntologySelectors from "base-app-src/state/ontologies/selectors";
 
 import * as NotariesSelectors from "state/entities/notaries/selectors";
@@ -22,9 +24,9 @@ import Button from "base-app-src/components/Button";
 import NumberInput from "base-app-src/components/NumberInput";
 
 import Select, { SelectItem } from "base-app-src/components/Select";
+
 import Label from "base-app-src/components/Label";
 
-import Text from "base-app-src/components/Text";
 import Subtitle from "base-app-src/components/Subtitle";
 
 import Loading from "base-app-src/components/Loading";
@@ -32,33 +34,11 @@ import Loading from "base-app-src/components/Loading";
 import AudiencePicker from "./AudiencePicker";
 import Config from "../../../config";
 
-import authorization from "../../../utils/headers"
-
-import terms from './terms.md';
+import authorization from "../../../utils/headers";
 
 import "./DataOrderCreate.css";
 
 const apiUrl = Config.get("api.url");
-
-const NotariesSelect = ({ availableNotaries, value, onNotarySelected }) => {
-  const notaries =
-    !availableNotaries || availableNotaries.pending || availableNotaries.error
-      ? []
-      : availableNotaries.list;
-
-  return (
-    <Select value={value}>
-      {notaries.map(({ value, label }) => (
-        <SelectItem
-          key={value}
-          value={value}
-          label={label}
-          onClick={() => onNotarySelected(value)}
-        />
-      ))}
-    </Select>
-  );
-};
 
 class DataOrderCreate extends Component {
   constructor(opts) {
@@ -72,8 +52,7 @@ class DataOrderCreate extends Component {
       audience: [],
       requestedData: dataOntology.options[0].value,
       // TODO: allow multiple notaries.
-      // requestedNotaries: [],
-      requestedNotary: null,
+      requestedNotaries: [],
       publicURL: Config.get("buyerPublicURL"),
       errors: {},
       loading: false,
@@ -97,14 +76,14 @@ class DataOrderCreate extends Component {
 
   async componentDidMount() {
     try {
-      const res = await fetch(`${apiUrl}/infos`,  {
+      const res = await fetch(`${apiUrl}/infos`, {
         headers: {
           Authorization: authorization()
         }
       });
       const result = await res.json();
       this.setState({ buyerInfos: result.infos });
-    } catch(error) {
+    } catch (error) {
       console.log(error);
     };
   }
@@ -119,7 +98,7 @@ class DataOrderCreate extends Component {
     const {
       audience,
       requestedData,
-      requestedNotary,
+      requestedNotaries,
       publicURL,
       price,
       buyerId
@@ -134,9 +113,9 @@ class DataOrderCreate extends Component {
       };
     });
 
-    const data = requestedData ? [requestedData] : undefined;
+    const data = requestedData ? [requestedData.value] : undefined;
 
-    const notaries = [requestedNotary];
+    const notaries = requestedNotaries.map((notaries)=> notaries.value);
 
     createDataOrder(
       selectedAudience,
@@ -144,21 +123,21 @@ class DataOrderCreate extends Component {
       notaries,
       publicURL,
       price,
-      buyerId
+      buyerId,
     );
   };
 
   shouldDisableSubmitButton() {
     const {
       audience,
-      requestedNotary,
+      requestedNotaries,
       publicURL,
       requestedData
     } = this.state;
 
     return (
       audience.length === 0 ||
-      !requestedNotary ||
+      !requestedNotaries ||
       !publicURL ||
       !requestedData
     );
@@ -167,13 +146,27 @@ class DataOrderCreate extends Component {
   renderCreateForm() {
     const { audienceOntology, dataOntology, availableNotaries } = this.props;
 
+    const customStyles = {
+      option: (base, state) => ({
+        ...base,
+      }),
+      control: () => ({
+        backgroundColor: 'red'
+      }),
+      singleValue: (base, state) => {
+        const opacity = state.isDisabled ? 0.5 : 1;
+        const transition = 'opacity 300ms';
+    
+        return { ...base, opacity, transition};
+      }
+    }
+
     return (
       <Form>
         <FormSection>
           <Subtitle>Buyer info</Subtitle>
           <InfoItem>
             <Label color="light-dark">Buyer name</Label>
-
             <Select value={this.state.buyerId}>
               {this.state.buyerInfos.map(({ id, label }) => (
                 <SelectItem
@@ -199,17 +192,13 @@ class DataOrderCreate extends Component {
           <Subtitle>Orders settings</Subtitle>
           <InfoItem>
             <Label color="light-dark">Data to request</Label>
-
-            <Select value={this.state.requestedData}>
-              {dataOntology.options.map(({ value, label }) => (
-                <SelectItem
-                  key={value}
-                  value={value}
-                  label={label}
-                  onClick={() => this.setState({ requestedData: value })}
-                />
-              ))}
-            </Select>
+            <ReactSelect
+              options={dataOntology.options}
+              value={this.state.requestedData}
+              onChange={requestedData =>
+                this.setState({ requestedData })
+              }
+            />
           </InfoItem>
 
           <InfoItem>
@@ -223,12 +212,14 @@ class DataOrderCreate extends Component {
           </InfoItem>
           <InfoItem>
             <Label color="light-dark">Notary</Label>
-            <NotariesSelect
-              availableNotaries={availableNotaries}
-              value={this.state.requestedNotary}
-              onNotarySelected={requestedNotary =>
-                this.setState({ requestedNotary })
+            <ReactSelect
+              options={availableNotaries.list}
+              value={this.state.requestedNotaries}
+              onChange={requestedNotaries =>
+                this.setState({ requestedNotaries })
               }
+              isMulti={true}
+              className={customStyles}
             />
           </InfoItem>
         </FormSection>
