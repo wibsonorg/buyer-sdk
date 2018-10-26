@@ -9,6 +9,11 @@ import { getNotaryInfo } from '../notariesFacade';
 import { web3, dataOrderAt, logger } from '../../utils';
 import config from '../../../config';
 
+// notarization hack
+const demandAuditsFrom = JSON.parse(config.notary.demandAuditsFrom) || [];
+const notariesToDemandAuditsFrom = demandAuditsFrom.map(n => n.toLowerCase());
+
+
 const buildUri = (rootUrl, path) => {
   const baseUri = rootUrl.replace(/\/$/, '');
   const trimmedPath = path.replace(/^\//, '');
@@ -70,7 +75,11 @@ const closeDataResponse = async (order, seller, notariesCache, dataResponseQueue
   const notaryApi = notaryInfo.publicUrls.api;
 
   const buyer = dataOrder.methods.buyer().call();
-  await demandAudit(notaryApi, order, seller, buyer);
+
+  if (notariesToDemandAuditsFrom.includes(notaryAddress.toLowerCase())) {
+    await demandAudit(notaryApi, order, seller, buyer);
+  }
+
   const params = await auditResult(notaryApi, order, seller, buyer);
 
   const { address } = await signingService.getAccount();
