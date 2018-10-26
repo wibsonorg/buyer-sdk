@@ -161,4 +161,23 @@ const getOrdersAmountForBuyer = async (
   return Promise.all(dataOrders);
 };
 
-export { getDataOrder, getOrdersForBuyer, fetchAndCacheDataOrder, getOrdersAmountForBuyer };
+/**
+ * @async
+ * @function refreshOrdersCache
+ * @param {Object} buyerAddress the buyer's Ethereum address.
+ * @param {Object} ordersCache Redis storage used for orders caching
+ * @throws When can not connect to blockchain or cache is not set up correctly.
+ */
+const refreshOrdersCache = async (buyerAddress, ordersCache) => {
+  const orderAddresses = await dataExchange.getOrdersForBuyer(buyerAddress);
+  orderAddresses
+    .forEach(orderAddress => fetchAndCacheDataOrder(orderAddress, ordersCache));
+};
+
+export {
+  getDataOrder,
+  getOrdersForBuyer,
+  getOrdersAmountForBuyer,
+  fetchAndCacheDataOrder,
+  refreshOrdersCache,
+};
