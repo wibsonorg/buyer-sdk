@@ -30,14 +30,14 @@ router.get(
 
     const ordersResult = getOrdersForBuyer(address, ordersCache, Number(offset), Number(limit));
 
-    const minimumBudget = dataExchange.minimumInitialBudgetForAudits();
+    const minimumBudget = dataExchange.methods.minimumInitialBudgetForAudits().call();
 
     const [orders, minimumInitialBudgetForAudits] = await Promise.all([
       ordersResult,
       minimumBudget,
     ]);
 
-    res.json({ orders, minimumInitialBudgetForAudits });
+    res.json({ orders, minimumInitialBudgetForAudits: Number(minimumInitialBudgetForAudits) });
   }),
 );
 

@@ -91,7 +91,7 @@ const createDataOrderFacade = async (
       address,
       signingService.signIncreaseApproval,
       {
-        spender: dataExchange.address,
+        spender: dataExchange.options.address,
         addedValue: fromWib(params.initialBudgetForAudits),
       },
     );
@@ -136,7 +136,7 @@ const onDataOrderSent = async (
   );
 
   dataOrderQueue.add('addNotariesToOrder', {
-    orderAddr,
+    orderAddr: orderAddr.toLowerCase(),
     notaries,
   }, {
     attempts: 20,
@@ -146,7 +146,7 @@ const onDataOrderSent = async (
   });
 
   dataOrderQueue.add('associateBuyerInfoToOrder', {
-    orderAddr,
+    orderAddr: orderAddr.toLowerCase(),
     buyerInfoId,
   }, {
     attempts: 20,

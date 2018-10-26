@@ -1,5 +1,4 @@
-import web3Utils from 'web3-utils';
-import { createLevelStore, listLevelValues } from '../utils';
+import { web3, createLevelStore, listLevelValues } from '../utils';
 import config from '../../config';
 
 const buyerInfos =
@@ -38,7 +37,7 @@ const listBuyerInfos = async () => listLevelValues(buyerInfos);
 const storeBuyerInfo = async (id, payload) => {
   const { terms } = payload;
   if (!terms) throw new Error('Field \'terms\' is required');
-  const termsHash = web3Utils.sha3(terms).replace(/^0x/, '');
+  const termsHash = web3.utils.sha3(terms).replace(/^0x/, '');
   buyerInfos.put(id, JSON.stringify({ ...payload, termsHash }));
 };
 

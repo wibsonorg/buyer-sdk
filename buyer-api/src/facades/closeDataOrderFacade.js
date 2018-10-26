@@ -1,7 +1,7 @@
 import Response from './Response';
 import { getSellersInfo } from './sellersFacade';
 import { sendTransaction } from './helpers';
-import { web3, DataOrderContract } from '../utils';
+import { web3, dataOrderAt } from '../utils';
 import signingService from '../services/signingService';
 import config from '../../config';
 
@@ -12,7 +12,7 @@ import config from '../../config';
  */
 const validate = async (orderAddres) => {
   let errors = [];
-  const dataOrder = DataOrderContract.at(orderAddres);
+  const dataOrder = dataOrderAt(orderAddres);
   const sellers = await getSellersInfo(web3, dataOrder);
 
   if (!sellers.every(({ status }) => status === 'TransactionCompleted')) {

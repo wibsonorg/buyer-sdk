@@ -1,4 +1,3 @@
-import web3Utils from 'web3-utils';
 import { logger, delay } from '../../utils';
 
 /**
@@ -40,8 +39,8 @@ const getTransactionReceipt = (web3, receipt) =>
         reject(pendingError);
       } else if (typeof result === 'object') {
         if (
-          web3Utils.isHex(result.status) &&
-          web3Utils.hexToNumber(result.status) === 1
+          web3.utils.isHex(result.status) &&
+          web3.utils.hexToNumber(result.status) === 1
         ) {
           resolve(result);
         } else {
@@ -79,6 +78,15 @@ const transactionResponse = async (web3, receipt) => {
   return response;
 };
 
+const sendSignedTransaction = (web3, signedTransaction) =>
+  new Promise((resolve, reject) => {
+    web3.eth.sendSignedTransaction(`0x${signedTransaction}`)
+      .on('transactionHash', (hash) => {
+        if (!hash) reject(new Error('No tx hash'));
+        resolve(hash);
+      });
+  });
+
 /**
  * @async
  * @function sendTransaction
@@ -104,7 +112,7 @@ const sendTransaction = async (
 
   const { signedTransaction } = await signingFunc(payload);
 
-  const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
+  const receipt = await sendSignedTransaction(web3, signedTransaction);
   logger.info(`[sendTransaction] receipt ${receipt}`);
 
   return receipt;

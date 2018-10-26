@@ -11,7 +11,15 @@ const notaryTTL = Number(config.contracts.cache.notaryTTL);
  * @returns {Promise} Promise which resolves to redis result
  */
 const addNotaryToCache = (notaryInfo, notariesCache) =>
-  notariesCache.set(notaryInfo.notary, JSON.stringify(notaryInfo), 'EX', notaryTTL);
+  notariesCache.set(
+    notaryInfo.notary.toLowerCase(),
+    JSON.stringify(notaryInfo),
+    'EX',
+    notaryTTL,
+  );
+
+const fetchNotaryFromCache = (notaryAddress, notariesCache) =>
+  notariesCache.get(notaryAddress.toLowerCase());
 
 /**
  * @async
@@ -22,11 +30,11 @@ const addNotaryToCache = (notaryInfo, notariesCache) =>
  * @returns {Promise} Promise which resolves to the Data Order.
  */
 const fetchAndCacheNotary = async (address, notariesCache) => {
-  const notaryInfo = await dataExchange.getNotaryInfo(address);
+  const notaryInfo = await dataExchange.methods.getNotaryInfo(address).call();
   const publicUrls = JSON.parse(notaryInfo[2]);
 
   const parsedNotaryInfo = {
-    notary: notaryInfo[0],
+    notary: (notaryInfo[0]).toLowerCase(),
     name: notaryInfo[1],
     publicUrl: publicUrls,
     publicUrls,
@@ -47,7 +55,7 @@ const fetchAndCacheNotary = async (address, notariesCache) => {
  * @returns {Promise} Promise which resolves to the notary's information.
  */
 const getNotaryInfo = async (address, notariesCache) => {
-  const cachedNotaryInfo = await notariesCache.get(address);
+  const cachedNotaryInfo = await fetchNotaryFromCache(address, notariesCache);
   if (cachedNotaryInfo) {
     logger.debug('Notary :: Cache Hit ::', { address });
     return JSON.parse(cachedNotaryInfo);
@@ -68,7 +76,7 @@ const getNotaryInfo = async (address, notariesCache) => {
 const getNotariesInfo = async (notariesCache, addresses = []) => {
   const notaryAddresses = addresses.length > 0
     ? addresses
-    : await dataExchange.getAllowedNotaries();
+    : await dataExchange.methods.getAllowedNotaries().call();
 
   const notaries = notaryAddresses.map(notaryAddress =>
     getNotaryInfo(notaryAddress, notariesCache));

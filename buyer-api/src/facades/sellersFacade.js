@@ -1,4 +1,3 @@
-import web3Utils from 'web3-utils';
 import { dateOrNull, getElements } from './helpers';
 
 /**
@@ -11,15 +10,15 @@ import { dateOrNull, getElements } from './helpers';
  * @returns {Promise} Promise which resolves to the seller's information.
  */
 const getSellerInfo = async (web3, dataOrder, address) => {
-  const sellerInfo = await dataOrder.getSellerInfo(address);
+  const sellerInfo = await dataOrder.methods.getSellerInfo(address).call();
 
   return {
-    address,
-    notaryAddress: sellerInfo[1],
+    address: address.toLowerCase(),
+    notaryAddress: (sellerInfo[1]).toLowerCase(),
     dataHash: sellerInfo[2],
     createdAt: dateOrNull(sellerInfo[3]),
     closedAt: dateOrNull(sellerInfo[4]),
-    status: web3Utils.hexToUtf8(sellerInfo[5]),
+    status: web3.utils.hexToUtf8(sellerInfo[5]),
   };
 };
 

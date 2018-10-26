@@ -3,7 +3,7 @@ import { getNotariesInfo } from './notariesFacade';
 import { extractEventArguments, performTransaction } from './helpers';
 import signingService from '../services/signingService';
 import notaryService from '../services/notaryService';
-import { logger, web3, dataExchange, DataOrderContract } from '../utils';
+import { logger, web3, dataExchange, dataOrderAt } from '../utils';
 import { coercion, coin, collection } from '../utils/wibson-lib';
 import config from '../../config';
 
@@ -27,14 +27,14 @@ const buildNotariesParameters = async (
 };
 
 const takeOnlyNotariesToAdd = async (orderAddress, addresses) => {
-  const dataOrder = DataOrderContract.at(orderAddress);
+  const dataOrder = dataOrderAt(orderAddress);
 
   let notariesNotAdded = [];
 
   // eslint-disable-next-line no-restricted-syntax
   for (const address of addresses) {
     // eslint-disable-next-line no-await-in-loop
-    const added = await dataOrder.hasNotaryBeenAdded(address);
+    const added = await dataOrder.methods.hasNotaryBeenAdded(address).call();
 
     if (!added) {
       notariesNotAdded = [...notariesNotAdded, address];

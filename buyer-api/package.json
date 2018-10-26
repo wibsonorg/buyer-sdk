@@ -43,8 +43,7 @@
     "swagger-jsdoc": "^1.9.7",
     "swagger-ui-express": "^3.0.10",
     "truffle-contract": "3.0.6",
-    "web3": "0.20.6",
-    "web3-utils": "1.0.0-beta.34",
+    "web3": "^1.0.0-beta.33",
     "winston": "^3.0.0"
   },
   "devDependencies": {

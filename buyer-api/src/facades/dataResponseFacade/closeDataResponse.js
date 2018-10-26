@@ -1,4 +1,3 @@
-import web3Utils from 'web3-utils';
 import client from 'request-promise-native';
 import signingService from '../../services/signingService';
 import {
@@ -7,7 +6,7 @@ import {
   retryAfterError,
 } from '../helpers';
 import { getNotaryInfo } from '../notariesFacade';
-import { web3, DataOrderContract, logger } from '../../utils';
+import { web3, dataOrderAt, logger } from '../../utils';
 import config from '../../../config';
 
 const buildUri = (rootUrl, path) => {
@@ -55,14 +54,14 @@ const auditResult = async (notaryUrl, order, seller, buyer) => {
 };
 
 const closeDataResponse = async (order, seller, notariesCache, dataResponseQueue) => {
-  if (!web3Utils.isAddress(order) || !web3Utils.isAddress(seller)) {
+  if (!web3.utils.isAddress(order) || !web3.utils.isAddress(seller)) {
     throw new Error('Invalid order|seller address');
   }
 
-  const dataOrder = DataOrderContract.at(order);
+  const dataOrder = dataOrderAt(order);
 
-  const sellerInfo = await dataOrder.getSellerInfo(seller);
-  if (web3Utils.hexToUtf8(sellerInfo[5]) !== 'DataResponseAdded') {
+  const sellerInfo = await dataOrder.methods.getSellerInfo(seller).call();
+  if (web3.utils.hexToUtf8(sellerInfo[5]) !== 'DataResponseAdded') {
     return true; // DataResponse has already been closed.
   }
 
@@ -70,7 +69,7 @@ const closeDataResponse = async (order, seller, notariesCache, dataResponseQueue
   const notaryInfo = await getNotaryInfo(notaryAddress, notariesCache);
   const notaryApi = notaryInfo.publicUrls.api;
 
-  const buyer = dataOrder.buyer();
+  const buyer = dataOrder.methods.buyer().call();
   await demandAudit(notaryApi, order, seller, buyer);
   const params = await auditResult(notaryApi, order, seller, buyer);
 

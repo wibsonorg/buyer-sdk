@@ -1,5 +1,4 @@
 import express from 'express';
-import web3Utils from 'web3-utils';
 import { web3, cache, asyncError, wibcoin, coin } from '../utils';
 import signingService from '../services/signingService';
 
@@ -17,13 +16,13 @@ const router = express.Router();
  *       500:
  *         description: When the fetch failed.
  */
-router.get('/', cache('30 seconds'), asyncError(async (req, res) => {
+router.get('/', cache('10 minutes'), asyncError(async (req, res) => {
   const { address } = await signingService.getAccount();
   const [balance, ethBalance] = await Promise.all([
-    wibcoin.balanceOf.call(address),
+    wibcoin.methods.balanceOf(address).call(),
     web3.eth.getBalance(address),
   ]);
-  const ether = web3Utils.fromWei(ethBalance.toString(), 'ether');
+  const ether = web3.utils.fromWei(ethBalance.toString(), 'ether');
   const wib = coin.toWib(balance, { decimals: 2 });
   res.json({
     address,
