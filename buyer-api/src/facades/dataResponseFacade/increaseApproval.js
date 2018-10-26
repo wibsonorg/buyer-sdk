@@ -4,6 +4,7 @@ import {
   sendTransaction,
   retryAfterError,
 } from '../helpers';
+import { balanceQueue } from '../../queues';
 import signingService from '../../services/signingService';
 import { web3, dataExchange, wibcoin, logger } from '../../utils';
 import config from '../../../config';
@@ -16,10 +17,11 @@ const params = ({ minimumAllowance, multiplier }) => ({
 const getAllowance = myAddress =>
   wibcoin.allowance(myAddress, dataExchange.address);
 
-const checkAllowance = async ({ balance }) => {
+const checkAllowance = async () => {
+  logger.info('Allowance Check :: Started');
   const { address } = await signingService.getAccount();
   const allowance = await getAllowance(address);
-  const { minimumAllowance, multiplier } = params(config.buyData);
+  const { minimumAllowance, multiplier } = params(config.allowance);
 
   if (minimumAllowance.isGreaterThan(allowance)) {
     const receipt = await sendTransaction(
@@ -33,7 +35,8 @@ const checkAllowance = async ({ balance }) => {
       config.contracts.gasPrice.fast,
     );
 
-    balance.add('increaseApprovalSent', { receipt });
+    balanceQueue.add('increaseApprovalSent', { receipt });
+    logger.info('Allowance Check :: Approval increase requested');
   }
 };
 

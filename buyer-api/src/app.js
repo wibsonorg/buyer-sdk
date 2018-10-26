@@ -17,7 +17,6 @@ import {
 import {
   createDataOrderQueue,
   createDataResponseQueue,
-  createBalanceQueue,
 } from './queues';
 import {
   auth,
@@ -41,7 +40,6 @@ app.locals.stores = {
 app.locals.queues = {
   dataOrder: createDataOrderQueue(app.locals.stores),
   dataResponse: createDataResponseQueue(app.locals.stores),
-  balance: createBalanceQueue(),
 };
 
 app.use(helmet());

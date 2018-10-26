@@ -12,10 +12,7 @@ const server = () => {
 
   attachContractEventSubscribers(contractEventSubscribers, app.locals.stores);
 
-  setInterval(
-    () => checkAllowance(app.locals.queues),
-    Number(config.buyData.interval),
-  );
+  setInterval(checkAllowance, Number(config.allowance.interval));
 };
 
 export default server;
