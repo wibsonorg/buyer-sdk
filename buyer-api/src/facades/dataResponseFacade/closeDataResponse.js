@@ -74,7 +74,7 @@ const closeDataResponse = async (order, seller, notariesCache, dataResponseQueue
   const notaryInfo = await getNotaryInfo(notaryAddress, notariesCache);
   const notaryApi = notaryInfo.publicUrls.api;
 
-  const buyer = dataOrder.methods.buyer().call();
+  const buyer = await dataOrder.methods.buyer().call();
 
   if (notariesToDemandAuditsFrom.includes(notaryAddress.toLowerCase())) {
     await demandAudit(notaryApi, order, seller, buyer);
