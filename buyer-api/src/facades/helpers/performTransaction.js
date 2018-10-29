@@ -81,11 +81,66 @@ const transactionResponse = async (web3, receipt) => {
 const sendSignedTransaction = (web3, signedTransaction) =>
   new Promise((resolve, reject) => {
     web3.eth.sendSignedTransaction(`0x${signedTransaction}`)
+      .on('error', (error, receipt) => {
+        logger.debug(`[perform tx] tx errored ${receipt}`);
+        reject(error);
+      })
+      .on('confirmation', (confirmationNumber, receipt) => {
+        logger.debug(`[perform tx] tx confirmed ${receipt}`);
+      })
+      .on('receipt', (receipt) => {
+        logger.debug('[perform tx] tx receipt done');
+      })
       .on('transactionHash', (hash) => {
         if (!hash) reject(new Error('No tx hash'));
+        logger.debug('[perform tx] tx hash done');
         resolve(hash);
       });
   });
+
+/**
+ * @param {Object} web3 instance of Web3
+ * @param {Sting} receipt transaction receipt
+ * @returns {Promise} promise that resolves to the transaction object in any of
+ *                    the following states: `pending`, `success` or `failure`.
+ *                    Is reject if an error occurs.
+ */
+const getTransaction = (web3, receipt) =>
+  new Promise((resolve, reject) => {
+    web3.eth.getTransactionReceipt(receipt, (err, result) => {
+      if (err) {
+        reject(err);
+      } else if (!result) {
+        resolve({ status: 'pending' });
+      } else if (result.status && result.status === 0x1) {
+        resolve({ ...result, status: 'success' });
+      } else {
+        resolve({ ...result, status: 'failure' });
+      }
+    });
+  });
+
+/**
+ * @param {Object} web3 instance of Web3
+ * @param {Sting} receipt transaction receipt
+ * @param {Object} opts
+ * @throws {Error} when `getTransaction` is rejected
+ */
+const waitForExecution = async (web3, receipt, opts = {}) => {
+  const { maxIterations = 20, Interval = 30 } = opts;
+  let transaction = { status: 'pending' };
+  let iteration = 0;
+
+  while (transaction.status === 'pending' && iteration < maxIterations) {
+    iteration += 1;
+    // eslint-disable-next-line no-await-in-loop
+    await delay(Interval * 1000);
+    // eslint-disable-next-line no-await-in-loop
+    transaction = await getTransaction(web3, receipt);
+  }
+
+  return transaction;
+};
 
 /**
  * @async
@@ -114,13 +169,14 @@ const sendTransaction = async (
   const { signedTransaction } = await signingFunc(payload);
 
   const receipt = await sendSignedTransaction(web3, signedTransaction);
-  logger.info(`[sendTransaction] receipt ${receipt}`);
 
   return receipt;
 };
 
 export {
   sendTransaction,
+  getTransaction,
+  waitForExecution,
   getTransactionReceipt,
   retryAfterError,
 };
