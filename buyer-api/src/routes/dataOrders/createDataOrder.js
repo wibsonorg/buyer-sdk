@@ -1,5 +1,5 @@
 import express from 'express';
-import { createDataOrderFacade, getOrdersForBuyer, getOrdersAmountForBuyer } from '../../facades';
+import { createDataOrderFacade, getOrdersForBuyer } from '../../facades';
 import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 
@@ -60,10 +60,8 @@ router.get(
   cache('10 minutes'),
   asyncError(async (req, res) => {
     req.apicacheGroup = '/orders/*';
-    const { address } = await signingService.getAccount();
-
-    const { stores: { ordersCache } } = req.app.locals;
-
+    // const { address } = await signingService.getAccount();
+    // const { stores: { ordersCache } } = req.app.locals;
     // 2018-10-29: Commented due to production failures.
     // const orders = await getOrdersAmountForBuyer(address, ordersCache);
 
