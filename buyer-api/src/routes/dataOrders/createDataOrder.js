@@ -64,10 +64,11 @@ router.get(
 
     const { stores: { ordersCache } } = req.app.locals;
 
-    const orders = await getOrdersAmountForBuyer(address, ordersCache);
+    // 2018-10-29: Commented due to production failures.
+    // const orders = await getOrdersAmountForBuyer(address, ordersCache);
 
-    const totalClosedOrders = orders.filter(order => order.isClosed).length;
-    const totalOpenOrders = orders.filter(order => !order.isClosed).length;
+    const totalClosedOrders = 0; // orders.filter(order => order.isClosed).length;
+    const totalOpenOrders = 0; // orders.filter(order => !order.isClosed).length;
 
     res.json({ totalClosedOrders, totalOpenOrders });
   }),
