@@ -110,40 +110,7 @@ const sendTransaction = async (
   return receipt;
 };
 
-/**
- * @deprecated The usage of this function is discouraged. Use Jobs instead.
- *
- * @async
- * @function performTransaction
- * @param {Object} web3
- * @param {Sting} address issuer's ethereum address of the transaction
- * @param {Function} signingFunc function used to sign the transaction
- * @param {Object} params data payload needed in the transaction
- * @returns {Object} transaction object
- * @see https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethgettransactionreceipt
- */
-const performTransaction = async (
-  web3,
-  address,
-  signingFunc,
-  params,
-  gasPrice,
-) => {
-  const receipt = await sendTransaction(
-    web3,
-    address,
-    signingFunc,
-    params,
-    gasPrice,
-  );
-
-  const response = await transactionResponse(web3, receipt);
-
-  return response;
-};
-
 export {
-  performTransaction,
   sendTransaction,
   getTransactionReceipt,
   retryAfterError,

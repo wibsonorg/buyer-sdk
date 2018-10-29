@@ -1,24 +1,19 @@
 import Response from './Response';
 import { getNotariesInfo } from './notariesFacade';
-import { extractEventArguments, performTransaction } from './helpers';
-import signingService from '../services/signingService';
-import notaryService from '../services/notaryService';
-import { logger, web3, dataExchange, DataOrderContract } from '../utils';
-import { coercion, coin, collection } from '../utils/wibson-lib';
+import {
+  getTransactionReceipt,
+  sendTransaction,
+  retryAfterError,
+} from './helpers';
+import { signingService, notaryService } from '../services';
+import { logger, web3, DataOrderContract } from '../utils';
+import { fromWib } from '../utils/wibson-lib/coin';
 import config from '../../config';
 
-const { isPresent } = coercion;
-const { fromWib } = coin;
-const { partition } = collection;
-
-const buildNotariesParameters = async (
-  notaries,
-  buyerAddress,
-  orderAddress,
-) => {
+const buildNotariesParameters = async (notaries, buyerAddr, orderAddr) => {
   const promises = notaries.map(async ({ notary, publicUrls: { api } }) => {
     const { notarizationFee, ...response } = await notaryService
-      .consent(api, { buyerAddress, orderAddress });
+      .consent(api, { buyerAddress: buyerAddr, orderAddress: orderAddr });
 
     return { ...response, notarizationFee: fromWib(notarizationFee), notary };
   });
@@ -26,68 +21,116 @@ const buildNotariesParameters = async (
   return Promise.all(promises);
 };
 
-const takeOnlyNotariesToAdd = async (orderAddress, addresses) => {
+/**
+ * @param {String} orderAddress DataOrder's ethereum address
+ * @param {Array} addresses Array of notary addresses
+ * @returns {Response} The result of the operation.
+ */
+const takeOnlyNotariesToAdd = (orderAddress, addresses) => {
   const dataOrder = DataOrderContract.at(orderAddress);
 
-  let notariesNotAdded = [];
-
-  // eslint-disable-next-line no-restricted-syntax
-  for (const address of addresses) {
-    // eslint-disable-next-line no-await-in-loop
-    const added = await dataOrder.hasNotaryBeenAdded(address);
-
-    if (!added) {
-      notariesNotAdded = [...notariesNotAdded, address];
+  return addresses.reduce((accumulator, address) => {
+    if (!dataOrder.hasNotaryBeenAdded(address)) {
+      return [...accumulator, address];
     }
-  }
-
-  return notariesNotAdded;
+    return accumulator;
+  }, []);
 };
 
-const addNotaryToOrder = async (notaryParameters, buyerAddress) => {
+/**
+ * @async
+ * @param {Object} params Transaction parameters
+ * @param {String} buyerAddress Buyer's ethereum address
+ * @param {Function} addNotaryToOrderSent Callback to notify that tx's been sent
+ * @throws {Error} when AddNotaryToOrder transaction can't be sent
+ * @returns {Response} The result of the operation.
+ */
+const addNotaryToOrder = async (params, buyerAddress, addNotaryToOrderSent) => {
   try {
-    const { logs } = await performTransaction(
+    const dataOrder = DataOrderContract.at(params.orderAddress);
+    if (dataOrder.hasNotaryBeenAdded(params.notary)) {
+      return;
+    }
+
+    const receipt = await sendTransaction(
       web3,
       buyerAddress,
       signingService.signAddNotaryToOrder,
-      notaryParameters,
+      params,
       config.contracts.gasPrice.fast,
     );
 
-    const { notary: notaryAddress } = extractEventArguments(
-      'NotaryAddedToOrder',
-      logs,
-      dataExchange,
-    );
+    addNotaryToOrderSent({
+      receipt,
+      buyerAddress,
+      orderAddress: params.orderAddress,
+      notaryAddress: params.notary,
+    });
+  } catch (error) {
+    if (!retryAfterError(error)) {
+      logger.error('Could not add notary to order (it will not be retried)' +
+        ` | reason: ${error.message}` +
+        ` | params ${JSON.stringify(params)}`);
+    } else {
+      throw error;
+    }
+  }
+};
 
-    return { notaryAddress };
-  } catch (error) { // TODO: treat each error type accordingly
-    const errorPayload = { error: error.message, notaryParameters };
-    logger.error('Transaction failed', errorPayload);
-
-    return errorPayload;
+/**
+ * @async
+ * @param {String} receipt Transaction hash
+ * @param {String} orderAddress Order's ethereum address
+ * @param {String} notaryAddress Notary's ethereum address
+ * @param {String} buyerAddress Buyer's ethereum address
+ * @throws {Error} when AddNotaryToOrder transaction is pending or fails
+ */
+const onAddNotaryToOrderSent = async (
+  receipt,
+  orderAddress,
+  notaryAddress,
+  buyerAddress,
+) => {
+  try {
+    await getTransactionReceipt(web3, receipt);
+  } catch (error) {
+    if (!retryAfterError(error)) {
+      logger.error('AddNotaryToOrder failed (it will not be retried) ' +
+        `| reason: ${error.message} ` +
+        `| params ${JSON.stringify({
+          orderAddress, notaryAddress, buyerAddress,
+        })}`);
+    } else {
+      throw error;
+    }
   }
 };
 
 /**
  * @async
  * @param {String} orderAddress Address of the DataOrder
- * @param {Array} addresses Notaries' addresses
+ * @param {Array} addresses Notaries' ethereum addresses
+ * @param {Object} notariesCache Storage used for notaries caching
+ * @param {Function} enqueueAddNotaryToOrder Callback to enqueue a job
  * @returns {Response} The result of the operation.
  */
-const addNotariesToOrderFacade = async (orderAddress, addresses, notariesCache) => {
+const addNotariesToOrderFacade = async (
+  orderAddress,
+  addresses,
+  notariesCache,
+  enqueueAddNotaryToOrder,
+) => {
   if (addresses.length === 0) {
-    return new Response(null, ['Field \'notaries\' must contain at least one notary address']);
+    return new Response(null, [
+      'Field \'notaries\' must contain at least one notary address',
+    ]);
   }
 
   const notariesToAdd = await takeOnlyNotariesToAdd(orderAddress, addresses);
 
   if (notariesToAdd.length === 0) {
     // Don't fail, all notaries have been added
-    return new Response({
-      orderAddress,
-      notariesAddresses: addresses,
-    });
+    return new Response({ status: 'done' });
   }
 
   const { address: buyerAddress } = await signingService.getAccount();
@@ -98,31 +141,10 @@ const addNotariesToOrderFacade = async (orderAddress, addresses, notariesCache) 
     orderAddress,
   );
 
-  let txs = [];
+  notariesParameters.map(notaryParameters =>
+    enqueueAddNotaryToOrder({ notaryParameters, buyerAddress }));
 
-  // eslint-disable-next-line no-restricted-syntax
-  for (const notaryParameters of notariesParameters) {
-    txs = [
-      ...txs,
-      // eslint-disable-next-line no-await-in-loop
-      await addNotaryToOrder(notaryParameters, buyerAddress),
-    ];
-  }
-
-  const [
-    failedTxs,
-    successTxs,
-  ] = partition(txs, ({ error }) => isPresent(error));
-  const notariesAddresses = successTxs.map(({ notaryAddress }) => notaryAddress);
-
-  if (failedTxs.length > 0) {
-    return new Response(null, failedTxs);
-  }
-
-  return new Response({
-    orderAddress,
-    notariesAddresses,
-  });
+  return new Response({ status: 'pending' });
 };
 
-export default addNotariesToOrderFacade;
+export { addNotariesToOrderFacade, addNotaryToOrder, onAddNotaryToOrderSent };

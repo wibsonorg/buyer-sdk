@@ -59,7 +59,12 @@ const auditResult = async (notaryUrl, order, seller, buyer) => {
   };
 };
 
-const closeDataResponse = async (order, seller, notariesCache, dataResponseQueue) => {
+const closeDataResponse = async (
+  order,
+  seller,
+  notariesCache,
+  closeDataResponseSent,
+) => {
   if (!web3Utils.isAddress(order) || !web3Utils.isAddress(seller)) {
     throw new Error('Invalid order|seller address');
   }
@@ -93,15 +98,10 @@ const closeDataResponse = async (order, seller, notariesCache, dataResponseQueue
     config.contracts.gasPrice.fast,
   );
 
-  dataResponseQueue.add('closeDataResponseSent', {
+  closeDataResponseSent({
     receipt,
     orderAddress: order,
     sellerAddress: seller,
-  }, {
-    attempts: 20,
-    backoff: {
-      type: 'linear',
-    },
   });
 
   return true;
@@ -112,7 +112,7 @@ const onAddDataResponseSent = async (
   orderAddress,
   sellerAddress,
   notariesCache,
-  dataResponseQueue,
+  closeDataResponseSent,
 ) => {
   try {
     if (receipt) {
@@ -123,15 +123,15 @@ const onAddDataResponseSent = async (
       orderAddress,
       sellerAddress,
       notariesCache,
-      dataResponseQueue,
+      closeDataResponseSent,
     );
   } catch (error) {
     const { message } = error;
 
     if (!retryAfterError(error) || message === 'Invalid order|seller address') {
-      logger.error('Could not close DataResponse (it will not be retried)' +
-        ` | reason: ${error.message}` +
-        ` | params ${JSON.stringify({ receipt, orderAddress, sellerAddress })}`);
+      logger.error('Could not close DataResponse (it will not be retried) ' +
+        `| reason: ${error.message} ` +
+        `| params ${JSON.stringify({ receipt, orderAddress, sellerAddress })}`);
     } else {
       throw error;
     }
@@ -147,9 +147,9 @@ const onCloseDataResponseSent = async (
     await getTransactionReceipt(web3, receipt);
   } catch (error) {
     if (!retryAfterError(error)) {
-      logger.error('Close DataResponse failed (it will not be retried)' +
-        ` | reason: ${error.message}` +
-        ` | params ${JSON.stringify({ receipt, orderAddress, sellerAddress })}`);
+      logger.error('Close DataResponse failed (it will not be retried) ' +
+        `| reason: ${error.message} ` +
+        `| params ${JSON.stringify({ receipt, orderAddress, sellerAddress })}`);
     } else {
       throw error;
     }

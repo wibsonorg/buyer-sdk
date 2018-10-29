@@ -1,7 +1,6 @@
 import { createQueue } from './createQueue';
 import {
   onBuyData,
-  onIncreaseApprovalSent,
   onAddDataResponseSent,
   onCloseDataResponseSent,
 } from '../facades';
@@ -15,29 +14,35 @@ const createDataResponseQueue = ({ notariesCache }) => {
   queue.process('buyData', async (
     { data: { orderAddress, sellerAddress } },
   ) => {
-    await onBuyData(orderAddress, sellerAddress, queue);
-  });
-
-  queue.process('increaseApprovalSent', async (
-    {
-      data: {
-        receipt, orderAddress, sellerAddress, addDataResponseParams,
-      },
-    },
-  ) => {
-    await onIncreaseApprovalSent(
-      receipt,
-      orderAddress,
-      sellerAddress,
-      addDataResponseParams,
-      queue,
-    );
+    await onBuyData(orderAddress, sellerAddress, (params) => {
+      queue.add('addDataResponseSent', params, {
+        priority: 10,
+        attempts: 20,
+        backoff: {
+          type: 'linear',
+        },
+      });
+    });
   });
 
   queue.process('addDataResponseSent', async (
     { data: { receipt, orderAddress, sellerAddress } },
   ) => {
-    await onAddDataResponseSent(receipt, orderAddress, sellerAddress, notariesCache, queue);
+    await onAddDataResponseSent(
+      receipt,
+      orderAddress,
+      sellerAddress,
+      notariesCache,
+      (params) => {
+        queue.add('closeDataResponseSent', params, {
+          priority: 100,
+          attempts: 20,
+          backoff: {
+            type: 'linear',
+          },
+        });
+      },
+    );
   });
 
   queue.process('closeDataResponseSent', async (
