@@ -28,6 +28,7 @@ const config = {
       notaryTTL: env.CONTRACTS_CACHE_NOTARY_TTL,
       ordersTTL: env.CONTRACTS_CACHE_ORDERS_TTL,
     },
+    gasPrice: {},
   },
   notary: {
     demandAuditsFrom: env.NOTARY_DEMAND_AUDITS_FROM,
@@ -60,6 +61,11 @@ const config = {
   eventSubscribers: {
     interval: env.EVENT_SUBSCRIBERS_INTERVAL,
     lastProcessedBlock: env.EVENT_SUBSCRIBERS_LAST_PROCESSED_BLOCK,
+  },
+  allowance: {
+    interval: env.ALLOWANCE_INTERVAL,
+    minimumAllowance: env.ALLOWANCE_MINIMUM,
+    multiplier: env.ALLOWANCE_MULTIPLIER,
   },
 };
 

@@ -2,7 +2,6 @@ import Response from './Response';
 import {
   getTransactionReceipt,
   extractEventArguments,
-  performTransaction,
   sendTransaction,
 } from './helpers';
 import { web3, dataExchange } from '../utils';
@@ -84,18 +83,6 @@ const createDataOrderFacade = async (
   }
 
   const { address } = await signingService.getAccount();
-
-  if (Number(params.initialBudgetForAudits) > 0) {
-    await performTransaction(
-      web3,
-      address,
-      signingService.signIncreaseApproval,
-      {
-        spender: dataExchange.options.address,
-        addedValue: fromWib(params.initialBudgetForAudits),
-      },
-    );
-  }
 
   const receipt = await sendTransaction(
     web3,

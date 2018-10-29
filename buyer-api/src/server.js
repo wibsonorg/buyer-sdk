@@ -3,14 +3,13 @@ import app from './app';
 import config from '../config';
 import { logger, attachContractEventSubscribers } from './utils';
 import contractEventSubscribers from './contractEventSubscribers';
-import { refreshOrdersCache } from './facades/getOrdersFacade';
+import { checkAllowance } from './facades';
 
 const server = () => {
   const { port, host, env } = config;
   app.listen({ port, host }, () =>
     logger.info(`Buyer API listening on port ${port} and host ${host} in ${env} mode`));
 
-  // refreshOrdersCache();
   attachContractEventSubscribers(
     contractEventSubscribers,
     app.locals.stores,
@@ -25,6 +24,8 @@ const server = () => {
     ),
     Number(config.eventSubscribers.interval),
   );
+
+  setInterval(checkAllowance, Number(config.allowance.interval));
 };
 
 export default server;

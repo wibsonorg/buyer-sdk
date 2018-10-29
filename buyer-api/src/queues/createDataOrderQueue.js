@@ -1,5 +1,10 @@
 import { createQueue } from './createQueue';
-import { onDataOrderSent, addNotariesToOrderFacade } from '../facades';
+import {
+  onDataOrderSent,
+  addNotariesToOrderFacade,
+  addNotaryToOrder,
+  onAddNotaryToOrderSent,
+} from '../facades';
 import { associateBuyerInfoToOrder } from '../services/buyerInfo';
 
 const createDataOrderQueue = ({ notariesCache }) => {
@@ -21,11 +26,56 @@ const createDataOrderQueue = ({ notariesCache }) => {
       orderAddr,
       notaries,
       notariesCache,
+      (params) => {
+        queue.add('addNotaryToOrder', params, {
+          priority: 10,
+          attempts: 20,
+          backoff: {
+            type: 'linear',
+          },
+        });
+      },
     );
 
     if (!response.success()) {
       throw new Error('Could not add notaries to order');
     }
+  });
+
+  queue.process('addNotaryToOrder', async (
+    { data: { notaryParameters, buyerAddress } },
+  ) => {
+    await addNotaryToOrder(
+      notaryParameters,
+      buyerAddress,
+      (params) => {
+        queue.add('addNotaryToOrderSent', params, {
+          priority: 100,
+          attempts: 20,
+          backoff: {
+            type: 'linear',
+          },
+        });
+      },
+    );
+  });
+
+  queue.process('addNotaryToOrderSent', async (
+    {
+      data: {
+        receipt,
+        orderAddress,
+        notaryAddress,
+        buyerAddress,
+      },
+    },
+  ) => {
+    await onAddNotaryToOrderSent(
+      receipt,
+      orderAddress,
+      notaryAddress,
+      buyerAddress,
+    );
   });
 
   queue.process('associateBuyerInfoToOrder', async (
