@@ -50,17 +50,9 @@ class Buyer extends React.Component {
     };
   }
 
-  componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll, true);
-  }
-
   componentWillMount() {
     this.props.fetchDataOrders();
     this.props.fetchDataOrdersAmount();
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
   }
 
   handleSelectClick = value => {
@@ -74,6 +66,7 @@ class Buyer extends React.Component {
     this.props.logOutUser();
   };
 
+  // 2018-10-29: Handler not used due to production failures.
   handleScroll = (e) =>{
     // const bottom = e.target.scrollingElement.scrollHeight - e.target.scrollingElement.scrollTop === e.target.scrollingElement.clientHeight;
     const bottom = window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight;
