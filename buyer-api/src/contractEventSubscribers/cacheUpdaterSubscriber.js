@@ -3,11 +3,8 @@ import {
   fetchAndCacheDataOrder,
   fetchAndCacheNotary,
 } from '../facades';
-import { logger } from '../utils';
 
 const subscriberCallback = async (res, { ordersCache, notariesCache }) => {
-  logger.debug(`[Cache Updater Subscriber] received: ${res.event}`);
-
   const { notary, orderAddr } = res.returnValues;
   if (orderAddr) {
     await fetchAndCacheDataOrder(orderAddr, ordersCache);

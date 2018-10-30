@@ -21,14 +21,6 @@ const createTransactionQueue = () => {
     const { address } = account;
     const signFn = signingService[signWith];
 
-    logger.debug(`[tx][${name}]`, {
-      name,
-      account,
-      signWith,
-      params,
-      gasPrice,
-    });
-
     const receipt = await sendTransaction(
       web3,
       address,
@@ -42,15 +34,15 @@ const createTransactionQueue = () => {
 
     switch (status) {
       case 'success': {
-        logger.info(`[tx][${name}] Transaction success`);
+        logger.info(`[tx][${name}] Transaction success ${receipt}`);
         break;
       }
       case 'failure': {
-        logger.info(`[tx][${name}] Transaction failure`);
+        logger.info(`[tx][${name}] Transaction failure ${receipt}`);
         break;
       }
       case 'pending': {
-        logger.info(`[tx][${name}] Transaction pending. Proceeding to retry...`);
+        logger.info(`[tx][${name}] Transaction pending ${receipt}. Proceeding to retry...`);
         throw new Error('Retry tx');
       }
       default: {
@@ -64,5 +56,23 @@ const createTransactionQueue = () => {
 };
 
 const transactionQueue = createTransactionQueue();
+const enqueueTransaction = (account, signWith, params, gasPrice, options = {}) => {
+  const {
+    name, priority = 1000, attempts = 20, backoffType = 'linear',
+  } = options;
+  transactionQueue.add('perform', {
+    name: name || signWith.replace('sign', ''),
+    account,
+    signWith,
+    params,
+    gasPrice,
+  }, {
+    priority,
+    attempts,
+    backoff: {
+      type: backoffType,
+    },
+  });
+};
 
-export { transactionQueue };
+export { transactionQueue, enqueueTransaction };
