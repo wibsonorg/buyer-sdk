@@ -124,14 +124,14 @@ const getTransaction = (web3, receipt) =>
  * @throws {Error} when `getTransaction` is rejected
  */
 const waitForExecution = async (web3, receipt, opts = {}) => {
-  const { maxIterations = 20, Interval = 30 } = opts;
+  const { maxIterations = 20, interval = 30 } = opts;
   let transaction = { status: 'pending' };
   let iteration = 0;
 
   while (transaction.status === 'pending' && iteration < maxIterations) {
     iteration += 1;
     // eslint-disable-next-line no-await-in-loop
-    await delay(Interval * 1000);
+    await delay(interval * 1000);
     // eslint-disable-next-line no-await-in-loop
     transaction = await getTransaction(web3, receipt);
   }
