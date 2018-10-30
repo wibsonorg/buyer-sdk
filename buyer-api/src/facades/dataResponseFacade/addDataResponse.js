@@ -81,7 +81,7 @@ const addDataResponse = async (order, seller, enqueueTransaction) => {
     },
     config.contracts.gasPrice.fast,
     {
-      priority: 10,
+      priority: 100,
     },
   );
 
