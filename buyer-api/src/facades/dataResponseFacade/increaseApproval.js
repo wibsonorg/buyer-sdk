@@ -14,8 +14,8 @@ const params = ({ minimumAllowance, multiplier }) => ({
   multiplier: Number(multiplier),
 });
 
-const getAllowance = myAddress =>
-  wibcoin.allowance(myAddress, dataExchange.address);
+const getAllowance = async myAddress =>
+  wibcoin.methods.allowance(myAddress, dataExchange.options.address).call();
 
 const checkAllowance = async () => {
   logger.info('Allowance Check :: Started');
@@ -29,7 +29,7 @@ const checkAllowance = async () => {
       address,
       signingService.signIncreaseApproval,
       {
-        spender: dataExchange.address,
+        spender: dataExchange.options.address,
         addedValue: minimumAllowance.multipliedBy(multiplier),
       },
       config.contracts.gasPrice.fast,

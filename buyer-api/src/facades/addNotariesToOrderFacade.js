@@ -49,7 +49,7 @@ const takeOnlyNotariesToAdd = async (orderAddress, addresses) => {
  */
 const addNotaryToOrder = async (params, buyerAddress, addNotaryToOrderSent) => {
   try {
-    const dataOrder = dataOrderAt(params.orderAddress);
+    const dataOrder = dataOrderAt(params.orderAddr);
     const notaryAdded = await dataOrder.methods.hasNotaryBeenAdded(params.notary).call();
     if (notaryAdded) {
       return;
@@ -66,7 +66,7 @@ const addNotaryToOrder = async (params, buyerAddress, addNotaryToOrderSent) => {
     addNotaryToOrderSent({
       receipt,
       buyerAddress,
-      orderAddress: params.orderAddress,
+      orderAddress: params.orderAddr,
       notaryAddress: params.notary,
     });
   } catch (error) {

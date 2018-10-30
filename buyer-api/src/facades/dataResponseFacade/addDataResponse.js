@@ -24,7 +24,7 @@ const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
 };
 
 const getAllowance = async myAddress =>
-  Number(await wibcoin.methods.allowance(myAddress, dataExchange.address).call());
+  Number(await wibcoin.methods.allowance(myAddress, dataExchange.options.address).call());
 
 const addDataResponse = async (order, seller, params, addDataResponseSent) => {
   const { address } = await signingService.getAccount();

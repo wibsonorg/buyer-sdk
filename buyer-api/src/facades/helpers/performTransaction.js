@@ -104,9 +104,10 @@ const sendTransaction = async (
   gasPrice,
 ) => {
   const nonce = await web3.eth.getTransactionCount(address);
+  const ethGasPrice = await web3.eth.getGasPrice();
   const payload = {
     nonce,
-    gasPrice: gasPrice || web3.eth.gasPrice.toNumber(),
+    gasPrice: gasPrice || ethGasPrice.toString(),
     params,
   };
 
