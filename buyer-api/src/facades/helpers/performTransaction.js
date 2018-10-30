@@ -85,10 +85,7 @@ const sendSignedTransaction = (web3, signedTransaction) =>
         logger.debug(`[perform tx] tx errored ${receipt}`);
         reject(error);
       })
-      .on('confirmation', (confirmationNumber, receipt) => {
-        logger.debug(`[perform tx] tx confirmed ${receipt}`);
-      })
-      .on('receipt', (receipt) => {
+      .on('receipt', () => {
         logger.debug('[perform tx] tx receipt done');
       })
       .on('transactionHash', (hash) => {
