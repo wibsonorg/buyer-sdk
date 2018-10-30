@@ -1,9 +1,7 @@
 import {
   onBuyData,
   addDataResponse,
-  onAddDataResponseSent,
   closeDataResponse,
-  onCloseDataResponseSent,
   checkAllowance,
   onIncreaseApprovalSent,
 } from './dataResponseFacade';
@@ -36,8 +34,6 @@ export {
   closeDataOrderFacade,
   onDataOrderSent,
   onBuyData,
-  onAddDataResponseSent,
-  onCloseDataResponseSent,
   checkAllowance,
   onIncreaseApprovalSent,
   fetchAndCacheDataOrder,

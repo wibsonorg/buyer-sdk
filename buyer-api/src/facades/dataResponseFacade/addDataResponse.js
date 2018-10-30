@@ -1,6 +1,5 @@
 import web3 from '../../utils/web3';
 import signingService from '../../services/signingService';
-import { sendTransaction, retryAfterError } from '../helpers';
 import { getDataResponse } from '../../utils/wibson-lib/s3';
 import { dataExchange, dataOrderAt, wibcoin, logger } from '../../utils';
 import config from '../../../config';
@@ -26,27 +25,13 @@ const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
 const getAllowance = async myAddress =>
   Number(await wibcoin.methods.allowance(myAddress, dataExchange.options.address).call());
 
-const addDataResponse = async (order, seller, params, addDataResponseSent) => {
-  const { address } = await signingService.getAccount();
-
-  const receipt = await sendTransaction(
-    web3,
-    address,
-    signingService.signAddDataResponse,
-    params,
-    config.contracts.gasPrice.fast,
-  );
-
-  addDataResponseSent({
-    receipt,
-    orderAddress: order,
-    sellerAddress: seller,
-  });
-
-  return true;
-};
-
-const buyData = async (order, seller, addDataResponseSent) => {
+/**
+ * @async
+ * @param {String} order DataOrder's ethereum address
+ * @param {String} seller Seller's ethereum address
+ * @param {Function} enqueueTransaction function to enqueue a transaction
+ */
+const addDataResponse = async (order, seller, enqueueTransaction) => {
   if (!web3.utils.isAddress(order) || !web3.utils.isAddress(seller)) {
     throw new Error('Invalid order|seller address');
   }
@@ -55,12 +40,6 @@ const buyData = async (order, seller, addDataResponseSent) => {
   const sellerAccepted = await dataOrder.methods.hasSellerBeenAccepted(seller).call();
 
   if (sellerAccepted) {
-    addDataResponseSent({
-      receipt: null, // We don't have the receipt at this point
-      orderAddress: order,
-      sellerAddress: seller,
-    });
-
     return true;
   }
 
@@ -82,31 +61,40 @@ const buyData = async (order, seller, addDataResponseSent) => {
     throw new Error('Invalid notary');
   }
 
-  const { address } = await signingService.getAccount();
-  const totalPrice = await getTotalPrice(address, dataOrder, notaryAccount);
-  const allowance = await getAllowance(address);
+  const account = await signingService.getAccount();
+  const totalPrice = await getTotalPrice(account.address, dataOrder, notaryAccount);
+  const allowance = await getAllowance(account.address);
 
   if (allowance < totalPrice) {
     throw new Error('Not enough allowance to add DataResponse');
   }
 
-  return addDataResponse(order, seller, {
-    orderAddr: order,
-    seller,
-    notary: notaryAccount,
-    dataHash,
-    signature,
-  }, addDataResponseSent);
+  enqueueTransaction(
+    account,
+    'signAddDataResponse',
+    {
+      orderAddr: order,
+      seller,
+      notary: notaryAccount,
+      dataHash,
+      signature,
+    },
+    config.contracts.gasPrice.fast,
+    {
+      priority: 10,
+    },
+  );
+
+  return true;
 };
 
-const onBuyData = async (orderAddress, sellerAddress, addDataResponseSent) => {
+const onBuyData = async (orderAddress, sellerAddress, enqueueTx) => {
   try {
-    await buyData(orderAddress, sellerAddress, addDataResponseSent);
+    await addDataResponse(orderAddress, sellerAddress, enqueueTx);
   } catch (error) {
     const { message } = error;
 
-    if (!retryAfterError(error)
-      || message === 'Invalid order|seller address'
+    if (message === 'Invalid order|seller address'
       || message === 'Invalid data response payload'
       || message === 'Invalid notary'
     ) {
