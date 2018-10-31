@@ -1,22 +1,31 @@
 import { createQueue } from './createQueue';
+import { enqueueTransaction } from './transactionQueue';
 import {
-  onDataOrderSent,
+  createDataOrderFacade,
   addNotariesToOrderFacade,
   addNotaryToOrder,
-  onAddNotaryToOrderSent,
 } from '../facades';
 import { associateBuyerInfoToOrder } from '../services/buyerInfo';
 
-const createDataOrderQueue = ({ notariesCache }) => {
+const createDataOrderQueue = () => {
   const queue = createQueue('DataOrderQueue');
 
-  // NOTE: The processing can be done in a separate process by specifying the
-  //       path to a module instead of function.
-  // @see https://github.com/OptimalBits/bull#separate-processes
-  queue.process('dataOrderSent', async (
-    { data: { receipt, notaries, buyerInfoId } },
+  queue.process('createDataOrder', async (
+    { data: { dataOrder } },
   ) => {
-    await onDataOrderSent(receipt, notaries, buyerInfoId, queue);
+    await createDataOrderFacade(
+      dataOrder,
+      enqueueTransaction,
+      (jobName, params) => {
+        queue.add(jobName, params, {
+          priority: 10,
+          attempts: 20,
+          backoff: {
+            type: 'linear',
+          },
+        });
+      },
+    );
   });
 
   queue.process('addNotariesToOrder', async (
@@ -25,7 +34,6 @@ const createDataOrderQueue = ({ notariesCache }) => {
     const response = await addNotariesToOrderFacade(
       orderAddr,
       notaries,
-      notariesCache,
       (params) => {
         queue.add('addNotaryToOrder', params, {
           priority: 10,
@@ -43,38 +51,12 @@ const createDataOrderQueue = ({ notariesCache }) => {
   });
 
   queue.process('addNotaryToOrder', async (
-    { data: { notaryParameters, buyerAddress } },
+    { data: { account, notaryParameters } },
   ) => {
     await addNotaryToOrder(
+      account,
       notaryParameters,
-      buyerAddress,
-      (params) => {
-        queue.add('addNotaryToOrderSent', params, {
-          priority: 100,
-          attempts: 20,
-          backoff: {
-            type: 'linear',
-          },
-        });
-      },
-    );
-  });
-
-  queue.process('addNotaryToOrderSent', async (
-    {
-      data: {
-        receipt,
-        orderAddress,
-        notaryAddress,
-        buyerAddress,
-      },
-    },
-  ) => {
-    await onAddNotaryToOrderSent(
-      receipt,
-      orderAddress,
-      notaryAddress,
-      buyerAddress,
+      enqueueTransaction,
     );
   });
 

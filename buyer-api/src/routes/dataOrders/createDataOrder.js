@@ -197,15 +197,14 @@ router.post(
     if (errors.length > 0) {
       res.boom.badData('Validation failed', { validation: errors });
     } else {
-      const response = await createDataOrderFacade(dataOrder, queue);
+      queue.add('createDataOrder', { dataOrder }, {
+        attempts: 20,
+        backoff: {
+          type: 'linear',
+        },
+      });
 
-      if (response.success()) {
-        res.json(response.result);
-      } else {
-        res.boom.badData('Operation failed', {
-          errors: response.errors,
-        });
-      }
+      res.json({ status: 'pending' });
     }
   }),
 );

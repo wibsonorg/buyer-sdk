@@ -1,10 +1,6 @@
 import Response from './Response';
-import {
-  getTransactionReceipt,
-  extractEventArguments,
-  sendTransaction,
-} from './helpers';
-import { web3, dataExchange } from '../utils';
+import { extractEventArguments } from './helpers';
+import { dataExchange } from '../utils';
 import signingService from '../services/signingService';
 import { getBuyerInfo } from '../services/buyerInfo';
 import { coercion, coin } from '../utils/wibson-lib';
@@ -12,6 +8,36 @@ import config from '../../config';
 
 const { toString } = coercion;
 const { fromWib } = coin;
+
+/**
+ * @async
+ * @param {Object} transaction Transaction hash.
+ * @param {Array} notaries Ethereum addresses of the notaries involved.
+ * @param {String} buyerInfoId The ID for the buyer info.
+ * @param {Function} enqueueJob Function to add job to process.
+ */
+const onDataOrderCreated = async (
+  transaction,
+  notaries,
+  buyerInfoId,
+  enqueueJob,
+) => {
+  const { orderAddr } = extractEventArguments(
+    'NewOrder',
+    transaction.logs,
+    dataExchange,
+  );
+
+  enqueueJob('addNotariesToOrder', {
+    orderAddr: orderAddr.toLowerCase(),
+    notaries,
+  });
+
+  enqueueJob('associateBuyerInfoToOrder', {
+    orderAddr: orderAddr.toLowerCase(),
+    buyerInfoId,
+  });
+};
 
 /**
  * Builds DataOrder parameters.
@@ -57,12 +83,14 @@ const buildDataOrderParameters = ({
  * @param {Array} parameters.notaries Ethereum addresses of the notaries
  *                 involved.
  * @param {String} parameters.buyerInfoId The ID for the buyer info.
- * @param {Object} dataOrderQueue DataOrder's queue object
+ * @param {Function} enqueueTransaction function to enqueue a transaction
+ * @param {Function} enqueueJob Function to add job to process.
  * @returns {Response} The result of the operation.
  */
 const createDataOrderFacade = async (
   { notaries, buyerInfoId, ...parameters },
-  dataOrderQueue,
+  enqueueTransaction,
+  enqueueJob,
 ) => {
   const { termsHash } = await getBuyerInfo(buyerInfoId);
   const params = buildDataOrderParameters({
@@ -82,65 +110,25 @@ const createDataOrderFacade = async (
     return new Response(null, ['Field \'notaries\' must contain at least one notary address']);
   }
 
-  const { address } = await signingService.getAccount();
+  const account = await signingService.getAccount();
 
-  const receipt = await sendTransaction(
-    web3,
-    address,
-    signingService.signNewOrder,
+  const job = await enqueueTransaction(
+    account,
+    'signNewOrder',
     params,
     config.contracts.gasPrice.fast,
+    {
+      priority: 1000,
+    },
   );
 
-  dataOrderQueue.add('dataOrderSent', { receipt, notaries, buyerInfoId }, {
-    attempts: 20,
-    backoff: {
-      type: 'linear',
-    },
+  job.finished().then((transaction) => {
+    if (transaction.status === 'success') {
+      onDataOrderCreated(transaction, notaries, buyerInfoId, enqueueJob);
+    }
   });
 
-  return new Response({ status: 'pending', receipt });
+  return new Response({ status: 'pending' });
 };
 
-/**
- * @async
- * @param {String} receipt Transaction hash.
- * @param {Array} notaries Ethereum addresses of the notaries involved.
- * @param {String} buyerInfoId The ID for the buyer info.
- * @param {Object} dataOrderQueue DataOrder's queue object.
- */
-const onDataOrderSent = async (
-  receipt,
-  notaries,
-  buyerInfoId,
-  dataOrderQueue,
-) => {
-  const { logs } = await getTransactionReceipt(web3, receipt);
-  const { orderAddr } = extractEventArguments(
-    'NewOrder',
-    logs,
-    dataExchange,
-  );
-
-  dataOrderQueue.add('addNotariesToOrder', {
-    orderAddr: orderAddr.toLowerCase(),
-    notaries,
-  }, {
-    attempts: 20,
-    backoff: {
-      type: 'linear',
-    },
-  });
-
-  dataOrderQueue.add('associateBuyerInfoToOrder', {
-    orderAddr: orderAddr.toLowerCase(),
-    buyerInfoId,
-  }, {
-    attempts: 20,
-    backoff: {
-      type: 'linear',
-    },
-  });
-};
-
-export { createDataOrderFacade, onDataOrderSent };
+export { createDataOrderFacade };
