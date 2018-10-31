@@ -62,14 +62,12 @@ router.get(
     req.apicacheGroup = '/orders/*';
     const { address } = await signingService.getAccount();
 
-    const { stores: { ordersCache } } = req.app.locals;
+    const orders = await getOrdersAmountForBuyer(address);
 
-    const orders = await getOrdersAmountForBuyer(address, ordersCache);
-
-    const totalClosedOrders = orders.filter(order => order.isClosed).length;
-    const totalOpenOrders = orders.filter(order => !order.isClosed).length;
-
-    res.json({ totalClosedOrders, totalOpenOrders });
+    res.json({
+      totalClosedOrders: orders.closed,
+      totalOpenOrders: orders.open,
+    });
   }),
 );
 
