@@ -40,7 +40,7 @@ import { removeCookie } from "../../utils/cookies"
 
 import R from "ramda";
 
-const limit = 12;
+const limit = 1;
 
 class Buyer extends React.Component {
   constructor(props) {
@@ -51,16 +51,23 @@ class Buyer extends React.Component {
   }
 
   componentDidMount() {
+    this.props.fetchDataOrders();
+    this.props.fetchDataOrdersAmount();
     window.addEventListener('scroll', this.handleScroll, true);
   }
 
-  componentWillMount() {
-    this.props.fetchDataOrders();
-    this.props.fetchDataOrdersAmount();
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll, true);
   }
 
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
+  componentDidUpdate(prevProps) {
+    if (this.props.location.pathname !== prevProps.location.pathname) {
+      if ((/.*-orders\/.+$/img).test(this.props.location.pathname)) {
+        window.removeEventListener('scroll', this.handleScroll, true);
+      } else if (this.props.location.pathname !== '/') {
+        window.addEventListener('scroll', this.handleScroll, true);
+      }
+    }
   }
 
   handleSelectClick = value => {

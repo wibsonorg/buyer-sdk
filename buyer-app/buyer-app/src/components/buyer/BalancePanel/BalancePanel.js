@@ -1,8 +1,6 @@
 import React from "react";
 
 import { compose } from "recompose";
-import Link from "base-app-src/components/Link";
-import Icon from "base-app-src/components/Icon";
 import Panel from "base-app-src/components/Panel";
 import Text from "base-app-src/components/Text";
 import Tooltip from "base-app-src/components/Tooltip";
@@ -39,16 +37,14 @@ class BalancePanel extends React.Component {
   };
 
   render() {
-    let balance ="N/A";
+    let balance = "N/A";
     let balanceScaled = balance;
     let ether = "N/A";
     let wib = "N/A";
 
-    const { history } = this.props;
-
     if (typeof this.props.balance !== "undefined") {
-      balance = this.props.balance;
-      balanceScaled = shortenLargeNumber(balance, 2);
+      balance = this.props.balance / Math.pow(10, 9); // TODO: unhardcode 9 decimal places
+      balanceScaled = shortenLargeNumber(this.props.balance, 2);
     }
 
     if (typeof this.props.wib !== "undefined") {
@@ -68,6 +64,7 @@ class BalancePanel extends React.Component {
         <div
           onMouseEnter={()=>(this.handleToggleTooltip("showTooltipWib"))}
           onMouseLeave={()=>(this.handleToggleTooltip("showTooltipWib"))}
+          style={{ flex: 1 }}
         >
           <span className={cx("panel-text-balance")}>{`WIB ${wib}`}</span>
           <span className={cx("panel-note")}>
@@ -88,6 +85,7 @@ class BalancePanel extends React.Component {
         <div
           onMouseEnter={()=>(this.handleToggleTooltip("showTooltipEther"))}
           onMouseLeave={()=>(this.handleToggleTooltip("showTooltipEther"))}
+          style={{ flex: 1 }}
         >
           <span className={cx("panel-text-eth-balance")}>{`ETH ${ether.toFixed(4)}`}</span>
           <div style={{ position: "relative" }}>
@@ -102,9 +100,6 @@ class BalancePanel extends React.Component {
             </Tooltip>
           </div>
         </div>
-        <Link color="light-dark" onClick={() => history.push("/cash-out")}>
-          Cash out <Icon icon="ArrowRight" />
-        </Link>
       </div>
       </Panel>
     );
