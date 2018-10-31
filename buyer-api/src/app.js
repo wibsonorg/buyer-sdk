@@ -34,7 +34,6 @@ app.locals.stores = {
   redis: createRedisStore('sample'),
   level: createLevelStore('sample_level'),
   ordersCache: createRedisStore('orders.cache'),
-  notariesCache: createRedisStore('notaries.cache'), // TODO: Remove this usage
   undead: createRedisStore('undead::'),
 };
 

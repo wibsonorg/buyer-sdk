@@ -2,7 +2,6 @@ import Response from './Response';
 import { getNotariesInfo } from './notariesFacade';
 import { signingService, notaryService } from '../services';
 import { dataOrderAt } from '../utils';
-import { notariesCache } from '../utils/stores';
 import { fromWib } from '../utils/wibson-lib/coin';
 import config from '../../config';
 
@@ -89,7 +88,7 @@ const addNotariesToOrderFacade = async (
   }
 
   const account = await signingService.getAccount();
-  const notariesInformation = await getNotariesInfo(notariesCache, notariesToAdd);
+  const notariesInformation = await getNotariesInfo(notariesToAdd);
   const notariesParameters = await buildNotariesParameters(
     notariesInformation,
     account.address,
