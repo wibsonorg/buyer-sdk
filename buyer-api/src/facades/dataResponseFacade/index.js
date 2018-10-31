@@ -3,4 +3,4 @@ export {
   addDataResponse,
 } from './addDataResponse';
 export { closeDataResponse } from './closeDataResponse';
-export { checkAllowance, onIncreaseApprovalSent } from './increaseApproval';
+export { checkAllowance } from './increaseApproval';
