@@ -85,12 +85,9 @@ const sendSignedTransaction = (web3, signedTransaction) =>
         logger.debug(`[perform tx] tx errored ${receipt}`);
         reject(error);
       })
-      .on('receipt', () => {
-        logger.debug('[perform tx] tx receipt done');
-      })
       .on('transactionHash', (hash) => {
         if (!hash) reject(new Error('No tx hash'));
-        logger.debug('[perform tx] tx hash done');
+        logger.debug('[perform tx] tx hash done', { hash });
         resolve(hash);
       });
   });
@@ -109,7 +106,7 @@ const getTransaction = (web3, receipt) =>
         reject(err);
       } else if (!result) {
         resolve({ status: 'pending' });
-      } else if (result.status && result.status === 0x1) {
+      } else if (result.status && web3.utils.hexToNumber(result.status) === 1) {
         resolve({ ...result, status: 'success' });
       } else {
         resolve({ ...result, status: 'failure' });

@@ -1,4 +1,7 @@
 export { createDataOrderQueue } from './createDataOrderQueue';
-export { createDataResponseQueue } from './createDataResponseQueue';
+export {
+  dataResponseQueue,
+  enqueueCloseDataResponse,
+} from './dataResponseQueue';
 export { balanceQueue } from './balanceQueue';
-export { transactionQueue } from './transactionQueue';
+export { transactionQueue, enqueueTransaction } from './transactionQueue';
