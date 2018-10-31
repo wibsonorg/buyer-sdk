@@ -39,7 +39,11 @@ const takeOnlyNotariesToAdd = (orderAddress, addresses) => {
 
 /**
  * @async
- * @param {Object} params Transaction parameters
+ * @param {String} params.orderAddr DataOrder's ethereum address
+ * @param {String} params.responsesPercentage Percentage of response to notarize
+ * @param {String} params.notarizationFee Notary's fee
+ * @param {String} params.notarizationTermsOfService Notary's ToS
+ * @param {String} params.notarySignature Notary's consent signature
  * @param {String} buyerAddress Buyer's ethereum address
  * @param {Function} addNotaryToOrderSent Callback to notify that tx's been sent
  * @throws {Error} when AddNotaryToOrder transaction can't be sent
@@ -47,7 +51,7 @@ const takeOnlyNotariesToAdd = (orderAddress, addresses) => {
  */
 const addNotaryToOrder = async (params, buyerAddress, addNotaryToOrderSent) => {
   try {
-    const dataOrder = DataOrderContract.at(params.orderAddress);
+    const dataOrder = DataOrderContract.at(params.orderAddr);
     if (dataOrder.hasNotaryBeenAdded(params.notary)) {
       return;
     }
@@ -63,7 +67,7 @@ const addNotaryToOrder = async (params, buyerAddress, addNotaryToOrderSent) => {
     addNotaryToOrderSent({
       receipt,
       buyerAddress,
-      orderAddress: params.orderAddress,
+      orderAddress: params.orderAddr,
       notaryAddress: params.notary,
     });
   } catch (error) {
