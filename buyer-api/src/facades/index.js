@@ -3,7 +3,6 @@ import {
   addDataResponse,
   closeDataResponse,
   checkAllowance,
-  onIncreaseApprovalSent,
 } from './dataResponseFacade';
 import {
   createDataOrderFacade,
@@ -35,7 +34,6 @@ export {
   onDataOrderSent,
   onBuyData,
   checkAllowance,
-  onIncreaseApprovalSent,
   fetchAndCacheDataOrder,
   getOrdersAmountForBuyer,
 };
