@@ -35,11 +35,11 @@ const createTransactionQueue = () => {
     switch (transaction.status) {
       case 'success': {
         logger.info(`[tx][${name}] Transaction success ${receipt}`);
-        return transaction;
+        break;
       }
       case 'failure': {
         logger.info(`[tx][${name}] Transaction failure ${receipt}`);
-        return transaction;
+        break;
       }
       case 'pending': {
         logger.info(`[tx][${name}] Transaction pending ${receipt}. Proceeding to retry...`);
@@ -47,9 +47,10 @@ const createTransactionQueue = () => {
       }
       default: {
         logger.info(`[tx][${name}] Unknown transaction status`);
-        break;
       }
     }
+
+    return transaction;
   });
 
   return queue;

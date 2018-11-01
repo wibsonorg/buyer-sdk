@@ -1,5 +1,5 @@
 import express from 'express';
-import { createDataOrderFacade, getOrdersForBuyer, getOrdersAmountForBuyer } from '../../facades';
+import { getOrdersForBuyer, getOrdersAmountForBuyer } from '../../facades';
 import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 
