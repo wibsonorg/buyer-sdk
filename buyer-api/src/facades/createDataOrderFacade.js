@@ -26,6 +26,7 @@ const { fromWib } = coin;
  *                 for the order.
  * @param {String} parameters.buyerURL Public URL of the buyer where the data
  *                 must be sent.
+ * @param {String} parameters.notaries Notaries' ethereum addresses.
  * @returns {Object} Curated fields needed to create a DataOrder.
  */
 const buildDataOrderParameters = ({
@@ -35,6 +36,7 @@ const buildDataOrderParameters = ({
   initialBudgetForAudits,
   termsAndConditions,
   buyerURL,
+  notaries,
 }) => ({
   filters: JSON.stringify(filters),
   dataRequest: JSON.stringify(dataRequest),
@@ -42,6 +44,7 @@ const buildDataOrderParameters = ({
   initialBudgetForAudits: fromWib(initialBudgetForAudits),
   termsAndConditions: toString(termsAndConditions),
   buyerURL: JSON.stringify(buyerURL),
+  notaries: notaries.map(notary => notary.toLowerCase()),
 });
 
 /**
@@ -61,11 +64,11 @@ const buildDataOrderParameters = ({
  * @returns {Response} The result of the operation.
  */
 const createDataOrderFacade = async (
-  { notaries, buyerInfoId, ...parameters },
+  { buyerInfoId, ...parameters },
   dataOrderQueue,
 ) => {
   const { termsHash } = await getBuyerInfo(buyerInfoId);
-  const params = buildDataOrderParameters({
+  const { notaries, ...params } = buildDataOrderParameters({
     ...parameters,
     termsAndConditions: termsHash,
   });
