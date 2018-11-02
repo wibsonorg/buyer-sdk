@@ -31,7 +31,7 @@ router.get('/verify-token', asyncError(async (req, res) => {
     if (error === 'TokenExpiredError') {
       return res.boom.unauthorized('token is expired');
     }
-    return res.status(200).send();
+    return res.json({ statusCode: 'OK' });
   });
 }));
 

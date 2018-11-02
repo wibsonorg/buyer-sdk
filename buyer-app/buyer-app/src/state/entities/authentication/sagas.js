@@ -20,8 +20,9 @@ function* logInUserWorker(action) {
       setCookie('token', token, {});
       yield put(Actions.logInUserSucceed(authenticated));
     }
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
+    const error = "connection refused"
     yield put(Actions.logInUserFailed(error));
   }
 }
