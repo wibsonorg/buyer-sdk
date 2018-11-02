@@ -1,9 +1,6 @@
 import uuid from 'uuid/v4';
-import { createLevelStore, listLevelKeys, listLevelPairs } from '../utils';
-import config from '../../config';
-
-const ordersPerBatch =
-  createLevelStore(`${config.levelDirectory}/orders_per_batch`);
+import { listLevelKeys, listLevelPairs } from '../utils';
+import { ordersPerBatch } from '../utils/stores';
 
 /**
  * @async

@@ -14,10 +14,10 @@ import {
   createRedisStore,
 } from './utils';
 import {
-  createDataOrderQueue,
-  createDataResponseQueue,
   fundingQueue,
   closeDataOrderQueue,
+  dataOrderQueue,
+  dataResponseQueue,
 } from './queues';
 import {
   auth,
@@ -37,12 +37,12 @@ app.locals.stores = {
   ordersCache: createRedisStore('orders.cache'),
   closedDataOrdersCache: createRedisStore('closedDataOrders.cache'),
   batchesCache: createRedisStore('batches.cache'),
-  notariesCache: createRedisStore('notaries.cache'),
+  undead: createRedisStore('undead::'),
 };
 
 app.locals.queues = {
-  dataOrder: createDataOrderQueue(app.locals.stores),
-  dataResponse: createDataResponseQueue(app.locals.stores),
+  dataOrder: dataOrderQueue,
+  dataResponse: dataResponseQueue,
   closeDataOrder: closeDataOrderQueue(app.locals.stores),
   funding: fundingQueue,
 };

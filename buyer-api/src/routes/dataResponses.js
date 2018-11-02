@@ -17,15 +17,22 @@ router.post('/', asyncError(async (req, res) => {
   const { dataResponse } = req.app.locals.queues;
   const { orderAddress, sellerAddress } = req.body;
 
-  // fire and forget
-  dataResponse.add('buyData', { orderAddress, sellerAddress }, {
-    attempts: 20,
-    backoff: {
-      type: 'linear',
-    },
-  });
+  const { undead } = req.app.locals.stores;
+  const undeadOrders = JSON.parse(await undead.get('orders')) || [];
 
-  res.status(200).send();
+  if (undeadOrders.includes(orderAddress)) {
+    res.status(410).send();
+  } else {
+    // fire and forget
+    dataResponse.add('buyData', { orderAddress, sellerAddress }, {
+      attempts: 20,
+      backoff: {
+        type: 'linear',
+      },
+    });
+
+    res.status(200).send();
+  }
 }));
 
 export default router;

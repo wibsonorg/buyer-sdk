@@ -1,15 +1,13 @@
-import web3Utils from 'web3-utils';
 import client from 'request-promise-native';
-import signingService from '../../services/signingService';
-import {
-  getTransactionReceipt,
-  sendTransaction,
-  retryAfterError,
-  getBuyerAccount,
-} from '../helpers';
+import { priority } from '../../queues';
+import { getBuyerAccount } from '../helpers';
 import { getNotaryInfo } from '../notariesFacade';
-import { web3, DataOrderContract, logger } from '../../utils';
+import { web3, dataOrderAt } from '../../utils';
 import config from '../../../config';
+
+// notarization hack
+const demandAuditsFrom = JSON.parse(config.notary.demandAuditsFrom) || [];
+const notariesToDemandAuditsFrom = demandAuditsFrom.map(n => n.toLowerCase());
 
 const buildUri = (rootUrl, path) => {
   const baseUri = rootUrl.replace(/\/$/, '');
@@ -55,104 +53,51 @@ const auditResult = async (notaryUrl, order, seller, buyer) => {
   };
 };
 
-const closeDataResponse = async (order, seller, notariesCache, dataResponseQueue) => {
-  if (!web3Utils.isAddress(order) || !web3Utils.isAddress(seller)) {
+/**
+ * @async
+ * @param {String} order DataOrder's ethereum address
+ * @param {String} seller Seller's ethereum address
+ * @param {Function} enqueueTransaction function to enqueue a transaction
+ */
+const closeDataResponse = async (
+  order,
+  seller,
+  enqueueTransaction,
+) => {
+  if (!web3.utils.isAddress(order) || !web3.utils.isAddress(seller)) {
     throw new Error('Invalid order|seller address');
   }
 
-  const dataOrder = DataOrderContract.at(order);
+  const dataOrder = dataOrderAt(order);
 
-  const sellerInfo = await dataOrder.getSellerInfo(seller);
-  if (web3Utils.hexToUtf8(sellerInfo[5]) !== 'DataResponseAdded') {
+  const sellerInfo = await dataOrder.methods.getSellerInfo(seller).call();
+  if (web3.utils.hexToUtf8(sellerInfo[5]) !== 'DataResponseAdded') {
     return true; // DataResponse has already been closed.
   }
 
   const notaryAddress = sellerInfo[1];
-  const notaryInfo = await getNotaryInfo(notaryAddress, notariesCache);
+  const notaryInfo = await getNotaryInfo(notaryAddress);
   const notaryApi = notaryInfo.publicUrls.api;
 
-  const buyer = dataOrder.buyer();
-  await demandAudit(notaryApi, order, seller, buyer);
-  const params = await auditResult(notaryApi, order, seller, buyer);
+  const buyer = await dataOrder.methods.buyer().call();
 
-  const buyerAccount = await getBuyerAccount(dataOrder);
-  if (!buyerAccount) {
-    throw new Error('No buyer account found to close DataResponse');
+  if (notariesToDemandAuditsFrom.includes(notaryAddress.toLowerCase())) {
+    await demandAudit(notaryApi, order, seller, buyer);
   }
 
-  const receipt = await sendTransaction(
-    web3,
-    buyerAccount,
-    signingService.signCloseDataResponse,
+  const params = await auditResult(notaryApi, order, seller, buyer);
+
+  const account = await getBuyerAccount(dataOrder);
+
+  enqueueTransaction(
+    account,
+    'CloseDataResponse',
     params,
     config.contracts.gasPrice.fast,
+    { priority: priority.LOW },
   );
-
-  dataResponseQueue.add('closeDataResponseSent', {
-    receipt,
-    orderAddress: order,
-    sellerAddress: seller,
-  }, {
-    attempts: 20,
-    backoff: {
-      type: 'linear',
-    },
-  });
 
   return true;
 };
 
-const onAddDataResponseSent = async (
-  receipt,
-  orderAddress,
-  sellerAddress,
-  notariesCache,
-  dataResponseQueue,
-) => {
-  try {
-    if (receipt) {
-      await getTransactionReceipt(web3, receipt);
-    }
-
-    await closeDataResponse(
-      orderAddress,
-      sellerAddress,
-      notariesCache,
-      dataResponseQueue,
-    );
-  } catch (error) {
-    const { message } = error;
-
-    if (!retryAfterError(error) || message === 'Invalid order|seller address') {
-      logger.error('Could not close DataResponse (it will not be retried)' +
-        ` | reason: ${error.message}` +
-        ` | params ${JSON.stringify({ receipt, orderAddress, sellerAddress })}`);
-    } else {
-      throw error;
-    }
-  }
-};
-
-const onCloseDataResponseSent = async (
-  receipt,
-  orderAddress,
-  sellerAddress,
-) => {
-  try {
-    await getTransactionReceipt(web3, receipt);
-  } catch (error) {
-    if (!retryAfterError(error)) {
-      logger.error('Close DataResponse failed (it will not be retried)' +
-        ` | reason: ${error.message}` +
-        ` | params ${JSON.stringify({ receipt, orderAddress, sellerAddress })}`);
-    } else {
-      throw error;
-    }
-  }
-};
-
-export {
-  onAddDataResponseSent,
-  closeDataResponse,
-  onCloseDataResponseSent,
-};
+export { closeDataResponse };

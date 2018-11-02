@@ -7,7 +7,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /orders/{batchId}/close:
+ * /orders/{orderAddress}/end:
  *   post:
  *     description: |
  *       # Wibson's Protocol final step
@@ -38,7 +38,7 @@ const router = express.Router();
  *         description: Problem on our side
  */
 router.post(
-  '/:batchId/close',
+  '/:orderAddress/end',
   asyncError(async (req, res) => {
     const { batchId } = req.params;
     const {

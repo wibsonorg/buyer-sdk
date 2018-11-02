@@ -33,9 +33,10 @@ router.get(
     // HACK: This is just to fit what buyer-app is expecting
     orders.forEach((o) => { o.orderAddress = o.batchId; }); //eslint-disable-line
 
-    const minimumInitialBudgetForAudits = await dataExchange.minimumInitialBudgetForAudits();
+    const minimumInitialBudgetForAudits =
+    await dataExchange.methods.minimumInitialBudgetForAudits().call();
 
-    res.json({ orders, minimumInitialBudgetForAudits });
+    res.json({ orders, minimumInitialBudgetForAudits: Number(minimumInitialBudgetForAudits) });
   }),
 );
 

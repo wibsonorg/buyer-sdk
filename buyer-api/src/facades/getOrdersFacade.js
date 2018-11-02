@@ -1,5 +1,5 @@
 import config from '../../config';
-import { logger, dataExchange, DataOrderContract } from '../utils';
+import { logger, dataExchange, dataOrderAt } from '../utils';
 import { getElements } from './helpers/blockchain';
 import { dateOrNull } from './helpers/date';
 import { storage as offchainStorage, coin } from '../utils/wibson-lib';
@@ -15,7 +15,15 @@ const { toWib } = coin;
  * @returns {Promise} Promise which resolves to redis result
  */
 const addOrderToCache = (dataOrder, ordersCache) =>
-  ordersCache.set(dataOrder.orderAddress, JSON.stringify(dataOrder), 'EX', ordersTTL);
+  ordersCache.set(
+    dataOrder.orderAddress.toLowerCase(),
+    JSON.stringify(dataOrder),
+    'EX',
+    ordersTTL,
+  );
+
+const fetchOrderFromCache = async (orderAddress, ordersCache) =>
+  ordersCache.get(orderAddress.toLowerCase());
 
 /**
  * @async
@@ -52,24 +60,23 @@ const getDataOrderDetails = async (order) => {
     transactionCompletedAt,
     price,
   ] = await Promise.all([
-    order.filters(),
-    order.dataRequest(),
+    order.methods.filters().call(),
+    order.methods.dataRequest().call(),
     getElements(order, 'notaries'),
     getElements(order, 'sellers'),
-    order.termsAndConditions(),
-    order.buyer(),
-    order.buyerURL(),
-    order.buyerPublicKey(),
-    order.createdAt(),
-    order.transactionCompletedAt(),
-    order.price(),
+    order.methods.termsAndConditions().call(),
+    order.methods.buyerURL().call(),
+    order.methods.buyerPublicKey().call(),
+    order.methods.createdAt().call(),
+    order.methods.transactionCompletedAt().call(),
+    order.methods.price().call(),
   ]);
 
   return {
-    orderAddress: order.address,
+    orderAddress: order.options.address.toLowerCase(),
     audience: JSON.parse(filters),
     requestedData: JSON.parse(dataRequest),
-    notaries,
+    notaries: notaries.map(notary => notary.toLowerCase()),
     responsesBought: sellers.length,
     termsAndConditions,
     buyerAddress,
@@ -78,7 +85,7 @@ const getDataOrderDetails = async (order) => {
     price: toWib(price),
     createdAt: dateOrNull(dataOrderCreatedAt),
     transactionCompletedAt: dateOrNull(transactionCompletedAt),
-    isClosed: !transactionCompletedAt.isZero(),
+    isClosed: (dateOrNull(transactionCompletedAt) !== null),
   };
 };
 
@@ -91,7 +98,7 @@ const getDataOrderDetails = async (order) => {
  * @returns {Promise} Promise which resolves to the Data Order.
  */
 const fetchAndCacheDataOrder = async (orderAddress, ordersCache) => {
-  const order = DataOrderContract.at(orderAddress);
+  const order = dataOrderAt(orderAddress);
   const dataOrder = await getDataOrderDetails(order);
 
   const fullDataOrder = await addOffChainInfo(dataOrder);
@@ -108,7 +115,7 @@ const fetchAndCacheDataOrder = async (orderAddress, ordersCache) => {
  * @returns {Promise} Promise which resolves to the Data Order.
  */
 const getDataOrder = async (orderAddress, ordersCache) => {
-  const cachedDataOrder = await ordersCache.get(orderAddress);
+  const cachedDataOrder = await fetchOrderFromCache(orderAddress, ordersCache);
   if (cachedDataOrder) {
     logger.debug('DataOrder :: Cache Hit ::', { orderAddress });
     return JSON.parse(cachedDataOrder);
@@ -134,7 +141,7 @@ const getOrdersForBuyer = async (
   offset = 0,
   limit = undefined,
 ) => {
-  const orderAddresses = await dataExchange.getOrdersForBuyer(buyerAddress);
+  const orderAddresses = await dataExchange.methods.getOrdersForBuyer(buyerAddress).call();
   const upperBound = limit && offset >= 0 ? offset + limit : orderAddresses.length;
   const ordersPage = orderAddresses.slice(offset, upperBound);
 
@@ -156,7 +163,7 @@ const getOrdersAmountForBuyer = async (
   buyerAddress,
   ordersCache,
 ) => {
-  const orderAddresses = await dataExchange.getOrdersForBuyer(buyerAddress);
+  const orderAddresses = await dataExchange.methods.getOrdersForBuyer(buyerAddress).call();
 
   const dataOrders = orderAddresses.map(orderAddress =>
     getDataOrder(orderAddress, ordersCache));
@@ -164,4 +171,23 @@ const getOrdersAmountForBuyer = async (
   return Promise.all(dataOrders);
 };
 
-export { getDataOrder, getOrdersForBuyer, fetchAndCacheDataOrder, getOrdersAmountForBuyer };
+/**
+ * @async
+ * @function refreshOrdersCache
+ * @param {Object} buyerAddress the buyer's Ethereum address.
+ * @param {Object} ordersCache Redis storage used for orders caching
+ * @throws When can not connect to blockchain or cache is not set up correctly.
+ */
+const refreshOrdersCache = async (buyerAddress, ordersCache) => {
+  const orderAddresses = await dataExchange.getOrdersForBuyer(buyerAddress);
+  orderAddresses
+    .forEach(orderAddress => fetchAndCacheDataOrder(orderAddress, ordersCache));
+};
+
+export {
+  getDataOrder,
+  getOrdersForBuyer,
+  getOrdersAmountForBuyer,
+  fetchAndCacheDataOrder,
+  refreshOrdersCache,
+};

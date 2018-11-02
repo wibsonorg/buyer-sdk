@@ -45,8 +45,7 @@
     "truffle-contract": "3.0.6",
     "url": "^0.11.0",
     "uuid": "^3.3.2",
-    "web3": "0.20.6",
-    "web3-utils": "1.0.0-beta.34",
+    "web3": "^1.0.0-beta.33",
     "winston": "^3.0.0",
     "winston-slack-webhook-transport": "git@github.com:TheAppleFreak/winston-slack-webhook-transport.git#9ef450249a1ece413dacd228e924d37a22c3e727"
   },

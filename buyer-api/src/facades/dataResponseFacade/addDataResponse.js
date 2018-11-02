@@ -1,14 +1,8 @@
-import web3Utils from 'web3-utils';
+import { priority } from '../../queues';
 import web3 from '../../utils/web3';
-import signingService from '../../services/signingService';
-import {
-  getTransactionReceipt,
-  sendTransaction,
-  retryAfterError,
-  getBuyerAccount,
-} from '../helpers';
+import { getBuyerAccount } from '../helpers';
 import { getDataResponse } from '../../utils/wibson-lib/s3';
-import { dataExchange, DataOrderContract, logger } from '../../utils';
+import { dataExchange, dataOrderAt, wibcoin, logger } from '../../utils';
 import config from '../../../config';
 
 const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
@@ -17,9 +11,9 @@ const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
     notaryInfo,
     remainingBudgetForAuditsStr,
   ] = await Promise.all([
-    dataOrder.price(),
-    dataOrder.getNotaryInfo(notaryAccount),
-    dataExchange.buyerRemainingBudgetForAudits(myAddress, dataOrder.address),
+    dataOrder.methods.price().call(),
+    dataOrder.methods.getNotaryInfo(notaryAccount).call(),
+    dataExchange.methods.buyerRemainingBudgetForAudits(myAddress, dataOrder.options.address).call(),
   ]);
   const price = Number(priceStr);
   const notarizationFee = Number(notaryInfo[2]);
@@ -29,120 +23,79 @@ const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
   return price + (notarizationFee - prePaid);
 };
 
-const buyData = async (order, seller, dataResponseQueue) => {
-  if (!web3Utils.isAddress(order) || !web3Utils.isAddress(seller)) {
+const getAllowance = async myAddress =>
+  Number(await wibcoin.methods.allowance(myAddress, dataExchange.options.address).call());
+
+/**
+ * @async
+ * @param {String} order DataOrder's ethereum address
+ * @param {String} seller Seller's ethereum address
+ * @param {Function} enqueueTransaction function to enqueue a transaction
+ */
+const addDataResponse = async (order, seller, enqueueTransaction) => {
+  if (!web3.utils.isAddress(order) || !web3.utils.isAddress(seller)) {
     throw new Error('Invalid order|seller address');
   }
 
-  const dataOrder = DataOrderContract.at(order);
+  const dataOrder = dataOrderAt(order);
+  const sellerAccepted = await dataOrder.methods.hasSellerBeenAccepted(seller).call();
 
-  if (dataOrder.hasSellerBeenAccepted(seller)) {
-    dataResponseQueue.add('addDataResponseSent', {
-      receipt: null, // We don't have the receipt at this point
-      orderAddress: order,
-      sellerAddress: seller,
-    }, {
-      attempts: 20,
-      backoff: {
-        type: 'linear',
-      },
-    });
-
+  if (sellerAccepted) {
     return true;
   }
 
   let dataResponse;
   try {
-    dataResponse = await getDataResponse(dataOrder.address, seller);
+    dataResponse = await getDataResponse(dataOrder.options.address, seller);
   } catch (err) {
     logger.error(err);
     throw new Error('Could not retrieve data response from storage');
   }
 
   const { notaryAccount, dataHash, signature } = dataResponse;
-  if (!(web3Utils.isAddress(notaryAccount) || dataHash || signature)) {
+  if (!(web3.utils.isAddress(notaryAccount) || dataHash || signature)) {
     throw new Error('Invalid data response payload');
   }
 
-  if (!dataOrder.hasNotaryBeenAdded(notaryAccount)) {
+  const notaryAdded = await dataOrder.methods.hasNotaryBeenAdded(notaryAccount).call();
+  if (!notaryAdded) {
     throw new Error('Invalid notary');
   }
 
-  const buyerAccount = await getBuyerAccount(dataOrder);
-  if (!buyerAccount) {
-    throw new Error('No buyer account found to buy data');
+  const account = await getBuyerAccount(dataOrder);
+  const totalPrice = await getTotalPrice(account.address, dataOrder, notaryAccount);
+  const allowance = await getAllowance(account.address);
+
+  if (allowance < totalPrice) {
+    throw new Error('Not enough allowance to add DataResponse');
   }
 
-  const totalPrice = await getTotalPrice(buyerAccount.address, dataOrder, notaryAccount);
-
-  const increaseApprovalReceipt = await sendTransaction(
-    web3,
-    buyerAccount,
-    signingService.signIncreaseApproval,
+  enqueueTransaction(
+    account,
+    'AddDataResponse',
     {
-      spender: dataExchange.address,
-      addedValue: totalPrice,
-    },
-    config.contracts.gasPrice.fast,
-  );
-
-  dataResponseQueue.add('increaseApprovalSent', {
-    receipt: increaseApprovalReceipt,
-    orderAddress: order,
-    sellerAddress: seller,
-    addDataResponseParams: {
       orderAddr: order,
       seller,
       notary: notaryAccount,
       dataHash,
       signature,
     },
-  }, {
-    attempts: 20,
-    backoff: {
-      type: 'linear',
-    },
-  });
-
-  return true;
-};
-
-const addDataResponse = async (order, seller, params, dataResponseQueue) => {
-  const buyerAccount = await getBuyerAccount(DataOrderContract.at(order));
-  if (!buyerAccount) {
-    throw new Error('No buyer account found to add DataResponse');
-  }
-
-  const receipt = await sendTransaction(
-    web3,
-    buyerAccount,
-    signingService.signAddDataResponse,
-    params,
     config.contracts.gasPrice.fast,
+    {
+      priority: priority.LOWEST,
+    },
   );
 
-  dataResponseQueue.add('addDataResponseSent', {
-    receipt,
-    orderAddress: order,
-    sellerAddress: seller,
-  }, {
-    attempts: 20,
-    backoff: {
-      type: 'linear',
-    },
-  });
-
   return true;
 };
 
-const onBuyData = async (orderAddress, sellerAddress, dataResponseQueue) => {
+const onBuyData = async (orderAddress, sellerAddress, enqueueTx) => {
   try {
-    await buyData(orderAddress, sellerAddress, dataResponseQueue);
+    await addDataResponse(orderAddress, sellerAddress, enqueueTx);
   } catch (error) {
     const { message } = error;
 
-    if (!retryAfterError(error)
-      || message === 'Invalid order|seller address'
+    if (message === 'Invalid order|seller address'
       || message === 'Invalid data response payload'
       || message === 'Invalid notary'
     ) {
@@ -155,37 +108,7 @@ const onBuyData = async (orderAddress, sellerAddress, dataResponseQueue) => {
   }
 };
 
-const onIncreaseApprovalSent = async (
-  increaseApprovalReceipt,
-  orderAddress,
-  sellerAddress,
-  addDataResponseParams,
-  dataResponseQueue,
-) => {
-  try {
-    if (increaseApprovalReceipt) {
-      await getTransactionReceipt(web3, increaseApprovalReceipt);
-    }
-
-    await addDataResponse(
-      orderAddress,
-      sellerAddress,
-      addDataResponseParams,
-      dataResponseQueue,
-    );
-  } catch (error) {
-    if (!retryAfterError(error)) {
-      logger.error('Could not add DataResponse (it will not be retried)' +
-        ` | reason: ${error.message}` +
-        ` | params ${JSON.stringify({ orderAddress, sellerAddress })}`);
-    } else {
-      throw error;
-    }
-  }
-};
-
 export {
   onBuyData,
   addDataResponse,
-  onIncreaseApprovalSent,
 };

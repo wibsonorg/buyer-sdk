@@ -10,8 +10,8 @@ const prefix = ns => `buyer-api:${ns}`;
 export const createRedisStore = ns =>
   asyncRedis.decorate(redis.createClient(redisSocket, { prefix: prefix(ns) }));
 
-export const createLevelStore = ns =>
-  level(ns, (err, db) => {
+export const createLevelStore = dir =>
+  level(`${config.levelDirectory}/${dir}`, (err, db) => {
     if (err) {
       throw new Error(err);
     }

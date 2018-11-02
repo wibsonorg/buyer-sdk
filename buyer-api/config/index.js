@@ -29,6 +29,9 @@ const config = {
       ordersTTL: env.CONTRACTS_CACHE_ORDERS_TTL,
     },
   },
+  notary: {
+    demandAuditsFrom: env.NOTARY_DEMAND_AUDITS_FROM,
+  },
   cache: {
     enabled: env.CACHE === 'enabled',
     adapter: env.CACHE_ADAPTER,
@@ -62,6 +65,15 @@ const config = {
   levelDirectory: env.LEVEL_DIRECTORY,
   jwt: JSON.parse(env.JWT_OPTIONS),
   passphrase: env.PASSPHRASE,
+  eventSubscribers: {
+    interval: env.EVENT_SUBSCRIBERS_INTERVAL,
+    lastProcessedBlock: env.EVENT_SUBSCRIBERS_LAST_PROCESSED_BLOCK,
+  },
+  allowance: {
+    interval: env.ALLOWANCE_INTERVAL,
+    minimumAllowance: env.ALLOWANCE_MINIMUM,
+    multiplier: env.ALLOWANCE_MULTIPLIER,
+  },
 };
 
 exports.default = config;

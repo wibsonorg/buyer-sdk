@@ -1,8 +1,7 @@
 import Response from './Response';
 import { getSellersInfo } from './sellersFacade';
-import { sendTransaction } from './helpers';
-import { web3, DataOrderContract } from '../utils';
-import signingService from '../services/signingService';
+import { enqueueTransaction, priority } from '../queues';
+import { web3, dataOrderAt } from '../utils';
 import config from '../../config';
 
 /**
@@ -12,7 +11,7 @@ import config from '../../config';
  */
 const validate = async (orderAddress) => {
   let errors = [];
-  const dataOrder = DataOrderContract.at(orderAddress);
+  const dataOrder = dataOrderAt(orderAddress);
   const sellers = await getSellersInfo(web3, dataOrder);
 
   if (!sellers.every(({ status }) => status === 'TransactionCompleted')) {
@@ -34,19 +33,19 @@ const closeDataOrderFacade = async (orderAddr, account, batchId, batchLength, ad
     return new Response(null, errors);
   }
 
-  const receipt = await sendTransaction(
-    web3,
+  enqueueTransaction(
     account,
-    signingService.signCloseOrder,
+    'CloseOrder',
     { orderAddr },
     config.contracts.gasPrice.fast,
+    { priority: priority.MEDIUM },
   );
 
   addJob('dataOrderClosed', {
     batchId, batchLength,
   });
 
-  return new Response({ status: 'pending', receipt });
+  return new Response({ status: 'pending' });
 };
 
 /**

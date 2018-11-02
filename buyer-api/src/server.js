@@ -2,7 +2,7 @@ import 'babel-polyfill';
 import app from './app';
 import config from '../config';
 import { logger, attachContractEventSubscribers } from './utils';
-import { checkInitialRootBuyerFunds, monitorFunds } from './facades';
+import { checkInitialRootBuyerFunds, monitorFunds, checkAllowance } from './facades';
 import contractEventSubscribers from './contractEventSubscribers';
 
 const checkConfig = (conf) => {
@@ -37,10 +37,25 @@ const server = async () => {
   app.listen({ port, host }, () =>
     logger.info(`Buyer API listening on port ${port} and host ${host} in ${env} mode`));
 
-  attachContractEventSubscribers(contractEventSubscribers, app.locals.stores);
+  attachContractEventSubscribers(
+    contractEventSubscribers,
+    app.locals.stores,
+    config.eventSubscribers.lastProcessedBlock,
+  );
 
   monitorFunds();
   setInterval(() => monitorFunds(), 60000 * Number(config.fundingInterval));
+
+  setInterval(
+    () => attachContractEventSubscribers(
+      contractEventSubscribers,
+      app.locals.stores,
+      config.eventSubscribers.lastProcessedBlock,
+    ),
+    Number(config.eventSubscribers.interval),
+  );
+
+  setInterval(checkAllowance, Number(config.allowance.interval));
 };
 
 export default server;

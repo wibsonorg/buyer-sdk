@@ -1,12 +1,8 @@
-import addNotariesToOrderFacade from './addNotariesToOrderFacade';
-
 export {
   onBuyData,
-  onIncreaseApprovalSent,
   addDataResponse,
-  onAddDataResponseSent,
   closeDataResponse,
-  onCloseDataResponseSent,
+  checkAllowance,
 } from './dataResponseFacade';
 
 export {
@@ -24,4 +20,4 @@ export { closeOrdersOfBatch, onBatchClosed } from './closeBatchFacade';
 export { checkAndTransfer, checkInitialRootBuyerFunds, monitorFunds } from './transferFacade';
 export { getSellerInfo, getSellersInfo } from './sellersFacade';
 
-export { addNotariesToOrderFacade };
+export { addNotariesToOrderFacade, addNotaryToOrder } from './addNotariesToOrderFacade';
