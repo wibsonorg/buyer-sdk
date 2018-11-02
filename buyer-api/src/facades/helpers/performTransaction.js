@@ -54,30 +54,6 @@ const getTransactionReceipt = (web3, receipt) =>
     });
   });
 
-/**
- * NOTE: There is an alternative to handle this with `filters`.
- * See https://goo.gl/VXv3zK (from ethereum.stackexchange.com)
- */
-const transactionResponse = async (web3, receipt) => {
-  let response = null;
-  let iteration = 0;
-  const maxIterations = 12; // 2 min
-
-  while (!response && iteration < maxIterations) {
-    try {
-      iteration += 1;
-      await delay(10 * 1000); // eslint-disable-line no-await-in-loop
-      response = await getTransactionReceipt(web3, receipt); // eslint-disable-line no-await-in-loop
-    } catch (error) {
-      if (!error.pending) {
-        throw error;
-      }
-    }
-  }
-
-  return response;
-};
-
 const sendSignedTransaction = (web3, signedTransaction) =>
   new Promise((resolve, reject) => {
     web3.eth.sendSignedTransaction(`0x${signedTransaction}`)

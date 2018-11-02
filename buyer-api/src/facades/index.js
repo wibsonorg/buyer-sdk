@@ -4,14 +4,10 @@ import {
   closeDataResponse,
   checkAllowance,
 } from './dataResponseFacade';
-import {
-  createDataOrderFacade,
-  onDataOrderSent,
-} from './createDataOrderFacade';
+import { createDataOrderFacade } from './createDataOrderFacade';
 import {
   addNotariesToOrderFacade,
   addNotaryToOrder,
-  onAddNotaryToOrderSent,
 } from './addNotariesToOrderFacade';
 import closeDataOrderFacade from './closeDataOrderFacade';
 import { getOrdersForBuyer, fetchAndCacheDataOrder, getOrdersAmountForBuyer } from './getOrdersFacade';
@@ -26,12 +22,10 @@ export {
   createDataOrderFacade,
   addNotariesToOrderFacade,
   addNotaryToOrder,
-  onAddNotaryToOrderSent,
   getOrdersForBuyer,
   addDataResponse,
   closeDataResponse,
   closeDataOrderFacade,
-  onDataOrderSent,
   onBuyData,
   checkAllowance,
   fetchAndCacheDataOrder,

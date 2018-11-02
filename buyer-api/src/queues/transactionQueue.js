@@ -30,9 +30,9 @@ const createTransactionQueue = () => {
     );
 
     const waitOptions = { maxIterations: 30, interval: 30 };
-    const { status } = await waitForExecution(web3, receipt, waitOptions);
+    const transaction = await waitForExecution(web3, receipt, waitOptions);
 
-    switch (status) {
+    switch (transaction.status) {
       case 'success': {
         logger.info(`[tx][${name}] Transaction success ${receipt}`);
         break;
@@ -47,9 +47,10 @@ const createTransactionQueue = () => {
       }
       default: {
         logger.info(`[tx][${name}] Unknown transaction status`);
-        break;
       }
     }
+
+    return transaction;
   });
 
   return queue;
@@ -60,7 +61,8 @@ const enqueueTransaction = (account, signWith, params, gasPrice, options = {}) =
   const {
     name, priority = 1000, attempts = 20, backoffType = 'linear',
   } = options;
-  transactionQueue.add('perform', {
+
+  return transactionQueue.add('perform', {
     name: name || signWith.replace('sign', ''),
     account,
     signWith,

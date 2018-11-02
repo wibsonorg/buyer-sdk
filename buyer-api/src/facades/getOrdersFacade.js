@@ -75,7 +75,7 @@ const getDataOrderDetails = async (order) => {
     orderAddress: order.options.address.toLowerCase(),
     audience: JSON.parse(filters),
     requestedData: JSON.parse(dataRequest),
-    notaries,
+    notaries: notaries.map(notary => notary.toLowerCase()),
     responsesBought: sellers.length,
     termsAndConditions,
     buyerPublicURL: JSON.parse(buyerPublicURL),

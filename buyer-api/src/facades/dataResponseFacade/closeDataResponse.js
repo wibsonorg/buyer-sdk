@@ -3,7 +3,6 @@ import { priority } from '../../queues';
 import signingService from '../../services/signingService';
 import { getNotaryInfo } from '../notariesFacade';
 import { web3, dataOrderAt } from '../../utils';
-import { notariesCache } from '../../utils/stores';
 import config from '../../../config';
 
 // notarization hack
@@ -77,7 +76,7 @@ const closeDataResponse = async (
   }
 
   const notaryAddress = sellerInfo[1];
-  const notaryInfo = await getNotaryInfo(notaryAddress, notariesCache);
+  const notaryInfo = await getNotaryInfo(notaryAddress);
   const notaryApi = notaryInfo.publicUrls.api;
 
   const buyer = await dataOrder.methods.buyer().call();
