@@ -69,4 +69,6 @@ const createDataOrderQueue = () => {
   return queue;
 };
 
-export { createDataOrderQueue };
+const dataOrderQueue = createDataOrderQueue();
+
+export { dataOrderQueue };

@@ -15,7 +15,7 @@ import {
   createLevelStore,
 } from './utils';
 import {
-  createDataOrderQueue,
+  dataOrderQueue,
   dataResponseQueue,
 } from './queues';
 import {
@@ -38,7 +38,7 @@ app.locals.stores = {
 };
 
 app.locals.queues = {
-  dataOrder: createDataOrderQueue(app.locals.stores),
+  dataOrder: dataOrderQueue,
   dataResponse: dataResponseQueue,
 };
 

@@ -14,6 +14,5 @@ export default {
   callback: subscriberCallback,
   events: [
     'DataAdded',
-    'TransactionCompleted',
   ],
 };

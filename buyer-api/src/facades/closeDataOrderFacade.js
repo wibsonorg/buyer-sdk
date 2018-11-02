@@ -1,6 +1,6 @@
 import Response from './Response';
 import { getSellersInfo } from './sellersFacade';
-import { sendTransaction } from './helpers';
+import { enqueueTransaction } from '../queues';
 import { web3, dataOrderAt } from '../utils';
 import signingService from '../services/signingService';
 import config from '../../config';
@@ -34,17 +34,16 @@ const closeDataOrderFacade = async (orderAddr) => {
     return new Response(null, errors);
   }
 
-  const { address } = await signingService.getAccount();
+  const account = await signingService.getAccount();
 
-  const receipt = await sendTransaction(
-    web3,
-    address,
-    signingService.signCloseOrder,
+  enqueueTransaction(
+    account,
+    'signCloseOrder',
     { orderAddr },
     config.contracts.gasPrice.fast,
   );
 
-  return new Response({ status: 'pending', receipt });
+  return new Response({ status: 'pending' });
 };
 
 export default closeDataOrderFacade;

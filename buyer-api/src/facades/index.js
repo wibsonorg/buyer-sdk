@@ -3,7 +3,6 @@ import {
   addDataResponse,
   closeDataResponse,
   checkAllowance,
-  onIncreaseApprovalSent,
 } from './dataResponseFacade';
 import { createDataOrderFacade } from './createDataOrderFacade';
 import {
@@ -29,7 +28,6 @@ export {
   closeDataOrderFacade,
   onBuyData,
   checkAllowance,
-  onIncreaseApprovalSent,
   fetchAndCacheDataOrder,
   getOrdersAmountForBuyer,
 };
