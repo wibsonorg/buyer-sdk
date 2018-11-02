@@ -91,7 +91,7 @@ const closeDataResponse = async (
 
   enqueueTransaction(
     account,
-    'signCloseDataResponse',
+    'CloseDataResponse',
     params,
     config.contracts.gasPrice.fast,
     { priority: priority.LOW },

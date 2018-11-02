@@ -38,7 +38,7 @@ const closeDataOrderFacade = async (orderAddr) => {
 
   enqueueTransaction(
     account,
-    'signCloseOrder',
+    'CloseOrder',
     { orderAddr },
     config.contracts.gasPrice.fast,
     { priority: priority.MEDIUM },

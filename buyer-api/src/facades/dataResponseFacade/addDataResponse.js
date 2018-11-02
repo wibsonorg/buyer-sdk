@@ -72,7 +72,7 @@ const addDataResponse = async (order, seller, enqueueTransaction) => {
 
   enqueueTransaction(
     account,
-    'signAddDataResponse',
+    'AddDataResponse',
     {
       orderAddr: order,
       seller,
