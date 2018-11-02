@@ -1,4 +1,4 @@
-import { web3, logger, dataExchange } from '.';
+import { logger, dataExchange } from '.';
 import { eventBlocks } from './stores';
 
 const invokeSubscribers = async (subscribers, result, stores) => {

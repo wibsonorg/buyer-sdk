@@ -4,7 +4,7 @@ import {
   fetchAndCacheNotary,
 } from '../facades';
 
-const subscriberCallback = async (res, { ordersCache, notariesCache }) => {
+const subscriberCallback = async (res, { ordersCache }) => {
   const { notary, orderAddr } = res.returnValues;
   if (orderAddr) {
     await fetchAndCacheDataOrder(orderAddr, ordersCache);
@@ -12,7 +12,7 @@ const subscriberCallback = async (res, { ordersCache, notariesCache }) => {
   }
 
   if (notary) {
-    await fetchAndCacheNotary(notary, notariesCache);
+    await fetchAndCacheNotary(notary);
     apicache.clear('/notaries/*');
   }
 };

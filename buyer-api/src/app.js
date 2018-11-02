@@ -15,7 +15,7 @@ import {
   createLevelStore,
 } from './utils';
 import {
-  createDataOrderQueue,
+  dataOrderQueue,
   dataResponseQueue,
 } from './queues';
 import {
@@ -34,12 +34,11 @@ app.locals.stores = {
   redis: createRedisStore('sample'),
   level: createLevelStore('sample_level'),
   ordersCache: createRedisStore('orders.cache'),
-  notariesCache: createRedisStore('notaries.cache'), // TODO: Remove this usage
   undead: createRedisStore('undead::'),
 };
 
 app.locals.queues = {
-  dataOrder: createDataOrderQueue(app.locals.stores),
+  dataOrder: dataOrderQueue,
   dataResponse: dataResponseQueue,
 };
 
