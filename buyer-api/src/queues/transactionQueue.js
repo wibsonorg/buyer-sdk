@@ -9,6 +9,7 @@ const createTransactionQueue = () => {
 
   queue.process('perform', async (
     {
+      id,
       data: {
         name,
         account,
@@ -18,6 +19,8 @@ const createTransactionQueue = () => {
       },
     },
   ) => {
+    logger.info(`Tx[${id}] :: ${name} :: Started`);
+
     const { address } = account;
     const signFn = signingService[signWith];
 
@@ -34,19 +37,19 @@ const createTransactionQueue = () => {
 
     switch (transaction.status) {
       case 'success': {
-        logger.info(`[tx][${name}] Transaction success ${receipt}`);
+        logger.info(`Tx[${id}] :: ${name} :: Success ${receipt}`);
         break;
       }
       case 'failure': {
-        logger.info(`[tx][${name}] Transaction failure ${receipt}`);
+        logger.info(`Tx[${id}] :: ${name} :: Failure ${receipt}`);
         break;
       }
       case 'pending': {
-        logger.info(`[tx][${name}] Transaction pending ${receipt}. Proceeding to retry...`);
+        logger.info(`Tx[${id}] :: ${name} :: Pending ${receipt} (will be retried)`);
         throw new Error('Retry tx');
       }
       default: {
-        logger.info(`[tx][${name}] Unknown transaction status`);
+        logger.info(`Tx[${id}] :: ${name} :: Unknown ${receipt} (will NOT be retried)`);
       }
     }
 
