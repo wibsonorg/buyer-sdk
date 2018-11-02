@@ -57,13 +57,11 @@ const getTransactionReceipt = (web3, receipt) =>
 const sendSignedTransaction = (web3, signedTransaction) =>
   new Promise((resolve, reject) => {
     web3.eth.sendSignedTransaction(`0x${signedTransaction}`)
-      .on('error', (error, receipt) => {
-        logger.debug(`[perform tx] tx errored ${receipt}`);
+      .on('error', (error) => {
         reject(error);
       })
       .on('transactionHash', (hash) => {
         if (!hash) reject(new Error('No tx hash'));
-        logger.debug('[perform tx] tx hash done', { hash });
         resolve(hash);
       });
   });
