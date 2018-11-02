@@ -56,6 +56,14 @@ const createTransactionQueue = () => {
     return transaction;
   });
 
+  queue.on('failed', ({
+    id, failedReason, data: { name },
+  }) => {
+    if (failedReason !== 'Retry tx') {
+      logger.error(`Tx[${id}] :: ${name} :: Error thrown: ${failedReason} (will be retried)`);
+    }
+  });
+
   return queue;
 };
 
