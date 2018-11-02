@@ -58,15 +58,15 @@ const createTransactionQueue = () => {
 };
 
 const transactionQueue = createTransactionQueue();
-const enqueueTransaction = (account, signWith, params, gasPrice, options = {}) => {
+const enqueueTransaction = (account, name, params, gasPrice, options = {}) => {
   const {
-    name, priority: p, attempts = 20, backoffType = 'linear',
+    priority: p, attempts = 20, backoffType = 'linear',
   } = options;
 
   return transactionQueue.add('perform', {
-    name: name || signWith.replace('sign', ''),
+    name,
     account,
-    signWith,
+    signWith: `sign${name}`,
     params,
     gasPrice,
   }, {

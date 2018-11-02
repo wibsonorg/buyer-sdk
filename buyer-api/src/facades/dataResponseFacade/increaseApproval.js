@@ -20,7 +20,7 @@ const checkAllowance = async () => {
   if (minimumAllowance.isGreaterThan(allowance)) {
     enqueueTransaction(
       account,
-      'signIncreaseApproval',
+      'IncreaseApproval',
       {
         spender: dataExchange.options.address,
         addedValue: minimumAllowance.multipliedBy(multiplier),

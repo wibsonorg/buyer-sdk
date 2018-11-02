@@ -56,7 +56,7 @@ const addNotaryToOrder = async (account, params, enqueueTransaction) => {
 
   enqueueTransaction(
     account,
-    'signAddNotaryToOrder',
+    'AddNotaryToOrder',
     params,
     config.contracts.gasPrice.fast,
     { priority: priority.MEDIUM },

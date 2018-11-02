@@ -118,7 +118,7 @@ const createDataOrderFacade = async (
 
   const job = await enqueueTransaction(
     account,
-    'signNewOrder',
+    'NewOrder',
     params,
     config.contracts.gasPrice.fast,
     {
