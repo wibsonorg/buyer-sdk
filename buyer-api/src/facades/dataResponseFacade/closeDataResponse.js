@@ -1,4 +1,5 @@
 import client from 'request-promise-native';
+import { priority } from '../../queues';
 import signingService from '../../services/signingService';
 import { getNotaryInfo } from '../notariesFacade';
 import { web3, dataOrderAt } from '../../utils';
@@ -93,7 +94,7 @@ const closeDataResponse = async (
     'signCloseDataResponse',
     params,
     config.contracts.gasPrice.fast,
-    { priority: 10 },
+    { priority: priority.LOW },
   );
 
   return true;

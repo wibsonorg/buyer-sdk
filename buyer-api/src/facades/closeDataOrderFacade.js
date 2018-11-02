@@ -1,6 +1,6 @@
 import Response from './Response';
 import { getSellersInfo } from './sellersFacade';
-import { enqueueTransaction } from '../queues';
+import { enqueueTransaction, priority } from '../queues';
 import { web3, dataOrderAt } from '../utils';
 import signingService from '../services/signingService';
 import config from '../../config';
@@ -41,6 +41,7 @@ const closeDataOrderFacade = async (orderAddr) => {
     'signCloseOrder',
     { orderAddr },
     config.contracts.gasPrice.fast,
+    { priority: priority.MEDIUM },
   );
 
   return new Response({ status: 'pending' });

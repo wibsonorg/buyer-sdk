@@ -1,4 +1,5 @@
 import { createQueue } from './createQueue';
+import { priority } from './priority';
 import { web3, logger } from '../utils';
 import { sendTransaction, waitForExecution } from '../facades/helpers';
 import signingService from '../services/signingService';
@@ -59,7 +60,7 @@ const createTransactionQueue = () => {
 const transactionQueue = createTransactionQueue();
 const enqueueTransaction = (account, signWith, params, gasPrice, options = {}) => {
   const {
-    name, priority = 1000, attempts = 20, backoffType = 'linear',
+    name, priority: p, attempts = 20, backoffType = 'linear',
   } = options;
 
   return transactionQueue.add('perform', {
@@ -69,7 +70,7 @@ const enqueueTransaction = (account, signWith, params, gasPrice, options = {}) =
     params,
     gasPrice,
   }, {
-    priority,
+    priority: p || priority.LOWEST,
     attempts,
     backoff: {
       type: backoffType,

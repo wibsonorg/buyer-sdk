@@ -1,5 +1,6 @@
 import { createQueue } from './createQueue';
 import { enqueueTransaction } from './transactionQueue';
+import { priority } from './priority';
 import {
   createDataOrderFacade,
   addNotariesToOrderFacade,
@@ -18,7 +19,7 @@ const createDataOrderQueue = () => {
       enqueueTransaction,
       (jobName, params) => {
         queue.add(jobName, params, {
-          priority: 10,
+          priority: priority.MEDIUM,
           attempts: 20,
           backoff: {
             type: 'linear',
@@ -36,7 +37,7 @@ const createDataOrderQueue = () => {
       notaries,
       (params) => {
         queue.add('addNotaryToOrder', params, {
-          priority: 10,
+          priority: priority.MEDIUM,
           attempts: 20,
           backoff: {
             type: 'linear',
