@@ -1,5 +1,6 @@
 import { createQueue } from './createQueue';
-import { enqueueTransaction } from '.';
+import { enqueueTransaction } from './transactionQueue';
+import { priority } from './priority';
 import { onBuyData, closeDataResponse } from '../facades';
 
 const createDataResponseQueue = () => {
@@ -23,11 +24,11 @@ const createDataResponseQueue = () => {
 const dataResponseQueue = createDataResponseQueue();
 const enqueueCloseDataResponse = (orderAddress, sellerAddress, options = {}) => {
   const {
-    priority = 1000, attempts = 20, backoffType = 'linear',
+    priority: p, attempts = 20, backoffType = 'linear',
   } = options;
 
   dataResponseQueue.add('closeDataResponse', { orderAddress, sellerAddress }, {
-    priority,
+    priority: p || priority.LOW,
     attempts,
     backoff: {
       type: backoffType,
