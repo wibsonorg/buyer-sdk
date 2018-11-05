@@ -36,7 +36,6 @@ import OpenDataOrders from "./OpenDataOrders";
 import BoughtDataOrders from "./BoughtDataOrders";
 import FailedDataOrders from "./FailedDataOrders";
 import DataOrderCreate from "./DataOrderCreate";
-import { removeCookie } from "../../utils/cookies"
 
 import R from "ramda";
 
@@ -77,7 +76,6 @@ class Buyer extends React.Component {
   };
 
   handleLogOut = () => {
-    removeCookie('token')
     this.props.logOutUser();
   };
 
@@ -255,7 +253,7 @@ const mapDispatchToProps = (dispatch, props) => ({
     );
   },
   logOutUser: () => {
-    dispatch(authenticationActions.logOutUser());
+    dispatch(authenticationActions.logOut());
   },
 });
 
