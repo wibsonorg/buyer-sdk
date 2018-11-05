@@ -5,17 +5,17 @@ import signingService from '../services/signingService';
 import { coin } from '../utils/wibson-lib';
 import { fundingQueue } from '../queues/fundingQueue';
 
-const minWib = web3.toBigNumber(config.buyerChild.minWib);
-const maxWib = web3.toBigNumber(config.buyerChild.maxWib);
-const minWei = web3.toBigNumber(config.buyerChild.minWei);
-const maxWei = web3.toBigNumber(config.buyerChild.maxWei);
+const minWib = web3.utils.toBN(config.buyerChild.minWib);
+const maxWib = web3.utils.toBN(config.buyerChild.maxWib);
+const minWei = web3.utils.toBN(config.buyerChild.minWei);
+const maxWei = web3.utils.toBN(config.buyerChild.maxWei);
 
 const getWeiBalance = async address =>
-  web3.eth.getBalance(address);
+  web3.utils.toBN(web3.eth.getBalance(address));
 
 const getWibBalance = async (address) => {
-  const wibUnits = await wibcoin.balanceOf.call(address);
-  return web3.toBigNumber(coin.toWib(wibUnits));
+  const wibUnits = await wibcoin.methods.balanceOf(address).call();
+  return coin.toWib(wibUnits);
 };
 
 const getFunds = async (address) => {
@@ -32,15 +32,15 @@ const missingChildFunds = async (child) => {
   const currentWib = await getWibBalance(child.address);
   const currentWei = await getWeiBalance(child.address);
 
-  if (currentWei.greaterThan(maxWei)) {
+  if (currentWei.gt(maxWei)) {
     logger.alert(`Child account ${child.address} exceeds maximum ETH balance. Max: ${maxWei} WEI | Current: ${currentWei} WEI`);
   }
   if (currentWib.greaterThan(maxWib)) {
     logger.alert(`Child account ${child.address} exceeds maximum WIB balance. Max: ${maxWib} | Current: ${currentWib}`);
   }
 
-  const missingWei = currentWei.lessThan(minWei) ? maxWei.minus(currentWei) : web3.toBigNumber(0);
-  const missingWib = currentWib.lessThan(minWib) ? maxWib.minus(currentWib) : web3.toBigNumber(0);
+  const missingWei = currentWei.lt(minWei) ? maxWei.subn(currentWei) : web3.utils.toBN(0);
+  const missingWib = currentWib.lessThan(minWib) ? maxWib.minus(currentWib) : web3.utils.toBN(0);
 
   return { child, missingWei, missingWib };
 };
@@ -74,7 +74,7 @@ const checkInitialRootBuyerFunds = async () => {
   const { root, children } = await signingService.getAccounts();
 
   const rootFunds = await getFunds(root.address);
-  const childrenCount = web3.toBigNumber(children.length);
+  const childrenCount = web3.utils.toBN(children.length);
   const requiredWib = childrenCount.times(minWib);
   const requiredWei = childrenCount.times(minWei);
 

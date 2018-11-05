@@ -31,7 +31,7 @@ router.get('/', cache('30 seconds'), asyncError(async (req, res) => {
   const ethBalance = ethBalances.reduce((accum, item) => item.plus(accum), 0);
 
   const ether = web3.utils.fromWei(ethBalance.toString(), 'ether');
-  const wib = coin.formatWib(coin.toWib(tokenBalance), { decimals: 2 });
+  const wib = coin.formatWib(coin.toWib(tokenBalance).toString(10), { decimals: 2 });
 
   res.json({
     address: root.address,

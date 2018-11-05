@@ -8,7 +8,7 @@ import { web3, wibcoin } from '../../utils';
 
 const { signETHTransfer, signWIBTransfer } = signingService;
 
-const toBN = num => web3.toBigNumber(num);
+const toBN = num => web3.utils.toBN(num);
 
 const options = {
   attempts: 20,
@@ -26,7 +26,7 @@ export default async (job) => {
   const amounts = config.buyerChild;
 
   const [balanceFx, transferFx, minFunds, maxFunds] = currency === 'WIB' ?
-    [wibcoin.balanceOf, signWIBTransfer, amounts.minWib, amounts.maxWib] :
+    [wibcoin.methods.balanceOf, signWIBTransfer, amounts.minWib, amounts.maxWib] :
     [web3.eth.getBalance, signETHTransfer, amounts.minWei, amounts.maxWei];
 
   const receipt = await checkAndTransfer(

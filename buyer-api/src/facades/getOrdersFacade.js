@@ -82,7 +82,7 @@ const getDataOrderDetails = async (order) => {
     buyerAddress,
     buyerPublicURL: JSON.parse(buyerPublicURL),
     buyerPublicKey,
-    price: toWib(price),
+    price: toWib(price).toString(10),
     createdAt: dateOrNull(dataOrderCreatedAt),
     transactionCompletedAt: dateOrNull(transactionCompletedAt),
     isClosed: (dateOrNull(transactionCompletedAt) !== null),
@@ -179,7 +179,7 @@ const getOrdersAmountForBuyer = async (
  * @throws When can not connect to blockchain or cache is not set up correctly.
  */
 const refreshOrdersCache = async (buyerAddress, ordersCache) => {
-  const orderAddresses = await dataExchange.getOrdersForBuyer(buyerAddress);
+  const orderAddresses = await dataExchange.methods.getOrdersForBuyer(buyerAddress).call();
   orderAddresses
     .forEach(orderAddress => fetchAndCacheDataOrder(orderAddress, ordersCache));
 };
