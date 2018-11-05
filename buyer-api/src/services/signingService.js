@@ -12,7 +12,7 @@ const url = config.buyerSigningServiceUrl;
  * milisseconds.
  * @type {Number}
  */
-const timeout = 1000;
+const timeout = 5000;
 
 const getHealth = () => client.get(`${url}/health`, { timeout });
 
