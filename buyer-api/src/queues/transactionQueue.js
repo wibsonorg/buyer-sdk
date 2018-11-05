@@ -33,8 +33,7 @@ const createTransactionQueue = () => {
       gasPrice || config.contracts.gasPrice.fast,
     );
 
-    const waitOptions = { maxIterations: 30, interval: 30 };
-    const transaction = await waitForExecution(web3, receipt, waitOptions);
+    const transaction = await waitForExecution(web3, receipt, config.transactionQueue);
 
     switch (transaction.status) {
       case 'success': {
