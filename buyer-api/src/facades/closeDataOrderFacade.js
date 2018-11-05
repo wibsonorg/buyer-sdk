@@ -10,9 +10,9 @@ import config from '../../config';
  * @param {String} orderAddres
  * @returns {Array} Error messages
  */
-const validate = async (orderAddres) => {
+const validate = async (orderAddress) => {
   let errors = [];
-  const dataOrder = dataOrderAt(orderAddres);
+  const dataOrder = dataOrderAt(orderAddress);
   const sellers = await getSellersInfo(web3, dataOrder);
 
   if (!sellers.every(({ status }) => status === 'TransactionCompleted')) {
