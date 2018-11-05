@@ -79,7 +79,7 @@ const checkInitialRootBuyerFunds = async () => {
   const requiredWei = childrenCount.times(minWei);
 
   const insufficientWib = rootFunds.wib.lessThan(requiredWib);
-  const insufficientEth = rootFunds.wei.lessThan(requiredWei);
+  const insufficientEth = rootFunds.wei.lt(requiredWei);
 
   if (insufficientWib) {
     logger.alert(`
@@ -111,13 +111,13 @@ const monitorFunds = async () => {
 
   const missingFunds = await Promise.all(children.map(child => missingChildFunds(child)));
 
-  const neededWei = missingFunds.map(x => x.missingWei).reduce((x, y) => x.plus(y));
+  const neededWei = missingFunds.map(x => x.missingWei).reduce((x, y) => x.add(y));
   const neededWib = missingFunds.map(x => x.missingWib).reduce((x, y) => x.plus(y));
 
-  const childrenToFundWei = missingFunds.filter(x => x.missingWei.greaterThan(0));
+  const childrenToFundWei = missingFunds.filter(x => x.missingWei.gt(0));
   const childrenToFundWib = missingFunds.filter(x => x.missingWib.greaterThan(0));
 
-  if (rootBuyerFunds.wei.lessThan(neededWei)) {
+  if (rootBuyerFunds.wei.lt(neededWei)) {
     logger.alert(`
     Root Buyer (${root.address}) is unable to fund ${childrenToFundWei.length} child accounts:
     Needed ETH: ${neededWei} WEI
