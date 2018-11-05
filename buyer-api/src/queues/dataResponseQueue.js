@@ -2,6 +2,7 @@ import { createQueue } from './createQueue';
 import { enqueueTransaction } from './transactionQueue';
 import { priority } from './priority';
 import { onBuyData, closeDataResponse } from '../facades';
+import { logger } from '../utils';
 
 const createDataResponseQueue = () => {
   const queue = createQueue('DataResponseQueue');
@@ -16,6 +17,10 @@ const createDataResponseQueue = () => {
     { data: { orderAddress, sellerAddress } },
   ) => {
     await closeDataResponse(orderAddress, sellerAddress, enqueueTransaction);
+  });
+
+  queue.on('failed', ({ id, name, failedReason }) => {
+    logger.error(`${name}[${id}] :: Error thrown: ${failedReason} (will be retried)`);
   });
 
   return queue;
