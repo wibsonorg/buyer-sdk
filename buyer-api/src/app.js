@@ -15,8 +15,8 @@ import {
   createLevelStore,
 } from './utils';
 import {
-  createDataOrderQueue,
-  createDataResponseQueue,
+  dataOrderQueue,
+  dataResponseQueue,
 } from './queues';
 import {
   auth,
@@ -32,15 +32,14 @@ import checkAuthorization from './utils/checkAuthorization';
 const app = express();
 app.locals.stores = {
   redis: createRedisStore('sample'),
-  level: createLevelStore(`${config.levelDirectory}/sample_level`),
+  level: createLevelStore('sample_level'),
   ordersCache: createRedisStore('orders.cache'),
-  notariesCache: createRedisStore('notaries.cache'),
   undead: createRedisStore('undead::'),
 };
 
 app.locals.queues = {
-  dataOrder: createDataOrderQueue(app.locals.stores),
-  dataResponse: createDataResponseQueue(app.locals.stores),
+  dataOrder: dataOrderQueue,
+  dataResponse: dataResponseQueue,
 };
 
 app.use(helmet());

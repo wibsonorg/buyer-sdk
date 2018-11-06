@@ -1,5 +1,5 @@
 import express from 'express';
-import { createDataOrderFacade, getOrdersForBuyer, getOrdersAmountForBuyer } from '../../facades';
+import { getOrdersForBuyer, getOrdersAmountForBuyer } from '../../facades';
 import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 
@@ -30,14 +30,14 @@ router.get(
 
     const ordersResult = getOrdersForBuyer(address, ordersCache, Number(offset), Number(limit));
 
-    const minimumBudget = dataExchange.minimumInitialBudgetForAudits();
+    const minimumBudget = dataExchange.methods.minimumInitialBudgetForAudits().call();
 
     const [orders, minimumInitialBudgetForAudits] = await Promise.all([
       ordersResult,
       minimumBudget,
     ]);
 
-    res.json({ orders, minimumInitialBudgetForAudits });
+    res.json({ orders, minimumInitialBudgetForAudits: Number(minimumInitialBudgetForAudits) });
   }),
 );
 
@@ -195,15 +195,14 @@ router.post(
     if (errors.length > 0) {
       res.boom.badData('Validation failed', { validation: errors });
     } else {
-      const response = await createDataOrderFacade(dataOrder, queue);
+      queue.add('createDataOrder', { dataOrder }, {
+        attempts: 20,
+        backoff: {
+          type: 'linear',
+        },
+      });
 
-      if (response.success()) {
-        res.json(response.result);
-      } else {
-        res.boom.badData('Operation failed', {
-          errors: response.errors,
-        });
-      }
+      res.json({ status: 'pending' });
     }
   }),
 );

@@ -10,7 +10,20 @@ const server = () => {
   app.listen({ port, host }, () =>
     logger.info(`Buyer API listening on port ${port} and host ${host} in ${env} mode`));
 
-  attachContractEventSubscribers(contractEventSubscribers, app.locals.stores);
+  attachContractEventSubscribers(
+    contractEventSubscribers,
+    app.locals.stores,
+    config.eventSubscribers.lastProcessedBlock,
+  );
+
+  setInterval(
+    () => attachContractEventSubscribers(
+      contractEventSubscribers,
+      app.locals.stores,
+      config.eventSubscribers.lastProcessedBlock,
+    ),
+    Number(config.eventSubscribers.interval),
+  );
 
   setInterval(checkAllowance, Number(config.allowance.interval));
 };

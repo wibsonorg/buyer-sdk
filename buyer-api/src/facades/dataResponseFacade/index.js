@@ -2,9 +2,5 @@ export {
   onBuyData,
   addDataResponse,
 } from './addDataResponse';
-export {
-  onAddDataResponseSent,
-  closeDataResponse,
-  onCloseDataResponseSent,
-} from './closeDataResponse';
-export { checkAllowance, onIncreaseApprovalSent } from './increaseApproval';
+export { closeDataResponse } from './closeDataResponse';
+export { checkAllowance } from './increaseApproval';

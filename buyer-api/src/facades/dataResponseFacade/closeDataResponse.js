@@ -1,19 +1,13 @@
-import web3Utils from 'web3-utils';
 import client from 'request-promise-native';
+import { priority } from '../../queues';
 import signingService from '../../services/signingService';
-import {
-  getTransactionReceipt,
-  sendTransaction,
-  retryAfterError,
-} from '../helpers';
 import { getNotaryInfo } from '../notariesFacade';
-import { web3, DataOrderContract, logger } from '../../utils';
+import { web3, dataOrderAt } from '../../utils';
 import config from '../../../config';
 
 // notarization hack
 const demandAuditsFrom = JSON.parse(config.notary.demandAuditsFrom) || [];
 const notariesToDemandAuditsFrom = demandAuditsFrom.map(n => n.toLowerCase());
-
 
 const buildUri = (rootUrl, path) => {
   const baseUri = rootUrl.replace(/\/$/, '');
@@ -59,28 +53,33 @@ const auditResult = async (notaryUrl, order, seller, buyer) => {
   };
 };
 
+/**
+ * @async
+ * @param {String} order DataOrder's ethereum address
+ * @param {String} seller Seller's ethereum address
+ * @param {Function} enqueueTransaction function to enqueue a transaction
+ */
 const closeDataResponse = async (
   order,
   seller,
-  notariesCache,
-  closeDataResponseSent,
+  enqueueTransaction,
 ) => {
-  if (!web3Utils.isAddress(order) || !web3Utils.isAddress(seller)) {
+  if (!web3.utils.isAddress(order) || !web3.utils.isAddress(seller)) {
     throw new Error('Invalid order|seller address');
   }
 
-  const dataOrder = DataOrderContract.at(order);
+  const dataOrder = dataOrderAt(order);
 
-  const sellerInfo = await dataOrder.getSellerInfo(seller);
-  if (web3Utils.hexToUtf8(sellerInfo[5]) !== 'DataResponseAdded') {
+  const sellerInfo = await dataOrder.methods.getSellerInfo(seller).call();
+  if (web3.utils.hexToUtf8(sellerInfo[5]) !== 'DataResponseAdded') {
     return true; // DataResponse has already been closed.
   }
 
   const notaryAddress = sellerInfo[1];
-  const notaryInfo = await getNotaryInfo(notaryAddress, notariesCache);
+  const notaryInfo = await getNotaryInfo(notaryAddress);
   const notaryApi = notaryInfo.publicUrls.api;
 
-  const buyer = dataOrder.buyer();
+  const buyer = await dataOrder.methods.buyer().call();
 
   if (notariesToDemandAuditsFrom.includes(notaryAddress.toLowerCase())) {
     await demandAudit(notaryApi, order, seller, buyer);
@@ -88,76 +87,17 @@ const closeDataResponse = async (
 
   const params = await auditResult(notaryApi, order, seller, buyer);
 
-  const { address } = await signingService.getAccount();
+  const account = await signingService.getAccount();
 
-  const receipt = await sendTransaction(
-    web3,
-    address,
-    signingService.signCloseDataResponse,
+  enqueueTransaction(
+    account,
+    'CloseDataResponse',
     params,
     config.contracts.gasPrice.fast,
+    { priority: priority.MEDIUM },
   );
-
-  closeDataResponseSent({
-    receipt,
-    orderAddress: order,
-    sellerAddress: seller,
-  });
 
   return true;
 };
 
-const onAddDataResponseSent = async (
-  receipt,
-  orderAddress,
-  sellerAddress,
-  notariesCache,
-  closeDataResponseSent,
-) => {
-  try {
-    if (receipt) {
-      await getTransactionReceipt(web3, receipt);
-    }
-
-    await closeDataResponse(
-      orderAddress,
-      sellerAddress,
-      notariesCache,
-      closeDataResponseSent,
-    );
-  } catch (error) {
-    const { message } = error;
-
-    if (!retryAfterError(error) || message === 'Invalid order|seller address') {
-      logger.error('Could not close DataResponse (it will not be retried) ' +
-        `| reason: ${error.message} ` +
-        `| params ${JSON.stringify({ receipt, orderAddress, sellerAddress })}`);
-    } else {
-      throw error;
-    }
-  }
-};
-
-const onCloseDataResponseSent = async (
-  receipt,
-  orderAddress,
-  sellerAddress,
-) => {
-  try {
-    await getTransactionReceipt(web3, receipt);
-  } catch (error) {
-    if (!retryAfterError(error)) {
-      logger.error('Close DataResponse failed (it will not be retried) ' +
-        `| reason: ${error.message} ` +
-        `| params ${JSON.stringify({ receipt, orderAddress, sellerAddress })}`);
-    } else {
-      throw error;
-    }
-  }
-};
-
-export {
-  onAddDataResponseSent,
-  closeDataResponse,
-  onCloseDataResponseSent,
-};
+export { closeDataResponse };

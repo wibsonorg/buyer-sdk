@@ -11,7 +11,7 @@ const getElements = async (contract, property, _idx, _elements) => {
   const elements = _elements || [];
 
   try {
-    const element = await contract[property](idx);
+    const element = await contract.methods[property](idx).call();
     if (!element || element === '0x') {
       throw new Error('Deployed version compatible: No more elements');
     }

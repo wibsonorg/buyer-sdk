@@ -1,4 +1,4 @@
-import web3Utils from 'web3-utils';
+import web3 from './web3';
 import logger from './logger';
 
 const asyncError = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
@@ -16,7 +16,7 @@ const errorHandler = (err, req, res, next) => { // eslint-disable-line no-unused
 const validateAddress = paramName => async (req, res, next) => {
   const address = req.params[paramName];
 
-  if (web3Utils.isAddress(address)) {
+  if (web3.utils.isAddress(address)) {
     return next();
   }
   res.status(400).send({
