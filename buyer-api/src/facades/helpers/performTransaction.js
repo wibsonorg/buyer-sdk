@@ -1,4 +1,4 @@
-import { logger, delay } from '../../utils';
+import { delay } from '../../utils';
 
 /**
  * Suggests if an operation should be retried or not after specified error.
