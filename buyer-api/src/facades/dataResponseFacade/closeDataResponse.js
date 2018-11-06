@@ -94,7 +94,7 @@ const closeDataResponse = async (
     'CloseDataResponse',
     params,
     config.contracts.gasPrice.fast,
-    { priority: priority.LOW },
+    { priority: priority.MEDIUM },
   );
 
   return true;
