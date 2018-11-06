@@ -3,7 +3,6 @@
   flex-direction: column;
   min-width: 270px;
   min-height: 100px;
-  justify-content: space-between;
 }
 
 .panel-text-balance {

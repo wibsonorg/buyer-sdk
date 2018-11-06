@@ -38,7 +38,7 @@ const closeDataOrderFacade = async (orderAddr, account, batchId, batchLength, ad
     'CloseOrder',
     { orderAddr },
     config.contracts.gasPrice.fast,
-    { priority: priority.MEDIUM },
+    { priority: priority.LOW },
   );
 
   addJob('dataOrderClosed', {

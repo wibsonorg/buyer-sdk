@@ -74,6 +74,10 @@ const config = {
     minimumAllowance: env.ALLOWANCE_MINIMUM,
     multiplier: env.ALLOWANCE_MULTIPLIER,
   },
+  transactionQueue: {
+    maxIterations: env.TRANSACTION_QUEUE_MAX_ITERATIONS,
+    interval: env.TRANSACTION_QUEUE_INSPECTION_INTERVAL,
+  },
 };
 
 exports.default = config;

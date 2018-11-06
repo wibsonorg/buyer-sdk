@@ -145,10 +145,15 @@ const createDataOrderFacade = async (
     params,
     config.contracts.gasPrice.fast,
     {
-      priority: priority.MEDIUM,
+      priority: priority.HIGH,
     },
   );
 
+  // TODO: Needs improvement since this a weak point in the DataOrder creation
+  // flow. If the service is interrupted before the job finishes, there is no
+  // way to recover the flow automatically when the service comes back.
+  // There is a manual workaround at the moment: enqueue `addNotariesToOrder`
+  // and `associateBuyerInfoToOrder`. See `onDataOrderCreated` for more info.
   job.finished().then((transaction) => {
     if (transaction.status === 'success') {
       onDataOrderCreated(transaction, notaries, buyerInfoId, enqueueJob);

@@ -19,7 +19,7 @@ const createDataOrderQueue = () => {
       enqueueTransaction,
       (jobName, params) => {
         queue.add(jobName, params, {
-          priority: priority.MEDIUM,
+          priority: priority.HIGH,
           attempts: 20,
           backoff: {
             type: 'linear',
@@ -37,7 +37,7 @@ const createDataOrderQueue = () => {
       notaries,
       (params) => {
         queue.add('addNotaryToOrder', params, {
-          priority: priority.MEDIUM,
+          priority: priority.HIGH,
           attempts: 20,
           backoff: {
             type: 'linear',
