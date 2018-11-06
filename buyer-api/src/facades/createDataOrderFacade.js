@@ -122,7 +122,7 @@ const createDataOrderFacade = async (
     params,
     config.contracts.gasPrice.fast,
     {
-      priority: priority.MEDIUM,
+      priority: priority.HIGH,
     },
   );
 
