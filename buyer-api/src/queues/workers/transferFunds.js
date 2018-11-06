@@ -32,6 +32,7 @@ export default async (job) => {
   const receipt = await checkAndTransfer(
     child,
     balanceFx,
+    currency,
     params => sendTransaction(web3, root, transferFx, params),
     toBN(minFunds),
     toBN(maxFunds),

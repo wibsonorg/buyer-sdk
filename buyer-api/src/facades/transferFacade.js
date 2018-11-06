@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import { wibcoin, logger } from '../utils';
 import web3 from '../utils/web3';
 import config from '../../config';
@@ -5,13 +6,15 @@ import signingService from '../services/signingService';
 import { coin } from '../utils/wibson-lib';
 import { fundingQueue } from '../queues/fundingQueue';
 
-const minWib = web3.utils.toBN(config.buyerChild.minWib);
-const maxWib = web3.utils.toBN(config.buyerChild.maxWib);
+const minWib = new BigNumber(config.buyerChild.minWib);
+const maxWib = new BigNumber(config.buyerChild.maxWib);
 const minWei = web3.utils.toBN(config.buyerChild.minWei);
 const maxWei = web3.utils.toBN(config.buyerChild.maxWei);
 
-const getWeiBalance = async address =>
-  web3.utils.toBN(web3.eth.getBalance(address));
+const getWeiBalance = async (address) => {
+  const result = await web3.eth.getBalance(address);
+  return web3.utils.toBN(result);
+};
 
 const getWibBalance = async (address) => {
   const wibUnits = await wibcoin.methods.balanceOf(address).call();
@@ -35,12 +38,12 @@ const missingChildFunds = async (child) => {
   if (currentWei.gt(maxWei)) {
     logger.alert(`Child account ${child.address} exceeds maximum ETH balance. Max: ${maxWei} WEI | Current: ${currentWei} WEI`);
   }
-  if (currentWib.greaterThan(maxWib)) {
+  if (currentWib.isGreaterThan(maxWib)) {
     logger.alert(`Child account ${child.address} exceeds maximum WIB balance. Max: ${maxWib} | Current: ${currentWib}`);
   }
 
-  const missingWei = currentWei.lt(minWei) ? maxWei.subn(currentWei) : web3.utils.toBN(0);
-  const missingWib = currentWib.lessThan(minWib) ? maxWib.minus(currentWib) : web3.utils.toBN(0);
+  const missingWei = currentWei.lt(minWei) ? maxWei.sub(currentWei) : web3.utils.toBN(0);
+  const missingWib = currentWib.isLessThan(minWib) ? maxWib.minus(currentWib) : new BigNumber(0);
 
   return { child, missingWei, missingWib };
 };
@@ -55,13 +58,13 @@ const missingChildFunds = async (child) => {
  * @param {Number} min Minimum required balance
  * @param {Number} max Maximum allowed balance
  */
-const checkAndTransfer = (child, getBalance, send, min, max) => {
-  const balance = getBalance(child.address);
-  if (balance.greaterThanOrEqualTo(min)) return false;
+const checkAndTransfer = async (child, getBalance, currency, send, min, max) => {
+  const balance = currency === 'ETH' ? await getBalance(child.address) : await getBalance(child.address).call();
+  if (new BigNumber(balance).gte(min)) return false;
 
   return send({
     _to: child.address,
-    _value: max.minus(balance).toString(),
+    _value: new BigNumber(max).minus(balance).toString(),
   });
 };
 
@@ -74,11 +77,11 @@ const checkInitialRootBuyerFunds = async () => {
   const { root, children } = await signingService.getAccounts();
 
   const rootFunds = await getFunds(root.address);
-  const childrenCount = web3.utils.toBN(children.length);
-  const requiredWib = childrenCount.times(minWib);
-  const requiredWei = childrenCount.times(minWei);
+  const childrenCount = children.length;
+  const requiredWib = new BigNumber(childrenCount).multipliedBy(minWib);
+  const requiredWei = web3.utils.toBN(childrenCount).mul(minWei);
 
-  const insufficientWib = rootFunds.wib.lessThan(requiredWib);
+  const insufficientWib = rootFunds.wib.isLessThan(requiredWib);
   const insufficientEth = rootFunds.wei.lt(requiredWei);
 
   if (insufficientWib) {
@@ -115,7 +118,7 @@ const monitorFunds = async () => {
   const neededWib = missingFunds.map(x => x.missingWib).reduce((x, y) => x.plus(y));
 
   const childrenToFundWei = missingFunds.filter(x => x.missingWei.gt(0));
-  const childrenToFundWib = missingFunds.filter(x => x.missingWib.greaterThan(0));
+  const childrenToFundWib = missingFunds.filter(x => x.missingWib.isGreaterThan(0));
 
   if (rootBuyerFunds.wei.lt(neededWei)) {
     logger.alert(`
@@ -126,7 +129,7 @@ const monitorFunds = async () => {
     `);
   }
 
-  if (rootBuyerFunds.wib.lessThan(neededWib)) {
+  if (rootBuyerFunds.wib.isLessThan(neededWib)) {
     logger.alert(`
     Root Buyer (${root.address}) is unable to fund ${childrenToFundWib.length} child accounts:
     Needed WIB: ${neededWib}

@@ -1,9 +1,11 @@
 import { createQueue } from './createQueue';
 import logger from '../utils/logger';
+import transferFunds from './workers/transferFunds';
 
 const fundingQueue = createQueue('FundingQueue');
 
-fundingQueue.process('transferFunds', 2, `${__dirname}/workers/transferFunds.js`);
+// fundingQueue.process('transferFunds', 2, `${__dirname}/workers/transferFunds.js`);
+fundingQueue.process('transferFunds', transferFunds);
 fundingQueue.process('checkStatus', 2, `${__dirname}/workers/checkStatus.js`);
 
 fundingQueue.on('active', async (job) => {
