@@ -26,7 +26,7 @@ const checkAllowance = async () => {
         addedValue: minimumAllowance.multipliedBy(multiplier),
       },
       config.contracts.gasPrice.fast,
-      { priority: priority.HIGH },
+      { priority: priority.URGENT },
     );
 
     logger.info('Allowance Check :: Approval increase requested');
