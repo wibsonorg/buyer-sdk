@@ -33,7 +33,7 @@ const enqueueCloseDataResponse = (orderAddress, sellerAddress, options = {}) => 
   } = options;
 
   dataResponseQueue.add('closeDataResponse', { orderAddress, sellerAddress }, {
-    priority: p || priority.LOW,
+    priority: p || priority.MEDIUM,
     attempts,
     backoff: {
       type: backoffType,
