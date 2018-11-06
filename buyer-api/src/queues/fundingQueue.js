@@ -1,12 +1,14 @@
 import { createQueue } from './createQueue';
 import logger from '../utils/logger';
 import transferFunds from './workers/transferFunds';
+import checkStatus from './workers/checkStatus';
 
 const fundingQueue = createQueue('FundingQueue');
 
 // fundingQueue.process('transferFunds', 2, `${__dirname}/workers/transferFunds.js`);
 fundingQueue.process('transferFunds', transferFunds);
-fundingQueue.process('checkStatus', 2, `${__dirname}/workers/checkStatus.js`);
+// fundingQueue.process('checkStatus', 2, `${__dirname}/workers/checkStatus.js`);
+fundingQueue.process('checkStatus', checkStatus);
 
 fundingQueue.on('active', async (job) => {
   if (!job.name.startsWith('transfer')) {
