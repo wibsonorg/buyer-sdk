@@ -41,7 +41,7 @@ const closeDataOrderFacade = async (orderAddr) => {
     'CloseOrder',
     { orderAddr },
     config.contracts.gasPrice.fast,
-    { priority: priority.MEDIUM },
+    { priority: priority.LOW },
   );
 
   return new Response({ status: 'pending' });
