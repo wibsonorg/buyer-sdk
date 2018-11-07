@@ -17,7 +17,6 @@ const { fromWib } = coin;
  * @param {Function} enqueueJob Function to add job to process.
  */
 const onDataOrderCreated = async (
-  account,
   batchId,
   transaction,
   notaries,
@@ -31,7 +30,6 @@ const onDataOrderCreated = async (
   );
 
   enqueueJob('addNotariesToOrder', {
-    account: account.toLowerCase(),
     orderAddr: orderAddr.toLowerCase(),
     notaries,
   });
@@ -42,7 +40,8 @@ const onDataOrderCreated = async (
   });
 
   enqueueJob('associateOrderToBatch', {
-    batchId, orderAddr,
+    batchId,
+    orderAddr: orderAddr.toLowerCase(),
   });
 };
 
@@ -124,7 +123,6 @@ const createDataOrderFacade = async (
         },
       },
     ],
-    ...parameters,
   });
 
   if (params.buyerURL.length === 0) {
@@ -153,10 +151,10 @@ const createDataOrderFacade = async (
   // flow. If the service is interrupted before the job finishes, there is no
   // way to recover the flow automatically when the service comes back.
   // There is a manual workaround at the moment: enqueue `addNotariesToOrder`
-  // and `associateBuyerInfoToOrder`. See `onDataOrderCreated` for more info.
+  // and `associateBuyerInfoToOrder`. See `x` for more info.
   job.finished().then((transaction) => {
     if (transaction.status === 'success') {
-      onDataOrderCreated(transaction, notaries, buyerInfoId, enqueueJob);
+      onDataOrderCreated(batchId, transaction, notaries, buyerInfoId, enqueueJob);
     }
   });
 

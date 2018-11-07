@@ -1,4 +1,4 @@
-export { dataOrderQueue } from './dataOrderQueue';
+export { dataOrderQueue } from './createDataOrderQueue';
 export {
   dataResponseQueue,
   enqueueCloseDataResponse,

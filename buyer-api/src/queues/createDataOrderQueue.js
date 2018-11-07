@@ -1,44 +1,26 @@
 import { createQueue } from './createQueue';
+import { enqueueTransaction } from './transactionQueue';
+import { priority } from './priority';
 import {
   createDataOrderFacade,
-  onDataOrderSent,
   addNotariesToOrderFacade,
+  addNotaryToOrder,
 } from '../facades';
 import { associateBuyerInfoToOrder } from '../services/buyerInfo';
 import { associateOrderToBatch } from '../services/batchInfo';
 
-const createDataOrderQueue = ({ notariesCache }) => {
+const createDataOrderQueue = () => {
   const queue = createQueue('DataOrderQueue');
 
-  // NOTE: The processing can be done in a separate process by specifying the
-  //       path to a module instead of function.
-  // @see https://github.com/OptimalBits/bull#separate-processes
   queue.process('createDataOrder', async (
     { data },
   ) => {
-    await createDataOrderFacade(data, (jobName, params) => {
-      queue.add(jobName, params, {
-        priority: 100,
-        attempts: 20,
-        backoff: {
-          type: 'linear',
-        },
-      });
-    });
-  });
-
-  queue.process('dataOrderSent', async (
-    {
-      data: {
-        receipt, account, notaries, buyerInfoId, batchId,
-      },
-    },
-  ) => {
-    await onDataOrderSent(
-      receipt, account, notaries, buyerInfoId, batchId,
+    await createDataOrderFacade(
+      data,
+      enqueueTransaction,
       (jobName, params) => {
         queue.add(jobName, params, {
-          priority: 10,
+          priority: priority.HIGH,
           attempts: 20,
           backoff: {
             type: 'linear',
@@ -55,7 +37,15 @@ const createDataOrderQueue = ({ notariesCache }) => {
       orderAddr,
       account,
       notaries,
-      notariesCache,
+      (params) => {
+        queue.add('addNotaryToOrder', params, {
+          priority: priority.HIGH,
+          attempts: 20,
+          backoff: {
+            type: 'linear',
+          },
+        });
+      },
     );
 
     if (!response.success()) {
@@ -69,6 +59,16 @@ const createDataOrderQueue = ({ notariesCache }) => {
     await associateBuyerInfoToOrder(orderAddr, buyerInfoId);
   });
 
+  queue.process('addNotaryToOrder', async (
+    { data: { buyerInfoId, notaryParameters } },
+  ) => {
+    await addNotaryToOrder(
+      buyerInfoId,
+      notaryParameters,
+      enqueueTransaction,
+    );
+  });
+
   queue.process('associateOrderToBatch', async (
     { data: { batchId, orderAddr } },
   ) => {
@@ -78,4 +78,6 @@ const createDataOrderQueue = ({ notariesCache }) => {
   return queue;
 };
 
-export { createDataOrderQueue };
+const dataOrderQueue = createDataOrderQueue();
+
+export { dataOrderQueue };

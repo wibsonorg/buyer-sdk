@@ -22,12 +22,11 @@ const createTransactionQueue = () => {
   ) => {
     logger.info(`Tx[${id}] :: ${name} :: Started`);
 
-    const { address } = account;
     const signFn = signingService[signWith];
 
     const receipt = await sendTransaction(
       web3,
-      address,
+      account,
       signFn,
       params,
       gasPrice || config.contracts.gasPrice.fast,
@@ -67,8 +66,14 @@ const createTransactionQueue = () => {
   return queue;
 };
 
-const transactionQueue = createTransactionQueue();
+const transactionQueues = {};
+
 const enqueueTransaction = (account, name, params, gasPrice, options = {}) => {
+  const { number } = account;
+  if (!transactionQueues[number]) transactionQueues[number] = createTransactionQueue();
+
+  const transactionQueue = transactionQueues[number];
+
   const {
     priority: p, attempts = 20, backoffType = 'linear',
   } = options;
@@ -88,4 +93,4 @@ const enqueueTransaction = (account, name, params, gasPrice, options = {}) => {
   });
 };
 
-export { transactionQueue, enqueueTransaction };
+export { enqueueTransaction };

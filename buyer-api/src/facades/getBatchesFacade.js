@@ -91,6 +91,7 @@ const fetchAndCacheBatch = async (batchId, batchInfo, ordersCache, batchesCache)
  */
 const getBatchInfo = async (batchId, batchInfo, ordersCache, batchesCache) => {
   const cachedBatch = await batchesCache.get(batchId);
+  console.log({ batchId, batchInfo, cachedBatch });
   if (cachedBatch) {
     logger.debug('Batch :: Cache Hit ::', { batchId });
     return JSON.parse(cachedBatch);
@@ -116,9 +117,10 @@ const getBatches = async (
   limit,
 ) => {
   const batchesRaw = await listBatchPairs();
+  const nonEmptyBatches = batchesRaw.filter(raw => JSON.parse(raw.value).orderAddresses.length > 0);
 
-  const upperBound = limit && offset >= 0 ? offset + limit : batchesRaw.length;
-  const batchesPage = batchesRaw.slice(offset, upperBound);
+  const upperBound = limit && offset >= 0 ? offset + limit : nonEmptyBatches.length;
+  const batchesPage = nonEmptyBatches.slice(offset, upperBound);
 
   const batches = await Promise.all(batchesPage.map(batch =>
     getBatchInfo(batch.key, JSON.parse(batch.value), ordersCache, batchesCache)));
