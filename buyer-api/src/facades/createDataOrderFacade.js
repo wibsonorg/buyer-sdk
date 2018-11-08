@@ -20,7 +20,7 @@ const onDataOrderCreated = async (
   batchId,
   transaction,
   notaries,
-  buyerInfoId,
+  account,
   enqueueJob,
 ) => {
   const { orderAddr } = extractEventArguments(
@@ -31,12 +31,13 @@ const onDataOrderCreated = async (
 
   enqueueJob('addNotariesToOrder', {
     orderAddr: orderAddr.toLowerCase(),
+    account,
     notaries,
   });
 
   enqueueJob('associateBuyerInfoToOrder', {
     orderAddr: orderAddr.toLowerCase(),
-    buyerInfoId,
+    buyerInfoId: account.buyerInfoId,
   });
 
   enqueueJob('associateOrderToBatch', {
@@ -154,7 +155,7 @@ const createDataOrderFacade = async (
   // and `associateBuyerInfoToOrder`. See `x` for more info.
   job.finished().then((transaction) => {
     if (transaction.status === 'success') {
-      onDataOrderCreated(batchId, transaction, notaries, buyerInfoId, enqueueJob);
+      onDataOrderCreated(batchId, transaction, notaries, account, enqueueJob);
     }
   });
 

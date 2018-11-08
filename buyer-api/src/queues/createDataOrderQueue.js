@@ -60,10 +60,10 @@ const createDataOrderQueue = () => {
   });
 
   queue.process('addNotaryToOrder', async (
-    { data: { buyerInfoId, notaryParameters } },
+    { data: { account, notaryParameters } },
   ) => {
     await addNotaryToOrder(
-      buyerInfoId,
+      account,
       notaryParameters,
       enqueueTransaction,
     );

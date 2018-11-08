@@ -51,7 +51,7 @@ const takeOnlyNotariesToAdd = async (orderAddress, addresses) => {
  * @throws {Error} when AddNotaryToOrder transaction can't be sent
  * @returns {Response} The result of the operation.
  */
-const addNotaryToOrder = async (buyerInfoId, params, enqueueTransaction) => {
+const addNotaryToOrder = async (account, params, enqueueTransaction) => {
   const dataOrder = dataOrderAt(params.orderAddr);
   const notaryAdded = await dataOrder.methods.hasNotaryBeenAdded(params.notary).call();
   if (notaryAdded) {
@@ -59,7 +59,7 @@ const addNotaryToOrder = async (buyerInfoId, params, enqueueTransaction) => {
   }
 
   enqueueTransaction(
-    buyerInfoId,
+    account,
     'AddNotaryToOrder',
     params,
     config.contracts.gasPrice.fast,
