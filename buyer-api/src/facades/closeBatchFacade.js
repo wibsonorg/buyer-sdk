@@ -3,7 +3,7 @@ import Response from './Response';
 import { getSellersInfo, getDataOrder, fetchAndCacheBatch } from './';
 
 import { getBatchInfo, closeBatch, startClosingOfBatch } from '../services/batchInfo';
-import { web3, DataOrderContract } from '../utils';
+import { web3, dataOrderAt } from '../utils';
 import signingService from '../services/signingService';
 
 /**
@@ -15,7 +15,7 @@ const validate = async (orderAddresses) => {
   let errors = [];
 
   orderAddresses.forEach(async (orderAddress) => {
-    const dataOrder = DataOrderContract.at(orderAddress);
+    const dataOrder = dataOrderAt(orderAddress);
     const sellers = await getSellersInfo(web3, dataOrder);
     if (!sellers.every(({ status }) => status === 'TransactionCompleted')) {
       errors = ['Order has pending data responses'];

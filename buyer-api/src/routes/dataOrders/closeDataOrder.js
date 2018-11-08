@@ -1,5 +1,4 @@
 import express from 'express';
-// import { closeDataOrderFacade } from '../../facades';
 import { closeOrdersOfBatch } from '../../facades';
 import { asyncError } from '../../utils';
 
@@ -38,7 +37,7 @@ const router = express.Router();
  *         description: Problem on our side
  */
 router.post(
-  '/:orderAddress/end',
+  '/:batchId/end',
   asyncError(async (req, res) => {
     const { batchId } = req.params;
     const {
