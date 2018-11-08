@@ -1,4 +1,5 @@
 import request from 'supertest';
+import { expect } from 'chai';
 import requestPromise from 'request-promise-native';
 import sinon from 'sinon';
 import { mockStorage, restoreMocks } from '../helpers';
@@ -25,16 +26,17 @@ describe('/health', () => {
     });
   });
 
-  describe('GET /deep', () => {
-    it('responds with an OK status when app and sub-systems are responding', (done) => {
-      const response = { status: 'OK' };
-
+  describe('GET /ss', () => {
+    it('responds with an OK status when app and sub-systems are responding', () => {
       sinon.stub(requestPromise, 'get')
-        .returns(Promise.resolve(JSON.stringify(response)));
+        .returns(Promise.resolve({ status: 'OK' }));
 
-      request(app)
-        .get('/health/deep')
-        .expect(200, response, done);
+      return request(app)
+        .get('/health/ss')
+        .expect(200)
+        .then((response) => {
+          expect(response.body.status, 'OK');
+        });
     });
 
     it('responds with an error message when sub-system is not responding', (done) => {
@@ -42,28 +44,16 @@ describe('/health', () => {
         .throws('RequestError');
 
       request(app)
-        .get('/health/deep')
-        .expect(500, { message: 'Signing Service not working as expected', error: '' }, done);
+        .get('/health/ss')
+        .expect(500, {
+          message: 'An internal server error occurred',
+          error: 'Internal Server Error',
+          statusCode: 500,
+        }, done);
     });
 
     afterEach(() => {
       requestPromise.get.restore();
-    });
-  });
-
-  describe('GET /redis', () => {
-    it('responds with an OK status', (done) => {
-      request(app)
-        .get('/health/redis')
-        .expect(200, { foo: 'bar' }, done);
-    });
-  });
-
-  describe('GET /level', () => {
-    it('responds with an OK status', (done) => {
-      request(app)
-        .get('/health/level')
-        .expect(200, { foz: 'baz' }, done);
     });
   });
 

@@ -8,16 +8,8 @@ import swaggerUi from 'swagger-ui-express';
 import cookieParser from 'cookie-parser';
 import config from '../config';
 import schema from './schema';
-import {
-  logger,
-  errorHandler,
-  createRedisStore,
-  createLevelStore,
-} from './utils';
-import {
-  dataOrderQueue,
-  dataResponseQueue,
-} from './queues';
+import { logger, errorHandler, createRedisStore } from './utils';
+import { dataOrderQueue, dataResponseQueue } from './queues';
 import {
   auth,
   account,
@@ -31,8 +23,6 @@ import checkAuthorization from './utils/checkAuthorization';
 
 const app = express();
 app.locals.stores = {
-  redis: createRedisStore('sample'),
-  level: createLevelStore('sample_level'),
   ordersCache: createRedisStore('orders.cache'),
   undead: createRedisStore('undead::'),
 };
