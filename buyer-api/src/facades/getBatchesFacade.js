@@ -91,7 +91,6 @@ const fetchAndCacheBatch = async (batchId, batchInfo, ordersCache, batchesCache)
  */
 const getBatchInfo = async (batchId, batchInfo, ordersCache, batchesCache) => {
   const cachedBatch = await batchesCache.get(batchId);
-  console.log({ batchId, batchInfo, cachedBatch });
   if (cachedBatch) {
     logger.debug('Batch :: Cache Hit ::', { batchId });
     return JSON.parse(cachedBatch);

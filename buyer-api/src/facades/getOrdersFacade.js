@@ -65,6 +65,7 @@ const getDataOrderDetails = async (order) => {
     getElements(order, 'notaries'),
     getElements(order, 'sellers'),
     order.methods.termsAndConditions().call(),
+    order.methods.buyer().call(),
     order.methods.buyerURL().call(),
     order.methods.buyerPublicKey().call(),
     order.methods.createdAt().call(),
