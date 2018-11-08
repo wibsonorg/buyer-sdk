@@ -14,11 +14,13 @@ const validate = async (orderAddress) => {
   const dataOrder = dataOrderAt(orderAddress);
   const sellers = await getSellersInfo(web3, dataOrder);
 
+  const isClosed = !dataOrder.transactionCompletedAt().isZero();
+
   if (!sellers.every(({ status }) => status === 'TransactionCompleted')) {
     errors = ['Order has pending data responses'];
   }
 
-  return errors;
+  return { errors, isClosed };
 };
 
 /**
@@ -27,13 +29,19 @@ const validate = async (orderAddress) => {
  * @returns {Response} The result of the operation.
  */
 const closeDataOrderFacade = async (orderAddr, account, batchId, batchLength, addJob) => {
-  const errors = await validate(orderAddr);
+  const { errors, isClosed } = await validate(orderAddr);
 
   if (errors.length > 0) {
     return new Response(null, errors);
   }
 
-  enqueueTransaction(
+  if (isClosed) {
+    return addJob('dataOrderClosed', {
+      batchId, batchLength,
+    });
+  }
+
+  const job = await enqueueTransaction(
     account,
     'CloseOrder',
     { orderAddr },
@@ -41,8 +49,12 @@ const closeDataOrderFacade = async (orderAddr, account, batchId, batchLength, ad
     { priority: priority.LOW },
   );
 
-  addJob('dataOrderClosed', {
-    batchId, batchLength,
+  job.finished().then((transaction) => {
+    if (transaction.status === 'success') {
+      addJob('dataOrderClosed', {
+        batchId, batchLength,
+      });
+    }
   });
 
   return new Response({ status: 'pending' });
