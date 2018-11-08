@@ -13,24 +13,27 @@ const getAllowance = async myAddress =>
   wibcoin.methods.allowance(myAddress, dataExchange.options.address).call();
 
 const checkAllowance = async () => {
-  const account = await signingService.getAccount();
-  const allowance = await getAllowance(account.address);
   const { minimumAllowance, multiplier } = params(config.allowance);
 
-  if (minimumAllowance.isGreaterThan(allowance)) {
-    enqueueTransaction(
-      account,
-      'IncreaseApproval',
-      {
-        spender: dataExchange.options.address,
-        addedValue: minimumAllowance.multipliedBy(multiplier),
-      },
-      config.contracts.gasPrice.fast,
-      { priority: priority.URGENT },
-    );
+  const { children: accounts } = await signingService.getAccounts();
 
-    logger.info('Allowance Check :: Approval increase requested');
-  }
+  accounts.forEach(async (account) => {
+    const allowance = await getAllowance(account.address);
+    if (minimumAllowance.isGreaterThan(allowance)) {
+      enqueueTransaction(
+        account,
+        'IncreaseApproval',
+        {
+          spender: dataExchange.options.address,
+          addedValue: minimumAllowance.multipliedBy(multiplier),
+        },
+        config.contracts.gasPrice.fast,
+        { priority: priority.URGENT },
+      );
+
+      logger.info('Allowance Check :: Approval increase requested');
+    }
+  });
 };
 
 export { checkAllowance };
