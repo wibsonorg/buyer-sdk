@@ -37,4 +37,4 @@ else
   start_ganache
 fi
 
-node_modules/.bin/mocha -r babel-register -r babel-polyfill --file test/setup.js --recursive test/ --exit
+node_modules/.bin/ava

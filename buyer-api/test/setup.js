@@ -1,4 +1,16 @@
 // TODO: This is a temporal solution, this file should not exist
+import td from 'testdouble';
+import asyncRedis from 'async-redis';
+import redisMock from 'redis-mock';
+import createLevel from 'level-test';
+
+const level = createLevel();
+
+td.replace('../src/utils/storage', {
+  createRedisStore: () => asyncRedis.decorate(redisMock.createClient()),
+  createLevelStore: () => level(),
+});
+
 process.env.WEB3_PROVIDER = 'http://localhost:8545';
 process.env.BUYER_SIGNING_SERVICE_URL = 'http://localhost:9101';
 process.env.REDIS_SOCKET = '/tmp/redis.sock';
