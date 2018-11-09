@@ -16,6 +16,7 @@ test('responds with error when notaries is not present', async (assert) => {
 
   assert.is(response.success(), false);
 });
+test.skip('responds with error when orderAddress is not present', t => t.fail());
 test.skip('responds with error when responsesPercentage is not present', t => t.fail());
 test.skip('responds with error when notarizationFee is not present', t => t.fail());
 test.skip('responds with error when notarizationTermsOfService is not present', t => t.fail());
