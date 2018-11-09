@@ -1,5 +1,5 @@
 import { BigNumber } from 'bignumber.js';
-import { enqueueTransaction, priority } from '../../queues';
+import { priority } from '../../queues';
 import signingService from '../../services/signingService';
 import { dataExchange, wibcoin, logger } from '../../utils';
 import config from '../../../config';
@@ -12,7 +12,7 @@ const params = ({ minimumAllowance, multiplier }) => ({
 const getAllowance = async myAddress =>
   wibcoin.methods.allowance(myAddress, dataExchange.options.address).call();
 
-const checkAllowance = async () => {
+const checkAllowance = async (enqueueTransaction) => {
   const account = await signingService.getAccount();
   const allowance = await getAllowance(account.address);
   const { minimumAllowance, multiplier } = params(config.allowance);
