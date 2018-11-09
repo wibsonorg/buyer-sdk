@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# TODO: take these values from the environment
 ganache_port=8545
 signing_service_port=9101
 signing_service_url="http://localhost:$signing_service_port/health"
