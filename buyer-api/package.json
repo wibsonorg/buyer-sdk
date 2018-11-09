@@ -11,7 +11,8 @@
     "test": "scripts/test.sh",
     "test:coverage": "nyc scripts/test.sh",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "retryjobs": "babel-node scripts/retryFailedJobs.js"
   },
   "dependencies": {
     "apicache": "^1.2.3",
