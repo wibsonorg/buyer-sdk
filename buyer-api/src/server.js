@@ -26,7 +26,7 @@ const server = () => {
     Number(config.eventSubscribers.interval),
   );
 
-  setInterval(checkAllowance(enqueueTransaction), Number(config.allowance.interval));
+  setInterval(() => checkAllowance(enqueueTransaction), Number(config.allowance.interval));
 };
 
 export default server;
