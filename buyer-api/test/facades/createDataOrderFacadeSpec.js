@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import signingService from '../../src/services/signingService';
+import { storeBuyerInfo } from '../../src/services';
 import web3 from '../../src/utils/web3';
 import { createDataOrderFacade } from '../../src/facades';
 
@@ -11,12 +11,24 @@ describe('createDataOrderFacade', () => {
   const initialBudgetForAudits = 10;
   const termsAndConditions = 'asd';
   const buyerURL = 'asd';
+  const buyerInfoId = 'social-good';
+  let notaries = [];
 
   beforeEach(async () => {
-    // TODO:
-    //   * Token Allowance: dx contract allowance is being set outside the test
-    //     suite. It should be set here.
-    //   * Buyer SS is not being mock for now.
+    const accounts = await web3.eth.getAccounts();
+    notaries = [accounts[5], accounts[6]];
+
+    await storeBuyerInfo(buyerInfoId, {
+      id: buyerInfoId,
+      label: 'Social Good',
+      description: 'Social Good $ Research',
+      category: {
+        id: 'research-social-good',
+        label: 'Social Good & Research',
+        description: 'Social Good & more Research',
+      },
+      terms: '# WIBSON ALPHA TERMS OF USE',
+    });
   });
 
   it('responds with error if filters is not present');
@@ -26,24 +38,17 @@ describe('createDataOrderFacade', () => {
   it('responds with error if termsAndConditions is not present');
   it('responds with error if buyerURL is not present');
   it('responds successfully', async () => {
-    sinon.stub(signingService, 'getAccount')
-      .returns(Promise.resolve(JSON.stringify({
-        address: '0xaddress',
-        publicKey: '0xpublickey',
-      })));
-    sinon.stub(signingService, 'signNewOrder')
-      .returns(Promise.resolve(JSON.stringify({
-        signedTransaction: 'asdasd',
-      })));
+    const callback = sinon.spy();
 
-    sinon.stub(web3.eth, 'getTransactionCount')
-      .returns(Promise.resolve(2));
-    sinon.stub(web3.eth, 'sendRawTransaction')
-      .returns(Promise.resolve('0xtxhash'));
-    sinon.stub(web3.eth, 'getTransactionReceipt')
-      .returns(Promise.resolve(JSON.stringify({
-        logs: [], // fails because of this
-      })));
+    const fakeEnqueueTransaction = () => ({
+      finished() {
+        return {
+          then: callback,
+        };
+      },
+    });
+
+    const fakeEnqueueJob = () => true;
 
     const response = await createDataOrderFacade({
       filters,
@@ -52,14 +57,11 @@ describe('createDataOrderFacade', () => {
       initialBudgetForAudits,
       termsAndConditions,
       buyerURL,
-    });
+      notaries,
+      buyerInfoId,
+    }, fakeEnqueueTransaction, fakeEnqueueJob);
 
     expect(response.success()).to.eq(true);
-
-    signingService.getAccount.restore();
-    signingService.signNewOrder.restore();
-    web3.eth.getTransactionCount.restore();
-    web3.eth.sendRawTransaction.restore();
-    web3.eth.getTransactionReceipt.restore();
+    expect(callback.called).to.eq(true);
   });
 });

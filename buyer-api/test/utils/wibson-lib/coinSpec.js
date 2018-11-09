@@ -7,14 +7,14 @@ describe('Coin helper', () => {
   describe('toWib', () => {
     it('returns the correct amount of wibcoins', () => {
       expect(toWib('0')).to.equal('0');
-      expect(toWib('1')).to.equal('0.000000001');
+      expect(toWib('1', { decimals: 9 })).to.equal('0.000000001');
       expect(toWib('1000000000')).to.equal('1');
-      expect(toWib('9000000000000000000')).to.equal('9000000000');
+      expect(toWib('9000000000000000000')).to.equal('9,000,000,000');
     });
 
     it('returns the correct amount of wibcoins when exponential notation is used', () => {
       expect(toWib('1e+9')).to.equal('1');
-      expect(toWib('9e+18')).to.equal('9000000000');
+      expect(toWib('9e+18')).to.equal('9,000,000,000');
     });
 
     it('returns NaN when an invalid number is specified', () => {
