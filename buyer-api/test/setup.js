@@ -4,13 +4,6 @@ import asyncRedis from 'async-redis';
 import redisMock from 'redis-mock';
 import createLevel from 'level-test';
 
-const level = createLevel();
-
-td.replace('../src/utils/storage', {
-  createRedisStore: () => asyncRedis.decorate(redisMock.createClient()),
-  createLevelStore: () => level(),
-});
-
 process.env.WEB3_PROVIDER = 'http://localhost:8545';
 process.env.BUYER_SIGNING_SERVICE_URL = 'http://localhost:9101';
 process.env.REDIS_SOCKET = '/tmp/redis.sock';
@@ -22,3 +15,10 @@ process.env.PASSPHRASE = 'pass';
 process.env.JWT_OPTIONS = '{ "secret": "secret", "expiration": "1d" }';
 process.env.SLACK_LOG = 'https://hooks.slack.com/services/foo/bar/baz';
 process.env.NOTARY_DEMAND_AUDITS_FROM = '["0xfe174860ad53e45047BABbcf4aff735d650D9284"]';
+
+const level = createLevel();
+
+td.replace('../src/utils/storage', {
+  createRedisStore: () => asyncRedis.decorate(redisMock.createClient()),
+  createLevelStore: () => level(),
+});
