@@ -30,7 +30,7 @@ const mockTransactionResponse = (tx) => {
   fakeProvider.addResponse('eth_gasPrice', gasPrice);
   fakeProvider.addResponse('eth_sendRawTransaction', tx.transactionHash);
   fakeProvider.addResponse('eth_getTransactionReceipt', tx);
-  // TODO: Web3 needs a second `eth_getTransactionReceipt` call. It woul
+  // TODO: Review if this second call is needed.
   fakeProvider.addResponse('eth_getTransactionReceipt', tx);
 };
 
