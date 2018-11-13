@@ -135,6 +135,7 @@ const sendTransaction = async (
   };
 
   const { signedTransaction } = await signingFunc(payload);
+
   const receipt = await sendSignedTransaction(web3, signedTransaction);
 
   return receipt;
