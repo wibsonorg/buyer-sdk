@@ -1,4 +1,4 @@
-import { delay } from '../../utils';
+import { delay } from '../../utils/delay';
 
 /**
  * Suggests if an operation should be retried or not after specified error.
@@ -80,7 +80,7 @@ const getTransaction = (web3, receipt) =>
         reject(err);
       } else if (!result) {
         resolve({ status: 'pending' });
-      } else if (result.status && web3.utils.hexToNumber(result.status) === 1) {
+      } else if (result.status) {
         resolve({ ...result, status: 'success' });
       } else {
         resolve({ ...result, status: 'failure' });
@@ -135,7 +135,6 @@ const sendTransaction = async (
   };
 
   const { signedTransaction } = await signingFunc(payload);
-
   const receipt = await sendSignedTransaction(web3, signedTransaction);
 
   return receipt;

@@ -77,4 +77,4 @@ else
   start_signing_service
 fi
 
-node_modules/.bin/ava
+node_modules/.bin/ava --tap | tap-spec

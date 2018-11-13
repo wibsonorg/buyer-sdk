@@ -1,6 +1,7 @@
 import { createQueue } from './createQueue';
 import { priority } from './priority';
-import { web3, logger } from '../utils';
+import web3 from '../utils/web3';
+import logger from '../utils/logger';
 import { sendTransaction, waitForExecution } from '../facades/helpers';
 import signingService from '../services/signingService';
 import config from '../../config';
