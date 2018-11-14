@@ -2,7 +2,7 @@ import redis from 'redis';
 import asyncRedis from 'async-redis';
 import Web3 from 'web3';
 import loadEnv from '../src/utils/wibson-lib/loadEnv';
-import { getTransactionReceipt } from '../src/facades/helpers/performTransaction.js';
+import { getTransactionReceipt } from '../src/facades/helpers/performTransaction';
 
 const getEnv = async () => {
   await loadEnv();
@@ -11,7 +11,9 @@ const getEnv = async () => {
 
 const retryJob = async (web3, redisClient, jobType, jobId) => {
   const job = await redisClient.hgetall(jobType.replace('failed', jobId));
-  const { name, failedReason, priority, opts, delay, attemptsMade } = job;
+  const {
+    name, failedReason, priority, opts, delay, attemptsMade,
+  } = job;
   const data = JSON.parse(job.data);
 
   if (attemptsMade >= 20) { // DO not hardcode this
@@ -21,7 +23,7 @@ const retryJob = async (web3, redisClient, jobType, jobId) => {
         console.log(txReceipt);
         // await redisClient.zrem(jobType, jobId);
       } catch (err) {
-        console.log(err.pending)
+        console.log(err.pending);
         // enqueue new job
       }
     }
