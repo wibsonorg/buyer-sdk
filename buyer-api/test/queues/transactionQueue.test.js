@@ -15,7 +15,7 @@ const receipt = {
   from: '0x2d419c641352e0baa7f54328ecabf58c5e4a56f1',
   to: '0x0188b5fbbd5220e938f084d4d5d00cc35ce2c029',
   gasUsed: 26056,
-  status: 0x1,
+  status: '0x1',
 };
 let account;
 
@@ -47,7 +47,7 @@ test.skip('responds a job that resolves to a pending transaction', t => t.fail()
 test.skip('responds a job that resolves to a transaction with unknown status', t => t.fail());
 
 test.serial('responds a job that resolves to a failed transaction', async (assert) => {
-  mockTransactionResponse({ ...receipt, status: 0x0 });
+  mockTransactionResponse({ ...receipt, status: '0x0' });
 
   const job = await enqueueTransaction(account, 'IncreaseApproval', dataPayload, 12);
   const transaction = await job.finished();
