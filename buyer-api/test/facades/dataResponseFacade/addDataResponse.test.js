@@ -9,13 +9,10 @@ import { addDataResponse } from '../../../src/facades';
 const fakeAddress = '0x1234567890123456789123456789012345678901';
 const fakeSignature = '0x1234567890123456789123456789012345678901123456789012345678912345678901234567890112345678901234567891234567890123456789011234567890';
 
-test.before(async () => {
-});
-
 test.afterEach(() => { sinon.restore(); });
 
 test.serial('responds with error when orderAddress is invalid', async (assert) => {
-  const error = await assert.throws(addDataResponse('I will fail!', undefined, undefined));
+  const error = await assert.throws(addDataResponse('I will fail!', fakeAddress, undefined));
   assert.is(error.message, 'Invalid order|seller address');
 });
 
@@ -58,6 +55,7 @@ test.serial('throws if dataHash is undefined', async (assert) => {
   assert.is(error.message, 'Invalid data response payload');
   assert.false(callback.called);
 });
+
 test.serial('throws if signature is undefined', async (assert) => {
   sinon.stub(utils, 'dataOrderAt').value(() => ({ methods: { hasSellerBeenAccepted: () => ({ call: () => false }) }, options: { address: fakeAddress } }));
   sinon.stub(s3, 'getDataResponse').value(async () => ({ notaryAccount: fakeAddress, dataHash: fakeAddress, signature: undefined }));
@@ -66,6 +64,7 @@ test.serial('throws if signature is undefined', async (assert) => {
   assert.is(error.message, 'Invalid data response payload');
   assert.false(callback.called);
 });
+
 test.serial('throws if notary is not added to dataorder', async (assert) => {
   sinon.stub(utils, 'dataOrderAt').value(() => ({ methods: { hasSellerBeenAccepted: () => ({ call: () => false }), hasNotaryBeenAdded: () => ({ call: () => false }) }, options: { address: fakeAddress } }));
   sinon.stub(s3, 'getDataResponse').value(async () => ({ notaryAccount: fakeAddress, dataHash: fakeAddress, signature: fakeSignature }));
@@ -74,6 +73,7 @@ test.serial('throws if notary is not added to dataorder', async (assert) => {
   assert.is(error.message, 'Invalid notary');
   assert.false(callback.called);
 });
+
 test.serial('throws if buyer does not have enough allowance to add DataResponse', async (assert) => {
   // In this case the user has 10 of allowance and it requires 100
   sinon.stub(utils, 'dataOrderAt').value(() =>
@@ -96,6 +96,7 @@ test.serial('throws if buyer does not have enough allowance to add DataResponse'
   assert.is(error.message, 'Not enough allowance to add DataResponse');
   assert.false(callback.called);
 });
+
 test.serial('returns true if dataResponse is successfully added', async (assert) => {
   // In this case the user has 100000 of allowance and it requires 100
   sinon.stub(utils, 'dataOrderAt').value(() =>
