@@ -18,7 +18,7 @@ process.env.JWT_OPTIONS = '{ "secret": "secret", "expiration": "1d" }';
 process.env.SLACK_LOG = 'https://hooks.slack.com/services/foo/bar/baz';
 process.env.NOTARY_DEMAND_AUDITS_FROM = '["0xfe174860ad53e45047BABbcf4aff735d650D9284"]';
 process.env.TRANSACTION_QUEUE_MAX_ITERATIONS = 5;
-process.env.TRANSACTION_QUEUE_INSPECTION_INTERVAL = 10;
+process.env.TRANSACTION_QUEUE_INSPECTION_INTERVAL = 5;
 
 const level = createLevel();
 
