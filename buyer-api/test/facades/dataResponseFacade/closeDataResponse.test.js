@@ -10,12 +10,12 @@ const fakeAddress = '0x1234567890123456789123456789012345678901';
 
 test.afterEach.always(() => { sinon.restore(); });
 
-test.serial('responds with error when orderAddress is invalid', async (assert) => {
+test.serial('throws an error when orderAddress is invalid', async (assert) => {
   const error = await assert.throws(closeDataResponse('I will fail!', fakeAddress, undefined));
   assert.is(error.message, 'Invalid order|seller address');
 });
 
-test.serial('responds with error when sellerAddress is invalid', async (assert) => {
+test.serial('throws an error when sellerAddress is invalid', async (assert) => {
   const error = await assert.throws(closeDataResponse(fakeAddress, 'I will fail!', undefined));
   assert.is(error.message, 'Invalid order|seller address');
 });
@@ -28,7 +28,7 @@ test.serial('responds true if dataResponse is already closed', async (assert) =>
   assert.false(callback.called);
 });
 
-test.serial('if notariesToDemandAuditsFrom has something, it demands an audit', async (assert) => {
+test.serial('demands audits from notaries in notariesToDemandAuditsFrom', async (assert) => {
   sinon.stub(utils, 'dataOrderAt').value(() => ({
     methods:
     {
@@ -39,7 +39,6 @@ test.serial('if notariesToDemandAuditsFrom has something, it demands an audit', 
   }));
   sinon.stub(notariesFacade, 'getNotaryInfo').value(() => ({ publicUrls: { api: 'http://localhost:12345' } }));
   sinon.stub(config.notary, 'demandAuditsFrom').value(JSON.stringify([fakeAddress]));
-  // const spy = sinon.spy(client, 'post');
   const clientStub = sinon.stub(client, 'post').resolves({ dataResponses: [{ result: 'ok' }] });
   await closeDataResponse(fakeAddress, fakeAddress, () => {});
   assert.true(clientStub.called);

@@ -11,12 +11,12 @@ const fakeSignature = '0x1234567890123456789123456789012345678901123456789012345
 
 test.afterEach.always(() => { sinon.restore(); });
 
-test.serial('responds with error when orderAddress is invalid', async (assert) => {
+test.serial('throws an error when orderAddress is invalid', async (assert) => {
   const error = await assert.throws(addDataResponse('I will fail!', fakeAddress, undefined));
   assert.is(error.message, 'Invalid order|seller address');
 });
 
-test.serial('responds with error when sellerAddress is invalid', async (assert) => {
+test.serial('throws an error when sellerAddress is invalid', async (assert) => {
   const error = await assert.throws(addDataResponse(fakeAddress, 'I will fail!', undefined));
   assert.is(error.message, 'Invalid order|seller address');
 });
