@@ -1,12 +1,19 @@
 import test from 'ava';
+import sinon from 'sinon';
 import FakeProvider from '../support/FakeProvider';
 import createReceipt from '../support/receiptFactory';
-import web3 from '../../src/utils/web3';
+import { web3, wibcoin } from '../../src/utils';
 import { signingService } from '../../src/services';
-import { enqueueTransaction } from '../../src/queues/transactionQueue';
+import {
+  enqueueTransaction,
+  transactionQueue,
+} from '../../src/queues/transactionQueue';
 
-const fakeProvider = new FakeProvider();
-web3.setProvider(fakeProvider);
+const web3FakeProvider = new FakeProvider();
+web3.setProvider(web3FakeProvider);
+
+const tokenFakeProvider = new FakeProvider();
+wibcoin.setProvider(tokenFakeProvider);
 
 let account;
 
@@ -15,7 +22,7 @@ const dataPayload = {
   addedValue: 1,
 };
 
-const mockTransactionResponse = (tx) => {
+const mockTransactionResponse = (tx, fakeProvider) => {
   const gasPrice = web3.utils.numberToHex('1000');
   fakeProvider.addResponse('eth_getTransactionCount', web3.utils.numberToHex('1'));
   fakeProvider.addResponse('eth_gasPrice', gasPrice);
@@ -29,6 +36,10 @@ test.before(async () => {
   account = await signingService.getAccount();
 });
 
+test.beforeEach(async () => {
+  await transactionQueue.resume();
+});
+
 // transactionQueue tests
 test.skip('retry transaction if connection to blockchain through web3 fails', t => t.fail());
 test.skip('responds with error if same transaction is added twice', t => t.fail());
@@ -38,8 +49,11 @@ test.skip('responds a job that resolves to a pending transaction', t => t.fail()
 test.skip('responds a job that resolves to a transaction with unknown status', t => t.fail());
 
 test.serial('responds a job that resolves to a failed transaction', async (assert) => {
+  web3FakeProvider.addResponse('eth_getBalance', web3.utils.toHex('100000000000000000'));
+  tokenFakeProvider.addResponse('eth_call', web3.utils.toHex('100000000000000000'));
+
   const receipt = createReceipt({ from: account.address, status: '0x0' });
-  mockTransactionResponse(receipt);
+  mockTransactionResponse(receipt, web3FakeProvider);
 
   const job = await enqueueTransaction(account, 'IncreaseApproval', dataPayload, 12);
   const transaction = await job.finished();
@@ -48,11 +62,46 @@ test.serial('responds a job that resolves to a failed transaction', async (asser
 });
 
 test.serial('responds a job that resolves to a succeeded transaction', async (assert) => {
+  web3FakeProvider.addResponse('eth_getBalance', web3.utils.toHex('100000000000000000'));
+  tokenFakeProvider.addResponse('eth_call', web3.utils.toHex('100000000000000000'));
+
   const receipt = createReceipt({ from: account.address, status: '0x1' });
-  mockTransactionResponse(receipt);
+  mockTransactionResponse(receipt, web3FakeProvider);
 
   const job = await enqueueTransaction(account, 'IncreaseApproval', dataPayload, 12);
   const transaction = await job.finished();
   assert.is(transaction.status, 'success');
   assert.is(transaction.transactionHash, receipt.transactionHash);
+});
+
+test.serial('responds a job that resolves to a failed transaction even if transaction queue gets paused', async (assert) => {
+  web3FakeProvider.addResponse('eth_getBalance', web3.utils.toHex('1'));
+  tokenFakeProvider.addResponse('eth_call', web3.utils.toHex('100000000000000000'));
+  const callback = sinon.spy();
+
+  const receipt = createReceipt({ from: account.address, status: '0x0' });
+  mockTransactionResponse(receipt, web3FakeProvider);
+
+  transactionQueue.on('paused', callback);
+  const job = await enqueueTransaction(account, 'IncreaseApproval', dataPayload, 12);
+  const transaction = await job.finished();
+  assert.is(transaction.status, 'failure');
+  assert.is(transaction.transactionHash, receipt.transactionHash);
+  assert.true(callback.called);
+});
+
+test.serial('responds a job that resolves to a succeeded transaction even if transaction queue gets paused', async (assert) => {
+  web3FakeProvider.addResponse('eth_getBalance', web3.utils.toHex('100000000000000000'));
+  tokenFakeProvider.addResponse('eth_call', web3.utils.toHex('1'));
+  const callback = sinon.spy();
+
+  const receipt = createReceipt({ from: account.address, status: '0x1' });
+  mockTransactionResponse(receipt, web3FakeProvider);
+
+  transactionQueue.on('paused', callback);
+  const job = await enqueueTransaction(account, 'IncreaseApproval', dataPayload, 12);
+  const transaction = await job.finished();
+  assert.is(transaction.status, 'success');
+  assert.is(transaction.transactionHash, receipt.transactionHash);
+  assert.true(callback.called);
 });

@@ -1,6 +1,7 @@
 import { createQueue } from './createQueue';
 import { priority } from './priority';
 import { web3, logger } from '../utils';
+import { hasEnoughBalance } from '../facades/balanceFacade';
 import { sendTransaction, waitForExecution } from '../facades/helpers';
 import signingService from '../services/signingService';
 import config from '../../config';
@@ -24,6 +25,12 @@ const createTransactionQueue = () => {
 
     const { address } = account;
     const signFn = signingService[signWith];
+
+    const enoughBalance = await hasEnoughBalance(address);
+    if (!enoughBalance) {
+      await queue.pause();
+      logger.info(`Tx[${id}] :: ${name} :: Transaction queue paused (this job will run until it's completed).`);
+    }
 
     const receipt = await sendTransaction(
       web3,
