@@ -41,7 +41,7 @@ start_signing_service() {
 
   currentDir=`pwd`
   cd ../buyer-signing-service
-  npm start > /dev/null &
+  BUYER_PRIVATE_KEY=6ce09f3ea6dc337fa8c9f90ebc61d5d60e3da21b719d0d83f76dae875dc377e3 npm start > /dev/null &
 
   set +o errexit
   i=0
