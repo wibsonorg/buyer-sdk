@@ -1,8 +1,8 @@
 import 'babel-polyfill';
 import app from './app';
 import config from '../config';
-import { logger, attachContractEventSubscribers } from './utils';
-import contractEventSubscribers from './contractEventSubscribers';
+import { logger } from './utils';
+import attach from './contractEventSubscribers';
 import { checkAllowance } from './facades';
 import { enqueueTransaction } from './queues';
 
@@ -11,15 +11,13 @@ const server = () => {
   app.listen({ port, host }, () =>
     logger.info(`Buyer API listening on port ${port} and host ${host} in ${env} mode`));
 
-  attachContractEventSubscribers(
-    contractEventSubscribers,
+  attach(
     app.locals.stores,
     config.eventSubscribers.lastProcessedBlock,
   );
 
   setInterval(
-    () => attachContractEventSubscribers(
-      contractEventSubscribers,
+    () => attach(
       app.locals.stores,
       config.eventSubscribers.lastProcessedBlock,
     ),
