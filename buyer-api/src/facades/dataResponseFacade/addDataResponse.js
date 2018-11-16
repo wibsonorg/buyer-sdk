@@ -53,7 +53,7 @@ const addDataResponse = async (order, seller, enqueueTransaction) => {
   }
 
   const { notaryAccount, dataHash, signature } = dataResponse;
-  if (!(web3.utils.isAddress(notaryAccount) || dataHash || signature)) {
+  if (!(web3.utils.isAddress(notaryAccount) && dataHash && signature)) {
     throw new Error('Invalid data response payload');
   }
 

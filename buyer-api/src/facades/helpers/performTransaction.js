@@ -80,7 +80,7 @@ const getTransaction = (web3, receipt) =>
         reject(err);
       } else if (!result) {
         resolve({ status: 'pending' });
-      } else if (result.status && web3.utils.hexToNumber(result.status) === 1) {
+      } else if (web3.utils.hexToNumber(result.status)) {
         resolve({ ...result, status: 'success' });
       } else {
         resolve({ ...result, status: 'failure' });

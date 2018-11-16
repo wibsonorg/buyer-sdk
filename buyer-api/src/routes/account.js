@@ -1,5 +1,6 @@
 import express from 'express';
-import { web3, cache, asyncError, wibcoin, coin } from '../utils';
+import { web3, cache, asyncError, wibcoin } from '../utils';
+import { coin } from '../utils/wibson-lib';
 import signingService from '../services/signingService';
 
 const router = express.Router();
