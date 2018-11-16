@@ -8,7 +8,7 @@
     "build": "babel src -d dist",
     "serve": "node dist/index.js",
     "start": "babel-node src/index.js",
-    "test": "scripts/test.sh | tap-spec",
+    "test": "scripts/test.sh",
     "test:coverage": "nyc scripts/test.sh",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

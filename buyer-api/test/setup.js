@@ -4,6 +4,8 @@ import asyncRedis from 'async-redis';
 import redisMock from 'redis-mock';
 import createLevel from 'level-test';
 
+process.env.ERROR_LOG = 'logs/error.test.log';
+process.env.COMBINED_LOG = 'logs/combined.test.log';
 process.env.WEB3_PROVIDER = 'http://localhost:8545';
 process.env.BUYER_SIGNING_SERVICE_URL = 'http://localhost:9101';
 process.env.REDIS_SOCKET = '/tmp/redis.sock';
@@ -20,10 +22,12 @@ process.env.DATA_EXCHANGE_ADDRESS = '0x79ee611a8f7a448ca7406693beb1858a8ec7415a'
 process.env.ALLOWANCE_MINIMUM = 100000000000;
 process.env.ALLOWANCE_MULTIPLIER = 5;
 process.env.GAS_PRICE_FAST = 10000000000;
+process.env.TRANSACTION_QUEUE_MAX_ITERATIONS = 5;
+process.env.TRANSACTION_QUEUE_INSPECTION_INTERVAL = 5;
 
 const level = createLevel();
 
 td.replace('../src/utils/storage', {
   createRedisStore: () => asyncRedis.decorate(redisMock.createClient()),
-  createLevelStore: () => level(),
+  createLevelStore: ns => level(ns),
 });
