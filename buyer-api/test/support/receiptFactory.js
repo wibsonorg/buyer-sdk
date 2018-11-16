@@ -3,8 +3,8 @@ import { web3 } from '../../src/utils';
 let _blockNumber = 0;
 let _transactionIndex = 0;
 
-const nextBlockNumber = () => _blockNumber+=1 && _blockNumber;
-const nextTransactionIndex = () => _transactionIndex+=1 && _transactionIndex;
+const nextBlockNumber = () => _blockNumber+=1;
+const nextTransactionIndex = () => _transactionIndex+=1;
 const generateRandomNumber = (min, max) => Math.round(Math.random() * (max-min) + min);
 
 export default ({ from, to, status = '0x1' }) => {
