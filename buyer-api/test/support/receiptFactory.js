@@ -1,11 +1,18 @@
 import { web3 } from '../../src/utils';
 
-let _blockNumber = 0;
-let _transactionIndex = 0;
+let bkNumber = 0;
+let txIndex = 0;
 
-const nextBlockNumber = () => _blockNumber+=1;
-const nextTransactionIndex = () => _transactionIndex+=1;
-const generateRandomNumber = (min, max) => Math.round(Math.random() * (max-min) + min);
+const nextBlockNumber = () => {
+  bkNumber += 1;
+  return bkNumber;
+};
+const nextTransactionIndex = () => {
+  txIndex += 1;
+  return txIndex;
+};
+const generateRandomNumber = (min, max) =>
+  Math.round((Math.random() * (max - min)) + min);
 
 export default ({ from, to, status = '0x1' }) => {
   const blockNumber = `0x${nextBlockNumber().toString(16)}`;
@@ -30,6 +37,6 @@ export default ({ from, to, status = '0x1' }) => {
     // TODO: logs and logsBloom fields break the tests if added randomly.
     status,
     transactionHash,
-    transactionIndex
-  }
+    transactionIndex,
+  };
 };
