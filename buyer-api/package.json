@@ -12,6 +12,7 @@
     "test:coverage": "nyc scripts/test.sh",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "task:production": "node dist/tasks/index.js",
     "task": "babel-node src/tasks/index.js"
   },
   "dependencies": {
