@@ -1,7 +1,7 @@
 import Response from './Response';
 import { extractEventArguments } from './helpers';
 import { dataExchange } from '../utils';
-import { priority, fetchTransactionJob } from '../queues';
+import { fetchTransactionJob } from '../queues';
 import signingService from '../services/signingService';
 import { getBuyerInfo } from '../services/buyerInfo';
 import { coercion, coin } from '../utils/wibson-lib';
@@ -134,9 +134,6 @@ const createDataOrderFacade = async (
     'NewOrder',
     params,
     config.contracts.gasPrice.fast,
-    {
-      priority: priority.HIGH,
-    },
   );
 
   // TODO: Needs improvement since this a weak point in the DataOrder creation
