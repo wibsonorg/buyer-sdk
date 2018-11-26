@@ -6,6 +6,6 @@ export {
 export {
   transactionQueue,
   enqueueTransaction,
-  fetchTransactionJob
+  fetchTransactionJob,
 } from './transactionQueue';
 export { priority } from './priority';

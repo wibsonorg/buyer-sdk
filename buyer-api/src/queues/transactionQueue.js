@@ -6,6 +6,34 @@ import { sendTransaction, waitForExecution } from '../facades/helpers';
 import signingService from '../services/signingService';
 import config from '../../config';
 
+const enqueueJob = (data, queue, options = {}) => {
+  const {
+    account, name, params, gasPrice,
+  } = data;
+  const {
+    priority: p, attempts = 20, backoffType = 'linear',
+  } = options;
+
+  return queue.add('perform', {
+    name,
+    account,
+    signWith: `sign${name}`,
+    params,
+    gasPrice,
+  }, {
+    priority: p || TxPriorities[name] || priority.LOWEST,
+    attempts,
+    backoff: {
+      type: backoffType,
+    },
+  });
+};
+
+const reenqueueJob = async (data, queue, options) => {
+  const newJob = await enqueueJob(data, queue, options);
+  return { newJobId: newJob.id, data: newJob.data };
+};
+
 const createTransactionQueue = () => {
   const queue = createQueue('TransactionQueue');
 
@@ -38,8 +66,9 @@ const createTransactionQueue = () => {
       // paused list. If not, the job is added to the waiting list.
       await queue.pause();
       logger.info(`Tx[${id}] :: ${name} :: Transaction queue paused, re-enqueuing job.`);
-      const newJob = await enqueueTransaction(account, name, params, gasPrice);
-      return { newJobId: newJob.id, data: newJob.data };
+      return reenqueueJob({
+        account, name, params, gasPrice,
+      }, queue);
     }
 
     const receipt = await sendTransaction(
@@ -85,25 +114,10 @@ const createTransactionQueue = () => {
 };
 
 const transactionQueue = createTransactionQueue();
-const enqueueTransaction = (account, name, params, gasPrice, options = {}) => {
-  const {
-    priority: p, attempts = 20, backoffType = 'linear',
-  } = options;
-
-  return transactionQueue.add('perform', {
-    name,
-    account,
-    signWith: `sign${name}`,
-    params,
-    gasPrice,
-  }, {
-    priority: p || TxPriorities[name] || priority.LOWEST,
-    attempts,
-    backoff: {
-      type: backoffType,
-    },
-  });
-};
-const fetchTransactionJob = async (jobId) => transactionQueue.getJob(jobId);
+const fetchTransactionJob = async jobId => transactionQueue.getJob(jobId);
+const enqueueTransaction = (account, name, params, gasPrice, opts = {}) =>
+  enqueueJob({
+    account, name, params, gasPrice,
+  }, transactionQueue, opts);
 
 export { transactionQueue, enqueueTransaction, fetchTransactionJob };

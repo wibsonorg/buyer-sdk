@@ -13,4 +13,4 @@ export const TxPriorities = {
   AddDataResponse: priority.LOWEST,
   CloseDataResponse: priority.MEDIUM,
   CloseOrder: priority.LOW,
-}
+};

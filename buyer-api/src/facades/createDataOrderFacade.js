@@ -75,16 +75,14 @@ const buildDataOrderParameters = ({
 });
 
 function afterCreate(notaries, buyerInfoId, enqueueJob) {
-  return async function (transaction) {
+  return async function afterCreateFn(transaction) {
     if (transaction.status === 'success') {
       onDataOrderCreated(transaction, notaries, buyerInfoId, enqueueJob);
-    }
-
-    if (transaction.newJobId) {
+    } else if (transaction.newJobId) {
       const newJob = await fetchTransactionJob(transaction.newJobId);
       newJob.finished().then(afterCreate(notaries, buyerInfoId, enqueueJob));
     }
-  }
+  };
 }
 
 /**

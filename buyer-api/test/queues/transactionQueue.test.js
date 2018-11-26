@@ -44,7 +44,7 @@ test.beforeEach(async () => {
 
 test.afterEach(async () => {
   await transactionQueue.empty();
-})
+});
 
 // transactionQueue tests
 test.skip('retry transaction if connection to blockchain through web3 fails', t => t.fail());
