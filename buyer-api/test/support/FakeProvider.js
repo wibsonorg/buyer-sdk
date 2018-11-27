@@ -37,6 +37,10 @@ FakeProvider.prototype.removeResponse = function removeResponse(_method) {
   return responseFound;
 };
 
+FakeProvider.prototype.clear = function clear() {
+  this.responses = [];
+};
+
 /**
  * It fakes an async request
  *

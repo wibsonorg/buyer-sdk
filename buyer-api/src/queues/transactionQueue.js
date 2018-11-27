@@ -1,9 +1,38 @@
 import { createQueue } from './createQueue';
-import { priority } from './priority';
+import { priority, TxPriorities } from './priority';
 import { web3, logger } from '../utils';
+import { hasEnoughBalance } from '../facades/balanceFacade';
 import { sendTransaction, waitForExecution } from '../facades/helpers';
 import signingService from '../services/signingService';
 import config from '../../config';
+
+const enqueueJob = (data, queue, options = {}) => {
+  const {
+    account, name, params, gasPrice,
+  } = data;
+  const {
+    priority: p, attempts = 20, backoffType = 'linear',
+  } = options;
+
+  return queue.add('perform', {
+    name,
+    account,
+    signWith: `sign${name}`,
+    params,
+    gasPrice,
+  }, {
+    priority: p || TxPriorities[name] || priority.LOWEST,
+    attempts,
+    backoff: {
+      type: backoffType,
+    },
+  });
+};
+
+const reenqueueJob = async (data, queue, options) => {
+  const newJob = await enqueueJob(data, queue, options);
+  return { newJobId: newJob.id, data: newJob.data };
+};
 
 const createTransactionQueue = () => {
   const queue = createQueue('TransactionQueue');
@@ -24,6 +53,23 @@ const createTransactionQueue = () => {
 
     const { address } = account;
     const signFn = signingService[signWith];
+
+    const enoughBalance = await hasEnoughBalance(address);
+    if (!enoughBalance) {
+      // To pause the queue, bulljs renames its waiting list to `paused`. This
+      // operation is atomic and is done in:
+      //   https://github.com/OptimalBits/bull/blob/v3.4.4/lib/commands/pause-4.lua
+      //
+      // To enqueue a new Job, bulljs uses the following lua script:
+      //   https://github.com/OptimalBits/bull/blob/v3.4.4/lib/commands/addJob-6.lua
+      // It checks if the queue is paused. If so, it will add the new job to the
+      // paused list. If not, the job is added to the waiting list.
+      await queue.pause();
+      logger.info(`Tx[${id}] :: ${name} :: Transaction queue paused, re-enqueuing job.`);
+      return reenqueueJob({
+        account, name, params, gasPrice,
+      }, queue);
+    }
 
     const receipt = await sendTransaction(
       web3,
@@ -68,24 +114,10 @@ const createTransactionQueue = () => {
 };
 
 const transactionQueue = createTransactionQueue();
-const enqueueTransaction = (account, name, params, gasPrice, options = {}) => {
-  const {
-    priority: p, attempts = 20, backoffType = 'linear',
-  } = options;
+const fetchTransactionJob = async jobId => transactionQueue.getJob(jobId);
+const enqueueTransaction = (account, name, params, gasPrice, opts = {}) =>
+  enqueueJob({
+    account, name, params, gasPrice,
+  }, transactionQueue, opts);
 
-  return transactionQueue.add('perform', {
-    name,
-    account,
-    signWith: `sign${name}`,
-    params,
-    gasPrice,
-  }, {
-    priority: p || priority.LOWEST,
-    attempts,
-    backoff: {
-      type: backoffType,
-    },
-  });
-};
-
-export { transactionQueue, enqueueTransaction };
+export { transactionQueue, enqueueTransaction, fetchTransactionJob };

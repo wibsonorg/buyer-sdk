@@ -3,5 +3,9 @@ export {
   dataResponseQueue,
   enqueueCloseDataResponse,
 } from './dataResponseQueue';
-export { transactionQueue, enqueueTransaction } from './transactionQueue';
+export {
+  transactionQueue,
+  enqueueTransaction,
+  fetchTransactionJob,
+} from './transactionQueue';
 export { priority } from './priority';

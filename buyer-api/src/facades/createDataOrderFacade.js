@@ -1,7 +1,7 @@
 import Response from './Response';
 import { extractEventArguments } from './helpers';
 import { dataExchange } from '../utils';
-import { priority } from '../queues';
+import { fetchTransactionJob } from '../queues';
 import signingService from '../services/signingService';
 import { getBuyerInfo } from '../services/buyerInfo';
 import { coercion, coin } from '../utils/wibson-lib';
@@ -74,6 +74,17 @@ const buildDataOrderParameters = ({
   notaries: notaries.map(notary => notary.toLowerCase()),
 });
 
+function afterCreate(notaries, buyerInfoId, enqueueJob) {
+  return async function afterCreateFn(transaction) {
+    if (transaction.status === 'success') {
+      onDataOrderCreated(transaction, notaries, buyerInfoId, enqueueJob);
+    } else if (transaction.newJobId) {
+      const newJob = await fetchTransactionJob(transaction.newJobId);
+      newJob.finished().then(afterCreate(notaries, buyerInfoId, enqueueJob));
+    }
+  };
+}
+
 /**
  * @async
  * @param {Object} parameters.filters Target audience.
@@ -121,9 +132,6 @@ const createDataOrderFacade = async (
     'NewOrder',
     params,
     config.contracts.gasPrice.fast,
-    {
-      priority: priority.HIGH,
-    },
   );
 
   // TODO: Needs improvement since this a weak point in the DataOrder creation
@@ -131,11 +139,7 @@ const createDataOrderFacade = async (
   // way to recover the flow automatically when the service comes back.
   // There is a manual workaround at the moment: enqueue `addNotariesToOrder`
   // and `associateBuyerInfoToOrder`. See `onDataOrderCreated` for more info.
-  job.finished().then((transaction) => {
-    if (transaction.status === 'success') {
-      onDataOrderCreated(transaction, notaries, buyerInfoId, enqueueJob);
-    }
-  });
+  job.finished().then(afterCreate(notaries, buyerInfoId, enqueueJob));
 
   return new Response({ status: 'pending' });
 };

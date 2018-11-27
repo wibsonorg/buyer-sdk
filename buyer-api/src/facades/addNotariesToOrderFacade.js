@@ -2,7 +2,6 @@ import Response from './Response';
 import { getNotariesInfo } from './notariesFacade';
 import { signingService, notaryService } from '../services';
 import { dataOrderAt } from '../utils';
-import { priority } from '../queues';
 import { fromWib } from '../utils/wibson-lib/coin';
 import config from '../../config';
 
@@ -59,7 +58,6 @@ const addNotaryToOrder = async (account, params, enqueueTransaction) => {
     'AddNotaryToOrder',
     params,
     config.contracts.gasPrice.fast,
-    { priority: priority.HIGH },
   );
 };
 
