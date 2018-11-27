@@ -5,7 +5,8 @@ import { dataResponseQueue } from './dataResponseQueue';
 const retryPendingDataResponse = async (job) => {
   const { name, data: { orderAddress, sellerAddress, receipt } } = job;
 
-  const jobName = name === 'closeDataResponseSent' ? 'closeDataResponse' : 'buyData';
+  const jobName = name ===
+    'closeDataResponseSent' ? 'closeDataResponse' : 'buyData';
 
   try {
     await getTransactionReceipt(web3, receipt);
@@ -21,29 +22,30 @@ const retryPendingDataResponse = async (job) => {
   }
 };
 
-const retryPendingDataResponses = async (failedJobs) => {
-  const pendingJobs = failedJobs.filter(job =>
-    job.data.receipt &&
-    job.attemptsMade >= 20 &&
-    job.failedReason.toLowerCase().includes('pending') &&
-    ['addDataResponseSent', 'closeDataResponseSent'].includes(job.name));
-
-  await Promise.all(pendingJobs.map(job => retryPendingDataResponse(job)));
-};
-
-const retryPendingJobs = async (failedJobs) => {
-  await retryPendingDataResponses(failedJobs);
-};
-
 const getFailedJobs = async (queue) => {
   const failedJobs = await queue.getFailed();
   return failedJobs.filter(job => !job.data.retried);
 };
 
+const retryPendingJobs = async (queue, jobNames, retryFunction) => {
+  const failedJobs = await getFailedJobs(queue);
+
+  const pendingJobs = failedJobs.filter(job =>
+    job.data.receipt &&
+    job.attemptsMade >= 20 &&
+    job.failedReason.toLowerCase().includes('pending') &&
+    jobNames.includes(job.name));
+
+  await Promise.all(pendingJobs.map(job => retryFunction(job)));
+};
+
 const retryFailed = async () => {
   logger.info('Retrying failed jobs');
-  const failedJobs = await getFailedJobs(dataResponseQueue);
-  await retryPendingJobs(failedJobs);
+  await retryPendingJobs(
+    dataResponseQueue,
+    ['addDataResponseSent', 'closeDataResponseSent', 'increaseApprovalSent'],
+    retryPendingDataResponse,
+  );
   logger.info('Finished enqueuing failed jobs');
 };
 
