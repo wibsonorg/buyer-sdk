@@ -1,25 +1,21 @@
-import { web3, logger } from '../utils';
-import { getTransactionReceipt } from '../facades/helpers';
+import { logger, dataOrderAt } from '../utils';
 import { dataResponseQueue } from './dataResponseQueue';
 
 const retryPendingDataResponse = async (job) => {
-  const { name, data: { orderAddress, sellerAddress, receipt } } = job;
+  const { data: { orderAddress, sellerAddress } } = job;
 
-  const jobName = name ===
-    'closeDataResponseSent' ? 'closeDataResponse' : 'buyData';
+  const dataOrder = dataOrderAt(orderAddress);
+  const sellerAccepted = await dataOrder.methods.hasSellerBeenAccepted(sellerAddress).call();
+  const jobName = sellerAccepted ? 'closeDataResponse' : 'buyData';
 
-  try {
-    await getTransactionReceipt(web3, receipt);
-  } catch (err) {
-    job.update({ ...job.data, retried: true });
+  job.update({ ...job.data, retried: true });
 
-    dataResponseQueue.add(jobName, { orderAddress, sellerAddress }, {
-      attempts: 20,
-      backoff: {
-        type: 'linear',
-      },
-    });
-  }
+  dataResponseQueue.add(jobName, { orderAddress, sellerAddress }, {
+    attempts: 20,
+    backoff: {
+      type: 'linear',
+    },
+  });
 };
 
 const getFailedJobs = async (queue) => {
