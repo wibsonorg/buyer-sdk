@@ -4,7 +4,7 @@ import config from '../config';
 import { logger } from './utils';
 import attach from './contractEventSubscribers';
 import { checkAllowance } from './facades';
-import { retryFailed, enqueueTransaction } from './queues';
+import { enqueueTransaction } from './queues';
 
 const server = () => {
   const { port, host, env } = config;
@@ -25,8 +25,6 @@ const server = () => {
   );
 
   setInterval(() => checkAllowance(enqueueTransaction), Number(config.allowance.interval));
-
-  setTimeout(retryFailed, 10000);
 };
 
 export default server;
