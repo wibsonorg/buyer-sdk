@@ -4,8 +4,7 @@ import config from '../config';
 import { logger } from './utils';
 import attach from './contractEventSubscribers';
 import { checkAllowance } from './facades';
-import { retryFailed } from './queues';
-import { enqueueTransaction } from './queues';
+import { retryFailed, enqueueTransaction } from './queues';
 
 const server = () => {
   const { port, host, env } = config;
