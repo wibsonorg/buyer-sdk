@@ -87,7 +87,7 @@ const createTransactionQueue = () => {
         break;
       }
       case 'failure': {
-        logger.info(`Tx[${id}] :: ${name} :: Failure ${receipt}`);
+        logger.notice(`Tx[${id}] :: ${name} :: Failure ${receipt}`);
         break;
       }
       case 'pending': {
