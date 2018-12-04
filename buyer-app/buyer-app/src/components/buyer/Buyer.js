@@ -38,8 +38,9 @@ import FailedDataOrders from "./FailedDataOrders";
 import DataOrderCreate from "./DataOrderCreate";
 
 import R from "ramda";
+import config from "../../config";
 
-const limit = 1;
+const limit = config.env === 'production' ? 1 : 30;
 
 class Buyer extends React.Component {
   constructor(props) {
