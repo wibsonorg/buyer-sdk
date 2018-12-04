@@ -5,26 +5,32 @@ const logger = winston.createLogger();
 
 switch (config.env) {
   case 'production':
-    logger.add(new winston.transports.Console());
-    logger.add(new winston.transports.File({ filename: config.log.combined }));
-    logger.add(new winston.transports.File({ filename: config.log.error, level: 'error' }));
+    logger.add(new winston.transports.Console({ handleExceptions: true }));
+    logger.add(new winston.transports.File({
+      filename: config.log.combined,
+      handleExceptions: true,
+    }));
+    logger.add(new winston.transports.File({
+      filename: config.log.error,
+      handleExceptions: true,
+      level: 'error',
+    }));
     break;
   case 'development':
     logger.add(new winston.transports.Console({
+      level: 'debug',
+      handleExceptions: true,
       format: winston.format.combine(
         winston.format.simple(),
         winston.format.colorize(),
         winston.format.timestamp({ format: 'HH:mm:ss.SSS' }),
         winston.format.printf(info => `${info.timestamp} [${info.level}]: ${info.message}`),
       ),
-      level: 'debug',
     }));
     break;
+  case 'test':
   default:
-    logger.add(new winston.transports.File({
-      format: winston.format.simple(),
-      filename: config.log.combined,
-    }));
+    logger.add(new winston.transports.Console({ silent: true }));
     break;
 }
 
