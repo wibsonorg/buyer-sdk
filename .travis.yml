@@ -47,38 +47,3 @@ notifications:
       secure: $SLACK_SECURE_KEY
       on_success: change
       on_failure: change
-
-
-
-jobs:
-  include:
-  - stage: Status Checks
-    name: Lint
-    script: npm run lint
-  - name: Tests
-    if: NOT env(WORKING_DIR) =~ "buyer-app"
-    script:
-      - npm run test:coverage:ci
-      - codecov
-    env: ALLOW_FAILURE=true
-  - name: Audit
-    script: npm run audit
-  - stage: Build
-    script: npm run build
-  - stage: Github Release
-    before_deploy: npm run publish
-    deploy:
-      provider: releases
-      api_key:
-        secure: $GITHUB_RELEASES_SECURE_KEY
-      file: "artifacts/*.tar.gz"
-      skip_cleanup: true
-      on:
-        tags: true
-
-notifications:
-  slack:
-    rooms:
-      secure: $SLACK_SECURE_KEY
-      on_success: change
-      on_failure: change
