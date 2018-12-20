@@ -34,7 +34,7 @@ jobs:
       - codecov
     env: ALLOW_FAILURE=true
   - name: Audit
-    script: npm run audit
+    script: npm audit
   - stage: Build
     script: npm run build
   - stage: Github Release
@@ -47,6 +47,10 @@ jobs:
       skip_cleanup: true
       on:
         tags: true
+
+stages:
+  - name: Tests
+    if: NOT env(WORKING_DIR) =~ "buyer-app"
 
 notifications:
   slack:
