@@ -24,9 +24,9 @@ allow_failures:
 before_script:
   - npm run lint
   # TODO: make these steps compulsive
-  - npm audit 2> /dev/null
-  - npm run test:coverage:ci 2> /dev/null
-  - codecov 2> /dev/null
+  - npm audit || true
+  - npm run test:coverage:ci || true
+  - codecov || true
 
 script: npm run build
 
