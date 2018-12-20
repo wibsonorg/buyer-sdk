@@ -1,60 +1,62 @@
-language: node_js
-
-node_js:
-- '8'
-
-before_install: npm i -g npm@6.1.0 codecov@3.1.0
-
-env:
-- WORKING_DIR=buyer-app/buyer-app
-- WORKING_DIR=buyer-api
-- WORKING_DIR=buyer-signing-service
-
-cache:
-  directories:
-  - "$WORKING_DIR/node_modules"
-
-install:
-- cd $WORKING_DIR
-- npm install
-
-script: 'true'
-
 jobs:
-  allow_failures:
-  - env: ALLOW_FAILURE=true
   include:
-  - stage: Status Checks
-    name: Lint
-    script: npm run lint
-  - name: Tests
-    if: NOT env(WORKING_DIR) =~ "buyer-app"
-    script:
-      - npm run test:coverage:ci
-      - codecov
-    env: ALLOW_FAILURE=true
-  - name: Audit
-    script: npm audit
-  - stage: Build
-    script: npm run build
-  - stage: Github Release
-    before_deploy: npm run publish
-    deploy:
-      provider: releases
-      api_key:
-        secure: $GITHUB_RELEASES_SECURE_KEY
-      file: "artifacts/*.tar.gz"
-      skip_cleanup: true
-      on:
-        tags: true
+    language: node_js
+
+    node_js:
+    - '8'
+
+    notifications:
+      slack:
+        rooms:
+          secure: $SLACK_SECURE_KEY
+          on_success: change
+          on_failure: change
+
+    before_install: npm i -g npm@6.1.0 codecov@3.1.0
+
+    env:
+    - WORKING_DIR=buyer-app/buyer-app
+    - WORKING_DIR=buyer-api
+    - WORKING_DIR=buyer-signing-service
+
+    cache:
+      directories:
+      - "$WORKING_DIR/node_modules"
+
+    install:
+    - cd $WORKING_DIR
+    - npm install
+
+    script: 'true'
+
+    allow_failures:
+    - env: ALLOW_FAILURE=true
+
+    - stage: Status Checks
+      name: Lint
+      script: npm run lint
+    - name: Tests
+      script:
+        - npm run test:coverage:ci
+        - codecov
+      env: ALLOW_FAILURE=true
+    - name: Audit
+      script: npm audit
+
+    - stage: Build
+      script: npm run build
+
+    - stage: Github Release
+      before_deploy: npm run publish
+      deploy:
+        provider: releases
+        api_key:
+          secure: $GITHUB_RELEASES_SECURE_KEY
+        file: "artifacts/*.tar.gz"
+        skip_cleanup: true
+        on:
+          tags: true
 
 stages:
   - name: Tests
     if: NOT env(WORKING_DIR) =~ "buyer-app"
-
-notifications:
-  slack:
-    rooms:
-      secure: $SLACK_SECURE_KEY
-      on_success: change
-      on_failure: change
