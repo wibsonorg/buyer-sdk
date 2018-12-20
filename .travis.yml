@@ -1,0 +1,57 @@
+language: node_js
+
+node_js:
+- '8'
+
+before_install: npm i -g npm@6.1.0 codecov@3.1.0
+
+env:
+- WORKING_DIR=buyer-app/buyer-app
+- WORKING_DIR=buyer-api
+- WORKING_DIR=buyer-signing-service
+
+cache:
+  directories:
+  - "$WORKING_DIR/node_modules"
+
+install:
+- cd $WORKING_DIR
+- npm install
+
+before_script: cd $WORKING_DIR
+
+jobs:
+  allow_failures:
+  - env: ALLOW_FAILURE=true
+  include:
+  - stage: Status Checks
+    name: Lint
+    script: npm run lint
+  - name: Tests
+    if: NOT env(WORKING_DIR) =~ "buyer-app"
+    script:
+      - npm run test:coverage:ci
+      - codecov
+    env: ALLOW_FAILURE=true
+  - name: Audit
+    script: npm run audit
+  - stage: Build
+    script: npm run build
+  - stage: Github Release
+    before_deploy:
+      - cd $WORKING_DIR
+      - npm run publish
+    deploy:
+      provider: releases
+      api_key:
+        secure: $GITHUB_RELEASES_SECURE_KEY
+      file: "$WORKING_DIR/artifacts/*.tar.gz"
+      skip_cleanup: true
+      on:
+        tags: true
+notifications:
+  slack:
+    rooms:
+      secure: $SLACK_SECURE_KEY
+      on_success: change
+      on_failure: change
