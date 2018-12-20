@@ -18,6 +18,8 @@ install:
 - cd $WORKING_DIR
 - npm install
 
+script: skip
+
 jobs:
   allow_failures:
   - env: ALLOW_FAILURE=true
@@ -45,6 +47,7 @@ jobs:
       skip_cleanup: true
       on:
         tags: true
+
 notifications:
   slack:
     rooms:
