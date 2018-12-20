@@ -18,8 +18,6 @@ install:
 - cd $WORKING_DIR
 - npm install
 
-before_script: cd $WORKING_DIR
-
 jobs:
   allow_failures:
   - env: ALLOW_FAILURE=true
@@ -38,14 +36,12 @@ jobs:
   - stage: Build
     script: npm run build
   - stage: Github Release
-    before_deploy:
-      - cd $WORKING_DIR
-      - npm run publish
+    before_deploy: npm run publish
     deploy:
       provider: releases
       api_key:
         secure: $GITHUB_RELEASES_SECURE_KEY
-      file: "$WORKING_DIR/artifacts/*.tar.gz"
+      file: "artifacts/*.tar.gz"
       skip_cleanup: true
       on:
         tags: true
