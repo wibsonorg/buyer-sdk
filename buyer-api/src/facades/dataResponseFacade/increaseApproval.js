@@ -1,5 +1,4 @@
 import { BigNumber } from 'bignumber.js';
-import { priority } from '../../queues';
 import signingService from '../../services/signingService';
 import { dataExchange, wibcoin, logger } from '../../utils';
 import config from '../../../config';
@@ -26,7 +25,6 @@ const checkAllowance = async (enqueueTransaction) => {
         addedValue: minimumAllowance.multipliedBy(multiplier),
       },
       config.contracts.gasPrice.fast,
-      { priority: priority.URGENT },
     );
 
     logger.info('Allowance Check :: Approval increase requested');

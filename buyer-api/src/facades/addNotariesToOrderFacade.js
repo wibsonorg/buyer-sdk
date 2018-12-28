@@ -2,20 +2,16 @@ import Response from './Response';
 import { getNotariesInfo } from './notariesFacade';
 import { signingService, notaryService } from '../services';
 import { dataOrderAt } from '../utils';
-import { priority } from '../queues';
-import { fromWib } from '../utils/wibson-lib/coin';
 import config from '../../config';
 
-const buildNotariesParameters = async (notaries, buyerAddr, orderAddr) => {
-  const promises = notaries.map(async ({ notary, publicUrls: { api } }) => {
-    const { notarizationFee, ...response } = await notaryService
-      .consent(api, { buyerAddress: buyerAddr, orderAddress: orderAddr });
-
-    return { ...response, notarizationFee: fromWib(notarizationFee), notary };
-  });
-
-  return Promise.all(promises);
-};
+const buildNotariesParameters = (notaries, buyerAddr, orderAddr) =>
+  Promise.all(notaries.map(async ({ notary, publicUrls: { api } }) => {
+    const response = await notaryService.consent(api, {
+      buyerAddress: buyerAddr,
+      orderAddress: orderAddr,
+    });
+    return { ...response, notary };
+  }));
 
 const takeOnlyNotariesToAdd = async (orderAddress, addresses) => {
   const dataOrder = dataOrderAt(orderAddress);
@@ -59,7 +55,6 @@ const addNotaryToOrder = async (account, params, enqueueTransaction) => {
     'AddNotaryToOrder',
     params,
     config.contracts.gasPrice.fast,
-    { priority: priority.HIGH },
   );
 };
 

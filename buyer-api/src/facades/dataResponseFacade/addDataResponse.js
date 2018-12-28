@@ -1,4 +1,3 @@
-import { priority } from '../../queues';
 import web3 from '../../utils/web3';
 import signingService from '../../services/signingService';
 import { getDataResponse } from '../../utils/wibson-lib/s3';
@@ -53,7 +52,7 @@ const addDataResponse = async (order, seller, enqueueTransaction) => {
   }
 
   const { notaryAccount, dataHash, signature } = dataResponse;
-  if (!(web3.utils.isAddress(notaryAccount) || dataHash || signature)) {
+  if (!(web3.utils.isAddress(notaryAccount) && dataHash && signature)) {
     throw new Error('Invalid data response payload');
   }
 
@@ -81,9 +80,6 @@ const addDataResponse = async (order, seller, enqueueTransaction) => {
       signature,
     },
     config.contracts.gasPrice.fast,
-    {
-      priority: priority.LOWEST,
-    },
   );
 
   return true;

@@ -66,6 +66,10 @@ const config = {
     minimumAllowance: env.ALLOWANCE_MINIMUM,
     multiplier: env.ALLOWANCE_MULTIPLIER,
   },
+  balance: {
+    minWib: env.BALANCE_MINIMUM_WIB,
+    minWei: env.BALANCE_MINIMUM_WEI,
+  },
   transactionQueue: {
     maxIterations: env.TRANSACTION_QUEUE_MAX_ITERATIONS,
     interval: env.TRANSACTION_QUEUE_INSPECTION_INTERVAL,
