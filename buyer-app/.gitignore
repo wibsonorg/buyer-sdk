@@ -1,8 +1,12 @@
+# Releases
+artifacts
+
 # local config
 buyer-app/configuration/development.json
 
 # Mac
 .DS_Store
+>>>>>>> develop
 
 # Logs
 logs
@@ -22,7 +26,7 @@ pids
 lib-cov
 
 # Coverage directory used by tools like istanbul
-coverage
+coverage*
 
 # nyc test coverage
 .nyc_output
