@@ -1,9 +1,12 @@
 import Queue from 'bull';
+import config from '../../config';
 
-const PREFIX = 'buyer-api:jobs';
+const { url: redisUrl, prefix } = config.redis;
+
+const PREFIX = `${prefix}:jobs`;
 
 const createQueue = (queueName) => {
-  const queue = new Queue(queueName, {
+  const queue = new Queue(queueName, redisUrl, {
     prefix: PREFIX,
     settings: {
       backoffStrategies: {
@@ -16,4 +19,3 @@ const createQueue = (queueName) => {
 };
 
 export { createQueue };
-
