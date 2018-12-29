@@ -14,7 +14,7 @@ const url = config.buyerSigningServiceUrl;
  */
 const timeout = 5000;
 
-const getHealth = () => client.get(`${url}/health`, { timeout });
+const getHealth = () => client.get(`${url}/health`, { json: true, timeout });
 
 const getAccount = () => client.get(`${url}/account`, {
   json: true,
