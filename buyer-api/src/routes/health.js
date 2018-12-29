@@ -1,6 +1,5 @@
 import express from 'express';
-import requestPromise from 'request-promise-native';
-import config from '../../config';
+import signingService from '../services/signingService';
 import { asyncError, cache } from '../utils';
 
 const NS_PER_SEC = 1e9;
@@ -43,10 +42,7 @@ router.get('/cache', cache('1 minute'), (req, res) => {
  */
 router.get('/ss', asyncError(async (_req, res) => {
   const time = process.hrtime();
-  const response = await requestPromise.get(
-    `${config.buyerSigningServiceUrl}/health`,
-    { timeout: 5000 },
-  );
+  const response = await signingService.getHealth();
   const diff = process.hrtime(time);
 
   res.json({
