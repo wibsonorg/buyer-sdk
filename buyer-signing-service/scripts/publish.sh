@@ -10,5 +10,5 @@ cp -r config package/
 cp -r node_modules package/
 cp package.json package/
 cp .env.example package/
-tar -zcf ../artifacts/$package_name.tar.gz -C package .
+tar -zcf artifacts/$package_name.tar.gz -C package .
 rm -r package
