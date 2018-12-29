@@ -23,8 +23,6 @@ import {
 import Button from "base-app-src/components/Button";
 import NumberInput from "base-app-src/components/NumberInput";
 
-import Select, { SelectItem } from "base-app-src/components/Select";
-
 import Label from "base-app-src/components/Label";
 
 import Subtitle from "base-app-src/components/Subtitle";
@@ -43,15 +41,11 @@ const apiUrl = Config.get("api.url");
 class DataOrderCreate extends Component {
   constructor(opts) {
     super(opts);
-
-    const { dataOntology } = this.props;
-
     this.state = {
       buyerInfos: [],
-      buyerId: undefined,
+      selectedBuyer: undefined,
       audience: [],
-      requestedData: dataOntology.options[0].value,
-      // TODO: allow multiple notaries.
+      requestedData: [],
       requestedNotaries: [],
       publicURL: Config.get("buyerPublicURL"),
       errors: {},
@@ -66,8 +60,7 @@ class DataOrderCreate extends Component {
   };
 
   handleRequestClose = () => {
-    const { history } = this.props;
-    history.replace("/");
+    this.props.history.replace("/");
   };
 
   componentWillMount() {
@@ -77,9 +70,7 @@ class DataOrderCreate extends Component {
   async componentDidMount() {
     try {
       const res = await fetch(`${apiUrl}/infos`, {
-        headers: {
-          Authorization: authorization()
-        }
+        headers: { Authorization: authorization() }
       });
       const result = await res.json();
       this.setState({ buyerInfos: result.infos });
@@ -101,10 +92,8 @@ class DataOrderCreate extends Component {
       requestedNotaries,
       publicURL,
       price,
-      buyerId
+      selectedBuyer
     } = this.state;
-
-    const { createDataOrder } = this.props;
 
     const selectedAudience = audience.map(filter => {
       return {
@@ -113,17 +102,13 @@ class DataOrderCreate extends Component {
       };
     });
 
-    const data = requestedData ? [requestedData.value] : undefined;
-
-    const notaries = requestedNotaries.map((notaries)=> notaries.value);
-
-    createDataOrder(
+    this.props.createDataOrder(
       selectedAudience,
-      data,
-      notaries,
+      requestedData.map(d => d.value),
+      requestedNotaries.map(n => n.value),
       publicURL,
       price,
-      buyerId,
+      selectedBuyer.id,
     );
   };
 
@@ -136,47 +121,26 @@ class DataOrderCreate extends Component {
     } = this.state;
 
     return (
-      audience.length === 0 ||
-      !requestedNotaries ||
-      !publicURL ||
-      !requestedData
+      audience.length === 0
+      || !publicURL
+      || !requestedNotaries || !requestedNotaries.length
+      || !requestedData || !requestedData.length
     );
   }
 
   renderCreateForm() {
     const { audienceOntology, dataOntology, availableNotaries } = this.props;
-
-    const customStyles = {
-      option: (base, state) => ({
-        ...base,
-      }),
-      control: () => ({
-        backgroundColor: 'red'
-      }),
-      singleValue: (base, state) => {
-        const opacity = state.isDisabled ? 0.5 : 1;
-        const transition = 'opacity 300ms';
-    
-        return { ...base, opacity, transition};
-      }
-    }
-
     return (
       <Form>
         <FormSection>
           <Subtitle>Buyer info</Subtitle>
           <InfoItem>
             <Label color="light-dark">Buyer name</Label>
-            <Select value={this.state.buyerId}>
-              {this.state.buyerInfos.map(({ id, label }) => (
-                <SelectItem
-                  key={id}
-                  value={id}
-                  label={label}
-                  onClick={() => this.setState({ buyerId: id })}
-                />
-              ))}
-            </Select>
+            <ReactSelect
+              options={this.state.buyerInfos}
+              value={this.state.selectedBuyer}
+              onChange={selectedBuyer => this.setState({ selectedBuyer })}
+            />
           </InfoItem>
         </FormSection>
         <FormSection>
@@ -195,9 +159,8 @@ class DataOrderCreate extends Component {
             <ReactSelect
               options={dataOntology.options}
               value={this.state.requestedData}
-              onChange={requestedData =>
-                this.setState({ requestedData })
-              }
+              onChange={requestedData => this.setState({ requestedData })}
+              isMulti={true}
             />
           </InfoItem>
 
@@ -215,11 +178,8 @@ class DataOrderCreate extends Component {
             <ReactSelect
               options={availableNotaries.list}
               value={this.state.requestedNotaries}
-              onChange={requestedNotaries =>
-                this.setState({ requestedNotaries })
-              }
+              onChange={requestedNotaries => this.setState({ requestedNotaries })}
               isMulti={true}
-              className={customStyles}
             />
           </InfoItem>
         </FormSection>
