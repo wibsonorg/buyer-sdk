@@ -45,7 +45,8 @@ const config = {
     provider: env.WEB3_PROVIDER,
   },
   redis: {
-    socket: env.REDIS_SOCKET,
+    url: env.REDIS_URL,
+    prefix: env.REDIS_PREFIX,
   },
   storage: {
     url: env.STORAGE_URL,
