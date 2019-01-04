@@ -4,9 +4,9 @@ node_js:
 - '8'
 
 env:
-- WORKING_DIR=buyer-app/buyer-app SKIP_AUDIT=true SKIP_TESTS=true
-- WORKING_DIR=buyer-api SKIP_AUDIT=false SKIP_TESTS=true
-- WORKING_DIR=buyer-signing-service SKIP_AUDIT=false SKIP_TESTS=true
+- WORKING_DIR=buyer-app/buyer-app
+- WORKING_DIR=buyer-api
+- WORKING_DIR=buyer-signing-service
 
 cache:
   directories:
@@ -20,10 +20,9 @@ install:
 
 before_script:
   - npm run lint
-  # TODO: make these steps compulsive
-  - npm audit || $SKIP_AUDIT
-  - npm run test:coverage:ci || $SKIP_TESTS
-  - codecov || $SKIP_TESTS
+  - npm audit
+  - npm run test:coverage:ci
+  - codecov
 
 script: npm run build
 
