@@ -20,7 +20,7 @@ const router = express.Router();
  */
 router.get(
   '/',
-  cache('10 minutes'),
+  cache('1 minute'),
   asyncError(async (req, res) => {
     req.apicacheGroup = '/orders/*';
     const { offset, limit } = req.query;
@@ -57,7 +57,7 @@ router.get(
  */
 router.get(
   '/total',
-  cache('10 minutes'),
+  cache('1 minute'),
   asyncError(async (req, res) => {
     req.apicacheGroup = '/orders/*';
     const { address } = await signingService.getAccount();
