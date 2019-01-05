@@ -1,9 +1,9 @@
-import { put, takeLatest, all, call } from "redux-saga/effects";
+import { put, takeLatest, all } from "redux-saga/effects";
 
 import * as Actions from "./actions";
 
 function* buyDataResponses(action) {
-  const { orderAddress, unitPrice, responsesToBuy } = action.payload;
+  const { orderAddress } = action.payload;
 
   try {
     // yield call(buyResponses, orderAddress, unitPrice, responsesToBuy);
