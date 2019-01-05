@@ -62,7 +62,6 @@
     "react-cookie": "^3.0.4",
     "react-dom": "^15.3.0",
     "react-modal": "^2.3.2",
-    "react-promise": "^2.0.0",
     "react-redux": "^5.0.6",
     "react-refetch": "^1.0.1",
     "react-router": "^4.2.0",

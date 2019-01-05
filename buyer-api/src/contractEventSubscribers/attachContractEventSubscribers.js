@@ -23,7 +23,7 @@ const attachContractEventSubscribers = async (
     fromBlock = startingBlock;
   }
 
-  logger.info(`Contract Events :: From block :: ${fromBlock}`);
+  logger.debug(`Contract Events :: From block :: ${fromBlock}`);
   const events = await dataExchange.getPastEvents('allEvents', { fromBlock });
   const confirmedEvents = events.filter(result => Number(result.blockNumber) > 0);
 
@@ -34,11 +34,11 @@ const attachContractEventSubscribers = async (
     logger.info(`Contract Events :: Last processed block :: ${lastProcessedBlock}`);
 
     confirmedEvents.forEach((result) => {
-      logger.debug(`Contract Events :: Received :: Event '${result.event}'`);
+      logger.info(`Contract Events :: Received :: Event '${result.event}'`);
       invokeSubscribers(subscribers, result, stores);
     });
   } else {
-    logger.info('Contract Events :: No events to process');
+    logger.debug('Contract Events :: No events to process');
   }
 };
 

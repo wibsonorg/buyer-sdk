@@ -87,7 +87,7 @@ const createTransactionQueue = () => {
         break;
       }
       case 'failure': {
-        logger.notice(`Tx[${id}] :: ${name} :: Failure ${receipt}`);
+        logger.error(`Tx[${id}] :: ${name} :: Failure ${receipt}`);
         break;
       }
       case 'pending': {
@@ -95,7 +95,7 @@ const createTransactionQueue = () => {
         throw new Error('Retry tx');
       }
       default: {
-        logger.info(`Tx[${id}] :: ${name} :: Unknown ${receipt} (will NOT be retried)`);
+        logger.error(`Tx[${id}] :: ${name} :: Unknown ${receipt} (will NOT be retried)`);
       }
     }
 
