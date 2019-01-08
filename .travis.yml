@@ -34,6 +34,7 @@ deploy:
   provider: releases
   api_key:
     secure: $GITHUB_RELEASES_SECURE_KEY
+  file_glob: true
   file: "artifacts/*.tar.gz"
   skip_cleanup: true
   on:
