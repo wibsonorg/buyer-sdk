@@ -79,6 +79,11 @@ const closeDataResponse = async (
   const notaryApi = notaryInfo.publicUrls.api;
 
   const buyer = await dataOrder.methods.buyer().call();
+  const account = await signingService.getAccount();
+
+  if (buyer.toLowerCase() !== account.address.toLowerCase()) {
+    return false;
+  }
 
   if (notariesToDemandAuditsFrom.includes(notaryAddress.toLowerCase())) {
     await demandAudit(notaryApi, order, seller, buyer);
@@ -86,7 +91,6 @@ const closeDataResponse = async (
 
   const params = await auditResult(notaryApi, order, seller, buyer);
 
-  const account = await signingService.getAccount();
 
   enqueueTransaction(
     account,
