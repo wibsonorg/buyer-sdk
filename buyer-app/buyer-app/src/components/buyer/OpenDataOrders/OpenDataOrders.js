@@ -11,7 +11,6 @@ import Button from "base-app-src/components/Button";
 import Label from "base-app-src/components/Label";
 import DataTable from "base-app-src/components/DataTable";
 import DateDetail from "base-app-src/components/DateDetail";
-import AudienceDetail from "base-app-src/components/AudienceDetail";
 import NotariesDetail from "base-app-src/components/NotariesDetail";
 import RequestedDataDetail from "base-app-src/components/RequestedDataDetail";
 
@@ -65,7 +64,6 @@ class OpenDataOrders extends Component {
 
   render() {
     const {
-      audienceOntology,
       dataOntology,
       dataOrders,
       availableNotaries
