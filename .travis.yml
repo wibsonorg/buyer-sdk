@@ -21,7 +21,7 @@ install:
 
 before_script:
   - npm run lint
-  # TODO: make these steps compulsive
+  # TODO: Make these steps compulsive
   - npm audit || $SKIP_AUDIT
   - npm run test:coverage:ci || $SKIP_TESTS
   - codecov || $SKIP_TESTS
