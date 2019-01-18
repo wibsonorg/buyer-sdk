@@ -1,16 +1,16 @@
 import express from 'express';
 import { asyncError } from '../../helpers';
-import signNewOrderFacade from '../../facades/sign/newOrderFacade';
+import sign from '../../facades/sign/newOrderFacade';
 
 const router = express.Router();
 
 /**
  * @swagger
- * /sign/new-order:
+ * /sign/create-data-order:
  *   post:
  *     description: |
- *       ## Sign NewOrder Transaction
- *       Receives DataExchange.newOrder parameters or a serialized payload and
+ *       ## Sign CreateDataOrder Transaction
+ *       Receives DataExchange.createDataOrder parameters and
  *       responds with the serialized transaction ready to be sent to the
  *       network.
  *     produces:
@@ -19,19 +19,18 @@ const router = express.Router();
  *       - in: body
  *         name: nonce
  *         type: integer
- *         description: |
- *           The number of transactions made by the sender including this one.
+ *         description: The number of transactions made by the sender
  *         required: true
  *       - in: body
  *         name: gasPrice
  *         type: string
- *         description: The number of transactions made by the sender.
+ *         description: Gas price
  *         required: true
  *       - in: body
  *         name: params
  *         description: Parameters to be used in the transaction call.
  *         schema:
- *           $ref: "#/definitions/NewOrderParameters"
+ *           $ref: "#/definitions/CreateDataOrderParameters"
  *     responses:
  *       200:
  *         description: When the signing performs successfully
@@ -39,38 +38,36 @@ const router = express.Router();
  *         description: Any other case
  *
  * definitions:
- *   NewOrderParameters:
+ *   CreateDataOrderParameters:
  *     type: object
  *     properties:
- *       filters:
+ *       audience:
  *         type: string
- *         description: Hashed target audience.
- *         required: true
- *       dataRequest:
- *         type: string
- *         description: Requested data type (Geolocation, Facebook, etc).
+ *         description: Target audience of the order.
  *         required: true
  *       price:
  *         type: string
- *         description: Price per Data Response added.
+ *         description: Price that sellers will receive in exchange of their data.
  *         required: true
- *       initialBudgetForAudits:
+ *       requestedData:
  *         type: string
- *         description: The initial budget set for future audits.
+ *         description: Requested data type (Geolocation, Facebook, etc).
  *         required: true
- *       termsAndConditions:
+ *       termsAndConditionsHash:
  *         type: string
- *         description: Buyer's terms and conditions for the order.
+ *         description: Hash of the Buyer's terms and conditions for the order.
  *         required: true
- *       buyerURL:
+ *       buyerUrl:
  *         type: string
- *         description: Public URL of the buyer where the data must be sent.
+ *         description: |
+ *           Public URL of the buyer where more information about the DataOrder
+ *           can be obtained.
  *         required: true
  */
-router.post('/new-order', asyncError(async (req, res) => {
+router.post('/create-data-order', asyncError(async (req, res) => {
   const { contracts: { dataExchange } } = req.app.locals;
   const { nonce, gasPrice, params } = req.body;
-  const response = signNewOrderFacade(nonce, gasPrice, params, dataExchange);
+  const response = sign(nonce, gasPrice, params, dataExchange);
 
   if (response.success()) {
     res.json({ signedTransaction: response.result });

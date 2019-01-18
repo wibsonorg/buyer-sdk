@@ -1,18 +1,12 @@
 import express from 'express';
-import newOrder from './newOrder';
-import addNotaryToOrder from './addNotaryToOrder';
-import increaseApproval from './increaseApproval';
-import addDataResponse from './addDataResponse';
-import closeDataResponse from './closeDataResponse';
-import closeOrder from './closeOrder';
+import validate from '../../middlewares/validateSignBody';
+import createDataOrder from './createDataOrder';
+import closeDataOrder from './closeDataOrder';
 
 const router = express.Router();
 
-router.use(newOrder);
-router.use(addNotaryToOrder);
-router.use(increaseApproval);
-router.use(addDataResponse);
-router.use(closeDataResponse);
-router.use(closeOrder);
+router.use(validate);
+router.use(createDataOrder);
+router.use(closeDataOrder);
 
 export default router;
