@@ -1,5 +1,4 @@
-import web3Utils from 'web3-utils';
-import { logger, delay } from '../../utils';
+import { delay } from '../../utils';
 
 /**
  * Suggests if an operation should be retried or not after specified error.
@@ -40,8 +39,8 @@ const getTransactionReceipt = (web3, receipt) =>
         reject(pendingError);
       } else if (typeof result === 'object') {
         if (
-          web3Utils.isHex(result.status) &&
-          web3Utils.hexToNumber(result.status) === 1
+          web3.utils.isHex(result.status) &&
+          web3.utils.hexToNumber(result.status) === 1
         ) {
           resolve(result);
         } else {
@@ -55,28 +54,60 @@ const getTransactionReceipt = (web3, receipt) =>
     });
   });
 
-/**
- * NOTE: There is an alternative to handle this with `filters`.
- * See https://goo.gl/VXv3zK (from ethereum.stackexchange.com)
- */
-const transactionResponse = async (web3, receipt) => {
-  let response = null;
-  let iteration = 0;
-  const maxIterations = 12; // 2 min
+const sendSignedTransaction = (web3, signedTransaction) =>
+  new Promise((resolve, reject) => {
+    web3.eth.sendSignedTransaction(`0x${signedTransaction}`)
+      .on('error', (error) => {
+        reject(error);
+      })
+      .on('transactionHash', (hash) => {
+        if (!hash) reject(new Error('No tx hash'));
+        resolve(hash);
+      });
+  });
 
-  while (!response && iteration < maxIterations) {
-    try {
-      iteration += 1;
-      await delay(10 * 1000); // eslint-disable-line no-await-in-loop
-      response = await getTransactionReceipt(web3, receipt); // eslint-disable-line no-await-in-loop
-    } catch (error) {
-      if (!error.pending) {
-        throw error;
+/**
+ * @param {Object} web3 instance of Web3
+ * @param {Sting} receipt transaction receipt
+ * @returns {Promise} promise that resolves to the transaction object in any of
+ *                    the following states: `pending`, `success` or `failure`.
+ *                    Is reject if an error occurs.
+ */
+const getTransaction = (web3, receipt) =>
+  new Promise((resolve, reject) => {
+    web3.eth.getTransactionReceipt(receipt, (err, result) => {
+      if (err) {
+        reject(err);
+      } else if (!result) {
+        resolve({ status: 'pending' });
+      } else if (web3.utils.hexToNumber(result.status)) {
+        resolve({ ...result, status: 'success' });
+      } else {
+        resolve({ ...result, status: 'failure' });
       }
-    }
+    });
+  });
+
+/**
+ * @param {Object} web3 instance of Web3
+ * @param {Sting} receipt transaction receipt
+ * @param {Object} opts
+ * @throws {Error} when `getTransaction` is rejected
+ */
+const waitForExecution = async (web3, receipt, opts = {}) => {
+  const { maxIterations = 20, interval = 30 } = opts;
+  let transaction = { status: 'pending' };
+  let iteration = 0;
+
+  while (transaction.status === 'pending' && iteration < maxIterations) {
+    iteration += 1;
+    // eslint-disable-next-line no-await-in-loop
+    await delay(interval * 1000);
+    // eslint-disable-next-line no-await-in-loop
+    transaction = await getTransaction(web3, receipt);
   }
 
-  return response;
+  return transaction;
 };
 
 /**
@@ -96,55 +127,24 @@ const sendTransaction = async (
   gasPrice,
 ) => {
   const nonce = await web3.eth.getTransactionCount(address);
+  const ethGasPrice = await web3.eth.getGasPrice();
   const payload = {
     nonce,
-    gasPrice: gasPrice || web3.eth.gasPrice.toNumber(),
+    gasPrice: gasPrice || ethGasPrice.toString(),
     params,
   };
 
   const { signedTransaction } = await signingFunc(payload);
 
-  const receipt = await web3.eth.sendRawTransaction(`0x${signedTransaction}`);
-  logger.info(`[sendTransaction] receipt ${receipt}`);
+  const receipt = await sendSignedTransaction(web3, signedTransaction);
 
   return receipt;
 };
 
-/**
- * @deprecated The usage of this function is discouraged. Use Jobs instead.
- *
- * @async
- * @function performTransaction
- * @param {Object} web3
- * @param {Sting} address issuer's ethereum address of the transaction
- * @param {Function} signingFunc function used to sign the transaction
- * @param {Object} params data payload needed in the transaction
- * @returns {Object} transaction object
- * @see https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethgettransactionreceipt
- */
-const performTransaction = async (
-  web3,
-  address,
-  signingFunc,
-  params,
-  gasPrice,
-) => {
-  const receipt = await sendTransaction(
-    web3,
-    address,
-    signingFunc,
-    params,
-    gasPrice,
-  );
-
-  const response = await transactionResponse(web3, receipt);
-
-  return response;
-};
-
 export {
-  performTransaction,
   sendTransaction,
+  getTransaction,
+  waitForExecution,
   getTransactionReceipt,
   retryAfterError,
 };

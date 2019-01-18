@@ -1,7 +1,7 @@
 import Response from './Response';
 import { getSellersInfo } from './sellersFacade';
-import { sendTransaction } from './helpers';
-import { web3, DataOrderContract } from '../utils';
+import { enqueueTransaction } from '../queues';
+import { web3, dataOrderAt } from '../utils';
 import signingService from '../services/signingService';
 import config from '../../config';
 
@@ -10,9 +10,9 @@ import config from '../../config';
  * @param {String} orderAddres
  * @returns {Array} Error messages
  */
-const validate = async (orderAddres) => {
+const validate = async (orderAddress) => {
   let errors = [];
-  const dataOrder = DataOrderContract.at(orderAddres);
+  const dataOrder = dataOrderAt(orderAddress);
   const sellers = await getSellersInfo(web3, dataOrder);
 
   if (!sellers.every(({ status }) => status === 'TransactionCompleted')) {
@@ -34,17 +34,16 @@ const closeDataOrderFacade = async (orderAddr) => {
     return new Response(null, errors);
   }
 
-  const { address } = await signingService.getAccount();
+  const account = await signingService.getAccount();
 
-  const receipt = await sendTransaction(
-    web3,
-    address,
-    signingService.signCloseOrder,
+  enqueueTransaction(
+    account,
+    'CloseOrder',
     { orderAddr },
     config.contracts.gasPrice.fast,
   );
 
-  return new Response({ status: 'pending', receipt });
+  return new Response({ status: 'pending' });
 };
 
 export default closeDataOrderFacade;

@@ -15,12 +15,28 @@ async function listBuyerDataOrders(limit, offset) {
     }
   });
   if (!res.ok) {
-    throw new Error('Could get data orders');
+    throw new Error('Could not get data orders');
   }
 
   const orders = await res.json();
 
   return orders;
+}
+
+async function getBuyerDataOrdersAmount() {
+  const res = await fetch(`${apiUrl}/orders/total`,
+  {
+    headers: {
+      Authorization: authorization()
+    }
+  });
+  if (!res.ok) {
+    throw new Error('Could not get data orders');
+  }
+
+  const ordersAmount = await res.json();
+
+  return ordersAmount;
 }
 
 async function createBuyerDataOrder(
@@ -76,7 +92,7 @@ const addNotariesToOrder = async (orderAddress, notariesAddresses) => {
 };
 
 const closeOrder = async orderAddress => {
-  const res = await fetch(`${apiUrl}/orders/${orderAddress}/close`, {
+  const res = await fetch(`${apiUrl}/orders/${orderAddress}/end`, {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
@@ -93,6 +109,7 @@ const closeOrder = async orderAddress => {
 export {
   listBuyerDataOrders,
   createBuyerDataOrder,
+  getBuyerDataOrdersAmount,
   addNotariesToOrder,
   closeOrder,
 };

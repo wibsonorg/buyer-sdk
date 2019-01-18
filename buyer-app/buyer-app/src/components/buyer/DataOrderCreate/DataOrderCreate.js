@@ -3,6 +3,8 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
+import { default as ReactSelect } from 'react-select';
+
 import * as OntologySelectors from "base-app-src/state/ontologies/selectors";
 
 import * as NotariesSelectors from "state/entities/notaries/selectors";
@@ -21,7 +23,6 @@ import {
 import Button from "base-app-src/components/Button";
 import NumberInput from "base-app-src/components/NumberInput";
 
-import Select, { SelectItem } from "base-app-src/components/Select";
 import Label from "base-app-src/components/Label";
 
 import Subtitle from "base-app-src/components/Subtitle";
@@ -37,40 +38,15 @@ import "./DataOrderCreate.css";
 
 const apiUrl = Config.get("api.url");
 
-const NotariesSelect = ({ availableNotaries, value, onNotarySelected }) => {
-  const notaries =
-    !availableNotaries || availableNotaries.pending || availableNotaries.error
-      ? []
-      : availableNotaries.list;
-
-  return (
-    <Select value={value}>
-      {notaries.map(({ value, label }) => (
-        <SelectItem
-          key={value}
-          value={value}
-          label={label}
-          onClick={() => onNotarySelected(value)}
-        />
-      ))}
-    </Select>
-  );
-};
-
 class DataOrderCreate extends Component {
   constructor(opts) {
     super(opts);
-
-    const { dataOntology } = this.props;
-
     this.state = {
       buyerInfos: [],
-      buyerId: undefined,
+      selectedBuyer: undefined,
       audience: [],
-      requestedData: dataOntology.options[0].value,
-      // TODO: allow multiple notaries.
-      // requestedNotaries: [],
-      requestedNotary: null,
+      requestedData: [],
+      requestedNotaries: [],
       publicURL: Config.get("buyerPublicURL"),
       errors: {},
       loading: false,
@@ -84,8 +60,7 @@ class DataOrderCreate extends Component {
   };
 
   handleRequestClose = () => {
-    const { history } = this.props;
-    history.replace("/");
+    this.props.history.replace("/");
   };
 
   componentWillMount() {
@@ -94,14 +69,12 @@ class DataOrderCreate extends Component {
 
   async componentDidMount() {
     try {
-      const res = await fetch(`${apiUrl}/infos`,  {
-        headers: {
-          Authorization: authorization()
-        }
+      const res = await fetch(`${apiUrl}/infos`, {
+        headers: { Authorization: authorization() }
       });
       const result = await res.json();
       this.setState({ buyerInfos: result.infos });
-    } catch(error) {
+    } catch (error) {
       console.log(error);
     };
   }
@@ -116,13 +89,11 @@ class DataOrderCreate extends Component {
     const {
       audience,
       requestedData,
-      requestedNotary,
+      requestedNotaries,
       publicURL,
       price,
-      buyerId
+      selectedBuyer
     } = this.state;
-
-    const { createDataOrder } = this.props;
 
     const selectedAudience = audience.map(filter => {
       return {
@@ -131,56 +102,45 @@ class DataOrderCreate extends Component {
       };
     });
 
-    const data = requestedData ? [requestedData] : undefined;
-
-    const notaries = [requestedNotary];
-
-    createDataOrder(
+    this.props.createDataOrder(
       selectedAudience,
-      data,
-      notaries,
+      requestedData.map(d => d.value),
+      requestedNotaries.map(n => n.value),
       publicURL,
       price,
-      buyerId
+      selectedBuyer.id,
     );
   };
 
   shouldDisableSubmitButton() {
     const {
       audience,
-      requestedNotary,
+      requestedNotaries,
       publicURL,
       requestedData
     } = this.state;
 
     return (
-      audience.length === 0 ||
-      !requestedNotary ||
-      !publicURL ||
-      !requestedData
+      audience.length === 0
+      || !publicURL
+      || !requestedNotaries || !requestedNotaries.length
+      || !requestedData || !requestedData.length
     );
   }
 
   renderCreateForm() {
     const { audienceOntology, dataOntology, availableNotaries } = this.props;
-
     return (
       <Form>
         <FormSection>
           <Subtitle>Buyer info</Subtitle>
           <InfoItem>
             <Label color="light-dark">Buyer name</Label>
-
-            <Select value={this.state.buyerId}>
-              {this.state.buyerInfos.map(({ id, label }) => (
-                <SelectItem
-                  key={id}
-                  value={id}
-                  label={label}
-                  onClick={() => this.setState({ buyerId: id })}
-                />
-              ))}
-            </Select>
+            <ReactSelect
+              options={this.state.buyerInfos}
+              value={this.state.selectedBuyer}
+              onChange={selectedBuyer => this.setState({ selectedBuyer })}
+            />
           </InfoItem>
         </FormSection>
         <FormSection>
@@ -196,17 +156,12 @@ class DataOrderCreate extends Component {
           <Subtitle>Orders settings</Subtitle>
           <InfoItem>
             <Label color="light-dark">Data to request</Label>
-
-            <Select value={this.state.requestedData}>
-              {dataOntology.options.map(({ value, label }) => (
-                <SelectItem
-                  key={value}
-                  value={value}
-                  label={label}
-                  onClick={() => this.setState({ requestedData: value })}
-                />
-              ))}
-            </Select>
+            <ReactSelect
+              options={dataOntology.options}
+              value={this.state.requestedData}
+              onChange={requestedData => this.setState({ requestedData })}
+              isMulti={true}
+            />
           </InfoItem>
 
           <InfoItem>
@@ -220,12 +175,11 @@ class DataOrderCreate extends Component {
           </InfoItem>
           <InfoItem>
             <Label color="light-dark">Notary</Label>
-            <NotariesSelect
-              availableNotaries={availableNotaries}
-              value={this.state.requestedNotary}
-              onNotarySelected={requestedNotary =>
-                this.setState({ requestedNotary })
-              }
+            <ReactSelect
+              options={availableNotaries.list}
+              value={this.state.requestedNotaries}
+              onChange={requestedNotaries => this.setState({ requestedNotaries })}
+              isMulti={true}
             />
           </InfoItem>
         </FormSection>

@@ -3,13 +3,15 @@ import redis from 'redis';
 import level from 'level';
 import config from '../../config';
 
-const redisSocket = config.redis.socket;
+const { url: redisUrl, prefix } = config.redis;
+
+const redisPrefix = ns => `${prefix}:${ns}`;
 
 export const createRedisStore = ns =>
-  asyncRedis.decorate(redis.createClient(redisSocket, { prefix: ns }));
+  asyncRedis.decorate(redis.createClient(redisUrl, { prefix: redisPrefix(ns) }));
 
-export const createLevelStore = ns =>
-  level(ns, (err, db) => {
+export const createLevelStore = dir =>
+  level(`${config.levelDirectory}/${dir}`, (err, db) => {
     if (err) {
       throw new Error(err);
     }

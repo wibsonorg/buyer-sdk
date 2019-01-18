@@ -29,6 +29,9 @@ const config = {
       ordersTTL: env.CONTRACTS_CACHE_ORDERS_TTL,
     },
   },
+  notary: {
+    demandAuditsFrom: env.NOTARY_DEMAND_AUDITS_FROM,
+  },
   cache: {
     enabled: env.CACHE === 'enabled',
     adapter: env.CACHE_ADAPTER,
@@ -42,7 +45,8 @@ const config = {
     provider: env.WEB3_PROVIDER,
   },
   redis: {
-    socket: env.REDIS_SOCKET,
+    url: env.REDIS_URL,
+    prefix: env.REDIS_PREFIX,
   },
   storage: {
     url: env.STORAGE_URL,
@@ -54,6 +58,23 @@ const config = {
   levelDirectory: env.LEVEL_DIRECTORY,
   jwt: JSON.parse(env.JWT_OPTIONS),
   passphrase: env.PASSPHRASE,
+  eventSubscribers: {
+    interval: env.EVENT_SUBSCRIBERS_INTERVAL,
+    lastProcessedBlock: env.EVENT_SUBSCRIBERS_LAST_PROCESSED_BLOCK,
+  },
+  allowance: {
+    interval: env.ALLOWANCE_INTERVAL,
+    minimumAllowance: env.ALLOWANCE_MINIMUM,
+    multiplier: env.ALLOWANCE_MULTIPLIER,
+  },
+  balance: {
+    minWib: env.BALANCE_MINIMUM_WIB,
+    minWei: env.BALANCE_MINIMUM_WEI,
+  },
+  transactionQueue: {
+    maxIterations: env.TRANSACTION_QUEUE_MAX_ITERATIONS,
+    interval: env.TRANSACTION_QUEUE_INSPECTION_INTERVAL,
+  },
 };
 
 exports.default = config;

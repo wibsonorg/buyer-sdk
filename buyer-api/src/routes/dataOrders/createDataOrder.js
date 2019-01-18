@@ -1,5 +1,5 @@
 import express from 'express';
-import { createDataOrderFacade, getOrdersForBuyer } from '../../facades';
+import { getOrdersForBuyer, getOrdersAmountForBuyer } from '../../facades';
 import { asyncError, cache, dataExchange } from '../../utils';
 import signingService from '../../services/signingService';
 
@@ -20,7 +20,7 @@ const router = express.Router();
  */
 router.get(
   '/',
-  cache('10 minutes'),
+  cache('1 minute'),
   asyncError(async (req, res) => {
     req.apicacheGroup = '/orders/*';
     const { offset, limit } = req.query;
@@ -30,14 +30,44 @@ router.get(
 
     const ordersResult = getOrdersForBuyer(address, ordersCache, Number(offset), Number(limit));
 
-    const minimumBudget = dataExchange.minimumInitialBudgetForAudits();
+    const minimumBudget = dataExchange.methods.minimumInitialBudgetForAudits().call();
 
     const [orders, minimumInitialBudgetForAudits] = await Promise.all([
       ordersResult,
       minimumBudget,
     ]);
 
-    res.json({ orders, minimumInitialBudgetForAudits });
+    res.json({ orders, minimumInitialBudgetForAudits: Number(minimumInitialBudgetForAudits) });
+  }),
+);
+
+/**
+ * @swagger
+ * /orders/total:
+ *   get:
+ *     description: Returns an object that shows the amount of open and closed data orders
+ *       created by the buyer in the Data Exchange.
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: When the orders have been fetched correctly.
+ *       500:
+ *         description: When the fetch failed.
+ */
+router.get(
+  '/total',
+  cache('1 minute'),
+  asyncError(async (req, res) => {
+    req.apicacheGroup = '/orders/*';
+    const { address } = await signingService.getAccount();
+
+    const orders = await getOrdersAmountForBuyer(address);
+
+    res.json({
+      totalClosedOrders: orders.closed,
+      totalOpenOrders: orders.open,
+    });
   }),
 );
 
@@ -165,15 +195,14 @@ router.post(
     if (errors.length > 0) {
       res.boom.badData('Validation failed', { validation: errors });
     } else {
-      const response = await createDataOrderFacade(dataOrder, queue);
+      queue.add('createDataOrder', { dataOrder }, {
+        attempts: 20,
+        backoff: {
+          type: 'linear',
+        },
+      });
 
-      if (response.success()) {
-        res.json(response.result);
-      } else {
-        res.boom.badData('Operation failed', {
-          errors: response.errors,
-        });
-      }
+      res.json({ status: 'pending' });
     }
   }),
 );

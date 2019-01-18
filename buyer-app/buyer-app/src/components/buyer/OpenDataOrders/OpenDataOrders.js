@@ -11,7 +11,6 @@ import Button from "base-app-src/components/Button";
 import Label from "base-app-src/components/Label";
 import DataTable from "base-app-src/components/DataTable";
 import DateDetail from "base-app-src/components/DateDetail";
-import AudienceDetail from "base-app-src/components/AudienceDetail";
 import NotariesDetail from "base-app-src/components/NotariesDetail";
 import RequestedDataDetail from "base-app-src/components/RequestedDataDetail";
 
@@ -48,12 +47,7 @@ class OpenDataOrders extends Component {
 
     const fullOrder = dataOrders[order.orderAddress];
 
-
-    const closeDisabled =
-      // eslint-disable-next-line eqeqeq
-      order.dataCount == 0 ||
-      fullOrder.data.transactionCompleted ||
-      fullOrder.closePending;
+    const closeDisabled = fullOrder.data.transactionCompleted || fullOrder.closePending;
 
     return (
       <div className="wibson-bought-data-orders-actions">
@@ -70,7 +64,6 @@ class OpenDataOrders extends Component {
 
   render() {
     const {
-      audienceOntology,
       dataOntology,
       dataOrders,
       availableNotaries
@@ -141,7 +134,13 @@ class OpenDataOrders extends Component {
             },
             {
               name: "dataResponsesCount",
-              label: "Responses",
+              label: "Responses Received",
+              width: "245",
+              renderer: value => <Label>{value || 0}</Label>
+            },
+            {
+              name: "responsesBought",
+              label: "Responses Bought",
               width: "245",
               renderer: value => <Label>{value || 0}</Label>
             },

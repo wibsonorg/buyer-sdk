@@ -1,32 +1,33 @@
 import {
   onBuyData,
-  onIncreaseApprovalSent,
   addDataResponse,
-  onAddDataResponseSent,
   closeDataResponse,
-  onCloseDataResponseSent,
+  checkAllowance,
 } from './dataResponseFacade';
+import { createDataOrderFacade } from './createDataOrderFacade';
 import {
-  createDataOrderFacade,
-  onDataOrderSent,
-} from './createDataOrderFacade';
-import addNotariesToOrderFacade from './addNotariesToOrderFacade';
+  addNotariesToOrderFacade,
+  addNotaryToOrder,
+} from './addNotariesToOrderFacade';
 import closeDataOrderFacade from './closeDataOrderFacade';
-import { getOrdersForBuyer, fetchAndCacheDataOrder } from './getOrdersFacade';
+import { getOrdersForBuyer, fetchAndCacheDataOrder, getOrdersAmountForBuyer } from './getOrdersFacade';
 
-export { getNotaryInfo, getNotariesInfo, fetchAndCacheNotary } from './notariesFacade';
+export {
+  getNotaryInfo,
+  getNotariesInfo,
+  fetchAndCacheNotary,
+} from './notariesFacade';
 
 export {
   createDataOrderFacade,
   addNotariesToOrderFacade,
+  addNotaryToOrder,
   getOrdersForBuyer,
   addDataResponse,
   closeDataResponse,
   closeDataOrderFacade,
-  onDataOrderSent,
   onBuyData,
-  onIncreaseApprovalSent,
-  onAddDataResponseSent,
-  onCloseDataResponseSent,
+  checkAllowance,
   fetchAndCacheDataOrder,
+  getOrdersAmountForBuyer,
 };
