@@ -6,19 +6,19 @@ module.exports = {
   rootDir: 'src',
 
   // All imported modules in your tests should be mocked automatically
-  // automock: false,
+  // automock: true,
+
+  // Reset the module registry before running each individual test
+  // resetModules: true,
 
   // Automatically clear mock calls and instances between every test
   clearMocks: true,
 
-  // Automatically restore mock state between every test
-  // restoreMocks: false,
-
   // Automatically reset mock state between every test
   // resetMocks: false,
 
-  // Reset the module registry before running each individual test
-  // resetModules: false,
+  // Automatically restore mock state between every test
+  // restoreMocks: false,
 
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
