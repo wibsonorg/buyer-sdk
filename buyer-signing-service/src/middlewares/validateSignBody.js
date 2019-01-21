@@ -1,3 +1,5 @@
+import { isPresent } from '../utils/wibson-lib';
+
 /**
  * Middleware to check sign body has all needed parameters.
  */

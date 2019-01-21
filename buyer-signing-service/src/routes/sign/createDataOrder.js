@@ -1,6 +1,8 @@
 import express from 'express';
-import { asyncError } from '../../helpers';
-import sign from '../../facades/sign/newOrderFacade';
+import {
+  asyncError,
+  buildMethodSigner as builder
+} from '../../helpers';
 
 const router = express.Router();
 
@@ -67,14 +69,13 @@ const router = express.Router();
 router.post('/create-data-order', asyncError(async (req, res) => {
   const { contracts: { dataExchange } } = req.app.locals;
   const { nonce, gasPrice, params } = req.body;
-  const response = sign(nonce, gasPrice, params, dataExchange);
+  const sign = builder(dataExchange, 'createDataOrder');
+  const { errors, result } = sign(nonce, gasPrice, params);
 
-  if (response.success()) {
-    res.json({ signedTransaction: response.result });
+  if (errors) {
+    res.boom.badData('Operation failed', { errors });
   } else {
-    res.boom.badData('Operation failed', {
-      errors: response.errors,
-    });
+    res.json({ signedTransaction: result });
   }
 }));
 
