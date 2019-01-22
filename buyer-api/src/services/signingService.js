@@ -21,48 +21,16 @@ const getAccount = () => client.get(`${url}/account`, {
   timeout,
 });
 
-const signNewOrder = payload => client.post(
-  `${url}/sign/new-order`,
+const signCreateDataOrder = payload => client.post(
+  `${url}/sign/create-data-order`,
   {
     json: payload,
     timeout,
   },
 );
 
-const signAddNotaryToOrder = payload => client.post(
-  `${url}/sign/add-notary-to-order`,
-  {
-    json: payload,
-    timeout,
-  },
-);
-
-const signIncreaseApproval = payload => client.post(
-  `${url}/sign/increase-approval`,
-  {
-    json: payload,
-    timeout,
-  },
-);
-
-const signAddDataResponse = payload => client.post(
-  `${url}/sign/add-data-response`,
-  {
-    json: payload,
-    timeout,
-  },
-);
-
-const signCloseDataResponse = payload => client.post(
-  `${url}/sign/close-data-response`,
-  {
-    json: payload,
-    timeout,
-  },
-);
-
-const signCloseOrder = payload => client.post(
-  `${url}/sign/close-order`,
+const signCloseDataOrder = payload => client.post(
+  `${url}/sign/close-data-order`,
   {
     json: payload,
     timeout,
@@ -72,12 +40,8 @@ const signCloseOrder = payload => client.post(
 const signinService = {
   getHealth,
   getAccount,
-  signNewOrder,
-  signAddNotaryToOrder,
-  signIncreaseApproval,
-  signAddDataResponse,
-  signCloseDataResponse,
-  signCloseOrder,
+  signCreateDataOrder,
+  signCloseDataOrder,
 };
 
 export default signinService;
