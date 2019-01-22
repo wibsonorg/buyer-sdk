@@ -1,7 +1,7 @@
 import express from 'express';
 import {
   asyncError,
-  buildMethodSigner as builder
+  buildMethodSigner as builder,
 } from '../../helpers';
 
 const router = express.Router();

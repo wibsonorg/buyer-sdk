@@ -5,5 +5,5 @@ import buildMethodSigner from './buildMethodSigner';
 export {
   asyncError,
   buyer,
-  buildMethodSigner
+  buildMethodSigner,
 };

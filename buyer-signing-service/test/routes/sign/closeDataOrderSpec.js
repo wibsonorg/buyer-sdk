@@ -65,12 +65,12 @@ describe('POST /sign/close-data-order', () => {
       .send({
         nonce,
         gasPrice,
-        params: {}
+        params: {},
       })
       .expect(422, {
         statusCode: 422,
         error: 'Unprocessable Entity',
-        message: "Operation failed",
+        message: 'Operation failed',
         errors: ['Field \'orderId\' is required'],
       }, done);
   });
