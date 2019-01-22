@@ -8,33 +8,33 @@ import { sendTransaction, waitForExecution } from '../facades/helpers';
 const { toBN } = web3.utils;
 const minWib = toBN(config.balance.minWib);
 const minWei = toBN(config.balance.minWei);
-const notEnoughWib = minWib.lt.bind(minWib);
-const notEnoughWei = minWei.lt.bind(minWei);
+const notEnoughWib = minWib.gte.bind(minWib);
+const notEnoughWei = minWei.gte.bind(minWei);
 
 export const transactionQueue = createQueue('TransactionQueue');
-transactionQueue.process(async ({ id, data }) => {
+export async function processTransaction({ id, data }) {
   const { name, params } = data;
   logger.info(`Tx[${id}] :: ${name} :: Started`);
 
   const { address } = await signingService.getAccount();
-  const [wei, wib] = Promise.all([
+  const [wei, wib] = (await Promise.all([
     wibcoin.methods.balanceOf(address).call(),
     web3.eth.getBalance(address),
-  ]).map(toBN);
+  ])).map(toBN);
   const insufficientWib = notEnoughWib(wib);
   const insufficientEth = notEnoughWei(wei);
   if (insufficientWib) {
     logger.error(`
-    Buyer (${address}) does not have enough WIB.
-    Current balance: ${wib} WIB
-    Minimum balance: ${minWib} WIB
+  Buyer (${address}) does not have enough WIB.
+  Current balance: ${wib} WIB
+  Minimum balance: ${minWib} WIB
     `);
   }
   if (insufficientEth) {
     logger.error(`
-    Buyer (${address}) does not have enough ETH.
-    Current balance: ${wei} ETH
-    Minimum balance: ${minWei} ETH
+  Buyer (${address}) does not have enough ETH.
+  Current balance: ${wei} ETH
+  Minimum balance: ${minWei} ETH
     `);
   }
   if (insufficientWib || insufficientEth) {
@@ -69,7 +69,8 @@ transactionQueue.process(async ({ id, data }) => {
     }
   }
   return transaction;
-});
+}
+transactionQueue.process(processTransaction);
 transactionQueue.on('failed', (j) => {
   if (j.failedReason !== 'Retry tx') {
     logger.error(`Tx[${j.id}] :: ${j.data.name} :: Error thrown: ${j.failedReason} (will be retried)`);

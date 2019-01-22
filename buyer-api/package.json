@@ -16,7 +16,7 @@
     "task": "babel-node src/tasks/index.js"
   },
   "nodemonConfig": {
-    "exec": "babel-node",
+    "exec": "clear;babel-node",
     "watchedExtensions": ["js"],
     "ignore": ["__mocks__/*", "__test__/*", "*.test.js"],
     "delay": "7000"

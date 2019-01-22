@@ -1,9 +1,8 @@
 import uuidv4 from 'uuid/v4';
-import { getBuyerInfo } from '../services/buyerInfo';
 import { fromWib } from '../utils/wibson-lib/coin';
+import { getBuyerInfo } from '../services/buyerInfo';
 import { dataOrders } from '../utils/stores';
-
-function enqueueTransaction() {}
+import { addTransactionJob } from '../queues/transactionQueue';
 
 export async function createDataOrder({ buyerUrl, ...dataOrder }) {
   const id = uuidv4();
@@ -14,7 +13,7 @@ export async function createDataOrder({ buyerUrl, ...dataOrder }) {
     status,
     termsHash,
   });
-  enqueueTransaction('NewOrder', {
+  addTransactionJob('NewOrder', {
     price: fromWib(dataOrder.price),
     audience: JSON.stringify(dataOrder.audience),
     requestedData: JSON.stringify(dataOrder.requestedData),
