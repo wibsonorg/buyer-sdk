@@ -4,21 +4,24 @@ import { getBuyerInfo } from '../services/buyerInfo';
 import { dataOrders } from '../utils/stores';
 import { addTransactionJob } from '../queues/transactionQueue';
 
-export async function createDataOrder({ buyerUrl, ...dataOrder }) {
+export async function createDataOrder(dataOrder) {
   const id = uuidv4();
   const status = 'creating';
+  const buyerUrl = `${dataOrder.buyerUrl}/orders/${id}`;
   const { termsHash } = await getBuyerInfo(dataOrder.buyerInfoId);
+  const termsAndConditionsHash = termsHash.startsWith('0x') ? termsHash : `0x${termsHash}`;
   dataOrders.put(id, {
     ...dataOrder,
     status,
-    termsHash,
+    buyerUrl,
+    termsAndConditionsHash,
   });
   addTransactionJob('NewOrder', {
     price: fromWib(dataOrder.price),
     audience: JSON.stringify(dataOrder.audience),
     requestedData: JSON.stringify(dataOrder.requestedData),
-    buyerUrl: `${buyerUrl}/orders/${id}`,
-    termsAndConditionsHash: termsHash,
+    buyerUrl,
+    termsAndConditionsHash,
   });
   return { id, status };
 }

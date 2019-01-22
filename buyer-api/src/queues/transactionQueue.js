@@ -17,7 +17,7 @@ export async function processTransaction({ id, data }) {
   logger.info(`Tx[${id}] :: ${name} :: Started`);
 
   const { address } = await signingService.getAccount();
-  const [wei, wib] = (await Promise.all([
+  const [wib, wei] = (await Promise.all([
     wibcoin.methods.balanceOf(address).call(),
     web3.eth.getBalance(address),
   ])).map(toBN);

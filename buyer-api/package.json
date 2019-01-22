@@ -17,8 +17,14 @@
   },
   "nodemonConfig": {
     "exec": "clear;babel-node",
-    "watchedExtensions": ["js"],
-    "ignore": ["__mocks__/*", "__test__/*", "*.test.js"],
+    "watchedExtensions": [
+      "js"
+    ],
+    "ignore": [
+      "__mocks__/*",
+      "__test__/*",
+      "*.test.js"
+    ],
     "delay": "7000"
   },
   "dependencies": {
@@ -70,6 +76,7 @@
     "level-test": "^4.0.0",
     "nodemon": "^1.18.9",
     "nyc": "12.0.2",
+    "prettier": "^1.16.1",
     "redis-mock": "^0.27.0",
     "sinon": "^6.1.0",
     "supertest": "^3.1.0",
