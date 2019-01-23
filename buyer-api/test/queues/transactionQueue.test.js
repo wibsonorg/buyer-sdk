@@ -18,8 +18,11 @@ wibcoin.setProvider(tokenFakeProvider);
 let account;
 
 const dataPayload = {
-  spender: '0x266d2a0f19e43028c6510dcdd32deb1087618224',
-  addedValue: 1,
+  "buyerUrl":"http://localhost:9200/orders/1234",
+  "price": '10000000000',
+  "audience": '{ "age": 20 }',
+  "requestedData": '["geolocation"]',
+  "termsAndConditionsHash": "0x989a8632fc932aaeae068195d79bf178fd0862691d4f2ce7f63ad5c4e15d7e48",
 };
 
 const mockTransactionResponse = (tx, fakeProvider) => {
@@ -54,26 +57,26 @@ test.skip('responds with error if same transaction is added twice', t => t.fail(
 test.skip('responds a job that resolves to a pending transaction', t => t.fail());
 test.skip('responds a job that resolves to a transaction with unknown status', t => t.fail());
 
-test.skip('responds a job that resolves to a failed transaction', async (assert) => {
+test.serial('responds a job that resolves to a failed transaction', async (assert) => {
   web3FakeProvider.addResponse('eth_getBalance', web3.utils.toHex('100000000000000000'));
   tokenFakeProvider.addResponse('eth_call', web3.utils.toHex('100000000000000000'));
 
   const receipt = createReceipt({ from: account.address, status: '0x0' });
   mockTransactionResponse(receipt, web3FakeProvider);
-  const job = await enqueueTransaction(account, 'IncreaseApproval', dataPayload, 12);
+  const job = await enqueueTransaction(account, 'CreateDataOrder', dataPayload, 12);
   const transaction = await job.finished();
   assert.is(transaction.status, 'failure');
   assert.is(transaction.transactionHash, receipt.transactionHash);
 });
 
-test.skip('responds a job that resolves to a succeeded transaction', async (assert) => {
+test.serial('responds a job that resolves to a succeeded transaction', async (assert) => {
   web3FakeProvider.addResponse('eth_getBalance', web3.utils.toHex('100000000000000000'));
   tokenFakeProvider.addResponse('eth_call', web3.utils.toHex('100000000000000000'));
 
   const receipt = createReceipt({ from: account.address, status: '0x1' });
   mockTransactionResponse(receipt, web3FakeProvider);
 
-  const job = await enqueueTransaction(account, 'IncreaseApproval', dataPayload, 12);
+  const job = await enqueueTransaction(account, 'CreateDataOrder', dataPayload, 12);
   const transaction = await job.finished();
   assert.is(transaction.status, 'success');
   assert.is(transaction.transactionHash, receipt.transactionHash);
