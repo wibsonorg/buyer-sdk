@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "task:production": "node dist/tasks/index.js",
-    "task": "babel-node src/tasks/index.js"
+    "task": "babel-node src/tasks/index.js",
+    "publish": "scripts/publish.sh $npm_package_name"
   },
   "dependencies": {
     "apicache": "^1.2.3",

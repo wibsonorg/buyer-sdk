@@ -1,9 +1,9 @@
 import Queue from 'bull';
 import config from '../../config';
 
-const { url: redisUrl, prefix } = config.redis;
+const { url: { redisUrl, prefix } } = config.redis;
 
-const PREFIX = `${prefix}:jobs`;
+const PREFIX = `${prefix || 'buyer-api'}:jobs`;
 
 const createQueue = (queueName) => {
   const queue = new Queue(queueName, redisUrl, {
