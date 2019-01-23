@@ -68,7 +68,7 @@ Array [
     await createDataOrder(someDataOrder);
     expect(addTransactionJob.mock.calls[0]).toMatchInlineSnapshot(`
 Array [
-  "NewOrder",
+  "CreateDataOrder",
   Object {
     "audience": "{\\"age\\":42}",
     "buyerUrl": "someBuyerUrl/orders/uuid",

@@ -16,7 +16,7 @@ export async function createDataOrder(dataOrder) {
     buyerUrl,
     termsAndConditionsHash,
   });
-  addTransactionJob('NewOrder', {
+  addTransactionJob('CreateDataOrder', {
     price: fromWib(dataOrder.price),
     audience: JSON.stringify(dataOrder.audience),
     requestedData: JSON.stringify(dataOrder.requestedData),
