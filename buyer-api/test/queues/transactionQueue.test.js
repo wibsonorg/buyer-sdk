@@ -82,32 +82,30 @@ test.serial('responds a job that resolves to a succeeded transaction', async (as
   assert.is(transaction.transactionHash, receipt.transactionHash);
 });
 
-test.skip('pauses the queue and re-enqueues the job when there is not enough ETH', async (assert) => {
+test.serial('pauses the queue and re-enqueues the job when there is not enough ETH', async (assert) => {
   web3FakeProvider.addResponse('eth_getBalance', web3.utils.toHex('1'));
   tokenFakeProvider.addResponse('eth_call', web3.utils.toHex('100000000000000000'));
   const callback = sinon.spy();
 
   transactionQueue.on('paused', callback);
-  const job = await enqueueTransaction(account, 'IncreaseApproval', dataPayload, 12);
+  const job = await enqueueTransaction(account, 'CreateDataOrder', dataPayload, 12);
   const { id, data } = await job.finished();
   assert.true(callback.called);
   assert.truthy(id);
-  assert.deepEqual(data.account, account);
-  assert.is(data.name, 'IncreaseApproval');
+  assert.is(data.name, 'CreateDataOrder');
   assert.deepEqual(data.params, dataPayload);
 });
 
-test.skip('pauses the queue and re-enqueues the job when there is not enough WIB', async (assert) => {
+test.serial('pauses the queue and re-enqueues the job when there is not enough WIB', async (assert) => {
   web3FakeProvider.addResponse('eth_getBalance', web3.utils.toHex('100000000000000000'));
   tokenFakeProvider.addResponse('eth_call', web3.utils.toHex('1'));
   const callback = sinon.spy();
 
   transactionQueue.on('paused', callback);
-  const job = await enqueueTransaction(account, 'IncreaseApproval', dataPayload, 12);
+  const job = await enqueueTransaction(account, 'CreateDataOrder', dataPayload, 12);
   const { id, data } = await job.finished();
   assert.true(callback.called);
   assert.truthy(id);
-  assert.deepEqual(data.account, account);
-  assert.is(data.name, 'IncreaseApproval');
+  assert.is(data.name, 'CreateDataOrder');
   assert.deepEqual(data.params, dataPayload);
 });
