@@ -1,16 +1,18 @@
 import express from 'express';
-import { asyncError } from '../../helpers';
-import signCloseOrderFacade from '../../facades/sign/closeOrderFacade';
+import {
+  asyncError,
+  buildMethodSigner as builder,
+} from '../../helpers';
 
 const router = express.Router();
 
 /**
  * @swagger
- * /sign/close-order:
+ * /sign/close-data-order:
  *   post:
  *     description: |
- *       ## Sign CloseOrder Transaction
- *       Receives DataExchange.closeOrder parameters and responds with the
+ *       ## Sign CloseDataOrder Transaction
+ *       Receives DataExchange.closeDataOrder parameters and responds with the
  *       serialized transaction ready to be sent to the network.
  *     produces:
  *       - application/json
@@ -18,19 +20,18 @@ const router = express.Router();
  *       - in: body
  *         name: nonce
  *         type: integer
- *         description: |
- *           The number of transactions made by the sender including this one.
+ *         description: The number of transactions made by the sender.
  *         required: true
  *       - in: body
  *         name: gasPrice
  *         type: string
- *         description: The number of transactions made by the sender.
+ *         description: Gas price
  *         required: true
  *       - in: body
  *         name: params
  *         description: Parameters to be used in the transaction call.
  *         schema:
- *           $ref: "#/definitions/CloseOrderParameters"
+ *           $ref: "#/definitions/CloseDataOrderParameters"
  *     responses:
  *       200:
  *         description: When the signing performs successfully
@@ -38,25 +39,24 @@ const router = express.Router();
  *         description: Any other case
  *
  * definitions:
- *   CloseOrderParameters:
+ *   CloseDataOrderParameters:
  *     type: object
  *     properties:
- *       orderAddr:
+ *       orderId:
  *         type: string
- *         description: The address of order to be closed
+ *         description: The id of order to be closed
  *         required: true
  */
-router.post('/close-order', asyncError(async (req, res) => {
+router.post('/close-data-order', asyncError(async (req, res) => {
   const { contracts: { dataExchange } } = req.app.locals;
   const { nonce, gasPrice, params } = req.body;
-  const response = signCloseOrderFacade(nonce, gasPrice, params, dataExchange);
+  const sign = builder(dataExchange, 'closeDataOrder');
+  const { errors, result } = sign(nonce, gasPrice, params);
 
-  if (response.success()) {
-    res.json({ signedTransaction: response.result });
+  if (errors) {
+    res.boom.badData('Operation failed', { errors });
   } else {
-    res.boom.badData('Operation failed', {
-      errors: response.errors,
-    });
+    res.json({ signedTransaction: result });
   }
 }));
 

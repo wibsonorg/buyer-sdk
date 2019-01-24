@@ -3,9 +3,8 @@ import cache from './cache';
 import logger from './logger';
 import fetchToken from './fetchToken';
 import checkAuthorization from './checkAuthorization';
-import delay from './delay';
 
-export { web3, cache, logger, fetchToken, checkAuthorization, delay };
+export { web3, cache, logger, fetchToken, checkAuthorization };
 export {
   createRedisStore,
   createLevelStore,

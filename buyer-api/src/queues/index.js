@@ -8,5 +8,4 @@ export {
   enqueueTransaction,
   fetchTransactionJob,
 } from './transactionQueue';
-export { priority } from './priority';
 export { retryFailed } from './retryFailed';
