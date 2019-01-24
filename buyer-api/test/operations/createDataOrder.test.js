@@ -29,6 +29,14 @@ it('stores data order', async (assert) => {
   assert.snapshot(dataOrders.put.lastCall.args);
 });
 
+it('stores the correct url /orders/:uuid/offchain-data', async (assert) => {
+  await createDataOrder(someDataOrder);
+  assert.is(
+    dataOrders.put.lastCall.args[1].buyerUrl,
+    'someBuyerUrl/orders/uuid/offchain-data',
+  );
+});
+
 it('adds transaction job', async (assert) => {
   await createDataOrder(someDataOrder);
   assert.snapshot(addTransactionJob.lastCall.args);
