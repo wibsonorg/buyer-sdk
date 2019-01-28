@@ -3,8 +3,6 @@ import app from './app';
 import config from '../config';
 import { logger } from './utils';
 import attach from './contractEventSubscribers';
-import { checkAllowance } from './facades';
-import { enqueueTransaction } from './queues';
 
 const server = () => {
   const { port, host, env } = config;
@@ -23,8 +21,6 @@ const server = () => {
     ),
     Number(config.eventSubscribers.interval),
   );
-
-  setInterval(() => checkAllowance(enqueueTransaction), Number(config.allowance.interval));
 };
 
 export default server;
