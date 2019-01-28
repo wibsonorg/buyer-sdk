@@ -20,19 +20,19 @@ it('sets id and status', async (assert) => {
 it('adds 0x to termsHash if its missing', async (assert) => {
   getBuyerInfo.returns(Promise.resolve({ termsHash: 'SomeOtherHash' }));
   await createDataOrder(someDataOrder);
-  assert.is(dataOrders.put.firstCall.args[1].termsAndConditionsHash, '0xSomeOtherHash');
+  assert.is(dataOrders.store.firstCall.args[1].termsAndConditionsHash, '0xSomeOtherHash');
   assert.is(addTransactionJob.firstCall.args[1].termsAndConditionsHash, '0xSomeOtherHash');
 });
 
 it('stores data order', async (assert) => {
   await createDataOrder(someDataOrder);
-  assert.snapshot(dataOrders.put.lastCall.args);
+  assert.snapshot(dataOrders.store.lastCall.args);
 });
 
 it('stores the correct url /orders/:uuid/offchain-data', async (assert) => {
   await createDataOrder(someDataOrder);
   assert.is(
-    dataOrders.put.lastCall.args[1].buyerUrl,
+    dataOrders.store.lastCall.args[1].buyerUrl,
     'someBuyerUrl/orders/uuid/offchain-data',
   );
 });

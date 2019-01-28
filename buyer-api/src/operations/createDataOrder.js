@@ -10,7 +10,7 @@ export async function createDataOrder(dataOrder) {
   const buyerUrl = `${dataOrder.buyerUrl}/orders/${id}/offchain-data`;
   const { termsHash } = await getBuyerInfo(dataOrder.buyerInfoId);
   const termsAndConditionsHash = termsHash.startsWith('0x') ? termsHash : `0x${termsHash}`;
-  dataOrders.put(id, {
+  dataOrders.store(id, {
     ...dataOrder,
     status,
     buyerUrl,
