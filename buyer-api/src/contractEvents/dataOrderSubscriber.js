@@ -19,6 +19,7 @@ export const dataOrderCacheSubscriber = {
         ...storedOrder,
         ...chainOrder,
         dxId,
+        status: 'created',
       });
       apicache.clear('/orders/*');
     }
