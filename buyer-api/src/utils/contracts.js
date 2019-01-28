@@ -1,21 +1,13 @@
-import web3 from './web3';
+// TODO: DEPRECATED This should be removed in favor of src/utils/blockchain.js
+
 import config from '../../config';
 
 import WibcoinDefinition from '../../contracts/Wibcoin.json';
 import DataExchangeDefinition from '../../contracts/DataExchange.json';
 
-const wibcoinAt = address =>
-  new web3.eth.Contract(WibcoinDefinition.abi, address);
-const dataExchangeAt = address =>
-  new web3.eth.Contract(DataExchangeDefinition.abi, address);
-
-const wibcoin = wibcoinAt(config.contracts.addresses.wibcoin);
-const dataExchange = dataExchangeAt(config.contracts.addresses.dataExchange);
+const { wibcoin: wib, dataExchange: dx } = config.contracts.addresses;
+export const wibcoin = new web3.eth.Contract(WibcoinDefinition.abi, wib);
+export const dataExchange = new web3.eth.Contract(DataExchangeDefinition.abi, dx);
 
 // TODO: remove this contract (deprecated)
-const dataOrderAt = () => 0;
-export {
-  wibcoin,
-  dataExchange,
-  dataOrderAt,
-};
+export const dataOrderAt = () => 0;

@@ -3,8 +3,9 @@ import cache from './cache';
 import logger from './logger';
 import fetchToken from './fetchToken';
 import checkAuthorization from './checkAuthorization';
+import * as blockchain from './blockchain';
 
-export { web3, cache, logger, fetchToken, checkAuthorization };
+export { web3, blockchain, cache, logger, fetchToken, checkAuthorization };
 export {
   createRedisStore,
   createLevelStore,
