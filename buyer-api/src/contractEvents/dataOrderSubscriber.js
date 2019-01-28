@@ -9,16 +9,16 @@ export const dataOrderCacheSubscriber = {
     'DataOrderCreated',
     'DataOrderClosed',
   ],
-  async callback({ returnValues: { orderId: id, owner } }) {
+  async callback({ returnValues: { orderId: dxId, owner } }) {
     const { address } = await getAccount();
     if (address === owner) {
-      const [storedOrder, chainOrder] = await Promise.all([
-        dataOrders.fetch(id),
-        fetchDataOrder(id),
-      ]);
+      const chainOrder = fetchDataOrder(dxId);
+      const id = chainOrder.buyerUrl.match(/\/orders\/(.+)\/offchain-data/)[1];
+      const storedOrder = dataOrders.fetch(id);
       await dataOrders.store(id, {
         ...storedOrder,
         ...chainOrder,
+        dxId,
       });
       apicache.clear('/orders/*');
     }
