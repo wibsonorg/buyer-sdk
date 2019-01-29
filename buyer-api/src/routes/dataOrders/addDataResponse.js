@@ -7,7 +7,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /orders/{uuid}/data-responses:
+ * /orders/{id}/data-responses:
  *   post:
  *     description: |
  *       # STEP 4 from Wibson's Protocol
@@ -78,7 +78,7 @@ const router = express.Router();
  *         description: Whether the Seller needs to be registered in BatPay or not
  *         example: 'true'
  */
-router.post('/:uuid/data-responses', fetchDataOrder, asyncError(async (req, res) => {
+router.post('/:id/data-responses', fetchDataOrder, asyncError(async (req, res) => {
   const { error, ...result } = await addDataResponse(req.dataOrder, req.body);
 
   if (error) {
