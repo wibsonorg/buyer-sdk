@@ -1,5 +1,5 @@
 import it from 'ava';
-import { res, next } from './fetchDataOrder.mock';
+import { res, next, dataOrders } from './fetchDataOrder.mock';
 import middleware from '../../../../src/routes/dataOrders/middlewares/fetchDataOrder';
 
 const req = { params: { id: 'some-uuid' } };
@@ -15,7 +15,7 @@ it('calls the next middleware', async (assert) => {
 });
 
 it('writes a Not Found response', async (assert) => {
-  req.params.id = 'not-found';
+  dataOrders.fetch.throws(new Error('Key not found in database [id]'));
   await middleware(req, res, next);
   assert.snapshot(res.boom.notFound.lastCall.args);
 });

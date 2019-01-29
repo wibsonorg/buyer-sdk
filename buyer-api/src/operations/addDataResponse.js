@@ -1,13 +1,5 @@
-import { fetchDataResponse, storeDataResponse } from '../utils/stores';
+import { dataResponses } from '../utils/stores';
 import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
-
-const safeFetchDataResponse = async (id) => {
-  try {
-    return await fetchDataResponse(id);
-  } catch (error) {
-    return null;
-  }
-};
 
 /**
  * @async
@@ -34,7 +26,7 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
   const { orderId, sellerAddress, sellerId } = dataResponse;
   const id = `${orderId}:${sellerAddress}`;
 
-  const existingDataResponse = await safeFetchDataResponse(id);
+  const existingDataResponse = await dataResponses.safeFetch(id);
   if (existingDataResponse) {
     return { id, status: existingDataResponse.status };
   }
@@ -43,7 +35,7 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
   const status = shouldProcess ? 'queued' : 'waiting';
   // (2019-01-28) Buyer Registration case is skipped at the moment.
 
-  await storeDataResponse(id, { ...dataResponse, status });
+  await dataResponses.store(id, { ...dataResponse, status });
   if (shouldProcess) await addProcessDataResponseJob(id);
 
   return { id, status };

@@ -1,5 +1,5 @@
 import test from 'ava';
-import { storeDataResponse, addProcessDataResponseJob } from './addDataResponse.mock';
+import { dataResponses, addProcessDataResponseJob } from './addDataResponse.mock';
 import { addDataResponse } from '../../src/operations/addDataResponse';
 
 const it = test.serial;
@@ -35,7 +35,7 @@ it('returns an error when DataOrder is closed', async (assert) => {
 
 it('stores the DataResponse', async (assert) => {
   await addDataResponse(dataOrder, someDataResponse);
-  assert.snapshot(storeDataResponse.lastCall.args);
+  assert.snapshot(dataResponses.store.lastCall.args);
 });
 
 it('adds job to process the DataResponse', async (assert) => {
