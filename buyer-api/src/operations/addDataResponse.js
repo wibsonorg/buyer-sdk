@@ -61,7 +61,7 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
     needsRegistration,
     status,
   });
-  if (shouldProcess) await addProcessDataResponseJob(id);
+  if (shouldProcess) await addProcessDataResponseJob({ orderId, dataResponseId: id });
 
   return { id, status };
 };
