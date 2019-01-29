@@ -10,11 +10,11 @@ export const notariesCache = createRedisStore('notaries.cache');
 export const storeDataOrder = async (key, payload) =>
   dataOrders.put(key, JSON.stringify(payload));
 
-export const fetchDataOrder = async (key) =>
+export const fetchDataOrder = async key =>
   dataOrders.get(key).then(JSON.parse);
 
 export const storeDataResponse = async (key, payload) =>
   dataResponses.put(key, JSON.stringify(payload));
 
-export const fetchDataResponse = async (key) =>
+export const fetchDataResponse = async key =>
   dataResponses.get(key).then(JSON.parse);

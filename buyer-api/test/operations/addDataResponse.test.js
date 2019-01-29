@@ -14,11 +14,11 @@ const someDataResponse = {
   notaryAddress: '0xccCF90140Fcc2d260186637D59F541E94Ff9288f',
   notaryUrl: 'https://api.notary.com/notarizations',
   needsRegistration: false,
-}
+};
 
 it('returns id and status', async (assert) => {
   const { id, status } = await addDataResponse(dataOrder, someDataResponse);
-  assert.is(id, `42:0xa42df59C5e17df255CaDfF9F52a004221f774f36`);
+  assert.is(id, '42:0xa42df59C5e17df255CaDfF9F52a004221f774f36');
   assert.is(status, 'queued');
 });
 

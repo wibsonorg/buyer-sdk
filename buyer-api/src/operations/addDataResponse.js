@@ -7,7 +7,7 @@ const safeFetchDataResponse = async (id) => {
   } catch (error) {
     return null;
   }
-}
+};
 
 /**
  * @async
@@ -21,7 +21,8 @@ const safeFetchDataResponse = async (id) => {
  * @param {String} dataResponse.decryptionKeyHash Hash of the key used to encrypt the data
  * @param {String} dataResponse.notaryAddress Notary's Ethereum address
  * @param {String} dataResponse.notaryUrl Notary's service url
- * @param {Boolean} dataResponse.needsRegistration Whether the Seller needs to be registered in BatPay or not
+ * @param {Boolean} dataResponse.needsRegistration Whether the Seller needs to be
+ *                                                 registered in BatPay or not
  * @returns {Object} Object with either the id and status of the DataResponse
  *                   or the error if any.
  */

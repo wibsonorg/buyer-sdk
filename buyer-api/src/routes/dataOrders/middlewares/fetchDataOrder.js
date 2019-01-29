@@ -12,4 +12,4 @@ export default async (req, res, next) => {
   } catch (error) {
     res.boom.notFound('DataOrder not found');
   }
-}
+};
