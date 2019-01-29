@@ -30,7 +30,7 @@ it('returns id and waiting status when sellerId is not present', async (assert) 
 it('returns an error when DataOrder is closed', async (assert) => {
   const { error, status } = await addDataResponse({ status: 'closed' }, someDataResponse);
   assert.is(status, undefined);
-  assert.is(error, 'Can\'t add DataResponse to a closed DataOrder');
+  assert.is(error, 'Can\'t accept DataReponse');
 });
 
 it('stores the DataResponse', async (assert) => {

@@ -19,8 +19,8 @@ import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
  *                   or the error if any.
  */
 export const addDataResponse = async (dataOrder, dataResponse) => {
-  if (dataOrder.status === 'closed') {
-    return { error: 'Can\'t add DataResponse to a closed DataOrder' };
+  if (dataOrder.status !== 'created') {
+    return { error: 'Can\'t accept DataReponse' };
   }
 
   const { orderId, sellerAddress, sellerId } = dataResponse;
