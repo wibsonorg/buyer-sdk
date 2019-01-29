@@ -1,10 +1,4 @@
-import { createDataOrderFacade } from './createDataOrderFacade';
-import {
-  addNotariesToOrderFacade,
-  addNotaryToOrder,
-} from './addNotariesToOrderFacade';
 import closeDataOrderFacade from './closeDataOrderFacade';
-import { getOrdersForBuyer, fetchAndCacheDataOrder, getOrdersAmountForBuyer } from './getOrdersFacade';
 
 export {
   getNotaryInfo,
@@ -12,12 +6,4 @@ export {
   fetchAndCacheNotary,
 } from './notariesFacade';
 
-export {
-  createDataOrderFacade,
-  addNotariesToOrderFacade,
-  addNotaryToOrder,
-  getOrdersForBuyer,
-  closeDataOrderFacade,
-  fetchAndCacheDataOrder,
-  getOrdersAmountForBuyer,
-};
+export { closeDataOrderFacade };

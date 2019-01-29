@@ -1,4 +1,4 @@
-import { web3, listLevelValues } from '../utils';
+import { web3 } from '../utils';
 import { buyerInfos, buyerInfoPerOrder } from '../utils/stores';
 
 /**
@@ -20,7 +20,7 @@ const getBuyerInfo = async (buyerInfoId) => {
  * @function getBuyerInfo
  * @returns {Promise} Promise which resolves to a list of buyer infos.
  */
-const listBuyerInfos = async () => listLevelValues(buyerInfos);
+const listBuyerInfos = async () => buyerInfos.listValues();
 
 /**
  * @async
