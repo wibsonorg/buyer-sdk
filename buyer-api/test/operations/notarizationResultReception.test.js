@@ -26,6 +26,24 @@ const someNotarizationResult = {
   lock:"0xde916ce0390bd5408b7a0a52aae818fd973858c7e9b5d368ec1e6a9b0db44cf9"    
 };
 
+let someNotarizationResultWithNonRequestedAddresses = { ...someNotarizationResult };
+someNotarizationResultWithNonRequestedAddresses.sellers = someNotarizationResultWithNonRequestedAddresses.sellers.slice(0);
+someNotarizationResultWithNonRequestedAddresses.sellers.push({
+  id:94,
+  address:"0x2d419c641351e0baa7f54328ecabf58c5e4a56f1",
+  result:"not_audited",
+  decryptionKeyEncryptedWithMasterKey:"0x912f8f484454e3a38f7535fbf6b7f0035a0fe27c028163348965eb9369fcca8c"
+});
+
+let someNotarizationResultWithDuplicatedAddresses = { ...someNotarizationResult };
+someNotarizationResultWithDuplicatedAddresses.sellers = someNotarizationResultWithDuplicatedAddresses.sellers.slice(0);
+someNotarizationResultWithDuplicatedAddresses.sellers.push({
+  id:78,
+  address:"0x338fff484061da07323e994990c901d322b6927a",
+  result:"ok",
+  decryptionKeyEncryptedWithMasterKey:"0x912f8f484454e3a38f7535fbf6b7f0035a0fe27c028163348965eb9369fcca8c"
+});
+
 const someNotarizationRequest = {
   orderId:114,
   callbackUrl:"http://api.wibson.org/notarization-result/0x87c2d362de99f75a4f2755cdaaad2d11bf6cc65dc71356593c445535ff28f43d",
@@ -42,9 +60,19 @@ const someNotarizationRequest = {
     }
   ]
 }
-  
 
 it('call notarizationResultReception', async (assert) => {
   notarizationResultReception(someNotarizationRequest, someNotarizationResult);
   assert.snapshot(addTransactionJob.lastCall.args);
+});
+
+it('call notarizationResultReception with not requested addresses', async (assert) => {
+  notarizationResultReception(someNotarizationRequest, someNotarizationResultWithNonRequestedAddresses);
+  assert.is(addTransactionJob.lastCall.lastArg.sellers.length, 2)
+  assert.snapshot(addTransactionJob.lastCall.args);
+});
+
+it('call notarizationResultReception with duplicated addresses', async (assert) => {
+  notarizationResultReception(someNotarizationRequest, someNotarizationResultWithDuplicatedAddresses);
+  assert.is(addTransactionJob.lastCall.lastArg.sellers.length, 2)
 });
