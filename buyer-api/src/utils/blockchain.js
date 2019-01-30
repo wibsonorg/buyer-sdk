@@ -32,7 +32,7 @@ export const fetchDataExchangeEvents = async fromBlock => (
  * @property {string} buyer Address of the buyer that owns this DataOrder
  * @property {Object.<string, *>} audience Target audience
  * @property {number} price Price of the DataOrder
- * @property {string[]} requestedData Requested data types (connector ids)
+ * @property {string[]} requestedData Requested data types
  * @property {string} termsAndConditionsHash Hash of the terms and conditions
  * @property {string} buyerUrl Url to get extra information
  * @property {Date} createdAt Creation date
