@@ -37,7 +37,6 @@ it('fetchDataExchangeEvents > filters out unconfirmed events', async (assert) =>
 });
 
 it('fetchDataOrder > throws with invalid dxId', async (assert) => {
-  // await fetchDataOrder(1);
   await assert.throws(fetchDataOrder(-1));
   await assert.throws(fetchDataOrder(-666));
   await assert.throws(fetchDataOrder('someDxId'));
@@ -48,13 +47,15 @@ it('fetchDataOrder > throws with invalid dxId', async (assert) => {
 });
 
 it('fetchDataOrder > cast types correctly', async (assert) => {
-  dxContract.dataOrders.returns({
-    buyer: 'SOMe AddRESs With UpperCaSe LeTTErs',
-    audience: '{"someAudienceFilter":"WithStringValue"}',
-    price: 666e9.toString(),
-    requestedData: '["some-connector-id","some-other-id"]',
-    createdAt: 1548859901,
-    closedAt: undefined,
-  });
+  dxContract.dataOrders.returns([
+    'SOMe AddRESs With UpperCaSe LeTTErs',
+    '{"someAudienceFilter":"WithStringValue"}',
+    666e9.toString(),
+    '["some-connector-id","some-other-id"]',
+    '0xSomeTermsAndConditionsHash',
+    'some-buyer-url',
+    1548859901,
+    undefined,
+  ]);
   assert.snapshot(await fetchDataOrder(1));
 });
