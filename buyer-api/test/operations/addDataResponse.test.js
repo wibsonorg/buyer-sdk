@@ -1,9 +1,11 @@
-import test from 'ava';
+import { serial as it } from 'ava';
 import { dataResponses, addProcessDataResponseJob } from './addDataResponse.mock';
 import { addDataResponse } from '../../src/operations/addDataResponse';
 
-const it = test.serial;
-const dataOrder = { status: 'created' };
+const dataOrder = {
+  status: 'created',
+  notariesAddresses: ['0xcccf90140fcc2d260186637d59f541e94ff9288f'],
+};
 const someDataResponse = {
   orderId: 42,
   sellerAddress: '0xa42df59C5e17df255CaDfF9F52a004221f774f36',
@@ -22,15 +24,43 @@ it('returns id and status', async (assert) => {
   assert.is(status, 'queued');
 });
 
+it('returns the id and status of the already stored DataResponse', async (assert) => {
+  dataResponses.safeFetch.returns({ status: 'queued' });
+  await addDataResponse(dataOrder, someDataResponse);
+  assert.false(dataResponses.store.called);
+  assert.false(addProcessDataResponseJob.called);
+});
+
 it('returns id and waiting status when sellerId is not present', async (assert) => {
-  const { status } = await addDataResponse(dataOrder, { ...someDataResponse, sellerId: undefined });
+  const { status } = await addDataResponse(
+    dataOrder,
+    {
+      ...someDataResponse,
+      sellerId: undefined,
+    },
+  );
   assert.is(status, 'waiting');
 });
 
 it('returns an error when DataOrder is closed', async (assert) => {
-  const { error, status } = await addDataResponse({ status: 'closed' }, someDataResponse);
+  const { error, status } = await addDataResponse(
+    { status: 'closed' },
+    someDataResponse,
+  );
   assert.is(status, undefined);
   assert.is(error, 'Can\'t accept DataReponse');
+});
+
+it('returns an error when the notary is not in the preferred ones', async (assert) => {
+  const { error, status } = await addDataResponse(
+    dataOrder,
+    {
+      ...someDataResponse,
+      notaryAddress: '0xasd',
+    },
+  );
+  assert.is(status, undefined);
+  assert.is(error, 'Can\'t accept DataReponse for notary 0xasd');
 });
 
 it('stores the DataResponse', async (assert) => {

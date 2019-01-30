@@ -28,9 +28,6 @@ const config = {
       notaryTTL: env.CONTRACTS_CACHE_NOTARY_TTL,
     },
   },
-  notary: {
-    demandAuditsFrom: env.NOTARY_DEMAND_AUDITS_FROM,
-  },
   cache: {
     enabled: env.CACHE === 'enabled',
     adapter: env.CACHE_ADAPTER,

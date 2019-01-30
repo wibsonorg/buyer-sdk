@@ -19,12 +19,19 @@ import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
  *                   or the error if any.
  */
 export const addDataResponse = async (dataOrder, dataResponse) => {
-  if (dataOrder.status !== 'created') {
+  const { status: st, notariesAddresses } = dataOrder;
+  if (st !== 'created') {
     return { error: 'Can\'t accept DataReponse' };
   }
 
-  const { orderId, sellerAddress, sellerId } = dataResponse;
+  const {
+    orderId, sellerAddress, sellerId, notaryAddress,
+  } = dataResponse;
   const id = `${orderId}:${sellerAddress}`;
+
+  if (!notariesAddresses.includes(notaryAddress.toLowerCase())) {
+    return { error: `Can't accept DataReponse for notary ${notaryAddress}` };
+  }
 
   const existingDataResponse = await dataResponses.safeFetch(id);
   if (existingDataResponse) {

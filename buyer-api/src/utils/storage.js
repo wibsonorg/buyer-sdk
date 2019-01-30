@@ -26,7 +26,7 @@ export const createLevelStore = (dir) => {
   store.fetch = async id => JSON.parse(await store.get(id));
   store.safeFetch = async (id) => {
     try {
-      return store.fetch(id);
+      return await store.fetch(id);
     } catch (_) {
       return null;
     }
