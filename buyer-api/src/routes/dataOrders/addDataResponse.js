@@ -67,11 +67,6 @@ const router = express.Router();
  *         required: true
  *         description: Notary's Ethereum address
  *         example: '"0xccCF90140Fcc2d260186637D59F541E94Ff9288f"'
- *       notaryUrl:
- *         type: string
- *         required: true
- *         description: Notary's service url
- *         example: '"https://api.notary.com/notarizations"'
  *       needsRegistration:
  *         type: boolean
  *         required: true
