@@ -12,9 +12,9 @@ export const dataOrderCacheSubscriber = {
   async callback({ returnValues: { orderId: dxId, owner } }) {
     const { address } = await getAccount();
     if (address === owner) {
-      const chainOrder = fetchDataOrder(dxId);
+      const chainOrder = await fetchDataOrder(dxId);
       const id = chainOrder.buyerUrl.match(/\/orders\/(.+)\/offchain-data/)[1];
-      const storedOrder = dataOrders.fetch(id);
+      const storedOrder = await dataOrders.fetch(id);
       await dataOrders.store(id, {
         ...storedOrder,
         ...chainOrder,

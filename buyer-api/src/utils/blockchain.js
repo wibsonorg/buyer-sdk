@@ -36,9 +36,9 @@ export const fetchDataExchangeEvents = async fromBlock => (
  * @param {Number} id Data order id on the data exchange.
  * @returns {DataOrder} An array of elements stored in the property.
  */
-export function fetchDataOrder(id) {
+export async function fetchDataOrder(id) {
   if (id > 0) {
-    const dataOrder = dx.methods.dataOrders(id).call();
+    const dataOrder = await dx.methods.dataOrders(id).call();
     return {
       ...dataOrder,
       buyer: dataOrder.buyer.toLowerCase(),
