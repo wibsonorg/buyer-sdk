@@ -22,7 +22,7 @@ router.get(
   cache('1 minute'),
   async (req, res) => {
     req.apicacheGroup = '/orders/*';
-    res.json(dataOrders.list());
+    res.json(await dataOrders.list());
   },
 );
 
@@ -44,7 +44,7 @@ router.get(
   cache('1 minute'),
   async (req, res) => {
     req.apicacheGroup = '/orders/*';
-    res.json(dataOrders.fetch(req.params.id));
+    res.json(await dataOrders.fetch(req.params.id));
   },
 );
 
@@ -52,7 +52,9 @@ router.get(
  * @swagger
  * /orders/{id}/offchain-data:
  *   get:
- *     description: Returns the data order information thats missing from the Data Exchange.
+ *     description: |
+ *        Returns the data order information thats missing from the Data Exchange
+ *        (offchain data)
  *     produces:
  *       - application/json
  *     responses:
@@ -76,7 +78,7 @@ router.get(
       createdAt,
       closedAt,
       ...offchainData
-    } = dataOrders.fetch(req.params.id);
+    } = await dataOrders.fetch(req.params.id);
     res.json(offchainData);
   },
 );
