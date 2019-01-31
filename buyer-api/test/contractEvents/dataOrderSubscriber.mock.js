@@ -13,7 +13,7 @@ export const dataOrders = {
 };
 td.replace('../../src/utils/stores', { dataOrders });
 
-export const fakeAccount = { address: '0xSomeBuyerAddress' };
+export const fakeAccount = { address: 'some-buyer-address' };
 export const fakeDataOrder = {
   id: 'some-uuid',
   audience: { age: 42 },
