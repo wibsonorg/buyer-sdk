@@ -59,7 +59,7 @@ const router = Router();
  *         type: string
  *         required: true
  *         description: The ID for the buyer info
- *         example: '["some-buyer-id"]'
+ *         example: '"some-buyer-id"'
  *       buyerUrl:
  *         type: string
  *         required: true

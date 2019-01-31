@@ -15,10 +15,8 @@ const toDate = ts => (ts > 0 ? new Date(ts * 1000).toISOString() : null);
  * @typedef BlockchainEvent An event on the blockchain
  * @property {string} event Name of this event
  * @property {?number} blockNumber Block number this event was registered on
- * @property {Object.<string, *>} returnValues Values emitted by the event
- */
+ * @property {Object<string, *>} returnValues Values emitted by the event
 
-/**
  * @function fetchDataExchangeEvents Fetches all events on the DataExchange
  * @param {Number} fromBlock Starting block to get events from the DataExchange
  * @returns {Promise<BlockchainEvent[]>} An array of events from the DataExchange
@@ -30,16 +28,14 @@ export const fetchDataExchangeEvents = async fromBlock => (
 /**
  * @typedef DataOrder DataOrder information on the DataExchange
  * @property {string} buyer Address of the buyer that owns this DataOrder
- * @property {Object.<string, *>} audience Target audience
+ * @property {Object<string, *>} audience Target audience
  * @property {number} price Price of the DataOrder
  * @property {string[]} requestedData Requested data types
  * @property {string} termsAndConditionsHash Hash of the terms and conditions
  * @property {string} buyerUrl Url to get extra information
  * @property {Date} createdAt Creation date
  * @property {?Date} closedAt Date of clousure
- */
 
-/**
  * @function fetchDataOrder Fetches a specific DataOrder by dxId
  * @param {Number} dxId Data order id on the data exchange
  * @returns {Promise<DataOrder>} DataOrder information on the DataExchange

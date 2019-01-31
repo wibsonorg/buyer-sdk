@@ -18,20 +18,19 @@ const listLevelStream = stream =>
 
 /**
  * @typedef LevelStore A store that uses LevelDB
- * @property {function(K):Promise<V>} fetch Retrives the value parsed from LevelDB
- * @property {function(K):Promise<V>} safeFetch As fetch but retrives null if missing
- * @property {function(K,V):Promise<void>} store Stores the value stringified on LevelDB
- * @property {function():Promise<K[]>} listKeys Lists all the keys stored on LevelDB
- * @property {function():Promise<V[]>} listValues Lists all the values stored on LevelDB
- * @property {function():Promise<({id:K}&V)[]>} list Lists all the objects stored on LevelDB
+ * @property {(id: K) => Promise<V>} fetch Retrives the value parsed from LevelDB
+ * @property {(id: K) => Promise<V>} safeFetch As fetch but retrives null if missing
+ * @property {(id: K, obj: V) => Promise<void>} store Stores the value stringified on LevelDB
+ * @property {() => Promise<K[]>} listKeys Lists all the keys stored on LevelDB
+ * @property {() => Promise<V[]>} listValues Lists all the values stored on LevelDB
+ * @property {() => Promise<({id:K}&V)[]>} list Lists all the objects stored on LevelDB
  * @template K
  * @template V
- */
-
+*/
 /**
  * @function createLevelStore Creates a level store
  * @param {string} dir Path to the store, starting on {config.levelDirectory}
- * @returns {LevelStore} A store that uses LevelDB with the given path
+ * @returns {LevelStore<*,*>} A store that uses LevelDB with the given path
  */
 export const createLevelStore = (dir) => {
   const store = level(`${config.levelDirectory}/${dir}`, (err, db) => {
@@ -46,7 +45,7 @@ export const createLevelStore = (dir) => {
       return null;
     }
   };
-  store.store = (id, payload) => store.put(id, JSON.stringify(payload));
+  store.store = (id, obj) => store.put(id, JSON.stringify(obj));
   store.listKeys = () => listLevelStream(store.createKeyStream());
   store.listValues = async () => {
     const list = await listLevelStream(store.createValueStream());
