@@ -28,6 +28,12 @@ const accumulate = async (accumulatorId, dataResponseId) => {
 const clear = async batchId => accumulator.store(batchId, []);
 
 const queue = createQueue('DataResponseQueue');
+
+/**
+ * This processor expects DataResponses only with status `queued`.
+ *
+ * @param {Object} job
+ */
 export const processDataResponseJob = async (job) => {
   const { id, data: { orderId, dataResponseId, maximumBatchSize } } = job;
 
