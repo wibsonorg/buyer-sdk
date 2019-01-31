@@ -88,7 +88,6 @@
     "build-develop": "NODE_ENV=development DEPLOY_ENVIRONMENT=development node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
     "test:coverage": "node scripts/test.js --coverage --env=jsdom",
-    "test:coverage:ci": "node scripts/test.js --coverage --env=jsdom > coverage.lcov",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "publish": "scripts/publish.sh $npm_package_name",
