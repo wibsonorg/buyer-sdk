@@ -18,6 +18,7 @@ import { addTransactionJob } from '../queues/transactionQueue';
 
 /**
  * take notarization result, validate and enqueue for transfer
+ * WARNING keep in mind that notarizationResult will be updated with the validated sellers
  * @param {NotarizationRequest} notarizationRequest original request sent for notarization
  * @param {NotarizationResult} notarizationResult results related with request done by notary
  */
@@ -30,5 +31,7 @@ export function notarizationResultReception(notarizationRequest, notarizationRes
       s.address === seller.address
     )) && notarizationRequest.sellers.map(y => y.address).includes(seller.address));
 
-  return addTransactionJob('TranferNotarizationResult', sellers);
+  const result = notarizationRequest;
+  result.seller = sellers;
+  return addTransactionJob('TranferNotarizationResult', result);
 }
