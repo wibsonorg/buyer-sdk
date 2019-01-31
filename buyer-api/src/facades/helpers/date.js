@@ -1,3 +1,5 @@
+// TODO: DEPRECATED this is only used to cast blockchain results, it should be part of blockchain.js
+
 /**
  * @function dateOrNull
  * @param {Number} timestamp The timestamp in seconds.

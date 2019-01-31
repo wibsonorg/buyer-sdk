@@ -1,4 +1,3 @@
-export { dataOrderQueue } from './dataOrderQueue';
 export {
   dataResponseQueue,
   enqueueCloseDataResponse,
@@ -8,5 +7,4 @@ export {
   enqueueTransaction,
   fetchTransactionJob,
 } from './transactionQueue';
-export { priority } from './priority';
 export { retryFailed } from './retryFailed';

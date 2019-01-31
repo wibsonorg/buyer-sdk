@@ -4,7 +4,6 @@ export { extractEventArguments } from './extractEventArguments';
 export {
   sendTransaction,
   getTransactionReceipt,
-  retryAfterError,
   getTransaction,
   waitForExecution,
 } from './performTransaction';
