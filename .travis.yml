@@ -6,6 +6,8 @@ node_js:
 
 env:
 - WORKING_DIR=buyer-app/buyer-app SKIP_AUDIT=true SKIP_TESTS=true
+- WORKING_DIR=buyer-api SKIP_AUDIT=false SKIP_TESTS=true
+- WORKING_DIR=buyer-signing-service SKIP_AUDIT=false SKIP_TESTS=true
 
 before_install: npm i -g npm@6.1.0
 
