@@ -12,5 +12,5 @@ export {
   listLevelKeys,
   listLevelValues,
 } from './storage';
-export { errorHandler, asyncError, validateAddress } from './routes';
+export { errorHandler, asyncError, validateAddress, validateFields } from './routes';
 export { wibcoin, dataExchange, dataOrderAt } from './contracts';
