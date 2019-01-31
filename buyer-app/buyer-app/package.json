@@ -1,5 +1,5 @@
 {
-  "name": "wibson-buyer-app",
+  "name": "buyer-app",
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
@@ -86,7 +86,13 @@
     "build-production": "NODE_ENV=production DEPLOY_ENVIRONMENT=production node scripts/build.js",
     "build-staging": "NODE_ENV=staging DEPLOY_ENVIRONMENT=staging node scripts/build.js",
     "build-develop": "NODE_ENV=development DEPLOY_ENVIRONMENT=development node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node scripts/test.js --env=jsdom",
+    "test:coverage": "node scripts/test.js --coverage --env=jsdom",
+    "test:coverage:ci": "node scripts/test.js --coverage --env=jsdom > coverage.lcov",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "publish": "scripts/publish.sh $npm_package_name",
+    "preinstall": "cd ../base-app && npm install"
   },
   "proxy": "http://localhost:8080",
   "jest": {

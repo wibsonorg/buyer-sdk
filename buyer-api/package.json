@@ -10,8 +10,10 @@
     "start": "nodemon src/index.js",
     "test": "scripts/test.sh",
     "test:coverage": "nyc scripts/test.sh",
+    "test:coverage:ci": "nyc scripts/test.sh > coverage.lcov",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "publish": "scripts/publish.sh $npm_package_name",
     "task:production": "node dist/tasks/index.js",
     "task": "babel-node src/tasks/index.js"
   },
@@ -83,6 +85,7 @@
   },
   "nyc": {
     "check-coverage": true,
+    "lines": 50,
     "cache": false,
     "reporter": [
       "html",
