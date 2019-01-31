@@ -31,6 +31,12 @@ router.get(
  * /orders/{id}:
  *   get:
  *     description: Returns the data order information.
+ *     parameters:
+ *       - in: params
+ *         name: id
+ *         type: string
+ *         required: true
+ *         description: The uuid of the DataOrder to be fetched
  *     produces:
  *       - application/json
  *     responses:
@@ -55,6 +61,12 @@ router.get(
  *     description: |
  *        Returns the data order information thats missing from the Data Exchange
  *        (offchain data)
+ *     parameters:
+ *       - in: params
+ *         name: id
+ *         type: string
+ *         required: true
+ *         description: The uuid of the DataOrder to be fetched
  *     produces:
  *       - application/json
  *     responses:
