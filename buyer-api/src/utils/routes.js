@@ -28,12 +28,32 @@ const validateAddress = paramName => async (req, res, next) => {
   return undefined;
 };
 
-const validateFields = (req) => {
-  let errors = []
-  if(!req.orderId) errors.push("Field 'orderId' is required");
-  else if(typeof(req.orderId) !== 'number') errors.push("Field 'orderId' is invalid");
+/**
+ * Middleware to check if an notarization result is valid or not.
+ * @public
+ */
+const validateFields = () => (req, res, next) => {
+  const notarizationResult = req.body;
 
-  return errors;
-}
+  if (!notarizationResult.orderId) {
+    res.status(422).json({
+      statusCode: 422,
+      statusText: 'Unprocessable Entity',
+      message: 'Parameters missing',
+      errors: ['Field "orderId" is required'],
+    });
+    return undefined;
+  } else if (typeof notarizationResult.orderId !== 'number') {
+    res.status(422).json({
+      statusCode: 422,
+      statusText: 'Unprocessable Entity',
+      message: 'Parameters missing',
+      errors: ['Field "orderId" is invalid'],
+    });
+    return undefined;
+  }
+
+  return next();
+};
 
 export { errorHandler, asyncError, validateAddress, validateFields };

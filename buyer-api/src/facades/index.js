@@ -16,9 +16,8 @@ export {
   getNotaryInfo,
   getNotariesInfo,
   fetchAndCacheNotary,
+  getNotarizationRequest,
 } from './notariesFacade';
-
-export { getNotarizationRequest } from './notarizationResFacade'
 
 export {
   createDataOrderFacade,

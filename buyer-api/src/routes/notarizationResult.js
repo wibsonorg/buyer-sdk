@@ -9,7 +9,6 @@ const router = express.Router();
  * @swagger
  * /notarization-result/:notarizationRequestId:
  *   post:
- *     description: 
  *     parameters:
  *       - name: notarizationRequestId
  *         description: Notarization request id
@@ -65,30 +64,19 @@ const router = express.Router();
  */
 router.post(
   '/:notarizationRequestId',
+  validateFields(),
   asyncError(async (req, res) => {
     const { notarizationRequestId } = req.params;
-    const notarizationResult = req.body;
+    // const notarizationResult = req.body;
 
-    let validation = validateFields(notarizationResult)
-    if( validation.length > 0 ){
-      res.status(422).json({
-        "statusCode": 422,
-        "statusText": "Unprocessable Entity",
-        "message": "Parameters missing",
-        "errors": validation
+    const request = getNotarizationRequest(notarizationRequestId);
+    if (!request) {
+      res.status(404).json({
+        statusCode: 404,
+        message: 'Could not find a request whith the id provided',
       });
     } else {
-      let request = getNotarizationRequest(notarizationRequestId)
-      if(!request) {
-        res.status(404).json({
-          "statusCode": 404,
-          "message": "Could not find a request whith the id provided"
-        });
-      }
-      else {
-        console.log("final")
-        res.status(202).json({ message: "OK" });
-      }
+      res.status(202).json({ message: 'OK' });
     }
   }),
 );
