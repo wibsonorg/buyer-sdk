@@ -1,35 +1,49 @@
+import uuid from 'uuid/v4';
 import { createQueue } from './createQueue';
 import { addPrepareNotarizationJob } from './notarizationQueue';
-import { dataResponses, dataResponsesBatches } from '../utils/stores';
+import {
+  dataResponses,
+  dataResponsesAccumulator as accumulator,
+  dataResponsesBatches as batches,
+} from '../utils/stores';
 import { logger } from '../utils';
 import config from '../../config';
 
-const addDataResponseToBatch = async (batchId, dataResponseId) => {
-  const batch = await dataResponsesBatches.safeFetch(batchId, []);
-  const dataResponseIds = Array
-    .from(new Set([...batch, dataResponseId]))
+const createBatch = async (payload) => {
+  const id = uuid();
+  const batch = { ...payload, status: 'created' };
+  await batches.store(id, batch);
+  return id;
+}
+
+const accumulate = async (accumulatorId, dataResponseId) => {
+  const dataResponseIds = await accumulator.safeFetch(accumulatorId, []);
+  const newDataResponseIds = Array
+    .from(new Set([...dataResponseIds, dataResponseId]))
     .filter(id => id);
-  await dataResponsesBatches.store(batchId, dataResponseIds);
-  return dataResponseIds;
+  await accumulator.store(accumulatorId, newDataResponseIds);
+  return newDataResponseIds;
 };
 
-const clearBatch = async batchId => dataResponsesBatches.store(batchId, []);
+const clear = async batchId => accumulator.store(batchId, []);
 
 const queue = createQueue('DataResponseQueue');
 export const processDataResponseJob = async (job) => {
-  const { data: { orderId, dataResponseId, maximumBatchSize } } = job;
+  const { id, data: { orderId, dataResponseId, maximumBatchSize } } = job;
 
   const dataResponse = await dataResponses.fetch(dataResponseId);
   const { status, notaryAddress } = dataResponse;
   if (status !== 'queued') {
+    logger.warn(`DR[${id}] :: Process :: Cant't process DataResponse (${status})`);
     return dataResponse;
   }
 
-  const batchId = `${orderId}:${notaryAddress}`;
-  const dataResponseIds = await addDataResponseToBatch(batchId, dataResponseId);
+  const accumulatorId = `${orderId}:${notaryAddress}`;
+  const dataResponseIds = await accumulate(accumulatorId, dataResponseId);
   if (dataResponseIds.length >= maximumBatchSize) {
-    await addPrepareNotarizationJob({ orderId, notaryAddress, dataResponseIds });
-    await clearBatch(batchId);
+    await clear(accumulatorId);
+    const batchId = await createBatch(orderId, notaryAddress, dataResponseIds);
+    await addPrepareNotarizationJob({ batchId });
   }
 
   const updateDataReseponse = { ...dataResponse, status: 'batched' };
@@ -40,7 +54,7 @@ export const processDataResponseJob = async (job) => {
 
 queue.process(processDataResponseJob);
 queue.on('failed', ({ id, failedReason }) => {
-  logger.error(`DR[${id}] :: Process :: Error thrown: ${failedReason} (will be retried)`);
+  logger.error(`DR[${id}] :: Process :: ${failedReason} (will be retried)`);
 });
 
 export const addProcessDataResponseJob = params =>
