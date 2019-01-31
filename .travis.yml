@@ -9,7 +9,7 @@ env:
 - WORKING_DIR=buyer-api SKIP_AUDIT=false SKIP_TESTS=true
 - WORKING_DIR=buyer-signing-service SKIP_AUDIT=false SKIP_TESTS=true
 
-before_install: npm i -g npm@6.1.0 codecov@3.1.0
+before_install: npm i -g npm@6.1.0
 
 install:
 - cd $WORKING_DIR
@@ -20,7 +20,7 @@ before_script:
   # TODO: Make these steps compulsive
   - npm audit || $SKIP_AUDIT
   - npm run test:coverage:ci || $SKIP_TESTS
-  - codecov || $SKIP_TESTS
+  - bash <(curl -s https://codecov.io/bash) -f coverage.lcov || $SKIP_TESTS
 
 script: npm run build
 
