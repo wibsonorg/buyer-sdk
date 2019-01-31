@@ -1,5 +1,6 @@
 import config from '../../config';
-import { logger, blockchain } from '../utils';
+import { logger } from '../utils';
+import { fetchDataExchangeEvents } from '../utils/blockchain';
 import { eventBlocks } from '../utils/stores';
 
 const { lastProcessedBlock, interval } = config.eventSubscribers;
@@ -11,7 +12,7 @@ const createContractEventListener = (...subscribers) => async () => {
   } catch (err) {
     fromBlock = lastProcessedBlock;
   }
-  const events = await blockchain.fetchDataExchangeEvents(fromBlock);
+  const events = await fetchDataExchangeEvents(fromBlock);
   logger.debug(`Contract Events :: From block :: ${fromBlock}`);
   if (events.length === 0) {
     logger.debug('Contract Events :: No events to process');

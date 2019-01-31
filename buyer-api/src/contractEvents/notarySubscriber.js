@@ -8,7 +8,7 @@ const updateNotary = (event, { notary }) => {
 };
 
 export const notarySubscriber = {
-  name: 'NotaryCacheUpdater',
+  name: 'NotaryUpdater',
   NotaryRegistered: updateNotary,
   NotaryUpdated: updateNotary,
   NotaryUnregistered(event, { notary }) {

@@ -20,7 +20,7 @@ const createDataOrderUpdapter = status => async ({ owner, orderId: dxId }) => {
 };
 
 export const dataOrderCacheSubscriber = {
-  name: 'CacheUpdater',
+  name: 'DataOrderUpdater',
   DataOrderCreated: createDataOrderUpdapter('created'),
   DataOrderClosed: createDataOrderUpdapter('closed'),
 };
