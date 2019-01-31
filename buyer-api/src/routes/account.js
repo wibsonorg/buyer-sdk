@@ -1,7 +1,7 @@
 import express from 'express';
 import { web3, cache, asyncError, wibcoin } from '../utils';
 import { coin } from '../utils/wibson-lib';
-import signingService from '../services/signingService';
+import { getAccount } from '../services/signingService';
 
 const router = express.Router();
 /**
@@ -18,7 +18,7 @@ const router = express.Router();
  *         description: When the fetch failed.
  */
 router.get('/', cache('10 minutes'), asyncError(async (req, res) => {
-  const { address } = await signingService.getAccount();
+  const { address } = await getAccount();
   const [balance, ethBalance] = await Promise.all([
     wibcoin.methods.balanceOf(address).call(),
     web3.eth.getBalance(address),
