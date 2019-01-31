@@ -18,6 +18,8 @@ export {
   fetchAndCacheNotary,
 } from './notariesFacade';
 
+export { getNotarizationRequest } from './notarizationResFacade'
+
 export {
   createDataOrderFacade,
   addNotariesToOrderFacade,

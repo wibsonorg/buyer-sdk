@@ -28,4 +28,12 @@ const validateAddress = paramName => async (req, res, next) => {
   return undefined;
 };
 
-export { errorHandler, asyncError, validateAddress };
+const validateFields = (req) => {
+  let errors = []
+  if(!req.orderId) errors.push("Field 'orderId' is required");
+  else if(typeof(req.orderId) !== 'number') errors.push("Field 'orderId' is invalid");
+
+  return errors;
+}
+
+export { errorHandler, asyncError, validateAddress, validateFields };
