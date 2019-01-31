@@ -32,7 +32,8 @@ before_deploy: npm run publish
 
 deploy:
   provider: releases
-  api_key: $GITHUB_RELEASES_KEY
+  api_key:
+    secure: qYSbn3B8FM673cADwbe7T5dDAwsQ9H5lLAiGnIbp3ZYxpAcFo6yprNb1LvwtPArp/7HwDpycdDx0a2hC3fBSkhUkbKcHIzyGpTaFIum5Ffm8Cwnuu4uOwrx4G5/CZrpZlha75lHuRCvvjUHIEBVwXsuizpbn4qXoAn+aJyzwKlVZBabPyjBFyv0qxqsYKDgQ4mFnEgrL+vY2A3C9WdIZ9fsyAf9jJeFqcpV1eHb8wTL887p4Gm9oWVjNalaagXn/66NAOJcvC3W2e2ZGyEyWzxVqLUHBAenF8SyMOEe+VBMCY9ewfCaGrnrlZGnWungE3I966eYoEBPcUBJsTWesonJznY5WTyVpaSVRpOSk1BjWi3JjeKrosWTGprRKX9JfdeecFrrr2hLTzwAZxJ5X6zdDGPo8oFtg/qyhHK9ava5Jr2FhjfHy1QkYLr5k6/T7I1uDKZjUl8Ng8KtU9uKDPpRH69TbUYsbq2VNCOC/yAMxOfIWa/vj+Pn6kzl0G2f2ucWwRgadVyTHtsXhRDV6No1lCG5kUyfN9cxc2DnPcY2erYo4dqMiFHDcoBpYN03f3kuyG65xkyTpzsq+37nPFMt6jFjh206VWXCt7qHs4pgyVbhdRXV8k1W6QikFTuODpCH6ddEs0ptVa5YKBvOj0bHYAHGWfFiVOgE7E9UnOHk=
   file_glob: true
   file: "artifacts/*.tar.gz"
   skip_cleanup: true
@@ -43,6 +44,6 @@ notifications:
   email: false
   slack:
     rooms:
-      secure: $SLACK_SECURE_KEY
-      on_success: change
-      on_failure: change
+      - secure: $SLACK_SECURE_KEY
+    on_success: change
+    on_failure: change
