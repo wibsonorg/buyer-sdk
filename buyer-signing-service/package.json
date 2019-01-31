@@ -1,6 +1,6 @@
 {
   "name": "buyer-signing-service",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Buyer Signing Service",
   "author": "Wibson Development Team",
   "main": "src/app.js",
