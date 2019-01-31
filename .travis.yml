@@ -32,8 +32,7 @@ before_deploy: npm run publish
 
 deploy:
   provider: releases
-  api_key:
-    secure: $GITHUB_RELEASES_SECURE_KEY
+  api_key: $GITHUB_RELEASES_KEY
   file_glob: true
   file: "artifacts/*.tar.gz"
   skip_cleanup: true
