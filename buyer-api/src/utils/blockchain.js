@@ -42,7 +42,7 @@ export const fetchDataExchangeEvents = async fromBlock => (
  */
 export async function fetchDataOrder(dxId) {
   if (dxId > 0) {
-    const [
+    const {
       buyer,
       audience,
       price,
@@ -51,7 +51,7 @@ export async function fetchDataOrder(dxId) {
       buyerUrl,
       createdAt,
       closedAt,
-    ] = await dx.methods.dataOrders(dxId).call();
+    } = await dx.methods.dataOrders(dxId).call();
     return {
       buyer: buyer.toLowerCase(),
       audience: JSON.parse(audience),

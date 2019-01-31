@@ -47,15 +47,15 @@ it('fetchDataOrder > throws with invalid dxId', async (assert) => {
 });
 
 it('fetchDataOrder > cast types correctly', async (assert) => {
-  dxContract.dataOrders.returns([
-    'SOMe AddRESs With UpperCaSe LeTTErs',
-    '{"someAudienceFilter":"WithStringValue"}',
-    666e9.toString(),
-    '["some-connector-id","some-other-id"]',
-    '0xSomeTermsAndConditionsHash',
-    'some-buyer-url',
-    1548859901,
-    undefined,
-  ]);
+  dxContract.dataOrders.returns({
+    buyer: 'SOMe AddRESs With UpperCaSe LeTTErs',
+    audience: '{"someAudienceFilter":"WithStringValue"}',
+    price: 666e9.toString(),
+    requestedData: '["some-connector-id","some-other-id"]',
+    termsAndConditionsHash: '0xSomeTermsAndConditionsHash',
+    buyerUrl: 'some-buyer-url',
+    createdAt: 1548859901,
+    closedAt: undefined,
+  });
   assert.snapshot(await fetchDataOrder(1));
 });

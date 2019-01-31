@@ -16,7 +16,7 @@ import { dataOrders } from '../utils/stores';
  */
 const createDataOrderUpdapter = status => async ({ owner, orderId: dxId }) => {
   const { address } = await getAccount();
-  if (address === owner.toLowerCase()) {
+  if (address.toLowerCase() === owner.toLowerCase()) {
     const { buyer, ...chainOrder } = await fetchDataOrder(dxId);
     const id = chainOrder.buyerUrl.match(/\/orders\/(.+)\/offchain-data/)[1];
     const storedOrder = await dataOrders.fetch(id);
