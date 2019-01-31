@@ -1,4 +1,5 @@
 import { dataResponses } from '../utils/stores';
+import { putData } from '../utils/wibson-lib/s3';
 import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
 
 /**
@@ -24,8 +25,16 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
   }
 
   const {
-    orderId, sellerAddress, sellerId, notaryAddress,
+    orderId,
+    sellerAddress: checkSummedSellerAddress,
+    sellerId,
+    encryptedData,
+    decryptedDataHash,
+    decryptionKeyHash,
+    notaryAddress,
+    needsRegistration,
   } = dataResponse;
+  const sellerAddress = checkSummedSellerAddress.toLowerCase();
   const id = `${orderId}:${sellerAddress}`;
 
   if (!notariesAddresses.includes(notaryAddress.toLowerCase())) {
@@ -41,7 +50,17 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
   const status = shouldProcess ? 'queued' : 'waiting';
   // (2019-01-28) Buyer Registration case is skipped at the moment.
 
-  await dataResponses.store(id, { ...dataResponse, status });
+  await putData(orderId, sellerAddress, encryptedData);
+  await dataResponses.store(id, {
+    orderId,
+    sellerAddress,
+    sellerId,
+    decryptedDataHash,
+    decryptionKeyHash,
+    notaryAddress,
+    needsRegistration,
+    status,
+  });
   if (shouldProcess) await addProcessDataResponseJob(id);
 
   return { id, status };

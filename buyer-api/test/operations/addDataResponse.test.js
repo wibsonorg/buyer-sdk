@@ -1,5 +1,5 @@
 import { serial as it } from 'ava';
-import { dataResponses, addProcessDataResponseJob } from './addDataResponse.mock';
+import { putData, dataResponses, addProcessDataResponseJob } from './addDataResponse.mock';
 import { addDataResponse } from '../../src/operations/addDataResponse';
 
 const dataOrder = {
@@ -19,7 +19,7 @@ const someDataResponse = {
 
 it('returns id and status', async (assert) => {
   const { id, status } = await addDataResponse(dataOrder, someDataResponse);
-  assert.is(id, '42:0xa42df59C5e17df255CaDfF9F52a004221f774f36');
+  assert.is(id, '42:0xa42df59c5e17df255cadff9f52a004221f774f36');
   assert.is(status, 'queued');
 });
 
@@ -27,6 +27,7 @@ it('returns the id and status of the already stored DataResponse', async (assert
   dataResponses.safeFetch.returns({ status: 'queued' });
   await addDataResponse(dataOrder, someDataResponse);
   assert.false(dataResponses.store.called);
+  assert.false(putData.called);
   assert.false(addProcessDataResponseJob.called);
 });
 
@@ -65,6 +66,11 @@ it('returns an error when the notary is not in the preferred ones', async (asser
 it('stores the DataResponse', async (assert) => {
   await addDataResponse(dataOrder, someDataResponse);
   assert.snapshot(dataResponses.store.lastCall.args);
+});
+
+it('stores the Data in S3', async (assert) => {
+  await addDataResponse(dataOrder, someDataResponse);
+  assert.snapshot(putData.lastCall.args);
 });
 
 it('adds job to process the DataResponse', async (assert) => {
