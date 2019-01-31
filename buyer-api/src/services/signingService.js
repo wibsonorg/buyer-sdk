@@ -39,12 +39,3 @@ export const signCloseDataOrder = payload => client.post(
     timeout,
   },
 );
-
-const signingService = {
-  getHealth,
-  getAccount,
-  signCreateDataOrder,
-  signCloseDataOrder,
-};
-
-export default signingService;

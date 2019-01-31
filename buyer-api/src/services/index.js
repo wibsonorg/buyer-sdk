@@ -1,4 +1,4 @@
-import signingService from './signingService';
+import * as signingService from './signingService';
 import notaryService from './notaryService';
 
 export {
@@ -10,4 +10,3 @@ export {
 } from './buyerInfo';
 
 export { signingService, notaryService };
-
