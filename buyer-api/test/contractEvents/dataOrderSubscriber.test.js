@@ -25,11 +25,11 @@ const fakeEvent = {
   orderId: 666,
 };
 
-it('DataOrderCreated > fetches the DataOrder fromm blockchain', async (assert) => {
+it('DataOrderCreated > fetches the DataOrder fromm DataExchange', async (assert) => {
   await dataOrderCacheSubscriber.DataOrderCreated(fakeEvent);
   assert.true(fetchDataOrder.calledOnceWithExactly(666));
 });
-it('DataOrderClosed > fetches the DataOrder fromm blockchain', async (assert) => {
+it('DataOrderClosed > fetches the DataOrder fromm DataExchange', async (assert) => {
   await dataOrderCacheSubscriber.DataOrderClosed(fakeEvent);
   assert.true(fetchDataOrder.calledOnceWithExactly(666));
 });
