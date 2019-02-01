@@ -1,3 +1,4 @@
+// TODO: DEPRECATED This should be removed in favor of src/utils/blockchain.js
 /**
  * @function getElements
  * @param {Object} contract the instance of the truffle contract to consult.

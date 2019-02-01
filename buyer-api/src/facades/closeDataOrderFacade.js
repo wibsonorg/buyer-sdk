@@ -2,7 +2,7 @@ import Response from './Response';
 import { getSellersInfo } from './sellersFacade';
 import { enqueueTransaction } from '../queues';
 import { web3, dataOrderAt } from '../utils';
-import signingService from '../services/signingService';
+import { getAccount } from '../services/signingService';
 import config from '../../config';
 
 /**
@@ -34,7 +34,7 @@ const closeDataOrderFacade = async (orderAddr) => {
     return new Response(null, errors);
   }
 
-  const account = await signingService.getAccount();
+  const account = await getAccount();
 
   enqueueTransaction(
     account,
