@@ -30,7 +30,7 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
     sellerId,
     encryptedData,
     notaryAddress,
-    ...rest,
+    ...rest
   } = dataResponse;
   const sellerAddress = checkSummedSellerAddress.toLowerCase();
   const id = `${orderId}:${sellerAddress}`;
