@@ -19,6 +19,8 @@ import { createLevelStore, createRedisStore } from './storage';
  */
 /** @type {LevelStore<string, DataOrder>} */
 export const dataOrders = createLevelStore('data_orders');
+/** @type {LevelStore<string, DataResponse>} */
+export const dataResponses = createLevelStore('data_responses');
 /** @type {LevelStore<string, number>} */
 export const eventBlocks = createLevelStore('event_blocks');
 /** @type {LevelStore<string, BuyerInfo>} */

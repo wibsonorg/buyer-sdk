@@ -1,6 +1,6 @@
 import config from '../../config';
 import { priority, TxPriorities } from './priority';
-import signingService from '../services/signingService';
+import * as signingService from '../services/signingService';
 import { createQueue } from './createQueue';
 import { web3, logger, wibcoin } from '../utils';
 import { sendTransaction, waitForExecution } from '../facades/helpers';

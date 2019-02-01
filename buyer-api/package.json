@@ -11,8 +11,10 @@
     "test": "ava --tap | faucet",
     "test:watch": "ava --watch",
     "test:coverage": "nyc npm test",
+    "test:coverage:ci": "npm test:coverage > coverage.lcov",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "publish": "scripts/publish.sh $npm_package_name",
     "task:production": "node dist/tasks/index.js",
     "task": "babel-node src/tasks/index.js"
   },
@@ -84,6 +86,7 @@
   },
   "nyc": {
     "check-coverage": true,
+    "lines": 50,
     "cache": false,
     "reporter": [
       "html",
