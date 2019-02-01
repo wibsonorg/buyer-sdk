@@ -18,11 +18,11 @@ wibcoin.setProvider(tokenFakeProvider);
 let account;
 
 const dataPayload = {
-  "buyerUrl":"http://localhost:9200/orders/1234",
-  "price": '10000000000',
-  "audience": '{ "age": 20 }',
-  "requestedData": '["geolocation"]',
-  "termsAndConditionsHash": "0x989a8632fc932aaeae068195d79bf178fd0862691d4f2ce7f63ad5c4e15d7e48",
+  buyerUrl: 'http://localhost:9200/orders/1234',
+  price: '10000000000',
+  audience: '{ "age": 20 }',
+  requestedData: '["geolocation"]',
+  termsAndConditionsHash: '0x989a8632fc932aaeae068195d79bf178fd0862691d4f2ce7f63ad5c4e15d7e48',
 };
 
 const mockTransactionResponse = (tx, fakeProvider) => {

@@ -24,6 +24,13 @@ export const createLevelStore = (dir) => {
     return db;
   });
   store.fetch = async id => JSON.parse(await store.get(id));
+  store.safeFetch = async (id) => {
+    try {
+      return await store.fetch(id);
+    } catch (_) {
+      return null;
+    }
+  };
   store.store = (id, payload) => store.put(id, JSON.stringify(payload));
   store.list = () => listLevelStream(store.createReadStream())
     .then(({ key, value }) => ({ id: key, ...JSON.parse(value) }));
