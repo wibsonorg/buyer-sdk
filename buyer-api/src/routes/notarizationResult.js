@@ -1,6 +1,7 @@
 import express from 'express';
 import { asyncError, validateFields } from '../utils';
 import { getNotarizationRequest } from '../facades';
+import { notarizationResultReception } from '../operations/notarizationResultReception';
 
 
 const router = express.Router();
@@ -67,15 +68,13 @@ router.post(
   validateFields(),
   asyncError(async (req, res) => {
     const { notarizationRequestId } = req.params;
-    // const notarizationResult = req.body;
+    const notarizationResult = req.body;
 
     const request = getNotarizationRequest(notarizationRequestId);
     if (!request) {
-      res.status(404).json({
-        statusCode: 404,
-        message: 'Could not find a request whith the id provided',
-      });
+      res.boom.notFound('Notarization request not found');
     } else {
+      notarizationResultReception(request, notarizationResult);
       res.status(202).json({ message: 'OK' });
     }
   }),
