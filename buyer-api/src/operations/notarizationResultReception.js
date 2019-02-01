@@ -32,6 +32,6 @@ export function notarizationResultReception(notarizationRequest, notarizationRes
     )) && notarizationRequest.sellers.map(y => y.address).includes(seller.address));
 
   const result = notarizationRequest;
-  result.seller = sellers;
+  result.sellers = sellers;
   return addTransactionJob('TranferNotarizationResult', result);
 }
