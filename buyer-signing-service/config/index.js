@@ -29,6 +29,7 @@ const config = {
   },
   buyer: {
     privateKey: env.BUYER_PRIVATE_KEY,
+    id: env.BUYER_ID,
   },
 };
 

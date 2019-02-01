@@ -16,6 +16,9 @@ const timeout = 5000;
 
 const getHealth = () => client.get(`${url}/health`, { json: true, timeout });
 
+/**
+ * gets the buyer address
+ */
 const getAccount = () => client.get(`${url}/account`, {
   json: true,
   timeout,
