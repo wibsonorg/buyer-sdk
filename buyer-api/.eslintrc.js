@@ -5,6 +5,7 @@ module.exports = {
     "jest": true
   },
   "rules": {
-    "import/prefer-default-export": false
+    "import/prefer-default-export": false,
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/*.test.js", "**/*.e2e.js"]}]
   }
 };
