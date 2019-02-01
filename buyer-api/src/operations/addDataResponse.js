@@ -46,9 +46,9 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
 
   const shouldProcess = sellerId > 0;
   const status = shouldProcess ? 'queued' : 'waiting';
-  // (2019-01-28) Buyer Registration case is skipped at the moment.
+  // TODO: Buyer Registration case is skipped at the moment (2019-01-28).
 
-  // (2019-02-01) This has a two major problems:
+  // TODO: This has a two major problems (2019-02-01):
   // * time consuming: sending the data to BAPI, and from BAPI to S3 could
   //   potentially increase the response time.
   // * it's weak: if communication with S3 fails for any reason, user will be
