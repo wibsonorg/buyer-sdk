@@ -17,6 +17,18 @@ import { addTransactionJob } from '../queues/transactionQueue';
  */
 
 /**
+ * Requeriment for notarization
+ * @typedef {Object} NotarizationResult
+ * @property {NumberLike} orderId - tracking Id for the order
+ * @property {String} notaryAddress - address for the notary
+ * @property {number} notarizationPercentage - notarized seller percentage
+ * @property {number} notarizationFee - fee for the notarized data
+ * @property {String} payDataHash - Hash for the payData
+ * @property {String} lock - hash used to lock a batch of sellers to validate decryption key
+ * @property {SellersInNotarizationRequest[]} sellers - list of sellers
+ */
+
+/**
  * take notarization result, validate and enqueue for transfer
  * WARNING keep in mind that notarizationResult will be updated with the validated sellers
  * @param {NotarizationRequest} notarizationRequest original request sent for notarization
