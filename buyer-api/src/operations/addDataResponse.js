@@ -29,10 +29,8 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
     sellerAddress: checkSummedSellerAddress,
     sellerId,
     encryptedData,
-    decryptedDataHash,
-    decryptionKeyHash,
     notaryAddress,
-    needsRegistration,
+    ...rest,
   } = dataResponse;
   const sellerAddress = checkSummedSellerAddress.toLowerCase();
   const id = `${orderId}:${sellerAddress}`;
@@ -50,17 +48,21 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
   const status = shouldProcess ? 'queued' : 'waiting';
   // (2019-01-28) Buyer Registration case is skipped at the moment.
 
-  await putData(orderId, sellerAddress, encryptedData);
-  await dataResponses.store(id, {
+  // (2019-02-01) This has a two major problems:
+  // * time consuming: sending the data to BAPI, and from BAPI to S3 could
+  //   potentially increase the response time.
+  // * it's weak: if communication with S3 fails for any reason, user will be
+  //   forced to "try again later".
+  const s3 = putData(orderId, sellerAddress, encryptedData);
+  const db = dataResponses.store(id, {
     orderId,
     sellerAddress,
     sellerId,
-    decryptedDataHash,
-    decryptionKeyHash,
     notaryAddress,
-    needsRegistration,
     status,
+    ...rest,
   });
+  await Promise.all([s3, db]);
   if (shouldProcess) await addProcessDataResponseJob(id);
 
   return { id, status };
