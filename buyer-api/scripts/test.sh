@@ -36,45 +36,10 @@ start_ganache() {
   echo "Ganache is starting... DONE (pid: ${ganache_pid})"
 }
 
-start_signing_service() {
-  echo -e "\rSigning Service is starting..."
-
-  currentDir=`pwd`
-  cd ../buyer-signing-service
-  BUYER_PRIVATE_KEY=6ce09f3ea6dc337fa8c9f90ebc61d5d60e3da21b719d0d83f76dae875dc377e3 npm start > /dev/null &
-
-  set +o errexit
-  i=0
-  health=""
-  while [ $i -lt 10 ] && [ -z $health ]; do
-    echo -e "\rHealth check ${i} / 10"
-    health=`curl --silent --fail $signing_service_url`
-    i=$[$i+1]
-    sleep 1
-  done
-  set -o errexit
-
-  if [[ -z $health ]]; then
-    echo -e "\rSigning Service could not start"
-    exit 1
-  else
-    signing_service_pid=`cat ./service.pid`
-    echo -e "\rSigning Service is starting... DONE (pid: ${signing_service_pid})"
-  fi
-
-  cd $currentDir
-}
-
 if is_service_running $ganache_port; then
   echo "Ganache is already running"
 else
   start_ganache
-fi
-
-if is_service_running $signing_service_port; then
-  echo "Signing Service is already running"
-else
-  start_signing_service
 fi
 
 node_modules/.bin/ava --tap | tap-spec

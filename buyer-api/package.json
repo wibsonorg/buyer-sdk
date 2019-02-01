@@ -12,7 +12,6 @@
     "test:coverage": "nyc scripts/test.sh",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "preinstall": "cd ../buyer-signing-service && npm install",
     "publish": "scripts/publish.sh $npm_package_name",
     "task:production": "node dist/tasks/index.js",
     "task": "babel-node src/tasks/index.js"
