@@ -26,7 +26,6 @@ const config = {
     },
     cache: {
       notaryTTL: env.CONTRACTS_CACHE_NOTARY_TTL,
-      ordersTTL: env.CONTRACTS_CACHE_ORDERS_TTL,
     },
   },
   notary: {

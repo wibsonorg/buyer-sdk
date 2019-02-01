@@ -9,7 +9,7 @@ import cookieParser from 'cookie-parser';
 import config from '../config';
 import schema from './schema';
 import { logger, errorHandler, createRedisStore } from './utils';
-import { dataOrderQueue, dataResponseQueue } from './queues';
+import { dataResponseQueue } from './queues';
 import {
   auth,
   account,
@@ -24,12 +24,10 @@ import checkAuthorization from './utils/checkAuthorization';
 
 const app = express();
 app.locals.stores = {
-  ordersCache: createRedisStore('orders.cache'),
   undead: createRedisStore('undead::'),
 };
 
 app.locals.queues = {
-  dataOrder: dataOrderQueue,
   dataResponse: dataResponseQueue,
 };
 

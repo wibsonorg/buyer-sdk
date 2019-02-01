@@ -14,17 +14,17 @@ const url = config.buyerSigningServiceUrl;
  */
 const timeout = 5000;
 
-const getHealth = () => client.get(`${url}/health`, { json: true, timeout });
+export const getHealth = () => client.get(`${url}/health`, { json: true, timeout });
 
 /**
  * gets the buyer address
  */
-const getAccount = () => client.get(`${url}/account`, {
+export const getAccount = () => client.get(`${url}/account`, {
   json: true,
   timeout,
 });
 
-const signCreateDataOrder = payload => client.post(
+export const signCreateDataOrder = payload => client.post(
   `${url}/sign/create-data-order`,
   {
     json: payload,
@@ -32,7 +32,7 @@ const signCreateDataOrder = payload => client.post(
   },
 );
 
-const signCloseDataOrder = payload => client.post(
+export const signCloseDataOrder = payload => client.post(
   `${url}/sign/close-data-order`,
   {
     json: payload,
@@ -40,11 +40,11 @@ const signCloseDataOrder = payload => client.post(
   },
 );
 
-const signinService = {
+const signingService = {
   getHealth,
   getAccount,
   signCreateDataOrder,
   signCloseDataOrder,
 };
 
-export default signinService;
+export default signingService;
