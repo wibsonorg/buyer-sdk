@@ -1,4 +1,5 @@
 import test from 'ava';
+import { } from './notaryService.mock';
 import { transferNotarizacionResult } from '../../src/services/notaryService';
 
 const it = test.serial;
@@ -28,5 +29,7 @@ export const someNotarizationResult = {
 
 it('call transferNotarizacionResult', async (assert) => {
   const result = await transferNotarizacionResult(someNotarizationResult);
-  assert.is(result.metadata, 'hash of the dataEchange ...');
+  assert.is(result.amount, 999);
+  // TODO: make this work
+  // assert.is(result.payData, '0x79ee611a8f7a448ca7406693beb1858a8ec7415a114');
 });

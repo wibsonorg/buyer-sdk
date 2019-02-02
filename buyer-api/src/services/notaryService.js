@@ -1,6 +1,11 @@
 import client from 'request-promise-native';
-import { logger } from '../utils';
-import signinService from './signingService';
+
+import logger from '../utils/logger';
+import config from '../../config';
+import { getAccount } from './signingService';
+import { dataOrders } from '../utils/stores';
+import { enqueueTransaction } from '../queues/transactionQueue';
+import { getPayData } from '../utils/blockchain';
 
 /**
  * We are not going to wait the service to respond mora than `timeout`
@@ -46,8 +51,7 @@ const transferNotarizacionResult = async (notarizationResult) => {
    *
    * fromId: Buyer’s account id in the BatchPayments contract
    * amount: DataOrder’s price
-   * payData: Includes the sellers’ ids, notary id and its notarizationFee,
-   *          and also the unlocker id along with its unlockingFee.
+   * payData: Includes the sellers’ ids
    * lock: extracted from the NotarizationResult
    * metadata: hash of the dataEchange address concatenated with
    *           the orderId involved in the transaction
@@ -61,20 +65,26 @@ const transferNotarizacionResult = async (notarizationResult) => {
   // data payload
 
   // buyer's account id in the BatchPayments contracts
-  const { id: buyerId } = await signinService.getAccount();
-  // search for data order
-  // const { dataOrder } = dataOrders.fetch(notarizationResult.orderId);
-  // const amount = 10000; // DataOrder's price
-  // const { payData } = notarizationResult;
+  const { id: buyerId, address: buyerAddress } = await getAccount();
+  const { dataExchange: dx } = config.contracts.addresses;
 
-  // console.log('buyerId', buyerId);
+  // search for data order
+  const dataOrder = await dataOrders.fetch(notarizationResult.orderId);
+
   const payload = {
     fromId: buyerId,
-    amount: 'dataOrder.price',
-    payData: 'Includes the sellers’ ids, notary id and its notarizationFee...',
+    amount: dataOrder.price,
+    payData: getPayData(notarizationResult.sellers.map(s => s.id)),
     lock: notarizationResult.lock,
-    metadata: 'hash of the dataEchange ...',
+    metadata: `${dx}${notarizationResult.orderId}`,
   };
+
+  enqueueTransaction(
+    buyerAddress,
+    'CloseDataResponse',
+    payload,
+    config.contracts.gasPrice.fast,
+  );
 
   return payload;
 };

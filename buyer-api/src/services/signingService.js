@@ -17,7 +17,15 @@ const timeout = 5000;
 export const getHealth = () => client.get(`${url}/health`, { json: true, timeout });
 
 /**
- * gets the buyer address
+ * @typedef BuyerAccount
+ * @property {string} address buyerId to get information of the buyer
+ * @property {string} publicKey buyerId to get information of the buyer
+ * @property {NumberLike} id buyerId to get information of the buyer
+ */
+
+/**
+ * Buyer Account information from the signing service
+ * @type {BuyerAccount}
  */
 export const getAccount = () => client.get(`${url}/account`, {
   json: true,

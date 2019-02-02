@@ -1,3 +1,5 @@
+import { BigNumber } from 'bignumber.js';
+
 import web3 from './web3';
 import config from '../../config';
 import { toWib } from './wibson-lib/coin';
@@ -62,4 +64,39 @@ export async function fetchDataOrder(dxId) {
     };
   }
   throw new Error('Invalid Id');
+}
+
+/**
+ * based on https://github.com/wibsonorg/BatchPayments/blob/0fd011b3ff7f078a449913cce47f2d1b954f8fcb/lib/utils.js#L66
+ * @param {[NumberLike]} list - ids to hash
+ */
+export function getPayData(list) {
+  const hex = x => (`00${x.toString(16)}`).substr(-2);
+  const bytesPerId = 4;
+
+  list.sort((a, b) => a - b);
+
+  let last = 0;
+  let data = '';
+
+  for (let i = 0; i < list.length; i += 1) {
+    let delta = list[i] - last;
+
+    let number = '';
+    for (let j = 0; j < bytesPerId; j += 1) {
+      number = hex(delta % 256) + number;
+      delta = Math.trunc(delta / 256);
+    }
+
+    data += number;
+    last = list[i];
+  }
+
+  const hexNumber = `0xff${hex(bytesPerId)}${data}`;
+  const bigNumber = new BigNumber(hexNumber);
+
+  // console.log('toBigNumber', web3.toBigNumber(hexNumber));
+  console.log('toBigNumber', bigNumber);
+
+  return bigNumber;
 }
