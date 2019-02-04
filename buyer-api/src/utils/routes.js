@@ -35,21 +35,8 @@ const validateAddress = paramName => async (req, res, next) => {
 export const validateFields = () => (req, res, next) => {
   const notarizationResult = req.body;
 
-  if (!notarizationResult.orderId) {
-    res.status(422).json({
-      statusCode: 422,
-      statusText: 'Unprocessable Entity',
-      message: 'Parameters missing',
-      errors: ['Field "orderId" is required'],
-    });
-    return undefined;
-  } else if (typeof notarizationResult.orderId !== 'number') {
-    res.status(422).json({
-      statusCode: 422,
-      statusText: 'Unprocessable Entity',
-      message: 'Parameters missing',
-      errors: ['Field "orderId" is invalid'],
-    });
+  if (!notarizationResult.orderId || typeof notarizationResult.orderId !== 'number') {
+    res.boom.badData('Validation error', { errors: ['Field "orderId" is missing or malformed'] });
     return undefined;
   }
 
