@@ -71,6 +71,9 @@ const config = {
     maxIterations: env.TRANSACTION_QUEUE_MAX_ITERATIONS,
     interval: env.TRANSACTION_QUEUE_INSPECTION_INTERVAL,
   },
+  dataResponseQueue: {
+    maximumBatchSize: Number(env.DATA_RESPONSE_QUEUE_MAX_BATCH_SIZE),
+  },
 };
 
 exports.default = config;
