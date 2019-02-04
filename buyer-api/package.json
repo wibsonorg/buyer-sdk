@@ -11,7 +11,6 @@
     "test": "ava --tap | faucet",
     "test:watch": "ava --watch",
     "test:coverage": "nyc npm test",
-    "test:coverage:ci": "npm test:coverage > coverage.lcov",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "publish": "scripts/publish.sh $npm_package_name",
@@ -90,7 +89,8 @@
     "cache": false,
     "reporter": [
       "html",
-      "text"
+      "text",
+      "lcov"
     ],
     "exclude": [
       "src/utils/logger.js",
