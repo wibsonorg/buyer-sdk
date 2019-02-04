@@ -65,6 +65,11 @@ const router = Router();
  *         required: true
  *         description: Public URL of the buyer to get extra information
  *         example: '"https://api.buyer.com"'
+ *       notariesAddresses:
+ *         type: string[]
+ *         required: true
+ *         description: Notaries' Ethereum addresses
+ *         example: '["0xnotary-ethereum-address"]'
  */
 router.post('/', async (req, res) => res.json(await createDataOrder(req.body.dataOrder)));
 
