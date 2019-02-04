@@ -14,7 +14,7 @@ const createBatch = async (payload) => {
   const batch = { ...payload, status: 'created' };
   await batches.store(id, batch);
   return id;
-}
+};
 
 const accumulate = async (accumulatorId, dataResponseId) => {
   const dataResponseIds = await accumulator.safeFetch(accumulatorId, []);
@@ -25,14 +25,22 @@ const accumulate = async (accumulatorId, dataResponseId) => {
   return newDataResponseIds;
 };
 
-const clear = async batchId => accumulator.store(batchId, []);
+const clear = async accumulatorId => accumulator.store(accumulatorId, []);
 
 const queue = createQueue('DataResponseQueue');
 
 /**
- * This processor expects DataResponses only with status `queued`.
+ * @typedef ProcessDataResponseJobData
+ * @property {Number} orderId DataOrder's id in the DataExchange
+ * @property {String} dataResponseId Offchain DataResponse's id
+ * @property {Number} maximumBatchSize Configured batch maximum size
  *
- * @param {Object} job
+ * @async
+ * @function processDataResponseJob
+      Accumulates DataResponses until a maximum batch size is met. When this
+      happens the another Job is enqueued to prepare the notarization request.
+ * @param {Number} job.id
+ * @param {ProcessDataResponseJobData} job.data
  */
 export const processDataResponseJob = async (job) => {
   const { id, data: { orderId, dataResponseId, maximumBatchSize } } = job;
