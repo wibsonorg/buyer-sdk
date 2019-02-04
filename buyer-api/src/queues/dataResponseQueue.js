@@ -6,7 +6,7 @@ import {
   dataResponsesAccumulator as accumulator,
   dataResponsesBatches as batches,
 } from '../utils/stores';
-import { logger } from '../utils';
+import logger from '../utils/logger';
 import config from '../../config';
 
 /**
