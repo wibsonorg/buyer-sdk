@@ -9,6 +9,10 @@ env:
 - WORKING_DIR=buyer-api SKIP_AUDIT=false SKIP_TESTS=true
 - WORKING_DIR=buyer-signing-service SKIP_AUDIT=false SKIP_TESTS=true
 
+cache:
+  directories:
+  - "$WORKING_DIR/node_modules"
+
 before_install: npm i -g npm@6.1.0
 
 install:
