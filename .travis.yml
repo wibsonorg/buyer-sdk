@@ -13,7 +13,7 @@ cache:
   directories:
   - "$WORKING_DIR/node_modules"
 
-before_install: npm i -g npm@6.1.0 codecov@3.1.0
+before_install: npm i -g npm@6.1.0
 
 install:
 - cd $WORKING_DIR
@@ -23,8 +23,8 @@ before_script:
   - npm run lint
   # TODO: Make these steps compulsive
   - npm audit || $SKIP_AUDIT
-  - npm run test:coverage:ci || $SKIP_TESTS
-  - codecov || $SKIP_TESTS
+  - npm run test:coverage || $SKIP_TESTS
+  - bash <(curl -s https://codecov.io/bash) -f coverage/lcov.info || $SKIP_TESTS
 
 script: npm run build
 
