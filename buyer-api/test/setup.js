@@ -1,8 +1,8 @@
 // TODO: This is a temporal solution, this file should not exist
-import td from 'testdouble';
-import asyncRedis from 'async-redis';
-import redisMock from 'redis-mock';
-import createLevel from 'level-test';
+// import td from 'testdouble';
+// import asyncRedis from 'async-redis';
+// import redisMock from 'redis-mock';
+// import createLevel from 'level-test';
 
 process.env.ERROR_LOG = 'logs/error.test.log';
 process.env.COMBINED_LOG = 'logs/combined.test.log';
@@ -26,9 +26,9 @@ process.env.BALANCE_MINIMUM_WEI = 10000000000000000;
 process.env.TRANSACTION_QUEUE_MAX_ITERATIONS = 5;
 process.env.TRANSACTION_QUEUE_INSPECTION_INTERVAL = 5;
 
-const level = createLevel();
+// const level = createLevel();
 
-td.replace('../src/utils/storage', {
-  createRedisStore: () => asyncRedis.decorate(redisMock.createClient()),
-  createLevelStore: ns => level(ns),
-});
+// td.replace('../src/utils/storage', {
+//   createRedisStore: () => asyncRedis.decorate(redisMock.createClient()),
+//   createLevelStore: ns => level(ns),
+// });
