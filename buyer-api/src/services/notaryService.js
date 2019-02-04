@@ -4,7 +4,7 @@ import logger from '../utils/logger';
 import config from '../../config';
 import { getAccount } from './signingService';
 import { dataOrders } from '../utils/stores';
-import { enqueueTransaction } from '../queues/transactionQueue';
+import { addTransactionJob } from '../queues/transactionQueue';
 import { getPayData } from '../utils/blockchain';
 
 /**
@@ -65,7 +65,7 @@ const transferNotarizacionResult = async (notarizationResult) => {
   // data payload
 
   // buyer's account id in the BatchPayments contracts
-  const { id: buyerId, address: buyerAddress } = await getAccount();
+  const { id: buyerId } = await getAccount();
   const { dataExchange: dx } = config.contracts.addresses;
 
   // search for data order
@@ -79,12 +79,7 @@ const transferNotarizacionResult = async (notarizationResult) => {
     metadata: `${dx}${notarizationResult.orderId}`,
   };
 
-  enqueueTransaction(
-    buyerAddress,
-    'CloseDataResponse',
-    payload,
-    config.contracts.gasPrice.fast,
-  );
+  await addTransactionJob('Tranfer', payload);
 
   return payload;
 };
