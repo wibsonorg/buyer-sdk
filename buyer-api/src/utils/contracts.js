@@ -1,5 +1,4 @@
 // TODO: DEPRECATED This should be removed in favor of src/utils/blockchain.js
-
 import web3 from './web3';
 import config from '../../config';
 

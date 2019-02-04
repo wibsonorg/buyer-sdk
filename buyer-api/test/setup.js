@@ -16,7 +16,6 @@ process.env.STORAGE_BUCKET = 'wibson-storage';
 process.env.PASSPHRASE = 'pass';
 process.env.JWT_OPTIONS = '{ "secret": "secret", "expiration": "1d" }';
 process.env.SLACK_LOG = 'https://hooks.slack.com/services/foo/bar/baz';
-process.env.NOTARY_DEMAND_AUDITS_FROM = '["0xfe174860ad53e45047BABbcf4aff735d650D9284"]';
 process.env.WIBCOIN_ADDRESS = '0x6ae42f46f84fd1e226443610b57ef5fa65a001c9';
 process.env.DATA_EXCHANGE_ADDRESS = '0x79ee611a8f7a448ca7406693beb1858a8ec7415a';
 process.env.ALLOWANCE_MINIMUM = 100000000000;
