@@ -17,5 +17,5 @@ it('calls the next middleware', async (assert) => {
 it('writes a Not Found response', async (assert) => {
   dataOrders.fetch.throws(new Error('Key not found in database [id]'));
   await middleware(req, res, next);
-  assert.snapshot(res.boom.notFound.lastCall.args);
+  assert.deepEqual(res.boom.notFound.lastCall.args, ['DataOrder not found']);
 });
