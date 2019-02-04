@@ -1,15 +1,15 @@
-import apicache from 'apicache';
-import { fetchAndCacheNotary } from '../facades';
+// TODO: update this subscriber
+const updateNotary = () => {
+  // fetch notaryUrl from blockchain
+  // fetch notary info from url
+  // store notary info
+};
 
 export const notarySubscriber = {
-  name: 'NotaryCacheUpdater',
-  events: [
-    'NotaryRegistered',
-    'NotaryUpdated',
-    'NotaryUnregistered',
-  ],
-  async callback(res) {
-    await fetchAndCacheNotary(res.returnValues.notary);
-    apicache.clear('/notaries/*');
+  name: 'NotaryUpdater',
+  NotaryRegistered: updateNotary,
+  NotaryUpdated: updateNotary,
+  NotaryUnregistered() {
+    // remove notary info
   },
 };

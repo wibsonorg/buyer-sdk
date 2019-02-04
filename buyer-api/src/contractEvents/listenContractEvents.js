@@ -1,5 +1,6 @@
 import config from '../../config';
-import { logger, fetchDataExchangeEvents } from '../utils';
+import { logger } from '../utils';
+import { fetchDataExchangeEvents } from '../utils/blockchain';
 import { eventBlocks } from '../utils/stores';
 
 const { lastProcessedBlock, interval } = config.eventSubscribers;
@@ -7,7 +8,7 @@ const { lastProcessedBlock, interval } = config.eventSubscribers;
 const createContractEventListener = (...subscribers) => async () => {
   let fromBlock;
   try {
-    fromBlock = Number(await eventBlocks.get('last_processed_block')) + 1;
+    fromBlock = (await eventBlocks.fetch('last_processed_block')) + 1;
   } catch (err) {
     fromBlock = lastProcessedBlock;
   }
@@ -20,16 +21,17 @@ const createContractEventListener = (...subscribers) => async () => {
   const lastBlock = events
     .map(event => event.blockNumber)
     .reduce((a, b) => Math.max(a, b));
-  await eventBlocks.put('last_processed_block', lastBlock);
+  await eventBlocks.store('last_processed_block', lastBlock);
   logger.info(`Contract Events :: Last processed block :: ${lastBlock}`);
-  events.forEach((result) => {
-    logger.info(`Contract Events :: Received :: Event '${result.event}'`);
-    subscribers
-      .filter(subscriber => subscriber.events.includes(result.event))
-      .forEach((subscriber) => {
-        logger.info(`Contract Events :: Invoking subscriber '${subscriber.name}' :: Event '${result.event}'`);
-        subscriber.callback(result);
-      });
+  events.forEach(({ event, returnValues }) => {
+    logger.info(`Contract Events :: Received :: Event '${event}'`);
+    subscribers.forEach((subscriber) => {
+      const callback = subscriber[event];
+      if (callback) {
+        logger.info(`Contract Events :: Invoking subscriber '${subscriber.name}' :: Event '${event}'`);
+        callback(returnValues);
+      }
+    });
   });
 };
 

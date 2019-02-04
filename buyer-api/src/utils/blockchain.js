@@ -10,41 +10,55 @@ const dx = new web3.eth.Contract(DataExchangeDefinition.abi, dataExchange);
 const toDate = ts => (ts > 0 ? new Date(ts * 1000).toISOString() : null);
 
 /**
- * @function fetchDataExchangeEvents
- * @param {Number} fromBlock Starting block to get events from the data exchange.
- * @returns {DataOrder} An array of elements stored in the property.
+ * @typedef BlockchainEvent An event on the blockchain
+ * @property {string} event Name of this event
+ * @property {?number} blockNumber Block number this event was registered on
+ * @property {Object<string, *>} returnValues Values emitted by the event
+
+ * @function fetchDataExchangeEvents Fetches all events on the DataExchange
+ * @param {Number} fromBlock Starting block to get events from the DataExchange
+ * @returns {Promise<BlockchainEvent[]>} An array of events from the DataExchange
  */
 export const fetchDataExchangeEvents = async fromBlock => (
   await dx.getPastEvents('allEvents', { fromBlock })
 ).filter(event => Number(event.blockNumber) > 0);
 
 /**
- * @typedef DataOrder
- * @property {string} buyer
- * @property {Object.<string, *>} audience
- * @property {string[]} requestedData
- * @property {string} termsAndConditionsHash
- * @property {string} buyerUrl
- * @property {Date} createdAt
- * @property {?Date} closedAt
- */
+ * @typedef DataOrder DataOrder information on the DataExchange
+ * @property {string} buyer Address of the buyer that owns this DataOrder
+ * @property {Object<string, *>} audience Target audience
+ * @property {number} price Price of the DataOrder
+ * @property {string[]} requestedData Requested data types
+ * @property {string} termsAndConditionsHash Hash of the terms and conditions
+ * @property {string} buyerUrl Url to get extra information
+ * @property {Date} createdAt Creation date
+ * @property {?Date} closedAt Date of clousure
 
-/**
- * @function fetchDataOrder
- * @param {Number} id Data order id on the data exchange.
- * @returns {DataOrder} An array of elements stored in the property.
+ * @function fetchDataOrder Fetches a specific DataOrder by dxId
+ * @param {Number} dxId Data order id on the data exchange
+ * @returns {Promise<DataOrder>} DataOrder information on the DataExchange
  */
-export function fetchDataOrder(id) {
-  if (id > 0) {
-    const dataOrder = dx.methods.dataOrders(id).call();
+export async function fetchDataOrder(dxId) {
+  if (dxId > 0) {
+    const {
+      buyer,
+      audience,
+      price,
+      requestedData,
+      termsAndConditionsHash,
+      buyerUrl,
+      createdAt,
+      closedAt,
+    } = await dx.methods.dataOrders(dxId).call();
     return {
-      ...dataOrder,
-      buyer: dataOrder.buyer.toLowerCase(),
-      audience: JSON.parse(dataOrder.audience),
-      price: toWib(dataOrder.price),
-      requestedData: JSON.parse(dataOrder.requestedData),
-      createdAt: toDate(dataOrder.createdAt),
-      closedAt: toDate(dataOrder.closedAt),
+      buyer: buyer.toLowerCase(),
+      audience: JSON.parse(audience),
+      price: Number(toWib(price)),
+      requestedData: JSON.parse(requestedData),
+      termsAndConditionsHash,
+      buyerUrl,
+      createdAt: toDate(createdAt),
+      closedAt: toDate(closedAt),
     };
   }
   throw new Error('Invalid Id');
