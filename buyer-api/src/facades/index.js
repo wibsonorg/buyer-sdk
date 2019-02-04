@@ -1,9 +1,3 @@
-import {
-  onBuyData,
-  addDataResponse,
-  closeDataResponse,
-  checkAllowance,
-} from './dataResponseFacade';
 import closeDataOrderFacade from './closeDataOrderFacade';
 
 export {
@@ -12,10 +6,4 @@ export {
   fetchAndCacheNotary,
 } from './notariesFacade';
 
-export {
-  addDataResponse,
-  closeDataResponse,
-  closeDataOrderFacade,
-  onBuyData,
-  checkAllowance,
-};
+export { closeDataOrderFacade };

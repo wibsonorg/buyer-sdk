@@ -2,11 +2,9 @@ import web3 from './web3';
 import config from '../../config';
 import { toWib } from './wibson-lib/coin';
 
-import WibcoinDefinition from '../../contracts/Wibcoin.json';
 import DataExchangeDefinition from '../../contracts/DataExchange.json';
 
-const { wibcoin, dataExchange } = config.contracts.addresses;
-const wib = new web3.eth.Contract(WibcoinDefinition.abi, wibcoin);
+const { dataExchange } = config.contracts.addresses;
 const dx = new web3.eth.Contract(DataExchangeDefinition.abi, dataExchange);
 
 const toDate = ts => (ts > 0 ? new Date(ts * 1000).toISOString() : null);

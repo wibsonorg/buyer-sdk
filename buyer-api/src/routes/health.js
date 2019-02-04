@@ -1,5 +1,5 @@
 import express from 'express';
-import signingService from '../services/signingService';
+import { getHealth } from '../services/signingService';
 import { asyncError, cache } from '../utils';
 
 const NS_PER_SEC = 1e9;
@@ -42,7 +42,7 @@ router.get('/cache', cache('1 minute'), (req, res) => {
  */
 router.get('/ss', asyncError(async (_req, res) => {
   const time = process.hrtime();
-  const response = await signingService.getHealth();
+  const response = await getHealth();
   const diff = process.hrtime(time);
 
   res.json({
