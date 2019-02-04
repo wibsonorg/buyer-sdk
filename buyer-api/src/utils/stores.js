@@ -14,6 +14,7 @@ import { createLevelStore, createRedisStore } from './storage';
  * @property {string} termsAndConditionsHash Hash of the terms and conditions
  * @property {DataOrderStatus} status Current status of the
  * @property {?number} dxId DataExchange id
+ * @property {string[]} notariesAddresses Notaries' Ethereum addresses
  * @property {?Date} createdAt Creation date
  * @property {?Date} closedAt Date of clousure
  */
