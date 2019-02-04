@@ -32,7 +32,7 @@ const validateAddress = paramName => async (req, res, next) => {
  * Middleware to check if an notarization result is valid or not.
  * @public
  */
-const validateFields = () => (req, res, next) => {
+export const validateFields = () => (req, res, next) => {
   const notarizationResult = req.body;
 
   if (!notarizationResult.orderId) {
@@ -56,4 +56,4 @@ const validateFields = () => (req, res, next) => {
   return next();
 };
 
-export { errorHandler, asyncError, validateAddress, validateFields };
+export { errorHandler, asyncError, validateAddress };
