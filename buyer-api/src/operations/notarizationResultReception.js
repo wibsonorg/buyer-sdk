@@ -1,4 +1,4 @@
-import { addTransactionJob } from '../queues/transactionQueue';
+import { addNotarizacionResultJob } from '../queues/tranferNotarizationResultQueue';
 
 /**
  * Seller inside Notarization Request
@@ -45,5 +45,6 @@ export function notarizationResultReception(notarizationRequest, notarizationRes
 
   const result = notarizationRequest;
   result.seller = sellers;
-  return addTransactionJob('TranferNotarizationResult', result);
+
+  return addNotarizacionResultJob(result);
 }

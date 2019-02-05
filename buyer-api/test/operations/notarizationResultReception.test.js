@@ -1,5 +1,5 @@
 import test from 'ava';
-import { addTransactionJob } from './notarizationResultReception.mock';
+import { addNotarizacionResultJob } from './notarizationResultReception.mock';
 import { notarizationResultReception } from '../../src/operations/notarizationResultReception';
 import {
   someNotarizationRequest,
@@ -15,7 +15,7 @@ it('call notarizationResultReception', async (assert) => {
     someNotarizationRequest,
     someNotarizationResult,
   );
-  assert.snapshot(addTransactionJob.lastCall.args);
+  assert.snapshot(addNotarizacionResultJob.lastCall.args);
 });
 
 it('call notarizationResultReception with not requested addresses', async (assert) => {
@@ -23,7 +23,7 @@ it('call notarizationResultReception with not requested addresses', async (asser
     someNotarizationRequest,
     someNotarizationResultWithNonRequestedAddresses,
   );
-  assert.is(addTransactionJob.lastCall.lastArg.sellers.length, 2);
+  assert.is(addNotarizacionResultJob.lastCall.lastArg.sellers.length, 2);
 });
 
 it('call notarizationResultReception with duplicated addresses', async (assert) => {
@@ -31,5 +31,5 @@ it('call notarizationResultReception with duplicated addresses', async (assert) 
     someNotarizationRequest,
     someNotarizationResultWithDuplicatedAddresses,
   );
-  assert.is(addTransactionJob.lastCall.lastArg.sellers.length, 2);
+  assert.is(addNotarizacionResultJob.lastCall.lastArg.sellers.length, 2);
 });
