@@ -27,12 +27,12 @@ export function receiveNotarizationResult(notarizationRequest, notarizationResul
   // validate input
   // notarizationRequest.sellers matches notarizationResult.sellers (address field)
   // avoid duplicated addresses, avoid not requested addresses
-  const sellers = notarizationResult.sellers.filter((seller, index, self) =>
-    index === self.findIndex(s => (
-      s.address === seller.address
-    )) && notarizationRequest.sellers.map(y => y.address).includes(seller.address));
 
-  const result = notarizationRequest;
-  result.sellers = sellers;
-  return addTransactionJob('TranferNotarizationResult', result);
+  return addTransactionJob('TranferNotarizationResult', {
+    ...notarizationResult,
+    sellers: notarizationResult.sellers.filter((seller, index, self) =>
+      index === self.findIndex(s => (
+        s.address === seller.address
+      )) && notarizationRequest.sellers.map(y => y.address).includes(seller.address)),
+  });
 }
