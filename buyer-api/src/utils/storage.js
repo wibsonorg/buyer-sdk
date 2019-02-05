@@ -38,11 +38,11 @@ export const createLevelStore = (dir) => {
     return db;
   });
   store.fetch = async id => JSON.parse(await store.get(id));
-  store.safeFetch = async (id) => {
+  store.safeFetch = async (id, defaultResponse = null) => {
     try {
       return await store.fetch(id);
     } catch (_) {
-      return null;
+      return defaultResponse;
     }
   };
   store.store = (id, obj) => store.put(id, JSON.stringify(obj));
