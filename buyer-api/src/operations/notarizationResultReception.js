@@ -2,7 +2,7 @@ import { addTransactionJob } from '../queues/transactionQueue';
 
 /**
  * Seller inside Notarization Request
- * @typedef {Object} SellersInNotarizationRequest
+ * @typedef {Object} NotarizationRequestSellers
  * @property {NumberLike} id - numeric id for the seller
  * @property {uuid} address - has for the seller
  * @property {KeyHash} decryptionKeyHash - decryption key for seller data
@@ -13,7 +13,7 @@ import { addTransactionJob } from '../queues/transactionQueue';
  * @typedef {Object} NotarizationRequest
  * @property {NumberLike} orderId - tracking Id for the order
  * @property {String} callbackUrl - callback url for the notarization result
- * @property {SellersInNotarizationRequest[]} sellers - list of sellers
+ * @property {NotarizationRequestSellers[]} sellers - list of sellers
  */
 
 /**
