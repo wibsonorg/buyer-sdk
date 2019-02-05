@@ -63,7 +63,7 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
     ...rest,
   });
   await Promise.all([s3, db]);
-  if (shouldProcess) await addProcessDataResponseJob(id);
+  if (shouldProcess) await addProcessDataResponseJob({ orderId, dataResponseId: id });
 
   return { id, status };
 };

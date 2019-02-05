@@ -14,7 +14,7 @@ const router = express.Router();
  *       ## Buyer accumulates DataResponses to notarize them by batches.
  *     parameters:
  *       - in: body
- *         name: dataOrder
+ *         name: dataResponse
  *         type: object
  *         required: true
  *         schema:
@@ -74,7 +74,7 @@ const router = express.Router();
  *         example: 'true'
  */
 router.post('/:id/data-responses', fetchDataOrder, asyncError(async (req, res) => {
-  const { error, ...result } = await addDataResponse(req.dataOrder, req.body);
+  const { error, ...result } = await addDataResponse(req.dataOrder, req.body.dataResponse);
 
   if (error) {
     res.boom.badData('Operation failed', { error });

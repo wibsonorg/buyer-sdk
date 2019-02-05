@@ -15,7 +15,6 @@ import {
   health,
   notaries,
   dataOrders,
-  dataResponses,
   buyerInfos,
   notarizationResult,
 } from './routes';
@@ -37,7 +36,6 @@ app.use(cookieParser());
 
 app.use('/authentication', auth);
 app.use('/health', health);
-app.use('/data-responses', dataResponses);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
 app.get('/api-docs.json', (_req, res) => res.json(schema));
 app.use('/orders', dataOrders);

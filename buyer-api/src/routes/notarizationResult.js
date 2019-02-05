@@ -1,14 +1,13 @@
 import express from 'express';
 import { asyncError, validateFields } from '../utils';
-import { getNotarizationRequest } from '../facades';
-import { notarizationResultReception } from '../operations/notarizationResultReception';
+import { receiveNotarizationResult } from '../operations/notarizationResultReception';
 
 
 const router = express.Router();
 
 /**
  * @swagger
- * /notarization-result/:notarizationRequestId:
+ * /notarization-result/{notarizationRequestId}
  *   post:
  *     parameters:
  *       - name: notarizationRequestId
@@ -70,12 +69,12 @@ router.post(
     const { notarizationRequestId } = req.params;
     const notarizationResult = req.body;
 
-    const request = getNotarizationRequest(notarizationRequestId);
-    if (!request) {
-      res.boom.notFound('Notarization request not found');
-    } else {
-      notarizationResultReception(request, notarizationResult);
+    try {
+      receiveNotarizationResult(notarizationRequestId, notarizationResult);
       res.status(202).json({ message: 'OK' });
+    } catch (error) {
+      const { message } = error;
+      res.boom.notFound(message);
     }
   }),
 );

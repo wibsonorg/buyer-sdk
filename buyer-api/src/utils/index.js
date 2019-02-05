@@ -6,7 +6,6 @@ import checkAuthorization from './checkAuthorization';
 import * as blockchain from './blockchain';
 import * as stores from './stores';
 
-
 export { web3, blockchain, stores, cache, logger, fetchToken, checkAuthorization };
 // TODO: remove, this should be for internal use only
 export { createRedisStore } from './storage';
