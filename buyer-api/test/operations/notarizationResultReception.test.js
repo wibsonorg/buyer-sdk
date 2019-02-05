@@ -2,7 +2,6 @@ import test from 'ava';
 import { addTransactionJob } from './notarizationResultReception.mock';
 import { receiveNotarizationResult } from '../../src/operations/notarizationResultReception';
 import {
-  someNotarizationRequest,
   someNotarizationResult,
   someNotarizationResultWithDuplicatedAddresses,
   someNotarizationResultWithNonRequestedAddresses,
