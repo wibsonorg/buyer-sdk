@@ -25,11 +25,13 @@ export async function createDataOrder(dataOrder) {
   const buyerUrl = `${dataOrder.buyerUrl}/orders/${id}/offchain-data`;
   const { termsHash } = await getBuyerInfo(dataOrder.buyerInfoId);
   const termsAndConditionsHash = termsHash.startsWith('0x') ? termsHash : `0x${termsHash}`;
+  const notariesAddresses = dataOrder.notariesAddresses.map(n => n.toLowerCase());
   await dataOrders.store(id, {
     ...dataOrder,
     status,
     buyerUrl,
     termsAndConditionsHash,
+    notariesAddresses,
   });
   await addTransactionJob('CreateDataOrder', {
     price: fromWib(dataOrder.price),

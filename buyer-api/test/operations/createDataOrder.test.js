@@ -9,6 +9,7 @@ const someDataOrder = {
   requestedData: ['geolocation'],
   buyerInfoId: 'someBuyerInfoId',
   buyerUrl: 'someBuyerUrl',
+  notariesAddresses: ['0xNotaryA', '0xNotaryB'],
 };
 
 it('sets id and status', async (assert) => {
