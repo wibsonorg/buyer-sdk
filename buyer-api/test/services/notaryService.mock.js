@@ -2,8 +2,8 @@ import td from 'testdouble';
 import sinon from 'sinon';
 import test from 'ava';
 
-export const enqueueTransaction = sinon.spy();
-td.replace('../../src/queues/transactionQueue', { enqueueTransaction });
+export const addTransactionJob = sinon.spy();
+td.replace('../../src/queues/transactionQueue', { addTransactionJob });
 
 export const getAccount = sinon.stub();
 td.replace('../../src/services/signingService', { getAccount });
