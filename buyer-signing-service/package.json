@@ -10,7 +10,6 @@
     "start": "babel-node src/index.js",
     "test": "scripts/test.sh",
     "test:coverage": "nyc scripts/test.sh",
-    "test:coverage:ci": "nyc scripts/test.sh > coverage.lcov",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "publish": "scripts/publish.sh $npm_package_name"
@@ -63,7 +62,8 @@
     "cache": false,
     "reporter": [
       "html",
-      "text"
+      "text",
+      "lcov"
     ],
     "exclude": [
       "src/utils/logger.js"
