@@ -1,4 +1,5 @@
 import { addTransactionJob } from '../queues/transactionQueue';
+import { getNotarizationRequest } from '../facades';
 
 /**
  * Seller inside Notarization Request
@@ -20,13 +21,18 @@ import { addTransactionJob } from '../queues/transactionQueue';
  * @function receiveNotarizationResult
  * take notarization result, validate and enqueue for transfer
  * WARNING keep in mind that notarizationResult will be updated with the validated sellers
- * @param {NotarizationRequest} notarizationRequest original request sent for notarization
+ * @param {string} notarizationRequestId original request sent for notarization
  * @param {NotarizationResult} notarizationResult results related with request done by notary
  */
-export function receiveNotarizationResult(notarizationRequest, notarizationResult) {
+export function receiveNotarizationResult(notarizationRequestId, notarizationResult) {
   // validate input
   // notarizationRequest.sellers matches notarizationResult.sellers (address field)
   // avoid duplicated addresses, avoid not requested addresses
+
+  const notarizationRequest = getNotarizationRequest(notarizationRequestId);
+  if (!notarizationRequest) {
+    throw new Error('Notarization request not found');
+  }
 
   return addTransactionJob('TranferNotarizationResult', {
     ...notarizationResult,

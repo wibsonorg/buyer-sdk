@@ -12,7 +12,7 @@ const it = test.serial;
 
 it('call receiveNotarizationResult', async (assert) => {
   receiveNotarizationResult(
-    someNotarizationRequest,
+    '1',
     someNotarizationResult,
   );
   assert.snapshot(addTransactionJob.lastCall.args);
@@ -20,7 +20,7 @@ it('call receiveNotarizationResult', async (assert) => {
 
 it('call receiveNotarizationResult with not requested addresses', async (assert) => {
   receiveNotarizationResult(
-    someNotarizationRequest,
+    '1',
     someNotarizationResultWithNonRequestedAddresses,
   );
   assert.is(addTransactionJob.lastCall.lastArg.sellers.length, 2);
@@ -28,8 +28,15 @@ it('call receiveNotarizationResult with not requested addresses', async (assert)
 
 it('call receiveNotarizationResult with duplicated addresses', async (assert) => {
   receiveNotarizationResult(
-    someNotarizationRequest,
+    '1',
     someNotarizationResultWithDuplicatedAddresses,
   );
   assert.is(addTransactionJob.lastCall.lastArg.sellers.length, 2);
+});
+
+it('call receiveNotarizationResult with non-existent request', async (assert) => {
+  assert.throws(() => receiveNotarizationResult(
+    '2',
+    someNotarizationResult,
+  ), 'Notarization request not found');
 });
