@@ -27,6 +27,7 @@ export const dataOrder = {
   audience: { age: 20 },
   price: 42,
   requestedData: ['some-data-type'],
+  notariesAddresses: ['0xcccf90140fcc2d260186637d59f541e94ff9288f'],
   buyerInfoId: 'wibson-buyer',
   buyerUrl: 'https://api.buyer.com',
 };
