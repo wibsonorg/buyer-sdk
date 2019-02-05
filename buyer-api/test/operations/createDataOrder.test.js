@@ -27,7 +27,7 @@ it('adds 0x to termsHash if its missing', async (assert) => {
 
 it('stores data order', async (assert) => {
   await createDataOrder(someDataOrder);
-  assert.snapshot(dataOrders.store.lastCall.args);
+  assert.snapshot(dataOrders.store.lastCall.args, { id: 'dataOrders.store().args' });
 });
 
 it('stores the correct url /orders/:uuid/offchain-data', async (assert) => {
@@ -40,5 +40,5 @@ it('stores the correct url /orders/:uuid/offchain-data', async (assert) => {
 
 it('adds transaction job', async (assert) => {
   await createDataOrder(someDataOrder);
-  assert.snapshot(addTransactionJob.lastCall.args);
+  assert.snapshot(addTransactionJob.lastCall.args, { id: 'addTransactionJob().args' });
 });
