@@ -1,11 +1,31 @@
+import uuid from 'uuid/v4';
 import { createQueue } from './createQueue';
-import { logger } from '../utils';
+import { dataResponses, dataResponsesBatches as batches } from '../utils/stores';
+import logger from '../utils/logger';
+
+const createNotarizationRequest = () => uuid();
 
 const queue = createQueue('NotarizationQueue');
 
-export const prepare = async ({ id }) => {
-  logger.info(`N[${id}] :: Prepare :: fake implementation`);
-  return true;
+export const prepare = async ({ id, data: { batchId } }) => {
+  const { orderId, notaryAddress, dataResponseIds } = await batches.fetch(batchId);
+  const sellers = dataResponseIds.reduce(async (accumulator, dataResponseId) => {
+    const {
+      sellerAddress,
+      sellerId,
+      decryptionKeyHash,
+    } = await dataResponses.fetch(dataResponseId);
+    return [...accumulator, { sellerAddress, sellerId, decryptionKeyHash }];
+  }, []);
+
+  const notarizationRequestId = await createNotarizationRequest({
+    orderId,
+    notaryAddress,
+    sellers
+  });
+  await addRequestNotarizationJob({ notarizationRequestId });
+
+  return notarizationRequestId;
 };
 
 export const request = async ({ id }) => {
