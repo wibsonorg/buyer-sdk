@@ -1,7 +1,7 @@
 import express from 'express';
 import { asyncError, validateFields } from '../utils';
 import { getNotarizationRequest } from '../facades';
-import { notarizationResultReception } from '../operations/notarizationResultReception';
+import { receiveNotarizationResult } from '../operations/notarizationResultReception';
 
 
 const router = express.Router();
@@ -74,7 +74,7 @@ router.post(
     if (!request) {
       res.boom.notFound('Notarization request not found');
     } else {
-      notarizationResultReception(request, notarizationResult);
+      receiveNotarizationResult(request, notarizationResult);
       res.status(202).json({ message: 'OK' });
     }
   }),

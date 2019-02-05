@@ -22,7 +22,7 @@ import { addTransactionJob } from '../queues/transactionQueue';
  * @param {NotarizationRequest} notarizationRequest original request sent for notarization
  * @param {NotarizationResult} notarizationResult results related with request done by notary
  */
-export function notarizationResultReception(notarizationRequest, notarizationResult) {
+export function receiveNotarizationResult(notarizationRequest, notarizationResult) {
   // validate input
   // notarizationRequest.sellers matches notarizationResult.sellers (address field)
   // avoid duplicated addresses, avoid not requested addresses

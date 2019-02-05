@@ -1,6 +1,6 @@
 import test from 'ava';
 import { addTransactionJob } from './notarizationResultReception.mock';
-import { notarizationResultReception } from '../../src/operations/notarizationResultReception';
+import { receiveNotarizationResult } from '../../src/operations/notarizationResultReception';
 import {
   someNotarizationRequest,
   someNotarizationResult,
@@ -10,24 +10,24 @@ import {
 
 const it = test.serial;
 
-it('call notarizationResultReception', async (assert) => {
-  notarizationResultReception(
+it('call receiveNotarizationResult', async (assert) => {
+  receiveNotarizationResult(
     someNotarizationRequest,
     someNotarizationResult,
   );
   assert.snapshot(addTransactionJob.lastCall.args);
 });
 
-it('call notarizationResultReception with not requested addresses', async (assert) => {
-  notarizationResultReception(
+it('call receiveNotarizationResult with not requested addresses', async (assert) => {
+  receiveNotarizationResult(
     someNotarizationRequest,
     someNotarizationResultWithNonRequestedAddresses,
   );
   assert.is(addTransactionJob.lastCall.lastArg.sellers.length, 2);
 });
 
-it('call notarizationResultReception with duplicated addresses', async (assert) => {
-  notarizationResultReception(
+it('call receiveNotarizationResult with duplicated addresses', async (assert) => {
+  receiveNotarizationResult(
     someNotarizationRequest,
     someNotarizationResultWithDuplicatedAddresses,
   );
