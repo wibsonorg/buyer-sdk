@@ -17,6 +17,9 @@ const getS3Object = async (objectName) => {
   return JSON.parse(data);
 };
 
+const putS3Object = async (objectName, data) =>
+  client.putObject(objectName, JSON.stringify(data));
+
 const getS3Objects = async (namespace, justSnippets = false) => {
   const files = await client.listObjects(namespace);
   const objectsPromises = files.map(async (file) => {
@@ -51,6 +54,11 @@ const getObject = (orderAddress, seller, type) => {
   return getS3Object(name);
 };
 
+const putObject = (orderAddress, seller, type, data) => {
+  const name = `${prefix}/${orderAddress}/${type}/${seller}.json`;
+  return putS3Object(name, data);
+};
+
 // //
 
 const countDataResponses = orderAddress => countObjects(orderAddress, 'data-responses');
@@ -65,6 +73,8 @@ const listData = orderAddress => listObjects(orderAddress, 'data');
 
 const getData = (orderAddress, seller) => getObject(orderAddress, seller, 'data');
 
+const putData = (orderAddress, seller, data) => putObject(orderAddress, seller, 'data', data);
+
 export {
   countDataResponses,
   listDataResponses,
@@ -72,4 +82,5 @@ export {
   countData,
   listData,
   getData,
+  putData,
 };

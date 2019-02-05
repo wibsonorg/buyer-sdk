@@ -1,44 +1,96 @@
+import uuid from 'uuid/v4';
 import { createQueue } from './createQueue';
-import { enqueueTransaction } from './transactionQueue';
-import { priority } from './priority';
-import { onBuyData, closeDataResponse } from '../facades';
-import { logger } from '../utils';
+import { addPrepareNotarizationJob } from './notarizationQueue';
+import {
+  dataResponses,
+  dataResponsesAccumulator as accumulator,
+  dataResponsesBatches as batches,
+} from '../utils/stores';
+import logger from '../utils/logger';
+import config from '../../config';
 
-const createDataResponseQueue = () => {
-  const queue = createQueue('DataResponseQueue');
-
-  queue.process('buyData', async (
-    { data: { orderAddress, sellerAddress } },
-  ) => {
-    await onBuyData(orderAddress, sellerAddress, enqueueTransaction);
-  });
-
-  queue.process('closeDataResponse', async (
-    { data: { orderAddress, sellerAddress } },
-  ) => {
-    await closeDataResponse(orderAddress, sellerAddress, enqueueTransaction);
-  });
-
-  queue.on('failed', ({ id, name, failedReason }) => {
-    logger.error(`${name}[${id}] :: Error thrown: ${failedReason} (will be retried)`);
-  });
-
-  return queue;
+/**
+ * @async
+ * @function createBatch Batch factory function
+ * @param {number} payload.orderId DataOrder's id in the DataExchange
+ * @param {string} payload.notaryAddress Notary's Ethereum address
+ * @param {string[]} payload.dataResponseIds List of DataResponses IDs
+ * @returns {string} The id of the created batch
+ */
+const createBatch = async (payload) => {
+  const id = uuid();
+  const batch = { ...payload, status: 'created' };
+  await batches.store(id, batch);
+  return id;
 };
 
-const dataResponseQueue = createDataResponseQueue();
-const enqueueCloseDataResponse = (orderAddress, sellerAddress, options = {}) => {
-  const {
-    priority: p, attempts = 20, backoffType = 'linear',
-  } = options;
-
-  dataResponseQueue.add('closeDataResponse', { orderAddress, sellerAddress }, {
-    priority: p || priority.MEDIUM,
-    attempts,
-    backoff: {
-      type: backoffType,
-    },
-  });
+/**
+ * @async
+ * @function accumulate Pushes a dataResponseId into an accumulator store
+ * @param {number} accumulatorId
+ * @param {string} dataResponseId
+ * @returns {string[]} Updated list of DataResponses IDs
+ */
+const accumulate = async (accumulatorId, dataResponseId) => {
+  const dataResponseIds = await accumulator.safeFetch(accumulatorId, []);
+  const newDataResponseIds = Array
+    .from(new Set([...dataResponseIds, dataResponseId]))
+    .filter(id => id);
+  await accumulator.store(accumulatorId, newDataResponseIds);
+  return newDataResponseIds;
 };
 
-export { dataResponseQueue, enqueueCloseDataResponse };
+/**
+ * @async
+ * @function clear Clears the accumulator store
+ * @param {number} accumulatorId
+ */
+const clear = async accumulatorId => accumulator.store(accumulatorId, []);
+
+const queue = createQueue('DataResponseQueue');
+
+/**
+ * @typedef ProcessDataResponseJobData
+ * @property {number} orderId DataOrder's id in the DataExchange
+ * @property {string} dataResponseId Offchain DataResponse's id
+ * @property {number} maximumBatchSize Configured batch maximum size
+ *
+ * @async
+ * @function processDataResponseJob
+      Accumulates DataResponses until a maximum batch size is met. When this
+      happens another Job is enqueued to prepare the notarization request.
+ * @param {number} job.id
+ * @param {ProcessDataResponseJobData} job.data
+ * @returns {import('../utils/stores').DataResponse} The updated DataResponse
+ */
+export const processDataResponseJob = async (job) => {
+  const { id, data: { orderId, dataResponseId, maximumBatchSize } } = job;
+
+  const dataResponse = await dataResponses.fetch(dataResponseId);
+  const { status, notaryAddress } = dataResponse;
+  if (status !== 'queued') {
+    logger.warn(`DR[${id}] :: Process :: Cant't process DataResponse (${status})`);
+    return dataResponse;
+  }
+
+  const accumulatorId = `${orderId}:${notaryAddress}`;
+  const dataResponseIds = await accumulate(accumulatorId, dataResponseId);
+  if (dataResponseIds.length >= maximumBatchSize) {
+    await clear(accumulatorId);
+    const batchId = await createBatch({ orderId, notaryAddress, dataResponseIds });
+    await addPrepareNotarizationJob({ batchId });
+  }
+
+  const updateDataReseponse = { ...dataResponse, status: 'batched' };
+  await dataResponses.store(dataResponseId, updateDataReseponse);
+
+  return updateDataReseponse;
+};
+
+queue.process(processDataResponseJob);
+queue.on('failed', ({ id, failedReason }) => {
+  logger.error(`DR[${id}] :: Process :: ${failedReason} (will be retried)`);
+});
+
+export const addProcessDataResponseJob = params =>
+  queue.add({ ...params, ...config.dataResponseQueue });

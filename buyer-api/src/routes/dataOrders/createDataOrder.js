@@ -40,37 +40,38 @@ const router = Router();
  *   DataOrder:
  *     type: object
  *     properties:
- *       price:
- *         type: number
- *         required: true
- *         description: Price per added Data Response
- *         example: '42'
  *       audience:
  *         type: object
  *         required: true
  *         description: Target audience of the order
  *         example: '{ "age": 20 }'
+ *       price:
+ *         type: number
+ *         required: true
+ *         description: Price per added Data Response
+ *         example: '42'
  *       requestedData:
  *         type: string[]
  *         required: true
  *         description: Requested data type (Geolocation, Facebook, etc)
- *         example: '["geolocation"]'
+ *         example: '["some-data-type"]'
  *       buyerInfoId:
  *         type: string
  *         required: true
  *         description: The ID for the buyer info
- *         example: '["some-buyer-id"]'
- *       notaries:
- *         type: string[]
- *         required: true
- *         description: List of notaries' ethereum addresses
- *         example: '["0x9e1ef1ec212f5dffb41d35d9e5c14054f26c6560"]'
+ *         example: '"some-buyer-id"'
  *       buyerUrl:
  *         type: string
  *         required: true
- *         description: Public URL of the buyer where the data must be sent
+ *         description: Public URL of the buyer to get extra information
  *         example: '"https://api.buyer.com"'
+ *       notariesAddresses:
+ *         type: string[]
+ *         required: true
+ *         description: Notaries' Ethereum addresses
+ *         example: '["0xnotary-ethereum-address"]'
  */
 router.post('/', async (req, res) => res.json(await createDataOrder(req.body.dataOrder)));
+// TODO: validate notariesAddresses
 
 export default router;

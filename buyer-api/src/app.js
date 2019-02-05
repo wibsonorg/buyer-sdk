@@ -8,29 +8,19 @@ import swaggerUi from 'swagger-ui-express';
 import cookieParser from 'cookie-parser';
 import config from '../config';
 import schema from './schema';
-import { logger, errorHandler, createRedisStore } from './utils';
-import { dataResponseQueue } from './queues';
+import { logger, errorHandler } from './utils';
 import {
   auth,
   account,
   health,
   notaries,
   dataOrders,
-  dataResponses,
   buyerInfos,
   notarizationResult,
 } from './routes';
 import checkAuthorization from './utils/checkAuthorization';
 
 const app = express();
-app.locals.stores = {
-  undead: createRedisStore('undead::'),
-};
-
-app.locals.queues = {
-  dataResponse: dataResponseQueue,
-};
-
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(morgan(config.logType || 'combined', {
@@ -46,7 +36,6 @@ app.use(cookieParser());
 
 app.use('/authentication', auth);
 app.use('/health', health);
-app.use('/data-responses', dataResponses);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
 app.get('/api-docs.json', (_req, res) => res.json(schema));
 app.use('/orders', dataOrders);

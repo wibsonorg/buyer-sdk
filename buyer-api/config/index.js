@@ -28,9 +28,6 @@ const config = {
       notaryTTL: env.CONTRACTS_CACHE_NOTARY_TTL,
     },
   },
-  notary: {
-    demandAuditsFrom: env.NOTARY_DEMAND_AUDITS_FROM,
-  },
   cache: {
     enabled: env.CACHE === 'enabled',
     adapter: env.CACHE_ADAPTER,
@@ -73,6 +70,9 @@ const config = {
   transactionQueue: {
     maxIterations: env.TRANSACTION_QUEUE_MAX_ITERATIONS,
     interval: env.TRANSACTION_QUEUE_INSPECTION_INTERVAL,
+  },
+  dataResponseQueue: {
+    maximumBatchSize: Number(env.DATA_RESPONSE_QUEUE_MAX_BATCH_SIZE),
   },
 };
 

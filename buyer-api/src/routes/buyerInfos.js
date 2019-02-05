@@ -26,11 +26,7 @@ router.get(
   cache('30 days'),
   asyncError(async (req, res) => {
     req.apicacheGroup = '/infos/*';
-    const values = await listBuyerInfos();
-
-    res.json({
-      infos: values.map(value => JSON.parse(value)),
-    });
+    res.json({ infos: await listBuyerInfos() });
   }),
 );
 
