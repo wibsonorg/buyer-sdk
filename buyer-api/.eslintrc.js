@@ -6,6 +6,12 @@ module.exports = {
   },
   "rules": {
     "import/prefer-default-export": false,
-    "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/*.test.js", "**/*.e2e.js"]}]
+    "import/no-extraneous-dependencies": ["error", {
+      "devDependencies": [
+        "**/*.mock.js", "**/*.fixture.js",
+        "test/**/*", "**/*.test.js",
+        "e2e/**/*", "**/*.e2e.js"
+      ]
+    }]
   }
 };
