@@ -82,7 +82,6 @@ const getNotariesInfo = async (addresses = []) => {
 };
 
 /**
- * @async
  * @function getNotarizationRequest
  * @param {String} notarizationId the notarization request Id.
  *
