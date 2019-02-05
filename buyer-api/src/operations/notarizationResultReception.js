@@ -17,6 +17,7 @@ import { addTransactionJob } from '../queues/transactionQueue';
  */
 
 /**
+ * @function receiveNotarizationResult
  * take notarization result, validate and enqueue for transfer
  * WARNING keep in mind that notarizationResult will be updated with the validated sellers
  * @param {NotarizationRequest} notarizationRequest original request sent for notarization
