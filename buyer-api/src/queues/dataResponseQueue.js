@@ -15,7 +15,7 @@ import config from '../../config';
  * @param {number} payload.orderId DataOrder's id in the DataExchange
  * @param {string} payload.notaryAddress Notary's Ethereum address
  * @param {string[]} payload.dataResponseIds List of DataResponses IDs
- * @return {string} The id of the created batch
+ * @returns {string} The id of the created batch
  */
 const createBatch = async (payload) => {
   const id = uuid();
@@ -29,6 +29,7 @@ const createBatch = async (payload) => {
  * @function accumulate Pushes a dataResponseId into an accumulator store
  * @param {number} accumulatorId
  * @param {string} dataResponseId
+ * @returns {string[]} Updated list of DataResponses IDs
  */
 const accumulate = async (accumulatorId, dataResponseId) => {
   const dataResponseIds = await accumulator.safeFetch(accumulatorId, []);
@@ -60,6 +61,7 @@ const queue = createQueue('DataResponseQueue');
       happens another Job is enqueued to prepare the notarization request.
  * @param {number} job.id
  * @param {ProcessDataResponseJobData} job.data
+ * @returns {import('../utils/stores').DataResponse} The updated DataResponse
  */
 export const processDataResponseJob = async (job) => {
   const { id, data: { orderId, dataResponseId, maximumBatchSize } } = job;

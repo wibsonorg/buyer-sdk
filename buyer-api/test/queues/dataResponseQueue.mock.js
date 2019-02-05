@@ -13,6 +13,10 @@ td.replace('../../src/utils/stores', {
   dataResponsesBatches,
 });
 
+const fakeQueue = { process: sinon.stub(), on: sinon.stub() };
+export const createQueue = sinon.stub().returns(fakeQueue);
+td.replace('../../src/queues/createQueue', { createQueue });
+
 export const addPrepareNotarizationJob = sinon.spy();
 td.replace('../../src/queues/notarizationQueue', { addPrepareNotarizationJob });
 
