@@ -8,6 +8,7 @@
     "build": "babel src -d dist",
     "serve": "node dist/index.js",
     "start": "nodemon src/index.js",
+    "e2e": "ava --tap e2e/**/*.e2e.js | faucet",
     "test": "ava --tap | faucet",
     "test:watch": "ava --watch",
     "test:coverage": "nyc npm test",
