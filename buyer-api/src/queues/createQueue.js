@@ -1,6 +1,5 @@
 import Queue from 'bull';
 import config from '../../config';
-import logger from '../utils/logger';
 
 const { url, prefix } = config.redis;
 export const createQueue = name => new Queue(name, url, {
@@ -15,5 +14,3 @@ export const createQueue = name => new Queue(name, url, {
     },
   },
 });
-
-createQueue.logger = logger;
