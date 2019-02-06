@@ -72,5 +72,6 @@ const router = Router();
  *         example: '["0xnotary-ethereum-address"]'
  */
 router.post('/', async (req, res) => res.json(await createDataOrder(req.body.dataOrder)));
+// TODO: validate notariesAddresses
 
 export default router;
