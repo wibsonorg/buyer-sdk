@@ -9,8 +9,8 @@ describe('POST /sign/close-data-order', () => {
 
   beforeEach(() => {
     config.contracts.chainId = 9697;
-    config.contracts.dataExchange.address = '0xf3b435d66a6156622e1b3c1a974d25cdbf6032aa';
-    config.contracts.dataExchange.closeDataOrder.gasLimit = 2000000;
+    config.contracts.DataExchange.address = '0xf3b435d66a6156622e1b3c1a974d25cdbf6032aa';
+    config.contracts.DataExchange.closeDataOrder.gasLimit = 2000000;
     config.buyer.privateKey = '123fa47078166dd487b92f856bfb4685dac280f486670248267450f10062f6e8';
   });
 
@@ -79,6 +79,6 @@ describe('POST /sign/close-data-order', () => {
     request(app)
       .post('/sign/close-data-order')
       .send({ nonce, gasPrice, params: { orderId } })
-      .expect(200, { signedTransaction: 'f88680830186a08094f3b435d66a6156622e1b3c1a974d25cdbf6032aa80a40b59ebd50000000000000000000000000000000000000000000000000000000000000001824be5a050c2c206b6c32d8a5963f6dbae73479e7f6cd1c78b987fce5eda48d373d60926a06a78ecfc2c062d63149e4b5f1f8e77ec5e31a843537fe62fc6702b8ab177b412' }, done);
+      .expect(200, { signedTransaction: 'f88980830186a0831e848094f3b435d66a6156622e1b3c1a974d25cdbf6032aa80a40b59ebd50000000000000000000000000000000000000000000000000000000000000001824be6a0d8972f02214ca7671880e7e22b3bdaec8ac41dd66758119ea7d2e1ab10ace2ada041154c1d94a1373fcd586744e955cbb3261fb64b47f89c7297d4d1b0fe2cb6da' }, done);
   });
 });
