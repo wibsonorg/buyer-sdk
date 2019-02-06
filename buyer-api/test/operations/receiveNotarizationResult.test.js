@@ -33,7 +33,7 @@ it('filters duplicated addresses', async (assert) => {
   assert.is(addNotarizacionResultJob.lastCall.lastArg.sellers.length, 2);
 });
 
-it('call receiveNotarizationResult with non-existent request', async (assert) => {
+it('throws exception on non-existent request', async (assert) => {
   assert.throws(() => receiveNotarizationResult(
     '2',
     someNotarizationResult,
