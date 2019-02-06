@@ -47,3 +47,9 @@ export const signCloseDataOrder = payload => client.post(
     timeout,
   },
 );
+
+// TODO: refactor upper function in order to use this factory function
+const createSigningMethod = endpoint => payload =>
+  client.post(`${url}${endpoint}`, { json: payload, timeout });
+
+export const signTransfer = createSigningMethod('/bat-pay/transfer');

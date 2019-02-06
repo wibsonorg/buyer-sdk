@@ -96,7 +96,7 @@ export function getPayData(list) {
   const bigNumber = new BigNumber(hexNumber);
 
   // console.log('toBigNumber', web3.toBigNumber(hexNumber));
-  console.log('toBigNumber', bigNumber);
+  // console.log('toBigNumber', bigNumber);
 
   return bigNumber;
 }

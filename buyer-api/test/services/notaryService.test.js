@@ -1,5 +1,5 @@
 import test from 'ava';
-import { } from './notaryService.mock';
+import { addTransactionJob } from './notaryService.mock';
 import { transferNotarizacionResult } from '../../src/services/notaryService';
 
 const it = test.serial;
@@ -27,9 +27,11 @@ export const someNotarizationResult = {
   lock: '0xde916ce0390bd5408b7a0a52aae818fd973858c7e9b5d368ec1e6a9b0db44cf9',
 };
 
-it('call transferNotarizacionResult', async (assert) => {
+it('calls addTransactionJob with correct payload', async (assert) => {
   const result = await transferNotarizacionResult(someNotarizationResult);
   assert.is(result.amount, 999);
   // TODO: make this work
   // assert.is(result.payData, '0x79ee611a8f7a448ca7406693beb1858a8ec7415a114');
+
+  assert.snapshot(addTransactionJob.lastCall.args, { id: 'addNotarizacionResultJob().args' });
 });

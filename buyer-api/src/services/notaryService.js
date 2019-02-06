@@ -79,7 +79,7 @@ const transferNotarizacionResult = async (notarizationResult) => {
     metadata: `${dx}${notarizationResult.orderId}`,
   };
 
-  await addTransactionJob('Tranfer', payload);
+  await addTransactionJob('Transfer', payload);
 
   return payload;
 };
