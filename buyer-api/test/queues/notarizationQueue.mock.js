@@ -7,11 +7,17 @@ td.replace('../../config', { buyerPublicBaseUrl });
 td.replace('uuid/v4', () => 'uuid');
 export const dataResponses = { fetch: sinon.stub(), store: sinon.spy() };
 export const dataResponsesBatches = { fetch: sinon.stub(), store: sinon.spy() };
-export const notarizations = { fetch: sinon.stub(), store: sinon.spy() };
+export const notarizations = {
+  fetch: sinon.stub(),
+  store: sinon.spy(),
+  update: sinon.spy(),
+};
+export const notaries = { fetch: sinon.stub() };
 td.replace('../../src/utils/stores', {
   dataResponses,
   dataResponsesBatches,
   notarizations,
+  notaries,
 });
 
 export const notarizationQueue = {
@@ -21,6 +27,9 @@ export const notarizationQueue = {
 };
 export const createQueue = sinon.stub().returns(notarizationQueue);
 td.replace('../../src/queues/createQueue', { createQueue });
+
+export const notarize = sinon.spy();
+td.replace('../../src/services/notaryService', { notarize });
 
 export const notaryAddress = '0xcccf90140fcc2d260186637d59f541e94ff9288f';
 
@@ -44,6 +53,29 @@ test.beforeEach(() => {
     decryptionKeyHash: '0x8122b2d07f65f4aaf949770358a2341410285968abb75a810a599a2563f8af38',
     status: 'queued',
     notaryAddress,
+  });
+  notarizations.fetch.returns({
+    notaryAddress,
+    request: {
+      callbackUrl: 'https://bapi.wibson.org/notarization-result/uuid',
+      orderId: 42,
+      sellers: [
+        {
+          decryptionKeyHash: '0xd48b012bc6c82d8ed80f88d88adf88ab61570d44ad6116f332a42cb7f4681515',
+          sellerAddress: '0xSellerA',
+          sellerId: 10,
+        },
+        {
+          decryptionKeyHash: '0x8122b2d07f65f4aaf949770358a2341410285968abb75a810a599a2563f8af38',
+          sellerAddress: '0xSellerB',
+          sellerId: 20,
+        },
+      ],
+    },
+    status: 'created',
+  });
+  notaries.fetch.returns({
+    apiUrl: 'https://napi.wibson.org',
   });
 });
 test.afterEach(sinon.reset);

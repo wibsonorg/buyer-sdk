@@ -1,9 +1,11 @@
 import uuid from 'uuid/v4';
 import { createQueue } from './createQueue';
+import { notarize } from '../services/notaryService';
 import {
   dataResponses,
   dataResponsesBatches as batches,
   notarizations,
+  notaries,
 } from '../utils/stores';
 import logger from '../utils/logger';
 import config from '../../config';
@@ -23,9 +25,9 @@ const createNotarizationRequest = (notaryAddress, orderId, sellers) => {
   const id = uuid();
   const callbackUrl = `${buyerPublicBaseUrl}/notarization-result/${id}`;
   const request = {
-    orderId, sellers, callbackUrl, status: 'created',
+    orderId, sellers, callbackUrl,
   };
-  notarizations.store(id, { notaryAddress, request });
+  notarizations.store(id, { notaryAddress, request, status: 'created' });
   return id;
 };
 
@@ -93,9 +95,18 @@ export const prepare = async ({ id, data: { batchId } }) => {
   return notarizationRequestId;
 };
 
-export const request = async ({ id }) => {
-  logger.info(`N[${id}] :: Request :: fake implementation`);
-  return true;
+export const request = async ({ data: { notarizationRequestId } }) => {
+  const { notaryAddress, request } = await notarizations.fetch(notarizationRequestId);
+  const notary = await notaries.fetch(notaryAddress);
+
+  await notarize(notary.apiUrl, notarizationRequestId, request);
+  await notarizations.update(
+    notarizationRequestId,
+    {
+      status: 'requested',
+      requestedAt: new Date(),
+    },
+  );
 };
 
 queue.process('prepare', prepare);

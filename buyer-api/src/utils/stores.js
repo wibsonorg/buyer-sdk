@@ -64,6 +64,10 @@ import { createLevelStore, createRedisStore } from './storage';
  * @property {NotarizationResult} result Notarization response Data Structure
  * @property {NotarizationStatus} status Current status of the Notarization
  */
+/**
+ * @typedef Notary
+ * @property {string} apiUrl Notary's API base URL
+ */
 /** @type {LevelStore<string, DataOrder>} */
 export const dataOrders = createLevelStore('data_orders');
 /** @type {LevelStore<string, DataResponse>} */
@@ -74,6 +78,8 @@ export const dataResponsesAccumulator = createLevelStore('data_responses_accumul
 export const dataResponsesBatches = createLevelStore('data_responses_batches');
 /** @type {LevelStore<string, Notarization>} */
 export const notarizations = createLevelStore('notarizations');
+/** @type {LevelStore<string, Notary>} */
+export const notaries = createLevelStore('notaries');
 /** @type {LevelStore<string, number>} */
 export const eventBlocks = createLevelStore('event_blocks');
 /** @type {LevelStore<string, BuyerInfo>} */

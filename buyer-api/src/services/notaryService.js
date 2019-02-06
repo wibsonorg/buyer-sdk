@@ -7,7 +7,7 @@ import client from 'request-promise-native';
  */
 const timeout = 10000;
 
-const consent = async (url, { buyerAddress, orderAddress }) => {
+export const consent = async (url, { buyerAddress, orderAddress }) => {
   const result = await client.get(
     `${url}/buyers/audit/consent/${buyerAddress}/${orderAddress}`,
     {
@@ -31,4 +31,13 @@ const consent = async (url, { buyerAddress, orderAddress }) => {
   };
 };
 
-export default { consent };
+export const notarize = async (url, id, payload) =>
+  client.post(
+    `${url}/request-notarization/${id}`,
+    {
+      json: payload,
+      timeout,
+    },
+  );
+
+export default { consent, notarize };
