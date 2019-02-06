@@ -26,7 +26,7 @@ const config = {
       createDataOrder: { gasLimit: env.TX_CREATE_DATA_ORDER_GAS_LIMIT },
       closeDataOrder: { gasLimit: env.TX_CLOSE_DATA_ORDER_GAS_LIMIT },
     },
-    BayPay: {
+    BatPay: {
       address: env.BAT_PAY_ADDRESS,
       transfer: { gasLimit: env.TX_BAT_PAY_TRANSFER_GAS_LIMIT },
     },
