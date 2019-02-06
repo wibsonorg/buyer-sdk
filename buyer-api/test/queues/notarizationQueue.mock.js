@@ -1,7 +1,10 @@
 import td from 'testdouble';
 import sinon from 'sinon';
 import test from 'ava';
+import config from '../../config';
 
+const buyerPublicBaseUrl = 'https://bapi.wibson.org';
+td.replace('../../config', { buyerPublicBaseUrl });
 td.replace('uuid/v4', () => 'uuid');
 export const dataResponses = { fetch: sinon.stub(), store: sinon.spy() };
 export const dataResponsesBatches = { fetch: sinon.stub(), store: sinon.spy() };

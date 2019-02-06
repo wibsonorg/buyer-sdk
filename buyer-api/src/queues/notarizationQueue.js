@@ -6,6 +6,9 @@ import {
   notarizations,
 } from '../utils/stores';
 import logger from '../utils/logger';
+import config from '../../config';
+
+const { buyerPublicBaseUrl } = config;
 
 /**
  * @async
@@ -18,7 +21,7 @@ import logger from '../utils/logger';
  */
 const createNotarizationRequest = (notaryAddress, orderId, sellers) => {
   const id = uuid();
-  const callbackUrl = `{baseUrl}/notarization-result/${id}`;
+  const callbackUrl = `${buyerPublicBaseUrl}/notarization-result/${id}`;
   const request = { orderId, sellers, callbackUrl, status: 'created' };
   notarizations.store(id, { notaryAddress, request });
   return id;

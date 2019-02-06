@@ -22,6 +22,8 @@ import { addTransactionJob } from '../queues/transactionQueue';
 export async function createDataOrder(dataOrder) {
   const id = uuidv4();
   const status = 'creating';
+  // (05-02-2019)
+  // TODO: use env.BUYER_PUBLIC_BASE_URL instead
   const buyerUrl = `${dataOrder.buyerUrl}/orders/${id}/offchain-data`;
   const { termsHash } = await getBuyerInfo(dataOrder.buyerInfoId);
   const termsAndConditionsHash = termsHash.startsWith('0x') ? termsHash : `0x${termsHash}`;
