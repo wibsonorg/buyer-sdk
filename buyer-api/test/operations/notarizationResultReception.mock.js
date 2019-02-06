@@ -5,8 +5,6 @@ import { someNotarizationRequest } from './notarizationResultReception.fixture';
 
 export const getNotarizationRequest = sinon.stub();
 td.replace('../../src/facades', { getNotarizationRequest });
-export const notarizationRequests = { put: sinon.spy() };
-td.replace('../../src/utils/stores', { notarizationRequests });
 export const addNotarizacionResultJob = sinon.spy();
 td.replace('../../src/queues/tranferNotarizationResultQueue', { addNotarizacionResultJob });
 

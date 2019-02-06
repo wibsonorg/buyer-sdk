@@ -9,15 +9,15 @@ import {
 
 const it = test.serial;
 
-it('call receiveNotarizationResult', async (assert) => {
+it('enqueues correct list of sellers for NotarizationResult', async (assert) => {
   receiveNotarizationResult(
     '1',
     someNotarizationResult,
   );
-  assert.snapshot(addNotarizacionResultJob.lastCall.args);
+  assert.snapshot(addNotarizacionResultJob.lastCall.args, { id: 'addNotarizacionResultJob().args' });
 });
 
-it('call receiveNotarizationResult with not requested addresses', async (assert) => {
+it('filters not requested addresses', async (assert) => {
   receiveNotarizationResult(
     '1',
     someNotarizationResultWithNonRequestedAddresses,
@@ -25,7 +25,7 @@ it('call receiveNotarizationResult with not requested addresses', async (assert)
   assert.is(addNotarizacionResultJob.lastCall.lastArg.sellers.length, 2);
 });
 
-it('call receiveNotarizationResult with duplicated addresses', async (assert) => {
+it('filters duplicated addresses', async (assert) => {
   receiveNotarizationResult(
     '1',
     someNotarizationResultWithDuplicatedAddresses,
