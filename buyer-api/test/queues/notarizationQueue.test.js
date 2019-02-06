@@ -9,7 +9,7 @@ import { prepare } from '../../src/queues/notarizationQueue';
 const job = {
   data: {
     batchId: 'batch1',
-  }
+  },
 };
 
 it('creates the NotarizationRequest', async (assert) => {

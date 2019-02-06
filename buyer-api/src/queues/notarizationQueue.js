@@ -22,10 +22,12 @@ const { buyerPublicBaseUrl } = config;
 const createNotarizationRequest = (notaryAddress, orderId, sellers) => {
   const id = uuid();
   const callbackUrl = `${buyerPublicBaseUrl}/notarization-result/${id}`;
-  const request = { orderId, sellers, callbackUrl, status: 'created' };
+  const request = {
+    orderId, sellers, callbackUrl, status: 'created',
+  };
   notarizations.store(id, { notaryAddress, request });
   return id;
-}
+};
 
 /**
  * @async
@@ -34,7 +36,7 @@ const createNotarizationRequest = (notaryAddress, orderId, sellers) => {
  * @param {string[]} dataResponseIds List of DataResponses IDs
  * @returns {import('../utils/stores').NotarizationSeller[]} List of sellers data
  */
-const collectNotarizationSellers = async (dataResponseIds) =>
+const collectNotarizationSellers = async dataResponseIds =>
   dataResponseIds.reduce(async (accumulatorPromise, dataResponseId) => {
     const accumulator = await accumulatorPromise;
     const {
@@ -46,6 +48,9 @@ const collectNotarizationSellers = async (dataResponseIds) =>
   }, Promise.resolve([]));
 
 const queue = createQueue('NotarizationQueue');
+
+export const addPrepareNotarizationJob = params => queue.add('prepare', params);
+export const addRequestNotarizationJob = params => queue.add('request', params);
 
 /**
  * @async
@@ -67,7 +72,7 @@ export const prepare = async ({ id, data: { batchId } }) => {
 
   if (status !== 'created') {
     logger.warn(`N[${id}] :: Prepare :: Can't prepare notarization (${status})`);
-    return;
+    return null;
   }
 
   const sellers = await collectNotarizationSellers(dataResponseIds);
@@ -82,7 +87,7 @@ export const prepare = async ({ id, data: { batchId } }) => {
     notaryAddress,
     dataResponseIds,
     status: 'processed',
-    ...rest
+    ...rest,
   });
 
   return notarizationRequestId;
@@ -98,6 +103,3 @@ queue.process('request', request);
 queue.on('failed', ({ id, name, failedReason }) => {
   logger.error(`N[${id}] :: ${name} :: Error thrown: ${failedReason} (will be retried)`);
 });
-
-export const addPrepareNotarizationJob = params => queue.add('prepare', params);
-export const addRequestNotarizationJob = params => queue.add('request', params);

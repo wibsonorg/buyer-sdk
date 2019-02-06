@@ -1,7 +1,6 @@
 import td from 'testdouble';
 import sinon from 'sinon';
 import test from 'ava';
-import config from '../../config';
 
 const buyerPublicBaseUrl = 'https://bapi.wibson.org';
 td.replace('../../config', { buyerPublicBaseUrl });
@@ -18,7 +17,7 @@ td.replace('../../src/utils/stores', {
 export const notarizationQueue = {
   add: sinon.spy(),
   process: sinon.stub(),
-  on: sinon.stub()
+  on: sinon.stub(),
 };
 export const createQueue = sinon.stub().returns(notarizationQueue);
 td.replace('../../src/queues/createQueue', { createQueue });
