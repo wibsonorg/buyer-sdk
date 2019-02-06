@@ -39,7 +39,7 @@ const consent = async (url, { buyerAddress, orderAddress }) => {
 };
 
 /**
- * @typedef {import('../operations/notarizationResultReception').NotarizationResult}
+ * @typedef {import('../operations/receiveNotarizationResult').NotarizationResult}
  *          NotarizationResult
  * @param {NotarizationResult} notarizationResult filtered results from notary
  */

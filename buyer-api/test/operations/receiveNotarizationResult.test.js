@@ -1,11 +1,11 @@
 import test from 'ava';
-import { addNotarizacionResultJob } from './notarizationResultReception.mock';
-import { receiveNotarizationResult } from '../../src/operations/notarizationResultReception';
+import { addNotarizacionResultJob } from './receiveNotarizationResult.mock';
+import { receiveNotarizationResult } from '../../src/operations/receiveNotarizationResult';
 import {
   someNotarizationResult,
   someNotarizationResultWithDuplicatedAddresses,
   someNotarizationResultWithNonRequestedAddresses,
-} from './notarizationResultReception.fixture';
+} from './receiveNotarizationResult.fixture';
 
 const it = test.serial;
 
