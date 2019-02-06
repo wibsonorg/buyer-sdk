@@ -9,7 +9,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /sign/create-data-order:
+ * /sign/bat-pay/transfer:
  *   post:
  *     description: |
  *       ## Sign BatPay.transfer Transaction
