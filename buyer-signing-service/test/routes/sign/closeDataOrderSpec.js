@@ -9,8 +9,8 @@ describe('POST /sign/close-data-order', () => {
 
   beforeEach(() => {
     config.contracts.chainId = 9697;
-    config.contracts.dataExchange.address = '0xf3b435d66a6156622e1b3c1a974d25cdbf6032aa';
-    config.contracts.dataExchange.closeDataOrder.gasLimit = 2000000;
+    config.contracts.DataExchange.address = '0xf3b435d66a6156622e1b3c1a974d25cdbf6032aa';
+    config.contracts.DataExchange.closeDataOrder.gasLimit = 2000000;
     config.buyer.privateKey = '123fa47078166dd487b92f856bfb4685dac280f486670248267450f10062f6e8';
   });
 
