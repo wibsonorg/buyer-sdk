@@ -57,5 +57,5 @@ it('fetchDataOrder > cast types correctly', async (assert) => {
     createdAt: 1548859901,
     closedAt: undefined,
   });
-  assert.snapshot(await fetchDataOrder(1));
+  assert.snapshot(await fetchDataOrder(1), { id: 'fetchDataOrder().returns' });
 });
