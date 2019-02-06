@@ -52,7 +52,7 @@ const collectNotarizationSellers = async dataResponseIds =>
 const queue = createQueue('NotarizationQueue');
 
 export const addPrepareNotarizationJob = params => queue.add('prepare', params);
-export const addRequestNotarizationJob = params => queue.add('request', params);
+export const addSendNotarizationJob = params => queue.add('send', params);
 
 /**
  * @async
@@ -83,7 +83,7 @@ export const prepare = async ({ id, data: { batchId } }) => {
     orderId,
     sellers,
   );
-  await addRequestNotarizationJob({ notarizationRequestId });
+  await addSendNotarizationJob({ notarizationRequestId });
   await batches.store(batchId, {
     orderId,
     notaryAddress,
@@ -95,7 +95,14 @@ export const prepare = async ({ id, data: { batchId } }) => {
   return notarizationRequestId;
 };
 
-export const request = async ({ data: { notarizationRequestId } }) => {
+/**
+ * @async
+ * @function send
+ *  Sends the NotarizationRequest to the Notary API
+ * @param {number} job.id
+ * @param {string} job.data.notarizationRequestId ID of the NotarizationRequest
+ */
+export const send = async ({ data: { notarizationRequestId } }) => {
   const { notaryAddress, request } = await notarizations.fetch(notarizationRequestId);
   const notary = await notaries.fetch(notaryAddress);
 
@@ -110,7 +117,7 @@ export const request = async ({ data: { notarizationRequestId } }) => {
 };
 
 queue.process('prepare', prepare);
-queue.process('request', request);
+queue.process('send', send);
 queue.on('failed', ({ id, name, failedReason }) => {
   logger.error(`N[${id}] :: ${name} :: Error thrown: ${failedReason} (will be retried)`);
 });

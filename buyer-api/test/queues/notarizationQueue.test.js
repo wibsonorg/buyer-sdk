@@ -3,10 +3,9 @@ import {
   notarizations,
   notarizationQueue,
   dataResponsesBatches as batches,
-  notaries,
   notarize,
 } from './notarizationQueue.mock';
-import { prepare, request } from '../../src/queues/notarizationQueue';
+import { prepare, send } from '../../src/queues/notarizationQueue';
 
 const job = {
   data: {
@@ -29,8 +28,8 @@ it('prepare > does not create the NotarizationRequest when Batch status is other
   assert.false(batches.store.called);
 });
 
-it('request > sends the NotarizationRequest', async (assert) => {
-  await request({ data: { notarizationRequestId: 'not-req-id' }});
+it('send > sends the NotarizationRequest', async (assert) => {
+  await send({ data: { notarizationRequestId: 'not-req-id' } });
   assert.snapshot(notarize.lastCall.args, { id: 'notarize().args' });
   const [id, { status }] = notarizations.update.lastCall.args;
   assert.is(id, 'not-req-id');
