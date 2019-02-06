@@ -83,7 +83,7 @@ router.post('/bat-pay/transfer', asyncError(async (req, res) => {
   const { contracts: { batPay } } = req.app.locals;
   const { nonce, gasPrice, params } = req.body;
   const sign = builder(batPay, 'transfer');
-  const { errors, result } = sign(nonce, gasPrice, { ...params, fromId: buyer.getId() })
+  const { errors, result } = sign(nonce, gasPrice, { ...params, fromId: buyer.getId() });
 
   if (errors) {
     res.boom.badData('Operation failed', { errors });
