@@ -16,6 +16,7 @@ import {
   notaries,
   dataOrders,
   buyerInfos,
+  notarizationResult,
 } from './routes';
 import checkAuthorization from './utils/checkAuthorization';
 
@@ -43,6 +44,7 @@ app.use(checkAuthorization);
 app.use('/account', account);
 app.use('/notaries', notaries);
 app.use('/infos', buyerInfos);
+app.use('/notarization-result', notarizationResult);
 
 app.use(errorHandler); // This MUST always go after any other app.use(...)
 
