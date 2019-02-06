@@ -28,4 +28,19 @@ const validateAddress = paramName => async (req, res, next) => {
   return undefined;
 };
 
+/**
+ * Middleware to check if an notarization result is valid or not.
+ * @public
+ */
+export const validateFields = () => (req, res, next) => {
+  const notarizationResult = req.body;
+
+  if (!notarizationResult.orderId || typeof notarizationResult.orderId !== 'number') {
+    res.boom.badData('Validation error', { errors: ['Field "orderId" is missing or malformed'] });
+    return undefined;
+  }
+
+  return next();
+};
+
 export { errorHandler, asyncError, validateAddress };
