@@ -1,11 +1,95 @@
+import uuid from 'uuid/v4';
 import { createQueue } from './createQueue';
-import { logger } from '../utils';
+import {
+  dataResponses,
+  dataResponsesBatches as batches,
+  notarizations,
+} from '../utils/stores';
+import logger from '../utils/logger';
+import config from '../../config';
+
+const { buyerPublicBaseUrl } = config;
+
+/**
+ * @async
+ * @function createNotarizationRequest
+ *  Creates a Notarization record containing the NotarizationRequest.
+ * @param {string} notaryAddress Notary's Ethereum address
+ * @param {number} orderId Order ID in the DataExchange contract
+ * @param {import('../utils/stores').NotarizationSeller[]} sellers List of sellers data
+ * @returns {string} ID of the Notarization record
+ */
+const createNotarizationRequest = (notaryAddress, orderId, sellers) => {
+  const id = uuid();
+  const callbackUrl = `${buyerPublicBaseUrl}/notarization-result/${id}`;
+  const request = {
+    orderId, sellers, callbackUrl, status: 'created',
+  };
+  notarizations.store(id, { notaryAddress, request });
+  return id;
+};
+
+/**
+ * @async
+ * @function collectNotarizationSellers
+ *  Fetches every DataResponse to extract the fields required for notarization.
+ * @param {string[]} dataResponseIds List of DataResponses IDs
+ * @returns {Promise[]} Promises that resolve to a list of sellers data
+ */
+const collectNotarizationSellers = dataResponseIds =>
+  dataResponseIds.map(async (dataResponseId) => {
+    const {
+      sellerAddress,
+      sellerId,
+      decryptionKeyHash,
+    } = await dataResponses.fetch(dataResponseId);
+    return { sellerAddress, sellerId, decryptionKeyHash };
+  });
 
 const queue = createQueue('NotarizationQueue');
 
-export const prepare = async ({ id }) => {
-  logger.info(`N[${id}] :: Prepare :: fake implementation`);
-  return true;
+export const addPrepareNotarizationJob = params => queue.add('prepare', params);
+export const addRequestNotarizationJob = params => queue.add('request', params);
+
+/**
+ * @async
+ * @function prepare
+ *  Builds the NotarizationRequest object from the DataResponse Batch and
+ *  enqueues another job to send the request to the notary.
+ * @param {number} job.id
+ * @param {string} job.data.batchId Batch ID from where the Notarization is built.
+ * @returns {string} The Notarization ID
+ */
+export const prepare = async ({ id, data: { batchId } }) => {
+  const {
+    orderId,
+    notaryAddress,
+    dataResponseIds,
+    status,
+    ...rest
+  } = await batches.fetch(batchId);
+
+  if (status !== 'created') {
+    logger.warn(`N[${id}] :: Prepare :: Can't prepare notarization (${status})`);
+    return null;
+  }
+
+  const sellers = await Promise.all(collectNotarizationSellers(dataResponseIds));
+  const notarizationRequestId = await createNotarizationRequest(
+    notaryAddress,
+    orderId,
+    sellers,
+  );
+  await addRequestNotarizationJob({ notarizationRequestId });
+  await batches.store(batchId, {
+    orderId,
+    notaryAddress,
+    dataResponseIds,
+    status: 'processed',
+    ...rest,
+  });
+
+  return notarizationRequestId;
 };
 
 export const request = async ({ id }) => {
@@ -18,6 +102,3 @@ queue.process('request', request);
 queue.on('failed', ({ id, name, failedReason }) => {
   logger.error(`N[${id}] :: ${name} :: Error thrown: ${failedReason} (will be retried)`);
 });
-
-export const addPrepareNotarizationJob = params => queue.add('prepare', params);
-export const addRequestNotarizationJob = params => queue.add('request', params);
