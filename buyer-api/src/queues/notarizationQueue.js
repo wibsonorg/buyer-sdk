@@ -34,18 +34,17 @@ const createNotarizationRequest = (notaryAddress, orderId, sellers) => {
  * @function collectNotarizationSellers
  *  Fetches every DataResponse to extract the fields required for notarization.
  * @param {string[]} dataResponseIds List of DataResponses IDs
- * @returns {import('../utils/stores').NotarizationSeller[]} List of sellers data
+ * @returns {Promise[]} Promises that resolve to a list of sellers data
  */
-const collectNotarizationSellers = async dataResponseIds =>
-  dataResponseIds.reduce(async (accumulatorPromise, dataResponseId) => {
-    const accumulator = await accumulatorPromise;
+const collectNotarizationSellers = dataResponseIds =>
+  dataResponseIds.map(async (dataResponseId) => {
     const {
       sellerAddress,
       sellerId,
       decryptionKeyHash,
     } = await dataResponses.fetch(dataResponseId);
-    return [...accumulator, { sellerAddress, sellerId, decryptionKeyHash }];
-  }, Promise.resolve([]));
+    return { sellerAddress, sellerId, decryptionKeyHash };
+  });
 
 const queue = createQueue('NotarizationQueue');
 
@@ -75,7 +74,7 @@ export const prepare = async ({ id, data: { batchId } }) => {
     return null;
   }
 
-  const sellers = await collectNotarizationSellers(dataResponseIds);
+  const sellers = await Promise.all(collectNotarizationSellers(dataResponseIds));
   const notarizationRequestId = await createNotarizationRequest(
     notaryAddress,
     orderId,
