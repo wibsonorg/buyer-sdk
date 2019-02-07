@@ -35,7 +35,7 @@ it('reads all stored values', async (assert) => {
   try {
     await Promise.all([
       Promise.all(records.map(({ id }) => store.fetch(id))),
-      Promise.all(records.map(({ id, value }) => store.store(value, id))),
+      Promise.all(records.map(({ value }) => store.fetch(value))),
     ]);
   } catch (err) {
     assert.fail(err.message);
