@@ -18,10 +18,10 @@ const job = {
 
 it('accumulates the DataResponse', async (assert) => {
   const { status } = await processDataResponseJob(job, done);
-  assert.snapshot(accumulator.store.lastCall.args);
+  assert.snapshot(accumulator.store.lastCall.args, { id: 'accumulator.store().args' });
   assert.false(batches.store.called);
   assert.false(addPrepareNotarizationJob.called);
-  assert.snapshot(dataResponses.store.lastCall.args);
+  assert.snapshot(dataResponses.store.lastCall.args, { id: 'dataResponses.store().args' });
   assert.is(status, 'batched');
 });
 
@@ -35,9 +35,9 @@ it('adds a job to prepare the notarization', async (assert) => {
     },
     done,
   );
-  assert.snapshot(batches.store.lastCall.args);
-  assert.snapshot(addPrepareNotarizationJob.lastCall.args);
-  assert.snapshot(dataResponses.store.lastCall.args);
+  assert.snapshot(batches.store.lastCall.args, { id: 'batches.store().args' });
+  assert.snapshot(addPrepareNotarizationJob.lastCall.args, { id: 'addPrepareNotarizationJob().args' });
+  assert.snapshot(dataResponses.store.lastCall.args, { id: 'dataResponses.store().args' });
   assert.is(status, 'batched');
 });
 

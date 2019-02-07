@@ -65,15 +65,15 @@ it('returns an error when the notary is not in the preferred ones', async (asser
 
 it('stores the DataResponse', async (assert) => {
   await addDataResponse(dataOrder, someDataResponse);
-  assert.snapshot(dataResponses.store.lastCall.args);
+  assert.snapshot(dataResponses.store.lastCall.args, { id: 'dataResponses.store().args' });
 });
 
 it('stores the Data in S3', async (assert) => {
   await addDataResponse(dataOrder, someDataResponse);
-  assert.snapshot(putData.lastCall.args);
+  assert.snapshot(putData.lastCall.args, { id: 's3.putData().args' });
 });
 
 it('adds job to process the DataResponse', async (assert) => {
   await addDataResponse(dataOrder, someDataResponse);
-  assert.snapshot(addProcessDataResponseJob.lastCall.args);
+  assert.snapshot(addProcessDataResponseJob.lastCall.args, { id: 'addProcessDataResponseJob().args' });
 });
