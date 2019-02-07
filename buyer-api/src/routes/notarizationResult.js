@@ -7,7 +7,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /notarization-result/{notarizationRequestId}
+ * /notarization-result/{notarizationRequestId}:
  *   post:
  *     parameters:
  *       - name: notarizationRequestId
