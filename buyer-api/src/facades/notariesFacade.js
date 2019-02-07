@@ -7,7 +7,7 @@ import { notaries } from '../utils/stores';
  * @throws When can not connect to blockchain or cache is not set up correctly.
  * @returns {Promise} Promise which resolves to the notary's information.
  */
-const getNotaryInfo = async (address) => notaries.fetch(address);
+const getNotaryInfo = async address => notaries.fetch(address);
 
 /**
  * @async

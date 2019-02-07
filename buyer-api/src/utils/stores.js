@@ -89,7 +89,7 @@ export const notaries = {
       address: 'fake-notary-address',
       notarizationUrl: 'http://localhost:9200/request-notarization',
       isRegistered: false,
-    }
+    },
   },
   async fetch(id) {
     return this.collection[id];
@@ -97,7 +97,7 @@ export const notaries = {
   async list() {
     return Object.values(this.collection);
   },
-}
+};
 /** @type {LevelStore<string, number>} */
 export const eventBlocks = createLevelStore('event_blocks');
 /** @type {LevelStore<string, BuyerInfo>} */
