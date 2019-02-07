@@ -47,19 +47,19 @@ it('calls the read stream on list', async (assert) => {
   const store = createLevelStore('someNamespace');
   const list = await store.list();
   assert.true(store.createReadStream.calledOnce);
-  assert.snapshot(list);
+  assert.snapshot(list, { id: 'store.list().returns' });
 });
 
 it('calls the key stream on listKeys', async (assert) => {
   const store = createLevelStore('someNamespace');
   const list = await store.listKeys();
   assert.true(store.createKeyStream.calledOnce);
-  assert.snapshot(list);
+  assert.snapshot(list, { id: 'store.listKeys().returns' });
 });
 
 it('calls the value stream on listValues', async (assert) => {
   const store = createLevelStore('someNamespace');
   const list = await store.listValues();
   assert.true(store.createValueStream.calledOnce);
-  assert.snapshot(list);
+  assert.snapshot(list, { id: 'store.listValues().returns' });
 });

@@ -9,5 +9,5 @@ import * as stores from './stores';
 export { web3, blockchain, stores, cache, logger, fetchToken, checkAuthorization };
 // TODO: remove, this should be for internal use only
 export { createRedisStore } from './storage';
-export { errorHandler, asyncError, validateAddress } from './routes';
+export { errorHandler, asyncError, validateAddress, validateFields } from './routes';
 export { wibcoin, dataExchange, dataOrderAt } from './contracts';
