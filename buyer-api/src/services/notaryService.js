@@ -32,12 +32,6 @@ export const consent = async (url, { buyerAddress, orderAddress }) => {
 };
 
 export const notarize = async (url, id, payload) =>
-  client.post(
-    `${url}/request-notarization/${id}`,
-    {
-      json: payload,
-      timeout,
-    },
-  );
+  client.post(`${url}/${id}`, { json: payload, timeout });
 
 export default { consent, notarize };

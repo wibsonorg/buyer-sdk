@@ -75,7 +75,7 @@ test.beforeEach(() => {
     status: 'created',
   });
   notaries.fetch.returns({
-    apiUrl: 'https://napi.wibson.org',
+    notarizationUrl: 'https://napi.wibson.org/req-not',
   });
 });
 test.afterEach(sinon.reset);

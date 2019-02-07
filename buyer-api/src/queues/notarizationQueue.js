@@ -103,9 +103,9 @@ export const prepare = async ({ id, data: { batchId } }) => {
  */
 export const send = async ({ data: { notarizationRequestId } }) => {
   const { notaryAddress, request } = await notarizations.fetch(notarizationRequestId);
-  const notary = await notaries.fetch(notaryAddress);
+  const { notarizationUrl } = await notaries.fetch(notaryAddress);
 
-  await notarize(notary.apiUrl, notarizationRequestId, request);
+  await notarize(notarizationUrl, notarizationRequestId, request);
   await notarizations.update(
     notarizationRequestId,
     {

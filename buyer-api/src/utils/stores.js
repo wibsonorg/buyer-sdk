@@ -66,7 +66,7 @@ import { createLevelStore, createRedisStore } from './storage';
  */
 /**
  * @typedef Notary
- * @property {string} apiUrl Notary's API base URL
+ * @property {string} notarizationUrl Notary's API URL used to request notarizations
  */
 /** @type {LevelStore<string, DataOrder>} */
 export const dataOrders = createLevelStore('data_orders');
@@ -78,8 +78,26 @@ export const dataResponsesAccumulator = createLevelStore('data_responses_accumul
 export const dataResponsesBatches = createLevelStore('data_responses_batches');
 /** @type {LevelStore<string, Notarization>} */
 export const notarizations = createLevelStore('notarizations');
-/** @type {LevelStore<string, Notary>} */
-export const notaries = createLevelStore('notaries');
+/**
+ * TODO: This will be removed when the Notary sync is added.
+ * @type {LevelStore<string, Notary>}
+ */
+export const notaries = {
+  collection: {
+    'fake-notary-address': {
+      name: 'Fake Notary',
+      address: 'fake-notary-address',
+      notarizationUrl: 'http://localhost:9200/request-notarization',
+      isRegistered: false,
+    }
+  },
+  async fetch(id) {
+    return this.collection[id];
+  },
+  async list() {
+    return Object.values(this.collection);
+  },
+}
 /** @type {LevelStore<string, number>} */
 export const eventBlocks = createLevelStore('event_blocks');
 /** @type {LevelStore<string, BuyerInfo>} */
