@@ -51,7 +51,7 @@ const collectNotarizationSellers = dataResponseIds =>
 const queue = createQueue('NotarizationQueue');
 
 export const addPrepareNotarizationJob = params => queue.add('prepare', params);
-export const addSendNotarizationJob = params => queue.add('send', params);
+const addSendNotarizationJob = params => queue.add('send', params);
 
 /**
  * @async
