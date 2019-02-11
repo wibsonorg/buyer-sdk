@@ -1,11 +1,11 @@
 import test from 'ava';
-import { addTransactionJob } from './notarizationResultReception.mock';
-import { receiveNotarizationResult } from '../../src/operations/notarizationResultReception';
+import { addNotarizacionResultJob } from './receiveNotarizationResult.mock';
+import { receiveNotarizationResult } from '../../src/operations/receiveNotarizationResult';
 import {
   someNotarizationResult,
   someNotarizationResultWithDuplicatedAddresses,
   someNotarizationResultWithNonRequestedAddresses,
-} from './notarizationResultReception.fixture';
+} from './receiveNotarizationResult.fixture';
 
 const it = test.serial;
 
@@ -14,7 +14,7 @@ it('enqueues correct list of sellers for NotarizationResult', async (assert) => 
     '1',
     someNotarizationResult,
   );
-  assert.snapshot(addTransactionJob.lastCall.args, { id: 'addTransactionJob().args' });
+  assert.snapshot(addNotarizacionResultJob.lastCall.args, { id: 'addNotarizacionResultJob().args' });
 });
 
 it('filters not requested addresses', async (assert) => {
@@ -22,7 +22,7 @@ it('filters not requested addresses', async (assert) => {
     '1',
     someNotarizationResultWithNonRequestedAddresses,
   );
-  assert.is(addTransactionJob.lastCall.lastArg.sellers.length, 2);
+  assert.is(addNotarizacionResultJob.lastCall.lastArg.sellers.length, 2);
 });
 
 it('filters duplicated addresses', async (assert) => {
@@ -30,10 +30,10 @@ it('filters duplicated addresses', async (assert) => {
     '1',
     someNotarizationResultWithDuplicatedAddresses,
   );
-  assert.is(addTransactionJob.lastCall.lastArg.sellers.length, 2);
+  assert.is(addNotarizacionResultJob.lastCall.lastArg.sellers.length, 2);
 });
 
-it('call receiveNotarizationResult with non-existent request', async (assert) => {
+it('throws exception on non-existent request', async (assert) => {
   assert.throws(() => receiveNotarizationResult(
     '2',
     someNotarizationResult,
