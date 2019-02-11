@@ -105,9 +105,9 @@
       "!**/*.performance.test.js"
     ],
     "sources": [
-			"test/**/*",
-			"e2e/**/*"
-		],
+      "test/**/*",
+      "e2e/**/*"
+    ],
     "cache": true,
     "concurrency": 5,
     "failWithoutAssertions": false,
