@@ -58,7 +58,7 @@ export const transferNotarizationResult = async (notarizationRequestId) => {
     lock,
     metadata: numberToHex(orderId),
     fee,
-    newCount: '0x00',
+    newCount: '0x',
     roothash: '0x',
   };
 
