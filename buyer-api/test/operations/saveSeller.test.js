@@ -1,6 +1,6 @@
 import test from 'ava';
-import { sellers } from './sellerService.mock';
-import { saveSeller } from '../../src/services/sellerService';
+import { sellers } from './saveSeller.mock';
+import { saveSeller } from '../../src/operations/saveSeller';
 
 const it = test.serial;
 
