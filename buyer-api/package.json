@@ -8,10 +8,11 @@
     "build": "babel src -d dist",
     "serve": "node dist/index.js",
     "start": "nodemon src/index.js",
-    "e2e": "ava --tap e2e/**/*.e2e.js | faucet",
+    "e2e": "ava -t **/*.e2e.js | faucet",
     "test": "ava --tap | faucet",
     "test:watch": "ava --watch",
     "test:coverage": "nyc npm test",
+    "test:performance": "ava -t **/*.test.js | faucet",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "publish": "scripts/publish.sh $npm_package_name",
@@ -100,8 +101,13 @@
   },
   "ava": {
     "files": [
-      "test/**/*.test.js"
+      "**/*.test.js",
+      "!**/*.performance.test.js"
     ],
+    "sources": [
+			"test/**/*",
+			"e2e/**/*"
+		],
     "cache": true,
     "concurrency": 5,
     "failWithoutAssertions": false,
