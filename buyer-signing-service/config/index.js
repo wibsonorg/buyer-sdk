@@ -21,14 +21,19 @@ const config = {
   },
   contracts: {
     chainId: env.CHAIN_ID,
-    dataExchange: {
+    DataExchange: {
       address: env.DATA_EXCHANGE_ADDRESS,
       createDataOrder: { gasLimit: env.TX_CREATE_DATA_ORDER_GAS_LIMIT },
       closeDataOrder: { gasLimit: env.TX_CLOSE_DATA_ORDER_GAS_LIMIT },
     },
+    BatPay: {
+      address: env.BAT_PAY_ADDRESS,
+      transfer: { gasLimit: env.TX_BAT_PAY_TRANSFER_GAS_LIMIT },
+    },
   },
   buyer: {
     privateKey: env.BUYER_PRIVATE_KEY,
+    id: env.BUYER_ID,
   },
 };
 

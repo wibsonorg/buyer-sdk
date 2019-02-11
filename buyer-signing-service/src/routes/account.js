@@ -18,6 +18,7 @@ router.get('/', async (_req, res) => {
   res.json({
     address: buyer.getAddress(),
     publicKey: buyer.getPublicKey(),
+    id: buyer.getId(),
   });
 });
 

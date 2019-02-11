@@ -1,9 +1,11 @@
 import uuid from 'uuid/v4';
 import { createQueue } from './createQueue';
+import { notarize } from '../services/notaryService';
 import {
   dataResponses,
   dataResponsesBatches as batches,
   notarizations,
+  notaries,
 } from '../utils/stores';
 import logger from '../utils/logger';
 import config from '../../config';
@@ -23,9 +25,9 @@ const createNotarizationRequest = (notaryAddress, orderId, sellers) => {
   const id = uuid();
   const callbackUrl = `${buyerPublicBaseUrl}/notarization-result/${id}`;
   const request = {
-    orderId, sellers, callbackUrl, status: 'created',
+    orderId, sellers, callbackUrl,
   };
-  notarizations.store(id, { notaryAddress, request });
+  notarizations.store(id, { notaryAddress, request, status: 'created' });
   return id;
 };
 
@@ -49,7 +51,7 @@ const collectNotarizationSellers = dataResponseIds =>
 const queue = createQueue('NotarizationQueue');
 
 export const addPrepareNotarizationJob = params => queue.add('prepare', params);
-export const addRequestNotarizationJob = params => queue.add('request', params);
+const addSendNotarizationJob = params => queue.add('send', params);
 
 /**
  * @async
@@ -80,7 +82,7 @@ export const prepare = async ({ id, data: { batchId } }) => {
     orderId,
     sellers,
   );
-  await addRequestNotarizationJob({ notarizationRequestId });
+  await addSendNotarizationJob({ notarizationRequestId });
   await batches.store(batchId, {
     orderId,
     notaryAddress,
@@ -92,13 +94,29 @@ export const prepare = async ({ id, data: { batchId } }) => {
   return notarizationRequestId;
 };
 
-export const request = async ({ id }) => {
-  logger.info(`N[${id}] :: Request :: fake implementation`);
-  return true;
+/**
+ * @async
+ * @function send
+ *  Sends the NotarizationRequest to the Notary API
+ * @param {number} job.id
+ * @param {string} job.data.notarizationRequestId ID of the NotarizationRequest
+ */
+export const send = async ({ data: { notarizationRequestId } }) => {
+  const { notaryAddress, request } = await notarizations.fetch(notarizationRequestId);
+  const { notarizationUrl } = await notaries.fetch(notaryAddress);
+
+  await notarize(notarizationUrl, notarizationRequestId, request);
+  await notarizations.update(
+    notarizationRequestId,
+    {
+      status: 'requested',
+      requestedAt: new Date(),
+    },
+  );
 };
 
 queue.process('prepare', prepare);
-queue.process('request', request);
+queue.process('send', send);
 queue.on('failed', ({ id, name, failedReason }) => {
   logger.error(`N[${id}] :: ${name} :: Error thrown: ${failedReason} (will be retried)`);
 });

@@ -1,4 +1,4 @@
-import { addTransactionJob } from '../queues/transactionQueue';
+import { addNotarizacionResultJob } from '../queues/tranferNotarizationResultQueue';
 import { getNotarizationRequest } from '../facades';
 
 /**
@@ -18,6 +18,18 @@ import { getNotarizationRequest } from '../facades';
  */
 
 /**
+ * Requeriment for notarization
+ * @typedef {Object} NotarizationResult
+ * @property {NumberLike} orderId - tracking Id for the order
+ * @property {String} notaryAddress - address for the notary
+ * @property {number} notarizationPercentage - notarized seller percentage
+ * @property {number} notarizationFee - fee for the notarized data
+ * @property {String} payDataHash - Hash for the payData
+ * @property {String} lock - hash used to lock a batch of sellers to validate decryption key
+ * @property {SellersInNotarizationRequest[]} sellers - list of sellers
+ */
+
+/**
  * @function receiveNotarizationResult
  * take notarization result, validate and enqueue for transfer
  * WARNING keep in mind that notarizationResult will be updated with the validated sellers
@@ -34,7 +46,7 @@ export function receiveNotarizationResult(notarizationRequestId, notarizationRes
     throw new Error('Notarization request not found');
   }
 
-  return addTransactionJob('TranferNotarizationResult', {
+  return addNotarizacionResultJob({
     ...notarizationResult,
     sellers: notarizationResult.sellers.filter((seller, index, self) =>
       index === self.findIndex(s => (

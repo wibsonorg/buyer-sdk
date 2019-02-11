@@ -1,7 +1,6 @@
 import express from 'express';
 import { asyncError, validateFields } from '../utils';
-import { receiveNotarizationResult } from '../operations/notarizationResultReception';
-
+import { receiveNotarizationResult } from '../operations/receiveNotarizationResult';
 
 const router = express.Router();
 
