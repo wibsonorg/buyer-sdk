@@ -1,10 +1,8 @@
 import client from 'request-promise-native';
-
-import logger from '../utils/logger';
-import config from '../../config';
-import { dataOrders, notarizations } from '../utils/stores';
 import { addTransactionJob } from '../queues/transactionQueue';
-import { getPayData } from '../utils/blockchain';
+import { notarizations } from '../utils/stores';
+import { getPayData, numberToHex } from '../utils/blockchain';
+import logger from '../utils/logger';
 
 /**
  * We are not going to wait the service to respond mora than `timeout`
@@ -24,8 +22,8 @@ export const notarize = async (url, id, payload) =>
  *          NotarizationResult
  * @param {NotarizationResult} notarizationResult filtered results from notary
  */
-export const transferNotarizacionResult = async (notarizationRequestId) => {
-  logger.info('transferNotarizacionResult');
+export const transferNotarizationResult = async (notarizationRequestId) => {
+  logger.info(`transferNotarizacionResult :: ${notarizationRequestId}`);
   /**
    * 4.4 The transfer operation will receive the NotarizationResult,
    * it will build the data payload containing:
@@ -45,22 +43,23 @@ export const transferNotarizacionResult = async (notarizationRequestId) => {
    */
   // data payload
   const {
+    price: amount,
     result: {
+      notarizationFee: fee,
       orderId,
       sellers,
       lock,
     },
-  } = notarizations.fetch(notarizationRequestId);
-  const { dataExchange: dx } = config.contracts.addresses;
-
-  // search for data order
-  const { price } = await dataOrders.fetch(orderId);
+  } = await notarizations.fetch(notarizationRequestId);
 
   const payload = {
-    amount: price,
-    payData: getPayData(sellers.map(s => s.id)),
+    amount,
+    payData: numberToHex(getPayData(sellers.map(s => s.id))),
     lock,
-    metadata: `${dx}${orderId}`,
+    metadata: numberToHex(orderId),
+    fee,
+    newCount: '0x00',
+    roothash: '0x',
   };
 
   await addTransactionJob('Transfer', payload);

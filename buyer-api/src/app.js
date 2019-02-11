@@ -39,12 +39,12 @@ app.use('/health', health);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
 app.get('/api-docs.json', (_req, res) => res.json(schema));
 app.use('/orders', dataOrders);
+app.use('/notarization-result', notarizationResult);
 // This middleware MUST always go after of authentication or fail
 app.use(checkAuthorization);
 app.use('/account', account);
 app.use('/notaries', notaries);
 app.use('/infos', buyerInfos);
-app.use('/notarization-result', notarizationResult);
 
 app.use(errorHandler); // This MUST always go after any other app.use(...)
 

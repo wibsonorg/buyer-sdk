@@ -35,8 +35,8 @@ export const getAccount = () => client.get(`${url}/account`, {
 const createSigningMethod = endpoint => payload =>
   client.post(`${url}${endpoint}`, { json: payload, timeout });
 
-export const signCreateDataOrder = createSigningMethod('/create-data-order');
+export const signCreateDataOrder = createSigningMethod('/sign/create-data-order');
 
-export const signCloseDataOrder = createSigningMethod('/close-data-order');
+export const signCloseDataOrder = createSigningMethod('/sign/close-data-order');
 
-export const signTransfer = createSigningMethod('/bat-pay/transfer');
+export const signTransfer = createSigningMethod('/sign/bat-pay/transfer');
