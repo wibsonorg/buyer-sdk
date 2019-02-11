@@ -42,7 +42,7 @@ import { createLevelStore, createRedisStore } from './storage';
  * (05-02-2019)
  * TODO: This definitions will be merged with the work of Pablo and Facu.
  *
- * @typedef NotarizationSeller
+ * @typedef NotarizationRequestSeller
  * @property {string} address Seller's Ethereum address
  * @property {number} id Seller ID in the DataExchange contract
  * @property {string} decryptionKeyHash Hash of the key that decrypts the information
@@ -50,10 +50,22 @@ import { createLevelStore, createRedisStore } from './storage';
  * @typedef NotarizationRequest
  * @property {number} orderId Order ID in the DataExchange contract
  * @property {string} callbackUrl Url where the Notary has to respond
- * @property {NotarizationSeller[]} sellers List of NotarizationSellers
+ * @property {NotarizationRequestSeller[]} sellers List of NotarizationRequestSeller
+ *
+ * @typedef NotarizationResultSeller
+ * @property {string} address Seller's Ethereum address
+ * @property {number} id Seller ID in the DataExchange contract
+ * @property {string} result The result of the notarization for the current seller
+ * @property {string} decryptionKeyEncryptedWithMasterKey Encrypted key
  *
  * @typedef NotarizationResult
  * @property {number} orderId Order ID in the DataExchange contract
+ * @property {String} notaryAddress address for the notary
+ * @property {number} notarizationPercentage notarized seller percentage
+ * @property {number} notarizationFee fee for the notarized data
+ * @property {String} payDataHash Hash for the payData
+ * @property {String} lock Hash used to lock a batch of sellers to validate decryption key
+ * @property {NotarizationResultSeller[]} sellers List of NotarizationResultSeller
  *
  * @typedef {"created" | "requested" | "responded"} NotarizationStatus
  * @typedef Notarization

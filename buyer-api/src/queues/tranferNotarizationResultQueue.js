@@ -1,28 +1,18 @@
 
 import { createQueue } from './createQueue';
 import { transferNotarizacionResult } from '../services/notaryService';
-import { logger } from '../utils';
+import logger from '../utils/logger';
 
-const process = async ({ id, data: { notarizationResult } }) => {
-  logger.info(`DR[${id}] :: Process :: ${notarizationResult}`);
-  return transferNotarizacionResult(notarizationResult);
+const process = async ({ id, data: { notarizationRequestId } }) => {
+  logger.info(`DR[${id}] :: Process :: ${notarizationRequestId}`);
+  return transferNotarizacionResult(notarizationRequestId);
 };
 
-const createTranferNotarizationResultQueue = () => {
-  const queue = createQueue('TranferNotarizationResult');
+const queue = createQueue('TranferNotarizationResult');
+queue.process(process);
+queue.on('failed', ({ id, failedReason }) => {
+  logger.error(`DR[${id}] :: Process :: ${failedReason} (will be retried)`);
+});
 
-  queue.process(process);
-
-  queue.on('failed', ({ id, failedReason }) => {
-    logger.error(`DR[${id}] :: Process :: Error thrown: ${failedReason} (will be retried)`);
-  });
-
-  return queue;
-};
-
-const queue = createTranferNotarizationResultQueue();
-
-const addNotarizacionResultJob = notarizationResult =>
+export const addNotarizationResultJob = notarizationResult =>
   queue.add({ notarizationResult });
-
-export { addNotarizacionResultJob, queue as tranferNotarizationResultQueue };

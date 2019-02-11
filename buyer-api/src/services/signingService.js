@@ -32,24 +32,11 @@ export const getAccount = () => client.get(`${url}/account`, {
   timeout,
 });
 
-export const signCreateDataOrder = payload => client.post(
-  `${url}/sign/create-data-order`,
-  {
-    json: payload,
-    timeout,
-  },
-);
-
-export const signCloseDataOrder = payload => client.post(
-  `${url}/sign/close-data-order`,
-  {
-    json: payload,
-    timeout,
-  },
-);
-
-// TODO: refactor upper function in order to use this factory function
 const createSigningMethod = endpoint => payload =>
   client.post(`${url}${endpoint}`, { json: payload, timeout });
+
+export const signCreateDataOrder = createSigningMethod('/create-data-order');
+
+export const signCloseDataOrder = createSigningMethod('/close-data-order');
 
 export const signTransfer = createSigningMethod('/bat-pay/transfer');
