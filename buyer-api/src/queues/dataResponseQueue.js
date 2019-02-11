@@ -65,7 +65,11 @@ const queue = createQueue('DataResponseQueue');
  * @returns {import('../utils/stores').DataResponse} The updated DataResponse
  */
 export const processDataResponseJob = async (job) => {
-  const { id, data: { orderId, price, dataResponseId, maximumBatchSize } } = job;
+  const {
+    id, data: {
+      orderId, price, dataResponseId, maximumBatchSize,
+    },
+  } = job;
 
   const dataResponse = await dataResponses.fetch(dataResponseId);
   const { status, notaryAddress } = dataResponse;

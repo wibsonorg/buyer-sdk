@@ -28,7 +28,9 @@ const createNotarizationRequest = (notaryAddress, orderId, price, sellers) => {
   const request = {
     orderId, sellers, callbackUrl,
   };
-  notarizations.store(id, { notaryAddress, price, request, status: 'created' });
+  notarizations.store(id, {
+    notaryAddress, price, request, status: 'created',
+  });
   return id;
 };
 
