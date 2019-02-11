@@ -38,6 +38,36 @@ import { createLevelStore, createRedisStore } from './storage';
  * @property {string[]} dataResponseIds List of DataResponses IDs
  * @property {DataResponseBatchStatus} status Current status of the Batch
  */
+/**
+ * (05-02-2019)
+ * TODO: This definitions will be merged with the work of Pablo and Facu.
+ *
+ * @typedef NotarizationSeller
+ * @property {string} address Seller's Ethereum address
+ * @property {number} id Seller ID in the DataExchange contract
+ * @property {string} decryptionKeyHash Hash of the key that decrypts the information
+ *
+ * @typedef NotarizationRequest
+ * @property {number} orderId Order ID in the DataExchange contract
+ * @property {string} callbackUrl Url where the Notary has to respond
+ * @property {NotarizationSeller[]} sellers List of NotarizationSellers
+ *
+ * @typedef NotarizationResult
+ * @property {number} orderId Order ID in the DataExchange contract
+ *
+ * @typedef {"created" | "requested" | "responded"} NotarizationStatus
+ * @typedef Notarization
+ * @property {string} notaryAddress Notary's Ethereum address
+ * @property {Date} requestedAt Date and Time when the request's been issued
+ * @property {Date} respondedAt Date and Time when the result's been received
+ * @property {NotarizationRequest} request Data Structure to request notarization
+ * @property {NotarizationResult} result Notarization response Data Structure
+ * @property {NotarizationStatus} status Current status of the Notarization
+ */
+/**
+ * @typedef Notary
+ * @property {string} notarizationUrl Notary's API URL used to request notarizations
+ */
 /** @type {LevelStore<string, DataOrder>} */
 export const dataOrders = createLevelStore('data_orders');
 /** @type {LevelStore<string, DataResponse>} */
@@ -46,6 +76,28 @@ export const dataResponses = createLevelStore('data_responses');
 export const dataResponsesAccumulator = createLevelStore('data_responses_accumulator');
 /** @type {LevelStore<string, DataResponseBatch>} */
 export const dataResponsesBatches = createLevelStore('data_responses_batches');
+/** @type {LevelStore<string, Notarization>} */
+export const notarizations = createLevelStore('notarizations');
+/**
+ * TODO: This will be removed when the Notary sync is added.
+ * @type {LevelStore<string, Notary>}
+ */
+export const notaries = {
+  collection: {
+    'fake-notary-address': {
+      name: 'Fake Notary',
+      address: 'fake-notary-address',
+      notarizationUrl: 'http://localhost:9200/request-notarization',
+      isRegistered: false,
+    },
+  },
+  async fetch(id) {
+    return this.collection[id];
+  },
+  async list() {
+    return Object.values(this.collection);
+  },
+};
 /** @type {LevelStore<string, number>} */
 export const eventBlocks = createLevelStore('event_blocks');
 /** @type {LevelStore<string, BuyerInfo>} */

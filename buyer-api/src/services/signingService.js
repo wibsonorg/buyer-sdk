@@ -16,6 +16,17 @@ const timeout = 5000;
 
 export const getHealth = () => client.get(`${url}/health`, { json: true, timeout });
 
+/**
+ * @typedef BuyerAccount
+ * @property {string} address buyerId to get information of the buyer
+ * @property {string} publicKey buyerId to get information of the buyer
+ * @property {NumberLike} id buyerId to get information of the buyer
+ */
+
+/**
+ * Buyer Account information from the signing service
+ * @type {BuyerAccount}
+ */
 export const getAccount = () => client.get(`${url}/account`, {
   json: true,
   timeout,
@@ -36,3 +47,9 @@ export const signCloseDataOrder = payload => client.post(
     timeout,
   },
 );
+
+// TODO: refactor upper function in order to use this factory function
+const createSigningMethod = endpoint => payload =>
+  client.post(`${url}${endpoint}`, { json: payload, timeout });
+
+export const signTransfer = createSigningMethod('/bat-pay/transfer');

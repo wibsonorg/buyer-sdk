@@ -46,6 +46,10 @@ export const createLevelStore = (dir) => {
     }
   };
   store.store = (id, obj) => store.put(id, JSON.stringify(obj));
+  store.update = async (id, obj) => {
+    const value = await store.fetch(id);
+    return store.store(id, { ...value, ...obj });
+  };
   store.listKeys = () => listLevelStream(store.createKeyStream());
   store.listValues = async () => {
     const list = await listLevelStream(store.createValueStream());
