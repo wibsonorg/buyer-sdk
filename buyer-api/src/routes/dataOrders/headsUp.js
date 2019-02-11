@@ -1,6 +1,6 @@
 import express from 'express';
 import { asyncError } from '../../utils';
-import { saveSeller } from '../../services/sellerService';
+import { saveSeller } from '../../operations/saveSeller';
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ const router = express.Router();
  * /orders/:orderID/heads-up:
  *   post:
  *     description: |
- *       Endpoint where the WAPI will make the POST request when the registration is finished.
+ *       Endpoint where the sellers registrerer will send the information regarding a new seller.
  *     parameters:
  *       - name: orderId
  *         description: Order ID in the DataExchange contract
@@ -29,19 +29,18 @@ const router = express.Router();
  *     produces:
  *       - application/json
  *     responses:
- *       200:
+ *       204:
  *         description: When validation results are registered successfully
+ *       422:
+ *         description: When seller has already been registered
  */
-router.post(
-  '/:orderId/heads-up',
-  asyncError(async (req, res) => {
-    const { sellerAddress, sellerId } = req.body;
-    if (await saveSeller(sellerAddress, sellerId)) {
-      res.status(202).json({ message: 'OK' });
-    } else {
-      res.boom.notFound('Seller has already been registered');
-    }
-  }),
-);
+router.post('/heads-up', asyncError(async (req, res) => {
+  const { sellerAddress, sellerId } = req.body;
+  if (await saveSeller(sellerAddress, sellerId)) {
+    res.status(204).send();
+  } else {
+    res.boom.badData('Seller has already been registered');
+  }
+}));
 
 export default router;
