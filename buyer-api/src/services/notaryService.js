@@ -46,7 +46,7 @@ export const notarize = async (url, id, payload) =>
  *          NotarizationResult
  * @param {NotarizationResult} notarizationResult filtered results from notary
  */
-const transferNotarizacionResult = async (notarizationResult) => {
+export const transferNotarizacionResult = async (notarizationResult) => {
   logger.info('transferNotarizacionResult');
   /**
    * 4.4 The transfer operation will receive the NotarizationResult,
@@ -86,5 +86,3 @@ const transferNotarizacionResult = async (notarizationResult) => {
 
   return payload;
 };
-
-export { consent, notarize, transferNotarizacionResult };
