@@ -22,13 +22,13 @@ const { buyerPublicBaseUrl } = config;
  * @param {import('../utils/stores').NotarizationSeller[]} sellers List of sellers data
  * @returns {string} ID of the Notarization record
  */
-const createNotarizationRequest = (notaryAddress, orderId, price, sellers) => {
+const createNotarizationRequest = async (notaryAddress, orderId, price, sellers) => {
   const id = uuid();
   const callbackUrl = `${buyerPublicBaseUrl}/notarization-result/${id}`;
   const request = {
     orderId, sellers, callbackUrl,
   };
-  notarizations.store(id, {
+  await notarizations.store(id, {
     notaryAddress, price, request, status: 'created',
   });
   return id;
