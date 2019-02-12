@@ -8,7 +8,9 @@ import { sellers } from '../utils/stores';
  */
 export const saveSeller = async (sellerAddress, sellerId) => {
   const seller = await sellers.safeFetch(sellerAddress);
-  if (seller) {
+  if (seller && seller === sellerId) {
+    return true;
+  } else if (seller) {
     return false;
   }
 

@@ -9,7 +9,12 @@ it('saves seller id', async (assert) => {
   assert.true(sellers.put.called);
 });
 
-it('doesn`t save id when address already registered', async (assert) => {
+it('returns true when id is same as saved', async (assert) => {
+  await saveSeller('2', 3);
+  assert.false(sellers.put.called);
+});
+
+it('doesn`t save id when address already registered and id is not the same', async (assert) => {
   await saveSeller('2', 1);
   assert.false(sellers.put.called);
 });
