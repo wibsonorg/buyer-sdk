@@ -1,6 +1,8 @@
 import express from 'express';
 import { asyncError } from '../../utils';
+import fetchDataOrder from './middlewares/fetchDataOrder';
 import { saveSeller } from '../../operations/saveSeller';
+import queueDataResponse from '../../operations/addDataResponse';
 
 const router = express.Router();
 
@@ -29,15 +31,21 @@ const router = express.Router();
  *     produces:
  *       - application/json
  *     responses:
- *       204:
- *         description: When validation results are registered successfully
+ *       200:
+ *         description: When seller is registered and DataResponse queued
  *       422:
  *         description: When seller has already been registered
  */
-router.post('/:id/heads-up', asyncError(async (req, res) => {
+router.post('/:id/heads-up', fetchDataOrder, asyncError(async (req, res) => {
   const { sellerAddress, sellerId } = req.body;
   if (await saveSeller(sellerAddress, sellerId)) {
-    res.status(204).send();
+    const { error, ...result } = await queueDataResponse(req.params.id, sellerAddress, sellerId);
+
+    if (error) {
+      res.boom.badData('Operation failed', { error });
+    } else {
+      res.json(result);
+    }
   } else {
     res.boom.badData('Seller has already been registered');
   }
