@@ -15,9 +15,9 @@ export default (contract, method) => (nonce, gasPrice, params) => {
 
   const {
     chainId,
-    dataExchange: {
+    [contract.contractName]: {
       address,
-      createDataOrder: { gasLimit },
+      [method]: { gasLimit },
     },
   } = config.contracts;
 
