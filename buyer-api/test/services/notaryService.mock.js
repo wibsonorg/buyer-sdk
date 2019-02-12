@@ -19,7 +19,10 @@ export const fakeDataOrder = {
   buyerUrl: 'someBuyerUrl/orders/some-uuid/offchain-data',
 };
 test.beforeEach(() => {
-  notarizations.fetch.withArgs('not-req-id').returns({ result: someNotarizationResult });
+  notarizations.fetch.withArgs('not-req-id').returns({
+    price: fakeDataOrder.price,
+    result: someNotarizationResult,
+  });
   dataOrders.fetch.resolves(fakeDataOrder);
 });
 test.afterEach(sinon.reset);

@@ -3,6 +3,7 @@ import { addTransactionJob } from '../queues/transactionQueue';
 import { notarizations } from '../utils/stores';
 import { getPayData, numberToHex } from '../utils/blockchain';
 import logger from '../utils/logger';
+import { fromWib } from '../utils/wibson-lib/coin';
 
 /**
  * We are not going to wait the service to respond mora than `timeout`
@@ -43,7 +44,7 @@ export const transferNotarizationResult = async (notarizationRequestId) => {
    */
   // data payload
   const {
-    price: amount,
+    price,
     result: {
       notarizationFee: fee,
       orderId,
@@ -53,7 +54,7 @@ export const transferNotarizationResult = async (notarizationRequestId) => {
   } = await notarizations.fetch(notarizationRequestId);
 
   const payload = {
-    amount,
+    amount: fromWib(price),
     payData: numberToHex(getPayData(sellers.map(s => s.id))),
     lock,
     metadata: numberToHex(orderId),
