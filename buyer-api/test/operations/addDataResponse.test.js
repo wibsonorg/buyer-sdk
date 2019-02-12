@@ -1,6 +1,6 @@
 import { serial as it } from 'ava';
 import { putData, dataResponses, addProcessDataResponseJob } from './addDataResponse.mock';
-import { addDataResponse, queueDataResponse } from '../../src/operations/addDataResponse';
+import { addDataResponse } from '../../src/operations/addDataResponse';
 
 const dataOrder = {
   status: 'created',
@@ -76,23 +76,4 @@ it('stores the Data in S3', async (assert) => {
 it('adds job to process the DataResponse', async (assert) => {
   await addDataResponse(dataOrder, someDataResponse);
   assert.snapshot(addProcessDataResponseJob.lastCall.args, { id: 'addProcessDataResponseJob().args' });
-});
-
-it('returns an error when the data response does not exist', async (assert) => {
-  const { error, status } = await queueDataResponse(2, '2', 2);
-  assert.is(status, undefined);
-  assert.is(error, 'There\'s not a DataResponse whith the data provided');
-});
-
-it('returns an status when the data response is not in `waiting`', async (assert) => {
-  dataResponses.safeFetch.returns({ status: 'queued' });
-  const { status } = await queueDataResponse(2, '2', 2);
-  assert.is(status, 'queued');
-});
-
-it('updates data response and launch addProcessDataResponseJob', async (assert) => {
-  dataResponses.safeFetch.returns({ status: 'waiting' });
-  await queueDataResponse(2, '2', 2);
-  assert.true(dataResponses.update.called);
-  assert.true(addProcessDataResponseJob.called);
 });

@@ -2,7 +2,7 @@ import express from 'express';
 import { asyncError } from '../../utils';
 import fetchDataOrder from './middlewares/fetchDataOrder';
 import { saveSeller } from '../../operations/saveSeller';
-import queueDataResponse from '../../operations/addDataResponse';
+import { queueDataResponse } from '../../operations/queueDataResponse';
 
 const router = express.Router();
 
