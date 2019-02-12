@@ -6,12 +6,12 @@ const router = express.Router();
 
 /**
  * @swagger
- * /orders/:orderID/heads-up:
+ * /orders/{id}/heads-up:
  *   post:
  *     description: |
  *       Endpoint where the sellers registrerer will send the information regarding a new seller.
  *     parameters:
- *       - name: orderId
+ *       - name: id
  *         description: Order ID in the DataExchange contract
  *         required: true
  *         type: number
