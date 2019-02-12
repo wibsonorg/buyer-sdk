@@ -1,5 +1,5 @@
 import { serial as it } from 'ava';
-import { dataResponses, addProcessDataResponseJob } from './addDataResponse.mock';
+import { dataResponses, addProcessDataResponseJob } from './queueDataResponse.mock';
 import { queueDataResponse } from '../../src/operations/queueDataResponse';
 
 it('returns an error when the data response does not exist', async (assert) => {
