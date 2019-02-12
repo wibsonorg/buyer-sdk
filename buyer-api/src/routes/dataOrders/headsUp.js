@@ -34,7 +34,7 @@ const router = express.Router();
  *       422:
  *         description: When seller has already been registered
  */
-router.post('/heads-up', asyncError(async (req, res) => {
+router.post('/:id/heads-up', asyncError(async (req, res) => {
   const { sellerAddress, sellerId } = req.body;
   if (await saveSeller(sellerAddress, sellerId)) {
     res.status(204).send();
