@@ -2,7 +2,7 @@ import express from 'express';
 import { asyncError } from '../../utils';
 import fetchDataOrder from './middlewares/fetchDataOrder';
 import { saveSeller } from '../../operations/saveSeller';
-import { queueDataResponse } from '../../operations/queueDataResponse';
+import { enqueueDataResponse } from '../../operations/enqueueDataResponse';
 
 const router = express.Router();
 
@@ -39,7 +39,7 @@ const router = express.Router();
 router.post('/:id/heads-up', fetchDataOrder, asyncError(async (req, res) => {
   const { sellerAddress, sellerId } = req.body;
   if (await saveSeller(sellerAddress, sellerId)) {
-    const { error, ...result } = await queueDataResponse(req.params.id, sellerAddress, sellerId);
+    const { error, ...result } = await enqueueDataResponse(req.params.id, sellerAddress, sellerId);
 
     if (error) {
       res.boom.badData('Operation failed', { error });

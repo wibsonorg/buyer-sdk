@@ -2,13 +2,13 @@ import { dataResponses } from '../utils/stores';
 import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
 
 /**
- * @function queueDataResponse
+ * @function enqueueDataResponse
  * Updates DataResponse and launch addProcessDataResponseJob.
  * @param {Number} orderId Order ID in the DataExchange contract
  * @param {string} sellerAddress Seller's ethereum address.
  * @param {number} sellerId Seller's unique ID.
  */
-export const queueDataResponse = async (orderId, sellerAddress, sellerId) => {
+export const enqueueDataResponse = async (orderId, sellerAddress, sellerId) => {
   const id = `${orderId}:${sellerAddress}`;
 
   const existingDataResponse = await dataResponses.safeFetch(id);
