@@ -6,31 +6,11 @@ const router = Router();
 
 /**
  * @swagger
- * /orders:
+ * /orders/{id}/offchain-data:
  *   get:
- *     description: Returns a list of all data orders created by the buyer in the Data Exchange.
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: When the list could be fetched correctly.
- *       500:
- *         description: When the fetch failed.
- */
-router.get(
-  '/',
-  cache('1 minute'),
-  async (req, res) => {
-    req.apicacheGroup = '/orders/*';
-    res.json(await dataOrders.list());
-  },
-);
-
-/**
- * @swagger
- * /orders/{id}:
- *   get:
- *     description: Returns the data order information.
+ *     description: |
+ *        Returns the data order information thats missing from the Data Exchange
+ *        (offchain data)
  *     parameters:
  *       - in: params
  *         name: id
@@ -46,11 +26,22 @@ router.get(
  *         description: When the fetch failed.
  */
 router.get(
-  '/:id',
+  '/:id/offchain-data',
   cache('1 minute'),
   async (req, res) => {
     req.apicacheGroup = '/orders/*';
-    res.json(await dataOrders.fetch(req.params.id));
+    const {
+      buyer,
+      audience,
+      price,
+      requestedData,
+      termsAndConditionsHash,
+      buyerUrl,
+      createdAt,
+      closedAt,
+      ...offchainData
+    } = await dataOrders.fetch(req.params.id);
+    res.json(offchainData);
   },
 );
 
