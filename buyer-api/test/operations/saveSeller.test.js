@@ -9,7 +9,7 @@ it('saves seller id', async (assert) => {
   assert.true(sellers.put.called);
 });
 
-it('returns true when id is same as saved', async (assert) => {
+it('returns true when id exists and has the same value', async (assert) => {
   await saveSeller('2', 3);
   assert.false(sellers.put.called);
 });
