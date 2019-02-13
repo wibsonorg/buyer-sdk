@@ -10,6 +10,7 @@ const { dataExchange } = config.contracts.addresses;
 const dx = new web3.eth.Contract(DataExchangeDefinition.abi, dataExchange);
 
 const toDate = ts => (ts > 0 ? new Date(ts * 1000).toISOString() : null);
+export const { numberToHex, sha3 } = web3.utils;
 
 /**
  * @typedef BlockchainEvent An event on the blockchain
