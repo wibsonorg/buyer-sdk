@@ -3,6 +3,25 @@ import sinon from 'sinon';
 import test from 'ava';
 import { someNotarizationResult } from './notaryService.fixture';
 
+const web3 = {
+  eth: {
+    Contract: sinon.stub(),
+  },
+  utils: {
+    numberToHex: () => 'hex',
+    sha3: () => 'hash',
+  },
+};
+td.replace('../../src/utils/web3', web3);
+const config = {
+  contracts: {
+    addresses: {
+      dataExchange: '0x7dD7c3400E01Af4238CEd5BF8AE6eFBCC5a46E6f',
+    },
+  },
+};
+td.replace('../../config', config);
+
 export const addTransactionJob = sinon.spy();
 td.replace('../../src/queues/transactionQueue', { addTransactionJob });
 
