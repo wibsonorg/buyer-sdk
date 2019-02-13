@@ -11,10 +11,10 @@ const router = express.Router();
 
 router.use(addDataResponse);
 router.use(ordersInfo);
+router.use(headsUp);
 router.use(checkAuthorization);
 router.use(createDataOrder);
 router.use(getDataOrder);
 router.use(closeDataOrder);
-router.use(headsUp);
 
 export default router;
