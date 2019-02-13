@@ -19,7 +19,7 @@ import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
  *                   or the error if any.
  */
 export const addDataResponse = async (dataOrder, dataResponse) => {
-  const { status: st, notariesAddresses } = dataOrder;
+  const { status: st, notariesAddresses, price } = dataOrder;
   if (st !== 'created') {
     return { error: 'Can\'t accept DataReponse' };
   }
@@ -63,7 +63,7 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
     ...rest,
   });
   await Promise.all([s3, db]);
-  if (shouldProcess) await addProcessDataResponseJob({ orderId, dataResponseId: id });
+  if (shouldProcess) await addProcessDataResponseJob({ orderId, price, dataResponseId: id });
 
   return { id, status };
 };

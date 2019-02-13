@@ -1,5 +1,5 @@
 import test from 'ava';
-import { addNotarizacionResultJob } from './receiveNotarizationResult.mock';
+import { notarizations, addNotarizationResultJob } from './receiveNotarizationResult.mock';
 import { receiveNotarizationResult } from '../../src/operations/receiveNotarizationResult';
 import {
   someNotarizationResult,
@@ -10,32 +10,30 @@ import {
 const it = test.serial;
 
 it('enqueues correct list of sellers for NotarizationResult', async (assert) => {
-  receiveNotarizationResult(
+  await receiveNotarizationResult(
     '1',
     someNotarizationResult,
   );
-  assert.snapshot(addNotarizacionResultJob.lastCall.args, { id: 'addNotarizacionResultJob().args' });
+  assert.snapshot(addNotarizationResultJob.lastCall.args, { id: 'addNotarizationResultJob().args' });
 });
 
 it('filters not requested addresses', async (assert) => {
-  receiveNotarizationResult(
+  await receiveNotarizationResult(
     '1',
     someNotarizationResultWithNonRequestedAddresses,
   );
-  assert.is(addNotarizacionResultJob.lastCall.lastArg.sellers.length, 2);
+  assert.snapshot(notarizations.store.lastCall.args, { id: 'notarizations.store().args with non-requested addresses' });
 });
 
 it('filters duplicated addresses', async (assert) => {
-  receiveNotarizationResult(
+  await receiveNotarizationResult(
     '1',
     someNotarizationResultWithDuplicatedAddresses,
   );
-  assert.is(addNotarizacionResultJob.lastCall.lastArg.sellers.length, 2);
+  assert.snapshot(notarizations.store.lastCall.args, { id: 'notarizations.store().args with duplicated addresses' });
 });
 
 it('throws exception on non-existent request', async (assert) => {
-  assert.throws(() => receiveNotarizationResult(
-    '2',
-    someNotarizationResult,
-  ), 'Notarization request not found');
+  const error = await assert.throws(receiveNotarizationResult('2', someNotarizationResult));
+  assert.is(error.message, 'Notarization request not found');
 });
