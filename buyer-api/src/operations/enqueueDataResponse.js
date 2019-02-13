@@ -16,7 +16,7 @@ export const enqueueDataResponse = async (orderId, sellerAddress, sellerId) => {
     return { id, status: existingDataResponse.status };
   }
   if (!existingDataResponse) {
-    return { error: 'There\'s not a DataResponse whith the data provided' };
+    return { error: 'There\'s not a DataResponse with the data provided' };
   }
 
   await dataResponses.update(id, { status: 'queued', sellerId });
