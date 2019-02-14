@@ -36,8 +36,6 @@ export const fakeLevel = {
   get: sinon.stub().callsFake(async x => x),
   put: sinon.spy(),
   createReadStream: createFakeStream(x => x),
-  createKeyStream: createFakeStream(({ key }) => key),
-  createValueStream: createFakeStream(({ value }) => value),
 };
 export const level = sinon.stub().returns(fakeLevel);
 td.replace('level', level);

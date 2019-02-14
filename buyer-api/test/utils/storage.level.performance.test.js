@@ -41,3 +41,18 @@ it('reads all stored values', async (assert) => {
     assert.fail(err.message);
   }
 });
+
+it('stores a group and retrives all values in the group and only those', async (assert) => {
+  const group = uuidv4();
+  try {
+    await Promise.all(records.map(({ id, value }) => store.store(`${group}:${id}`, { value })));
+    const expectedValues = records.map(({ id, value }) => ({ id: `${group}:${id}`, value }));
+    const realValues = await store.list(group);
+    assert.deepEqual(
+      realValues.sort((a, b) => a.id.localeCompare(b.id)),
+      expectedValues.sort((a, b) => a.id.localeCompare(b.id)),
+    );
+  } catch (err) {
+    assert.fail(err.message);
+  }
+});
