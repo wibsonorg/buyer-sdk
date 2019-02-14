@@ -1,6 +1,6 @@
 import Router from 'express-promise-router';
 import { cache } from '../../utils';
-import { dataOrders } from '../../utils/stores';
+import fetchDataOrder from './middlewares/fetchDataOrder';
 
 const router = Router();
 
@@ -28,6 +28,7 @@ const router = Router();
 router.get(
   '/:id/offchain-data',
   cache('1 minute'),
+  fetchDataOrder,
   async (req, res) => {
     req.apicacheGroup = '/orders/*';
     const {
@@ -40,7 +41,7 @@ router.get(
       createdAt,
       closedAt,
       ...offchainData
-    } = await dataOrders.fetch(req.params.id);
+    } = req.dataOrder;
     res.json(offchainData);
   },
 );
