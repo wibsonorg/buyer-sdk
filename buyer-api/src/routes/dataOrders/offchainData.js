@@ -27,8 +27,8 @@ const router = Router();
  */
 router.get(
   '/:id/offchain-data',
-  cache('1 minute'),
   fetchDataOrder,
+  cache('1 minute'),
   async (req, res) => {
     req.apicacheGroup = '/orders/*';
     const {
