@@ -1,5 +1,6 @@
 import Router from 'express-promise-router';
 import { cache } from '../../utils';
+import { notaries } from '../../utils/stores';
 import fetchDataOrder from './middlewares/fetchDataOrder';
 
 const router = Router();
@@ -42,6 +43,11 @@ router.get(
       closedAt,
       ...offchainData
     } = req.dataOrder;
+    offchainData.notaries = await Promise.all(offchainData.notariesAddresses
+      .map(async (notaryAddress) => {
+        const notary = await notaries.fetch(notaryAddress);
+        return notary;
+      }));
     res.json(offchainData);
   },
 );
