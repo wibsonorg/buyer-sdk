@@ -11,6 +11,7 @@ import { processDataResponseJob } from '../../src/queues/dataResponseQueue';
 const job = {
   data: {
     orderId: 42,
+    price: 65,
     dataResponseId: '42:0xa42df59C5e17df255CaDfF9F52a004221f774f36',
     maximumBatchSize: 10,
   },
