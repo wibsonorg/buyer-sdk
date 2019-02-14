@@ -52,6 +52,7 @@ const queue = createQueue('DataResponseQueue');
 /**
  * @typedef ProcessDataResponseJobData
  * @property {number} orderId DataOrder's id in the DataExchange
+ * @property {number} price DataOrder's price
  * @property {string} dataResponseId Offchain DataResponse's id
  * @property {number} maximumBatchSize Configured batch maximum size
  *
@@ -64,7 +65,11 @@ const queue = createQueue('DataResponseQueue');
  * @returns {import('../utils/stores').DataResponse} The updated DataResponse
  */
 export const processDataResponseJob = async (job) => {
-  const { id, data: { orderId, dataResponseId, maximumBatchSize } } = job;
+  const {
+    id, data: {
+      orderId, price, dataResponseId, maximumBatchSize,
+    },
+  } = job;
 
   const dataResponse = await dataResponses.fetch(dataResponseId);
   const { status, notaryAddress } = dataResponse;
@@ -78,7 +83,7 @@ export const processDataResponseJob = async (job) => {
   if (dataResponseIds.length >= maximumBatchSize) {
     await clear(accumulatorId);
     const batchId = await createBatch({ orderId, notaryAddress, dataResponseIds });
-    await addPrepareNotarizationJob({ batchId });
+    await addPrepareNotarizationJob({ batchId, price });
   }
 
   const updateDataReseponse = { ...dataResponse, status: 'batched' };

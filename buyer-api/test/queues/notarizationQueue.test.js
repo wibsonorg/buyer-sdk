@@ -10,6 +10,7 @@ import { prepare, send } from '../../src/queues/notarizationQueue';
 const job = {
   data: {
     batchId: 'batch1',
+    price: 100,
   },
 };
 

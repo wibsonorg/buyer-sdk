@@ -3,17 +3,16 @@ import sinon from 'sinon';
 import test from 'ava';
 import { someNotarizationRequest } from './receiveNotarizationResult.fixture';
 
-export const getNotarizationRequest = sinon.stub();
-td.replace('../../src/facades', { getNotarizationRequest });
-export const addNotarizacionResultJob = sinon.spy();
-td.replace('../../src/queues/tranferNotarizationResultQueue', { addNotarizacionResultJob });
-
-function returnRequest(id) {
-  if (id === '1') return someNotarizationRequest;
-  return null;
-}
+const clock = sinon.useFakeTimers();
+export const notarizations = { safeFetch: sinon.stub(), store: sinon.spy() };
+td.replace('../../src/utils/stores', { notarizations });
+export const addNotarizationResultJob = sinon.spy();
+td.replace('../../src/queues/tranferNotarizationResultQueue', { addNotarizationResultJob });
 
 test.beforeEach(() => {
-  getNotarizationRequest.callsFake(returnRequest);
+  notarizations.safeFetch.withArgs('1').returns({ request: someNotarizationRequest });
 });
-test.afterEach(sinon.reset);
+test.afterEach(() => {
+  sinon.reset();
+  clock.reset();
+});

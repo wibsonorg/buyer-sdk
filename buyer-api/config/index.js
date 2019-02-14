@@ -55,9 +55,9 @@ const config = {
   levelDirectory: env.LEVEL_DIRECTORY,
   jwt: JSON.parse(env.JWT_OPTIONS),
   passphrase: env.PASSPHRASE,
-  eventSubscribers: {
-    interval: env.EVENT_SUBSCRIBERS_INTERVAL,
-    lastProcessedBlock: env.EVENT_SUBSCRIBERS_LAST_PROCESSED_BLOCK,
+  contractEventListener: {
+    interval: Number(env.CONTRACT_EVENT_LISTENER_INTERVAL),
+    lastProcessedBlock: Number(env.CONTRACT_EVENT_LISTENER_LAST_PROCESSED_BLOCK),
   },
   allowance: {
     interval: env.ALLOWANCE_INTERVAL,

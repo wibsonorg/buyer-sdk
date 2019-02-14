@@ -1,11 +1,10 @@
 import client from 'request-promise-native';
-
-import logger from '../utils/logger';
-import config from '../../config';
-import { getAccount } from './signingService';
-import { dataOrders } from '../utils/stores';
 import { addTransactionJob } from '../queues/transactionQueue';
-import { getPayData } from '../utils/blockchain';
+import { notarizations } from '../utils/stores';
+import { getPayData, numberToHex, sha3 } from '../utils/blockchain';
+import logger from '../utils/logger';
+import { fromWib } from '../utils/wibson-lib/coin';
+import config from '../../config';
 
 /**
  * We are not going to wait the service to respond mora than `timeout`
@@ -14,40 +13,19 @@ import { getPayData } from '../utils/blockchain';
  */
 const timeout = 10000;
 
-export const consent = async (url, { buyerAddress, orderAddress }) => {
-  const result = await client.get(
-    `${url}/buyers/audit/consent/${buyerAddress}/${orderAddress}`,
-    {
-      timeout,
-    },
-  );
-
-  const {
-    responsesPercentage,
-    notarizationFee,
-    notarizationTermsOfService,
-    signature,
-  } = JSON.parse(result);
-
-  return {
-    orderAddr: orderAddress,
-    responsesPercentage,
-    notarizationFee,
-    notarizationTermsOfService,
-    notarySignature: signature,
-  };
-};
-
 export const notarize = async (url, id, payload) =>
   client.post(`${url}/${id}`, { json: payload, timeout });
 
 /**
+ * TODO: Move this function elsewhere since the purpose of the service modules
+ * is to build and send http (or other protocol) requests to external services.
+ *
  * @typedef {import('../operations/receiveNotarizationResult').NotarizationResult}
  *          NotarizationResult
  * @param {NotarizationResult} notarizationResult filtered results from notary
  */
-export const transferNotarizacionResult = async (notarizationResult) => {
-  logger.info('transferNotarizacionResult');
+export const transferNotarizationResult = async (notarizationRequestId) => {
+  logger.info(`transferNotarizacionResult :: ${notarizationRequestId}`);
   /**
    * 4.4 The transfer operation will receive the NotarizationResult,
    * it will build the data payload containing:
@@ -66,20 +44,26 @@ export const transferNotarizacionResult = async (notarizationResult) => {
    * the operation will add new job to the transaction queue to send the transaction to the network.
    */
   // data payload
-
-  // buyer's account id in the BatchPayments contracts
-  const { id: buyerId } = await getAccount();
   const { dataExchange: dx } = config.contracts.addresses;
-
-  // search for data order
-  const dataOrder = await dataOrders.fetch(notarizationResult.orderId);
+  const {
+    price,
+    result: {
+      notarizationFee: fee,
+      notaryAddress,
+      orderId,
+      sellers,
+      lock,
+    },
+  } = await notarizations.fetch(notarizationRequestId);
 
   const payload = {
-    fromId: buyerId,
-    amount: dataOrder.price,
-    payData: getPayData(notarizationResult.sellers.map(s => s.id)),
-    lock: notarizationResult.lock,
-    metadata: `${dx}${notarizationResult.orderId}`,
+    amount: fromWib(price),
+    payData: numberToHex(getPayData(sellers.map(s => s.id))),
+    lock,
+    metadata: sha3(`${dx}${orderId}${notaryAddress}`),
+    fee,
+    newCount: '0x',
+    roothash: '0x',
   };
 
   await addTransactionJob('Transfer', payload);
