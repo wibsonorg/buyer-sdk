@@ -25,6 +25,7 @@ export async function createDataOrder(dataOrder) {
   // (05-02-2019)
   // TODO: use env.BUYER_PUBLIC_BASE_URL instead
   const buyerUrl = `${dataOrder.buyerUrl}/orders/${id}/offchain-data`;
+  const headsUpUrl = `${dataOrder.buyerUrl}/orders/${id}/heads-up`;
   const { termsHash } = await getBuyerInfo(dataOrder.buyerInfoId);
   const termsAndConditionsHash = termsHash.startsWith('0x') ? termsHash : `0x${termsHash}`;
   const notariesAddresses = dataOrder.notariesAddresses.map(n => n.toLowerCase());
@@ -32,6 +33,7 @@ export async function createDataOrder(dataOrder) {
     ...dataOrder,
     status,
     buyerUrl,
+    headsUpUrl,
     termsAndConditionsHash,
     notariesAddresses,
   });

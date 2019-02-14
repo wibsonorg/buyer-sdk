@@ -31,6 +31,9 @@ export const web3 = {
       .withArgs(DataExchangeDefinition, 'someDataExchangeddress')
       .returns(dxContract),
   },
+  utils: {
+    numberToHex: () => '0x123',
+  },
 };
 td.replace('../../src/utils/web3', web3);
 
