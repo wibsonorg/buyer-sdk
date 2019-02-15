@@ -3,7 +3,7 @@ import redis from 'redis';
 import config from '../../config';
 
 const redisCache = () =>
-  redis.createClient(config.redis.socket, { prefix: 'cache' });
+  redis.createClient(config.redis.url, { prefix: 'cache' });
 
 const cache = apicache.options({
   enabled: config.cache.enabled,
