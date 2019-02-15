@@ -44,10 +44,7 @@ router.get(
       ...offchainData
     } = req.dataOrder;
     offchainData.notaries = await Promise.all(offchainData.notariesAddresses
-      .map(async (notaryAddress) => {
-        const notary = await notaries.fetch(notaryAddress);
-        return notary;
-      }));
+      .map(notaryAddress => notaries.fetch(notaryAddress)));
     res.json(offchainData);
   },
 );
