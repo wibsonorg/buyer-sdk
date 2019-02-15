@@ -12,9 +12,9 @@ export const createRedisStore = ns =>
  * @property {(id: K) => Promise<V>} fetch Retrives the value parsed from LevelDB
  * @property {(id: K) => Promise<V>} safeFetch As fetch but retrives null if missing
  * @property {(id: K, obj: V) => Promise<void>} store Stores the value stringified on LevelDB
- * @property {(gruop: string) => Promise<({id:K}&V)[]>} list Lists all the objects stored on LevelDB
- * @property {(gruop: string) => Promise<K[]>} listKeys Lists all the keys stored on LevelDB
- * @property {(gruop: string) => Promise<V[]>} listValues Lists all the values stored on LevelDB
+ * @property {(group: string) => Promise<({id:K}&V)[]>} list Lists all the objects stored on LevelDB
+ * @property {(group: string) => Promise<K[]>} listKeys Lists all the keys stored on LevelDB
+ * @property {(group: string) => Promise<V[]>} listValues Lists all the values stored on LevelDB
  * @template K
  * @template V
 */
