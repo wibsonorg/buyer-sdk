@@ -1,4 +1,4 @@
-import { web3 } from '../utils/web3';
+import { web3 } from '../utils';
 import config from '../../config';
 
 import WibcoinDefinition from '../../contracts/Wibcoin.json';
