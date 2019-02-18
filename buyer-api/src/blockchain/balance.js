@@ -29,7 +29,7 @@ export const getFunds = async (address) => {
  * @returns {Boolean} if root can fund correctly all accounts.
  */
 export const hasEnoughBalance = async (address) => {
-  const { wei, wib } = getFunds(address);
+  const { wei, wib } = await getFunds(address);
   const insufficientEth = wei.lt(minWei);
   const insufficientWib = wib.lt(minWib);
   if (insufficientEth) {
