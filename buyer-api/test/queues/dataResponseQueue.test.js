@@ -13,7 +13,7 @@ const job = {
     orderId: 42,
     price: 65,
     dataResponseId: '42:0xa42df59C5e17df255CaDfF9F52a004221f774f36',
-    maximumBatchSize: 10,
+    batchSize: 10,
   },
 };
 
@@ -31,7 +31,7 @@ it('adds a job to prepare the notarization', async (assert) => {
     {
       data: {
         ...job.data,
-        maximumBatchSize: 1,
+        batchSize: 1,
       },
     },
     done,
