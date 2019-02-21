@@ -1,5 +1,8 @@
-import { logger, dataOrderAt } from '../utils';
+// TODO: DEPRECATED
+import { logger } from '../utils';
 import { dataResponseQueue } from './dataResponseQueue';
+
+const dataOrderAt = () => 0;
 
 const retryPendingDataResponse = async (job) => {
   const { data: { orderAddress, sellerAddress } } = job;
