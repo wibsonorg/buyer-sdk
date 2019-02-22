@@ -39,6 +39,12 @@ import { createLevelStore, createRedisStore } from './storage';
  * @property {DataResponseBatchStatus} status Current status of the Batch
  */
 /**
+ * @typedef DataResponseLastAdded
+ * @property {string} notaryAddress Notary's Ethereum address
+ * @property {number} orderId Order ID in the DataExchange contract
+ * @property {number} price Price per added Data Response
+ */
+/**
  * (05-02-2019)
  * TODO: This definitions will be merged with the work of Pablo and Facu.
  *
@@ -88,6 +94,8 @@ export const dataResponses = createLevelStore('data_responses');
 export const dataResponsesAccumulator = createLevelStore('data_responses_accumulator');
 /** @type {LevelStore<string, DataResponseBatch>} */
 export const dataResponsesBatches = createLevelStore('data_responses_batches');
+/** @type {LevelStore<string, DataResponseLastAdded>} */
+export const dataResponsesLastAdded = createLevelStore('data_responses_last_added');
 /** @type {LevelStore<string, Notarization>} */
 export const notarizations = createLevelStore('notarizations');
 /**

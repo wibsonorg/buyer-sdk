@@ -5,6 +5,7 @@ import {
   dataResponses,
   dataResponsesAccumulator as accumulator,
   dataResponsesBatches as batches,
+  dataResponsesLastAdded,
 } from '../utils/stores';
 import logger from '../utils/logger';
 import config from '../../config';
@@ -42,12 +43,27 @@ const accumulate = async (accumulatorId, dataResponseId) => {
 
 /**
  * @async
+ * @function saveLastDataResponse Saves last data response id in a dataResponsesLastAdded store
+ * @param {number} notaryAddress Notary's Ethereum address
+ * @param {string} dataResponseId Data Response ID
+ * @property {number} orderId DataOrder's id in the DataExchange
+ * @property {number} price DataOrder's price
+ */
+const saveLastDataResponse = async (accumulatorId, notaryAddress, orderId, price) => {
+  await dataResponsesLastAdded.store(accumulatorId, { notaryAddress, orderId, price });
+};
+
+/**
+ * @async
  * @function clear Clears the accumulator store
  * @param {number} accumulatorId
  */
 const clear = async accumulatorId => accumulator.store(accumulatorId, []);
 
 const queue = createQueue('DataResponseQueue');
+
+export const addProcessDataResponseJob = params => queue.add('process', { ...params, ...config.dataResponseQueue });
+export const addSendNotarizationBatchJob = params => queue.add('send', params);
 
 /**
  * @typedef ProcessDataResponseJobData
@@ -81,21 +97,36 @@ export const processDataResponseJob = async (job) => {
   const accumulatorId = `${orderId}:${notaryAddress}`;
   const dataResponseIds = await accumulate(accumulatorId, dataResponseId);
   if (dataResponseIds.length >= maximumBatchSize) {
-    await clear(accumulatorId);
-    const batchId = await createBatch({ orderId, notaryAddress, dataResponseIds });
-    await addPrepareNotarizationJob({ batchId, price });
+    await addSendNotarizationBatchJob({ orderId, price, notaryAddress });
   }
 
   const updateDataReseponse = { ...dataResponse, status: 'batched' };
   await dataResponses.store(dataResponseId, updateDataReseponse);
 
+  await saveLastDataResponse(accumulatorId, notaryAddress, orderId, price);
+
   return updateDataReseponse;
 };
 
-queue.process(processDataResponseJob);
+export const sendNotarizationBatchJob = async (job) => {
+  const {
+    data: {
+      orderId, price, notaryAddress,
+    },
+  } = job;
+
+  const accumulatorId = `${orderId}:${notaryAddress}`;
+  const dataResponseIds = await accumulator.fetch(accumulatorId);
+
+  await clear(accumulatorId);
+  const batchId = await createBatch({ orderId, notaryAddress, dataResponseIds });
+  await addPrepareNotarizationJob({ batchId, price });
+
+  await dataResponsesLastAdded.del(accumulatorId);
+};
+
+queue.process('process', processDataResponseJob);
+queue.process('send', sendNotarizationBatchJob);
 queue.on('failed', ({ id, failedReason }) => {
   logger.error(`DR[${id}] :: Process :: ${failedReason} (will be retried)`);
 });
-
-export const addProcessDataResponseJob = params =>
-  queue.add({ ...params, ...config.dataResponseQueue });
