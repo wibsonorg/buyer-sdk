@@ -75,6 +75,7 @@ const config = {
   dataResponseQueue: {
     maximumBatchSize: Number(env.DATA_RESPONSE_QUEUE_MAX_BATCH_SIZE),
   },
+  sendBatchPassphrase: env.SEND_BATCH_PASSPHRASE,
 };
 
 exports.default = config;
