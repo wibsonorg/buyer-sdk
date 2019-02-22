@@ -1,32 +1,36 @@
-import express from 'express';
+import Router from 'express-promise-router';
 import { asyncError } from '../utils';
 import config from '../../config';
+import addSendNotarizationBatchJob from '../queues/dataResponseQueue';
+import { dataResponsesLastAdded } from '../utils/stores';
 
-const router = express.Router();
+const router = Router();
 
 /**
  * @swagger
- * /orders/{id}/heads-up:
+ * /recurrent/batch-data-responses:
  *   post:
- *     description: |
- *       Endpoint where the sellers registrerer will send the information regarding a new seller.
+ *     description: Endpoint to launch the batches to notarize
  *     parameters:
- *       - name: id
- *         description: Order ID in the DataExchange contract
+ *       - name: passphrase
+ *         description: validation of the request
  *         required: true
- *         type: number
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:
  *       200:
- *         description: When seller is registered and DataResponse queued
+ *         description: When the batches are send
  *       422:
- *         description: When seller has already been registered
+ *         description: When passphrase is incorrect
  */
 router.post('/batch-data-responses', asyncError(async (req, res) => {
   const { passphrase } = req.body;
   if (passphrase === config.sendBatchPassphrase) {
-    // TODO: launch batches to notarization
+    const batches = await dataResponsesLastAdded.list();
+    batches.forEach((batch) => {
+      addSendNotarizationBatchJob({ ...batch, accumulatorId: batch.id });
+    });
   } else {
     res.boom.badData('Incorrect passphrase');
   }
