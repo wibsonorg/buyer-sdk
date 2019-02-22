@@ -17,14 +17,14 @@ const statusOrder = {
  * @property {string} owner The buyer that created the DataOrder
  * @property {number} orderId The DataExchange id of the DataOrder
 
- * @callback dataOrderUpdapter Updates DataOrder in the store with data from the DataExchange
+ * @callback dataOrderUpdater Updates DataOrder in the store with data from the DataExchange
  * @param {DataOrderEventValues} eventValues The values emmited by the DataExchange event
 
- * @function createDataOrderUpdapter Creates a dataOrderUpdapter with the given status
+ * @function createDataOrderUpdater Creates a dataOrderUpdater with the given status
  * @param {string} status The status to be set by the updater
- * @returns {dataOrderUpdapter}
+ * @returns {dataOrderUpdater}
  */
-const createDataOrderUpdapter = status => async ({ owner, orderId: dxId }, { transactionHash }) => {
+const createDataOrderUpdater = status => async ({ owner, orderId: dxId }, { transactionHash }) => {
   const { address } = await getAccount();
   if (address.toLowerCase() === owner.toLowerCase()) {
     const { buyer, ...chainOrder } = await fetchDataOrder(dxId);
@@ -45,5 +45,5 @@ const createDataOrderUpdapter = status => async ({ owner, orderId: dxId }, { tra
 
 contractEventListener
   .addContract(DataExchange)
-  .on('DataOrderCreated', createDataOrderUpdapter('created'))
-  .on('DataOrderClosed', createDataOrderUpdapter('closed'));
+  .on('DataOrderCreated', createDataOrderUpdater('created'))
+  .on('DataOrderClosed', createDataOrderUpdater('closed'));
