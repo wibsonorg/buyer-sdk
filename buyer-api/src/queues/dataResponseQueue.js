@@ -83,7 +83,7 @@ export const addSendNotarizationBatchJob = params => queue.add('send', params);
 export const processDataResponseJob = async (job) => {
   const {
     id, data: {
-      orderId, price, dataResponseId, maximumBatchSize,
+      orderId, price, dataResponseId, batchSize,
     },
   } = job;
 
@@ -96,7 +96,9 @@ export const processDataResponseJob = async (job) => {
 
   const accumulatorId = `${orderId}:${notaryAddress}`;
   const dataResponseIds = await accumulate(accumulatorId, dataResponseId);
-  if (dataResponseIds.length >= maximumBatchSize) {
+  if (batchSize === -1) {
+    logger.info(`addPrepareNotarizationJob will not be called on batchSize: ${batchSize}`);
+  } else if (dataResponseIds.length >= batchSize) {
     await addSendNotarizationBatchJob({ orderId, price, notaryAddress });
   }
 
