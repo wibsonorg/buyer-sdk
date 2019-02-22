@@ -113,10 +113,10 @@ export const sendNotarizationBatchJob = async (job) => {
 
   const dataResponseIds = await accumulator.safeFetch(accumulatorId);
 
-  await clear(accumulatorId);
   const batchId = await createBatch({ orderId, notaryAddress, dataResponseIds });
   await addPrepareNotarizationJob({ batchId, price });
 
+  await clear(accumulatorId);
   await dataResponsesLastAdded.del(accumulatorId);
 };
 
