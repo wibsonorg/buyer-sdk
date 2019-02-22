@@ -41,17 +41,6 @@ const accumulate = async (accumulatorId, dataResponseId) => {
   return newDataResponseIds;
 };
 
-/**
- * @async
- * @function saveLastDataResponse Saves last data response id in a dataResponsesLastAdded store
- * @param {number} notaryAddress Notary's Ethereum address
- * @param {string} dataResponseId Data Response ID
- * @property {number} orderId DataOrder's id in the DataExchange
- * @property {number} price DataOrder's price
- */
-const saveLastDataResponse = async (accumulatorId, notaryAddress, orderId, price) => {
-  await dataResponsesLastAdded.store(accumulatorId, { notaryAddress, orderId, price });
-};
 
 /**
  * @async
@@ -99,13 +88,18 @@ export const processDataResponseJob = async (job) => {
   if (batchSize === -1) {
     logger.info(`addPrepareNotarizationJob will not be called on batchSize: ${batchSize}`);
   } else if (dataResponseIds.length >= batchSize) {
-    await addSendNotarizationBatchJob({ orderId, price, notaryAddress });
+    addSendNotarizationBatchJob({
+      accumulatorId,
+      orderId,
+      price,
+      notaryAddress,
+    });
   }
 
   const updateDataReseponse = { ...dataResponse, status: 'batched' };
   await dataResponses.store(dataResponseId, updateDataReseponse);
 
-  await saveLastDataResponse(accumulatorId, notaryAddress, orderId, price);
+  await dataResponsesLastAdded.store(accumulatorId, { notaryAddress, orderId, price });
 
   return updateDataReseponse;
 };
@@ -113,12 +107,11 @@ export const processDataResponseJob = async (job) => {
 export const sendNotarizationBatchJob = async (job) => {
   const {
     data: {
-      orderId, price, notaryAddress,
+      accumulatorId, orderId, price, notaryAddress,
     },
   } = job;
 
-  const accumulatorId = `${orderId}:${notaryAddress}`;
-  const dataResponseIds = await accumulator.fetch(accumulatorId);
+  const dataResponseIds = await accumulator.safeFetch(accumulatorId);
 
   await clear(accumulatorId);
   const batchId = await createBatch({ orderId, notaryAddress, dataResponseIds });
