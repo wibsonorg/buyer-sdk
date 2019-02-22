@@ -5,7 +5,11 @@ import test from 'ava';
 td.replace('uuid/v4', () => 'uuid');
 export const done = sinon.spy();
 export const dataResponses = { fetch: sinon.stub(), store: sinon.spy() };
-export const dataResponsesAccumulator = { safeFetch: sinon.stub(), store: sinon.spy() };
+export const dataResponsesAccumulator = {
+  safeFetch: sinon.stub(),
+  store: sinon.spy(),
+  fetch: sinon.stub(),
+};
 export const dataResponsesBatches = { safeFetch: sinon.stub(), store: sinon.spy() };
 export const dataResponsesLastAdded = { store: sinon.spy(), del: sinon.spy() };
 td.replace('../../src/utils/stores', {

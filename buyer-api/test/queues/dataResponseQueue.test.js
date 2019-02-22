@@ -43,7 +43,7 @@ it('adds a job to send the notarization batch', async (assert) => {
 });
 
 it('adds a job to prepare the notarization', async (assert) => {
-  accumulator.safeFetch.returns(['42:0xa42df59C5e17df255CaDfF9F52a004221f774f36']);
+  accumulator.fetch.returns(['42:0xa42df59C5e17df255CaDfF9F52a004221f774f36']);
   await sendNotarizationBatchJob(
     {
       data: {
