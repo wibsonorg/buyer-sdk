@@ -1,10 +1,9 @@
 import client from 'request-promise-native';
 import { addTransactionJob } from '../queues/transactionQueue';
-import { notarizations } from '../utils/stores';
-import { getPayData, numberToHex, sha3 } from '../utils/blockchain';
+import { notarizations, dataOrders } from '../utils/stores';
+import { packPayData } from '../blockchain/batPay';
 import logger from '../utils/logger';
 import { fromWib } from '../utils/wibson-lib/coin';
-import config from '../../config';
 
 /**
  * We are not going to wait the service to respond mora than `timeout`
@@ -44,23 +43,22 @@ export const transferNotarizationResult = async (notarizationRequestId) => {
    * the operation will add new job to the transaction queue to send the transaction to the network.
    */
   // data payload
-  const { dataExchange: dx } = config.contracts.addresses;
   const {
     price,
     result: {
       notarizationFee: fee,
-      notaryAddress,
       orderId,
       sellers,
       lock,
     },
   } = await notarizations.fetch(notarizationRequestId);
+  const { transactionHash } = await dataOrders.fetch(orderId);
 
   const payload = {
     amount: fromWib(price),
-    payData: numberToHex(getPayData(sellers.map(s => s.id))),
+    payData: packPayData(sellers.map(s => s.id)),
     lock,
-    metadata: sha3(`${dx}${orderId}${notaryAddress}`),
+    metadata: transactionHash,
     fee,
     newCount: '0x',
     roothash: '0x',
