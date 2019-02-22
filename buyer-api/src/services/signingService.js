@@ -20,7 +20,7 @@ export const getHealth = () => client.get(`${url}/health`, { json: true, timeout
  * @typedef BuyerAccount
  * @property {string} address buyerId to get information of the buyer
  * @property {string} publicKey buyerId to get information of the buyer
- * @property {NumberLike} id buyerId to get information of the buyer
+ * @property {number} id buyerId to get information of the buyer
  */
 
 /**
