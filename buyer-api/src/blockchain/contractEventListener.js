@@ -15,18 +15,22 @@ const processEvents = async () => {
   logger.debug(`Contract Events :: From block :: ${fromBlock}`);
   // getEvents
   const allEvents = contracts.map(c => c.getPastEvents('allEvents', { fromBlock }));
-  const events = (await Promise.all(allEvents))
-    .reduce((acc, val) => acc.concat(val), []) // Flatten events from all contracts
-    .filter(result => Number(result.blockNumber) > 0); // Confirmed events
+  const confirmedEvents = (await Promise.all(allEvents))
+    .reduce((acc, val) => acc.concat(val), [])
+    .filter(result => Number(result.blockNumber) > 0);
   // emitEvents
-  events.forEach((e) => {
+  confirmedEvents.forEach((e) => {
     logger.info(`Contract Events :: Processing Event :: '${e.event}'`);
     contractEventListener.emit(e.event, e.returnValues, e);
   });
-  // saveLastProcessedBlock
-  const lastBlock = Math.max(lastProcessedBlock, ...events.map(e => e.blockNumber));
-  eventBlocks.put('last_processed_block', lastBlock);
-  logger.info(`Contract Events :: Last processed block :: ${lastBlock}`);
+  if (confirmedEvents.length > 0) {
+    // saveLastProcessedBlock
+    const lastBlock = Math.max(...confirmedEvents.map(e => e.blockNumber));
+    eventBlocks.put('last_processed_block', lastBlock);
+    logger.info(`Contract Events :: Last processed block :: ${lastBlock}`);
+  } else {
+    logger.info('Contract Events :: No events to process');
+  }
 };
 
 Object.assign(contractEventListener, {

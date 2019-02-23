@@ -13,7 +13,7 @@ const job = {
     orderId: 42,
     price: 65,
     dataResponseId: '42:0xa42df59C5e17df255CaDfF9F52a004221f774f36',
-    maximumBatchSize: 10,
+    batchSize: 10,
   },
 };
 
@@ -31,7 +31,7 @@ it('adds a job to prepare the notarization', async (assert) => {
     {
       data: {
         ...job.data,
-        maximumBatchSize: 1,
+        batchSize: 1,
       },
     },
     done,
@@ -42,11 +42,25 @@ it('adds a job to prepare the notarization', async (assert) => {
   assert.is(status, 'batched');
 });
 
-it('does not add the DataResponse to a batch when the status is other than queued', async (assert) => {
-  dataResponses.fetch.returns({ status: 'waiting' });
-  const { status } = await processDataResponseJob(job, done);
+const dontAddJob = async (assert, localJob) => {
+  const { status } = await processDataResponseJob(localJob, done);
   assert.false(accumulator.store.called);
   assert.false(batches.store.called);
   assert.false(addPrepareNotarizationJob.called);
   assert.is(status, 'waiting');
+};
+
+it('does not add the DataResponse to a batch when the status is other than queued', async (assert) => {
+  dataResponses.fetch.returns({ status: 'waiting' });
+  dontAddJob(assert, job);
+});
+
+it('does not add the DataResponse to a batch if batchSize = -1', async (assert) => {
+  const otherJob = {
+    data: {
+      ...job.data,
+      batchSize: -1,
+    },
+  };
+  dontAddJob(assert, otherJob);
 });

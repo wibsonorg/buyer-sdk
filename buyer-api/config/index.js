@@ -74,7 +74,7 @@ const config = {
     interval: env.TRANSACTION_QUEUE_INSPECTION_INTERVAL,
   },
   dataResponseQueue: {
-    maximumBatchSize: Number(env.DATA_RESPONSE_QUEUE_MAX_BATCH_SIZE),
+    batchSize: Number(env.DATA_RESPONSE_QUEUE_MAX_BATCH_SIZE),
   },
 };
 
