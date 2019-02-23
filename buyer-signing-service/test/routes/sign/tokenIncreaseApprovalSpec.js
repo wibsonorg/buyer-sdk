@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import request from 'supertest';
 import config from '../../../config';
 import app from '../../../src/app';
