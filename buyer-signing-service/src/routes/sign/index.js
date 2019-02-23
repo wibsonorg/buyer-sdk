@@ -4,6 +4,7 @@ import createDataOrder from './createDataOrder';
 import closeDataOrder from './closeDataOrder';
 import batPayTransfer from './batPayTransfer';
 import batPayDeposit from './batPayDeposit';
+import tokenIncreaseApproval from './tokenIncreaseApproval';
 
 const router = express.Router();
 
@@ -12,5 +13,6 @@ router.use(createDataOrder);
 router.use(closeDataOrder);
 router.use(batPayTransfer);
 router.use(batPayDeposit);
+router.use(tokenIncreaseApproval);
 
 export default router;

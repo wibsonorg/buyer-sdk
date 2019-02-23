@@ -36,7 +36,7 @@ const createSigningMethod = endpoint => payload =>
   client.post(`${url}${endpoint}`, { json: payload, timeout });
 
 export const signCreateDataOrder = createSigningMethod('/sign/create-data-order');
-
 export const signCloseDataOrder = createSigningMethod('/sign/close-data-order');
-
 export const signTransfer = createSigningMethod('/sign/bat-pay/transfer');
+export const signDeposit = createSigningMethod('/sign/bat-pay/deposit');
+export const signIncreaseApproval = createSigningMethod('/sign/token/increase-approval');

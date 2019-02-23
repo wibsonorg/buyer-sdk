@@ -4,6 +4,7 @@ import { hasEnoughBatPayBalance } from "../blockchain/balance";
 import { addTransactionJob } from "../queues/transactionQueue";
 import { logger } from "../utils";
 import config from "../../config";
+import { BatPay } from "../blockchain/contracts";
 
 const {
   balance: { minBatPay },
@@ -15,13 +16,10 @@ export const checkBatPayBalance = async () => {
   const hasEnough = await hasEnoughBatPayBalance(account);
   if (!hasEnough) {
     const required = new BigNumber(minBatPay);
-    // addTransactionJob('Deposit', {
-    //   amount: required.multipliedBy(multiplier),
-    //   id: account.id
-    // });
-    console.log('Deposit', {
-      amount: required.multipliedBy(multiplier),
-      id: account.id
+    const amount = required.multipliedBy(multiplier);
+    await addTransactionJob('IncreaseApproval', {
+      _spender: BatPay.options.address,
+      _addedValue: amount,
     });
     logger.info('BatPay Balance Check :: Deposit requested');
   } else {
@@ -29,4 +27,5 @@ export const checkBatPayBalance = async () => {
   }
 }
 
-setInterval(checkBatPayBalance, interval);
+export const runCheckBatPayBalance = () =>
+  setInterval(checkBatPayBalance, interval);
