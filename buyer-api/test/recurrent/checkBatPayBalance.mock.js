@@ -27,6 +27,6 @@ td.replace('../../src/blockchain/contracts', { BatPay });
 
 test.beforeEach(() => {
   hasEnoughBatPayBalance.returns(false);
-  getAccount.returns({ address: buyerAddress })
+  getAccount.returns({ address: buyerAddress });
 });
 test.afterEach(sinon.reset);

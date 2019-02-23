@@ -49,5 +49,5 @@ contractEventListener
   .on('DataOrderCreated', createDataOrderUpdater('created'))
   .on('DataOrderClosed', createDataOrderUpdater('closed'))
   .addContract(Wibcoin)
-  .on('Approval', sendDeposit)
-;
+  .on('Approval', sendDeposit);
+

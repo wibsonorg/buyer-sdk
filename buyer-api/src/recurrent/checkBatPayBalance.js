@@ -1,15 +1,15 @@
-import { BigNumber } from "bignumber.js";
-import { getAccount } from "../services/signingService";
-import { hasEnoughBatPayBalance } from "../blockchain/balance";
-import { addTransactionJob } from "../queues/transactionQueue";
-import logger from "../utils/logger";
-import config from "../../config";
-import { BatPay } from "../blockchain/contracts";
+import { BigNumber } from 'bignumber.js';
+import { getAccount } from '../services/signingService';
+import { hasEnoughBatPayBalance } from '../blockchain/balance';
+import { addTransactionJob } from '../queues/transactionQueue';
+import logger from '../utils/logger';
+import config from '../../config';
+import { BatPay } from '../blockchain/contracts';
 
 const {
   balance: { minBatPay },
   checkBatPayBalance: { interval, multiplier },
-} = config
+} = config;
 
 /**
  * @async
@@ -35,7 +35,7 @@ export const checkBatPayBalance = async () => {
   } else {
     logger.info('BatPay Balance Check :: No deposit needed');
   }
-}
+};
 
 /**
  * @typedef ApprovalEvent
@@ -56,7 +56,7 @@ export const sendDeposit = async (event) => {
   if (address.toLowerCase() !== owner.toLowerCase()) return;
   if (spender.toLowerCase() !== BatPay.options.address.toLowerCase()) return;
   await addTransactionJob('Deposit', { amount });
-}
+};
 
 export const runCheckBatPayBalance = () =>
   setInterval(checkBatPayBalance, interval);
