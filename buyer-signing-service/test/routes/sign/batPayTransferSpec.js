@@ -9,7 +9,7 @@ describe('POST /sign/bat-pay/transfer', () => {
   const fee = 1;
   const payData = '0x6964313b696432';
   const newCount = 0;
-  const roothash = '0x468e49a01f8bc984472a1991b383c90731f114c042a6a1c39959c774d45028f4';
+  const rootHash = '0x468e49a01f8bc984472a1991b383c90731f114c042a6a1c39959c774d45028f4';
   const lock = '0x6168652c307c1e813ca11cfb3a601f1cf3b22452021a5052d8b05f1f1f8a3e92';
   const metadata = '0x7a9d3a032b8ff274f09714b56ba8e5ed776ec9638ca303069bc3a3267bb22f65';
 
@@ -31,7 +31,7 @@ describe('POST /sign/bat-pay/transfer', () => {
           fee,
           payData,
           newCount,
-          roothash,
+          rootHash,
           lock,
           metadata,
         },
@@ -47,7 +47,7 @@ describe('POST /sign/bat-pay/transfer', () => {
   it('responds with an Unprocessable Entity status when fee is not present');
   it('responds with an Unprocessable Entity status when payData is not present');
   it('responds with an Unprocessable Entity status when newCount is not present');
-  it('responds with an Unprocessable Entity status when roothash is not present');
+  it('responds with an Unprocessable Entity status when rootHash is not present');
   it('responds with an Unprocessable Entity status when lock is not present');
   it('responds with an Unprocessable Entity status when metadata is not present');
 
@@ -62,7 +62,7 @@ describe('POST /sign/bat-pay/transfer', () => {
           fee,
           payData,
           newCount,
-          roothash,
+          rootHash,
           lock,
           metadata,
         },
