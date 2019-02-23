@@ -58,11 +58,9 @@ export const hasEnoughBalance = async (address) => {
  * @property {string} address Account's Ethereum address
  * @property {number} id Account's BatPay ID
  *
- * Checks that the account is able to operate.
- *
  * @async
  * @function hasEnoughBatPayBalance
- *  Checks if account's balanca in BatPay is less than `amount`.
+ *  Checks if account's balance in BatPay is less than `amount`.
  *  If no `amount` is supplied it will fallback to the configured one via ENV.
  * @param {Account} account Subject's account
  * @param {?BigNumber} amount Amount to test with the current balance.
