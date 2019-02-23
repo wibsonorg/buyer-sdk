@@ -29,6 +29,7 @@ const config = {
     BatPay: {
       address: env.BAT_PAY_ADDRESS,
       transfer: { gasLimit: env.TX_BAT_PAY_TRANSFER_GAS_LIMIT },
+      deposit: { gasLimit: env.TX_BAT_PAY_DEPOSIT_GAS_LIMIT },
     },
   },
   buyer: {
