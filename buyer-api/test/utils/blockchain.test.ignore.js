@@ -1,8 +1,7 @@
-import test from 'ava';
+import { serial as it } from 'ava';
 import { dxContract } from './blockchain.mock';
-import { fetchDataExchangeEvents, fetchDataOrder } from '../../src/utils/blockchain';
-
-const it = test.serial;
+// import { fetchDataExchangeEvents, fetchDataOrder } from '../../src/utils/blockchain';
+const { fetchDataExchangeEvents, fetchDataOrder } = {};
 
 it('fetchDataExchangeEvents > gets all events', async (assert) => {
   const someDataExchangeEvents = [
