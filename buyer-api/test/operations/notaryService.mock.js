@@ -1,47 +1,28 @@
 import td from 'testdouble';
 import sinon from 'sinon';
 import test from 'ava';
-import { someNotarizationResult } from './notaryService.fixture';
-
-const web3 = {
-  eth: {
-    Contract: sinon.stub(),
-  },
-  utils: {
-    numberToHex: () => 'hex',
-    sha3: () => 'hash',
-  },
-};
-td.replace('../../src/utils/web3', web3);
-const config = {
-  contracts: {
-    addresses: {
-      dataExchange: '0x7dD7c3400E01Af4238CEd5BF8AE6eFBCC5a46E6f',
-    },
-  },
-};
-td.replace('../../config', config);
+import { someNotarizationResult } from './receiveNotarizationResult.fixture';
 
 export const addTransactionJob = sinon.spy();
 td.replace('../../src/queues/transactionQueue', { addTransactionJob });
 
-export const notarizations = { fetch: sinon.stub() };
-export const dataOrders = { fetch: sinon.stub() };
+export const notarizations = {
+  fetch: sinon.stub().withArgs('not-req-id').returns({
+    price: 666,
+    result: someNotarizationResult,
+  }),
+};
+export const dataOrders = {
+  fetch: sinon.stub().resolves({
+    transactionHash: '0xSomeDataOrderCreationHash',
+  }),
+};
 td.replace('../../src/utils/stores', { dataOrders, notarizations });
 
-export const fakeDataOrder = {
-  id: 'some-uuid',
-  audience: { age: 42 },
-  price: 999,
-  requestedData: ['some-data-type-id'],
-  termsAndConditionsHash: '0xSomeTermsAndConditionsHash',
-  buyerUrl: 'someBuyerUrl/orders/some-uuid/offchain-data',
-};
-test.beforeEach(() => {
-  notarizations.fetch.withArgs('not-req-id').returns({
-    price: fakeDataOrder.price,
-    result: someNotarizationResult,
-  });
-  dataOrders.fetch.resolves(fakeDataOrder);
-});
-test.afterEach(sinon.reset);
+export const packPayData = sinon.stub().returns('0xff04+SomePayDataPack');
+td.replace('../../src/blockchain/batPay', { packPayData });
+
+export const fromWib = sinon.stub().returns('SomeAmount');
+td.replace('../../src/utils/wibson-lib/coin', { fromWib });
+
+test.afterEach(sinon.resetHistory);
