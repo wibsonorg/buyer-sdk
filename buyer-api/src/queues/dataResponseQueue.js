@@ -51,8 +51,8 @@ const clear = async accumulatorId => accumulator.store(accumulatorId, []);
 
 const queue = createQueue('DataResponseQueue');
 
-export const addProcessDataResponseJob = params => queue.add('process', { ...params, ...config.dataResponseQueue });
-export const addSendNotarizationBatchJob = params => queue.add('send', params);
+export const addProcessDataResponseJob = params =>
+  queue.add({ ...params, ...config.dataResponseQueue });
 
 /**
  * @typedef ProcessDataResponseJobData
@@ -69,7 +69,7 @@ export const addSendNotarizationBatchJob = params => queue.add('send', params);
  * @param {ProcessDataResponseJobData} job.data
  * @returns {import('../utils/stores').DataResponse} The updated DataResponse
  */
-export const processDataResponseJob = async (job) => {
+const processDataResponseJob = async (job) => {
   const {
     id, data: {
       orderId, price, dataResponseId, batchSize,
@@ -88,11 +88,12 @@ export const processDataResponseJob = async (job) => {
   if (batchSize === -1) {
     logger.info(`addPrepareNotarizationJob will not be called on batchSize: ${batchSize}`);
   } else if (dataResponseIds.length >= batchSize) {
-    addSendNotarizationBatchJob({
+    addProcessDataResponseJob({
       accumulatorId,
       orderId,
       price,
       notaryAddress,
+      type: 'sendNotarizationBatch',
     });
   }
 
@@ -104,7 +105,7 @@ export const processDataResponseJob = async (job) => {
   return updateDataReseponse;
 };
 
-export const sendNotarizationBatchJob = async (job) => {
+const sendNotarizationBatchJob = async (job) => {
   const {
     data: {
       accumulatorId, orderId, price, notaryAddress,
@@ -120,8 +121,16 @@ export const sendNotarizationBatchJob = async (job) => {
   await dataResponsesLastAdded.del(accumulatorId);
 };
 
-queue.process('process', processDataResponseJob);
-queue.process('send', sendNotarizationBatchJob);
+const selectJobType = async (job) => {
+  const { data: { type } } = job;
+  if (type === 'processDataResponse') {
+    await processDataResponseJob(job);
+  } else {
+    await sendNotarizationBatchJob(job);
+  }
+};
+
+queue.process(selectJobType);
 queue.on('failed', ({ id, failedReason }) => {
   logger.error(`DR[${id}] :: Process :: ${failedReason} (will be retried)`);
 });

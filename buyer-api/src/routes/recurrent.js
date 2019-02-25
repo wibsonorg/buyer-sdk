@@ -1,7 +1,7 @@
 import Router from 'express-promise-router';
 import { asyncError } from '../utils';
 import config from '../../config';
-import addSendNotarizationBatchJob from '../queues/dataResponseQueue';
+import addProcessDataResponseJob from '../queues/dataResponseQueue';
 import { dataResponsesLastAdded } from '../utils/stores';
 
 const router = Router();
@@ -29,7 +29,7 @@ router.post('/batch-data-responses', asyncError(async (req, res) => {
   if (passphrase === config.sendBatchPassphrase) {
     const batches = await dataResponsesLastAdded.list();
     batches.forEach((batch) => {
-      addSendNotarizationBatchJob({ ...batch, accumulatorId: batch.id });
+      addProcessDataResponseJob({ ...batch, accumulatorId: batch.id, type: 'sendNotarizationBatch' });
     });
   } else {
     res.boom.badData('Incorrect passphrase');
