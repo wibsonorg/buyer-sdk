@@ -1,4 +1,4 @@
-import { dateOrNull, getElements } from './helpers';
+import { toDate, getElements } from '../blockchain/contracts';
 
 /**
  * @async
@@ -16,8 +16,8 @@ const getSellerInfo = async (web3, dataOrder, address) => {
     address: address.toLowerCase(),
     notaryAddress: (sellerInfo[1]).toLowerCase(),
     dataHash: sellerInfo[2],
-    createdAt: dateOrNull(sellerInfo[3]),
-    closedAt: dateOrNull(sellerInfo[4]),
+    createdAt: toDate(sellerInfo[3]),
+    closedAt: toDate(sellerInfo[4]),
     status: web3.utils.hexToUtf8(sellerInfo[5]),
   };
 };
