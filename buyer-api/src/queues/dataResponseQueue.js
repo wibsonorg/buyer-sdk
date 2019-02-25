@@ -69,7 +69,7 @@ export const addProcessDataResponseJob = params =>
  * @param {ProcessDataResponseJobData} job.data
  * @returns {import('../utils/stores').DataResponse} The updated DataResponse
  */
-const processDataResponseJob = async (job) => {
+export const processDataResponseJob = async (job) => {
   const {
     id, data: {
       orderId, price, dataResponseId, batchSize,
@@ -97,15 +97,15 @@ const processDataResponseJob = async (job) => {
     });
   }
 
-  const updateDataReseponse = { ...dataResponse, status: 'batched' };
-  await dataResponses.store(dataResponseId, updateDataReseponse);
+  const updateDataResponse = { ...dataResponse, status: 'batched' };
+  await dataResponses.store(dataResponseId, updateDataResponse);
 
   await dataResponsesLastAdded.store(accumulatorId, { notaryAddress, orderId, price });
 
-  return updateDataReseponse;
+  return updateDataResponse;
 };
 
-const sendNotarizationBatchJob = async (job) => {
+export const sendNotarizationBatchJob = async (job) => {
   const {
     data: {
       accumulatorId, orderId, price, notaryAddress,
@@ -121,13 +121,12 @@ const sendNotarizationBatchJob = async (job) => {
   await dataResponsesLastAdded.del(accumulatorId);
 };
 
-const selectJobType = async (job) => {
+export const selectJobType = async (job) => {
   const { data: { type } } = job;
   if (type === 'processDataResponse') {
-    await processDataResponseJob(job);
-  } else {
-    await sendNotarizationBatchJob(job);
+    return processDataResponseJob(job);
   }
+  return sendNotarizationBatchJob(job);
 };
 
 queue.process(selectJobType);

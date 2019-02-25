@@ -8,7 +8,7 @@ import {
   notaryAddress,
   fakeQueue,
 } from './dataResponseQueue.mock';
-import { processDataResponseJob, sendNotarizationBatchJob } from '../../src/queues/dataResponseQueue';
+import { processDataResponseJob, sendNotarizationBatchJob, selectJobType } from '../../src/queues/dataResponseQueue';
 
 const job = {
   data: {
@@ -55,6 +55,39 @@ it('adds a job to prepare the notarization', async (assert) => {
   );
   assert.snapshot(batches.store.lastCall.args, { id: 'batches.store().args' });
   assert.snapshot(addPrepareNotarizationJob.lastCall.args, { id: 'addPrepareNotarizationJob().args' });
+});
+
+it('selectJobType launchs sendNotarizationBatchJob', async (assert) => {
+  accumulator.fetch.returns(['42:0xa42df59C5e17df255CaDfF9F52a004221f774f36']);
+  await selectJobType(
+    {
+      data: {
+        ...job.data,
+        notaryAddress,
+        type: 'sendNotarizationBatch',
+      },
+    },
+    done,
+  );
+  assert.snapshot(batches.store.lastCall.args, { id: 'batches.store().args' });
+  assert.snapshot(addPrepareNotarizationJob.lastCall.args, { id: 'addPrepareNotarizationJob().args' });
+});
+
+it('selectJobType launchs processDataResponseJob', async (assert) => {
+  const { status } = await selectJobType(
+    {
+      data: {
+        ...job.data,
+        notaryAddress,
+        type: 'processDataResponse',
+      },
+    },
+    done,
+  );
+  assert.snapshot(accumulator.store.lastCall.args, { id: 'accumulator.store().args' });
+  assert.false(fakeQueue.add.called);
+  assert.snapshot(dataResponses.store.lastCall.args, { id: 'dataResponses.store().args' });
+  assert.is(status, 'batched');
 });
 
 const dontAddJob = async (assert, localJob) => {
