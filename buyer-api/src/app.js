@@ -17,7 +17,7 @@ import {
   dataOrders,
   buyerInfos,
   notarizationResult,
-  recurrent,
+  batchDataResponse,
 } from './routes';
 import checkAuthorization from './utils/checkAuthorization';
 
@@ -41,7 +41,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(schema));
 app.get('/api-docs.json', (_req, res) => res.json(schema));
 app.use('/orders', dataOrders);
 app.use('/notarization-result', notarizationResult);
-app.use('/recurrent', recurrent);
+app.use('/batch-data-responses', batchDataResponse);
 // This middleware MUST always go after of authentication or fail
 app.use(checkAuthorization);
 app.use('/account', account);

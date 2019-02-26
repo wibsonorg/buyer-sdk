@@ -24,7 +24,7 @@ const router = Router();
  *       422:
  *         description: When passphrase is incorrect
  */
-router.post('/batch-data-responses', asyncError(async (req, res) => {
+router.post('/', asyncError(async (req, res) => {
   const { passphrase } = req.body;
   if (passphrase === config.sendBatchPassphrase) {
     const batches = await dataResponsesLastAdded.list();
