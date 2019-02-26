@@ -37,7 +37,7 @@ it('adds a job to send the notarization batch', async (assert) => {
     },
     done,
   );
-  assert.snapshot(fakeQueue.add.lastCall.args);
+  assert.snapshot(fakeQueue.add.lastCall.args, { id: 'addProcessDataResponseJob().args' });
   assert.snapshot(dataResponses.store.lastCall.args, { id: 'dataResponses.store().args' });
   assert.is(status, 'batched');
 });
