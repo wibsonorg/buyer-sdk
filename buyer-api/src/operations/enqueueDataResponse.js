@@ -21,6 +21,6 @@ export const enqueueDataResponse = async (orderId, sellerAddress, sellerId) => {
 
   await dataResponses.update(id, { status: 'queued', sellerId });
 
-  await addProcessDataResponseJob({ orderId, dataResponseId: id });
+  await addProcessDataResponseJob({ orderId, dataResponseId: id, type: 'processDataResponse' });
   return { id, status: 'queued' };
 };
