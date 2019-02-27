@@ -1,6 +1,6 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
-import 'babel-polyfill';
+import '@babel/polyfill';
 import glob from 'glob';
 import loadEnv from '../utils/wibson-lib/loadEnv';
 

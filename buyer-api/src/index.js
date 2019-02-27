@@ -1,4 +1,4 @@
-import 'babel-polyfill';
+import '@babel/polyfill';
 import loadEnv from './utils/wibson-lib/loadEnv';
 
 const init = async () => {
