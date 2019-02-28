@@ -1,9 +1,12 @@
+// TODO: DEPRECATED
 import Response from './Response';
 import { getSellersInfo } from './sellersFacade';
 import { enqueueTransaction } from '../queues';
-import { web3, dataOrderAt } from '../utils';
+import { web3 } from '../utils';
 import { getAccount } from '../services/signingService';
 import config from '../../config';
+
+const dataOrderAt = () => 0;
 
 /**
  * @async

@@ -1,6 +1,7 @@
 import { web3, logger } from '../utils';
 import { Wibcoin, BatPay } from './contracts';
 import config from '../../config';
+import { toWib } from '../utils/wibson-lib/coin';
 
 const { toBN, fromWei } = web3.utils;
 const minWib = toBN(config.balance.minWib);
@@ -22,6 +23,16 @@ export const getFunds = async (address) => {
     getWibBalance(address),
   ]);
   return { wei, wib };
+};
+
+export const getBalance = async (address) => {
+  const [wei, wib] = await getFunds(address);
+  return {
+    address,
+    balance: Number(wib),
+    wib: toWib(wib, { decimals: 2 }),
+    ether: web3.utils.fromWei(wei.toString(), 'ether'),
+  };
 };
 
 /**

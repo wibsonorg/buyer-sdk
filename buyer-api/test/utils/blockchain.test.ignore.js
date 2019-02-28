@@ -1,8 +1,7 @@
-import test from 'ava';
+import { serial as it } from 'ava';
 import { dxContract } from './blockchain.mock';
-import { fetchDataExchangeEvents, fetchDataOrder } from '../../src/utils/blockchain';
-
-const it = test.serial;
+// import { fetchDataExchangeEvents, fetchDataOrder } from '../../src/utils/blockchain';
+const { fetchDataExchangeEvents, fetchDataOrder } = {};
 
 it('fetchDataExchangeEvents > gets all events', async (assert) => {
   const someDataExchangeEvents = [
@@ -37,13 +36,13 @@ it('fetchDataExchangeEvents > filters out unconfirmed events', async (assert) =>
 });
 
 it('fetchDataOrder > throws with invalid dxId', async (assert) => {
-  await assert.throws(fetchDataOrder(-1));
-  await assert.throws(fetchDataOrder(-666));
-  await assert.throws(fetchDataOrder('someDxId'));
-  await assert.throws(fetchDataOrder());
-  await assert.throws(fetchDataOrder(NaN));
-  await assert.throws(fetchDataOrder(null));
-  await assert.throws(fetchDataOrder(undefined));
+  await assert.throwsAsync(fetchDataOrder(-1));
+  await assert.throwsAsync(fetchDataOrder(-666));
+  await assert.throwsAsync(fetchDataOrder('someDxId'));
+  await assert.throwsAsync(fetchDataOrder());
+  await assert.throwsAsync(fetchDataOrder(NaN));
+  await assert.throwsAsync(fetchDataOrder(null));
+  await assert.throwsAsync(fetchDataOrder(undefined));
 });
 
 it('fetchDataOrder > cast types correctly', async (assert) => {

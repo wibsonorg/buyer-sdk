@@ -34,6 +34,6 @@ it('filters duplicated addresses', async (assert) => {
 });
 
 it('throws exception on non-existent request', async (assert) => {
-  const error = await assert.throws(receiveNotarizationResult('2', someNotarizationResult));
+  const error = await assert.throwsAsync(receiveNotarizationResult('2', someNotarizationResult));
   assert.is(error.message, 'Notarization request not found');
 });
