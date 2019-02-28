@@ -1,7 +1,7 @@
 import Router from 'express-promise-router';
 import { asyncError } from '../utils';
 import config from '../../config';
-import addProcessDataResponseJob from '../queues/dataResponseQueue';
+import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
 import { dataResponsesLastAdded } from '../utils/stores';
 
 const router = Router();
@@ -25,14 +25,14 @@ const router = Router();
  *         description: When passphrase is incorrect
  */
 router.post('/', asyncError(async (req, res) => {
-  const { passphrase } = req.body;
-  if (passphrase === config.sendBatchPassphrase) {
+  if (req.headers.authorization === `Bearer ${config.sendBatchPassphrase}`) {
     const batches = await dataResponsesLastAdded.list();
     batches.forEach((batch) => {
       addProcessDataResponseJob({ ...batch, accumulatorId: batch.id, type: 'sendNotarizationBatch' });
     });
+    res.sendStatus(202);
   } else {
-    res.boom.badData('Incorrect passphrase');
+    res.sendStatus(401);
   }
 }));
 
