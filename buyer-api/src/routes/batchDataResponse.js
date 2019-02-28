@@ -1,7 +1,7 @@
 import Router from 'express-promise-router';
 import { asyncError } from '../utils';
 import config from '../../config';
-import addProcessDataResponseJob from '../queues/dataResponseQueue';
+import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
 import { dataResponsesLastAdded } from '../utils/stores';
 
 const router = Router();
