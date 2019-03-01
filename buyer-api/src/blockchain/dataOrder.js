@@ -17,7 +17,7 @@ import { toWib } from '../utils/wibson-lib/coin';
  * @returns {Promise<DataOrder>} DataOrder information on the DataExchange
  */
 export async function fetchDataOrder(dxId) {
-  if (dxId > 0) {
+  if (dxId >= 0) {
     const {
       buyer,
       audience,
@@ -39,5 +39,5 @@ export async function fetchDataOrder(dxId) {
       closedAt: toDate(closedAt),
     };
   }
-  throw new Error('Invalid Id');
+  throw new Error(`Invalid DataExchange-Id ${dxId}`);
 }
