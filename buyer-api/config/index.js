@@ -75,6 +75,7 @@ const config = {
     maxIterations: env.TRANSACTION_QUEUE_MAX_ITERATIONS,
     interval: env.TRANSACTION_QUEUE_INSPECTION_INTERVAL,
   },
+  allowedCountries: env.ALLOWED_COUNTRIES,
 };
 
 exports.default = config;

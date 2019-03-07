@@ -1,7 +1,10 @@
 import express from 'express';
 import { asyncError } from '../utils';
+import { restrictCountryByIp } from '../services/ipGeofencing';
 
 const router = express.Router();
+router.use(restrictCountryByIp);
+
 /**
  * @swagger
  * /data-responses:
