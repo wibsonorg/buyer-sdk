@@ -1,22 +1,23 @@
 import express from 'express';
-import { closeDataOrderFacade } from '../../facades';
-import { validateAddress, asyncError } from '../../utils';
+import { closeDataOrder } from '../../operations/closeDataOrder';
+import { asyncError } from '../../utils';
+import fetchDataOrder from './middlewares/fetchDataOrder';
 
 const router = express.Router();
 
 /**
  * @swagger
- * /orders/{orderAddress}/end:
+ * /orders/{id}/close:
  *   post:
  *     description: |
  *       # Wibson's Protocol final step
  *       ## The Buyer closes the DataOrder it had created on the first step.
  *     parameters:
  *       - in: params
- *         name: orderAddress
+ *         name: id
  *         type: string
  *         required: true
- *         description: The order address that will be closed
+ *         description: The order id that will be closed
  *     produces:
  *       - application/json
  *     responses:
@@ -37,20 +38,17 @@ const router = express.Router();
  *         description: Problem on our side
  */
 router.post(
-  '/:orderAddress/end',
-  validateAddress('orderAddress'),
+  '/:id/close',
+  fetchDataOrder,
   asyncError(async (req, res) => {
-    const { orderAddress } = req.params;
-
-    const response = await closeDataOrderFacade(orderAddress);
-
-    if (response.success()) {
-      res.json(response.result);
-    } else {
-      res.boom.badData('Operation failed', {
-        errors: response.errors,
-      });
+    if (req.dataOrder.status !== 'created') {
+      res.status(422).json({ message: 'The order can not be closed' });
+      return;
     }
+
+    const response = await closeDataOrder(req.params.id, req.dataOrder);
+
+    res.json(response.result);
   }),
 );
 
