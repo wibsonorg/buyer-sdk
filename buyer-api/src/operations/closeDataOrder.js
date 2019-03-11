@@ -1,21 +1,15 @@
-import { enqueueTransaction } from '../queues';
+import { addTransactionJob } from '../queues/transactionQueue';
 import { dataOrders } from '../utils/stores';
-import { getAccount } from '../services/signingService';
-import config from '../../config';
 
 /**
  * @async
  * @param {String} orderAddr Order address to be closed.
  * @returns {Response} The result of the operation.
  */
-const closeDataOrder = async (orderId, order) => {
-  const account = await getAccount();
-
-  enqueueTransaction(
-    account,
+export const closeDataOrder = async (orderId, order) => {
+  addTransactionJob(
     'closeDataOrder',
     { orderId: order.dxId },
-    config.contracts.gasPrice.fast,
   );
 
   await dataOrders.update(orderId, { status: 'closing' });
@@ -23,4 +17,3 @@ const closeDataOrder = async (orderId, order) => {
   return { status: 'pending' };
 };
 
-export default closeDataOrder;
