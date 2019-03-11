@@ -12,6 +12,13 @@ const statusOrder = {
   closing: 2,
   closed: 3,
 };
+
+const getOrderId = async (dxId) => {
+  const { buyer, ...chainOrder } = await fetchDataOrder(dxId);
+  const id = chainOrder.buyerUrl.match(/\/orders\/(.+)\/offchain-data/)[1];
+  return { chainOrder, id };
+};
+
 /**
  * @typedef DataOrderEventValues
  * @property {string} owner The buyer that created the DataOrder
@@ -24,26 +31,43 @@ const statusOrder = {
  * @param {string} status The status to be set by the updater
  * @returns {dataOrderUpdater}
  */
-const createDataOrderUpdater = status => async ({ owner, orderId: dxId }, { transactionHash }) => {
+export const createDataOrderUpdater =
+  status => async ({ owner, orderId: dxId }, { transactionHash }) => {
+    const { address } = await getAccount();
+    if (address.toLowerCase() === owner.toLowerCase()) {
+      const { chainOrder, id } = await getOrderId(dxId);
+      const storedOrder = await dataOrders.fetch(id);
+      if (statusOrder[storedOrder.status] < statusOrder[status]) {
+        await dataOrders.store(id, {
+          ...storedOrder,
+          ...chainOrder,
+          dxId,
+          transactionHash,
+          status,
+        });
+        apicache.clear('/orders/*');
+      }
+    }
+  };
+
+/**
+ * @callback closeDataOrder Updates DataOrder in the store with closed status
+ * @param {DataOrderEventValues} eventValues The values emmited by the DataExchange event
+ *
+ * @function createCloseDataOrder Creates a closeDataOrder
+ * @returns {closeDataOrder}
+ */
+export const createCloseDataOrder = async ({ owner, orderId: dxId }) => {
   const { address } = await getAccount();
   if (address.toLowerCase() === owner.toLowerCase()) {
-    const { buyer, ...chainOrder } = await fetchDataOrder(dxId);
-    const id = chainOrder.buyerUrl.match(/\/orders\/(.+)\/offchain-data/)[1];
-    const storedOrder = await dataOrders.fetch(id);
-    if (statusOrder[storedOrder.status] < statusOrder[status]) {
-      await dataOrders.store(id, {
-        ...storedOrder,
-        ...chainOrder,
-        dxId,
-        transactionHash,
-        status,
-      });
-      apicache.clear('/orders/*');
-    }
+    const { id } = await getOrderId(dxId);
+    await dataOrders.update(id, { status: 'closed' });
+    apicache.clear('/orders/*');
   }
 };
 
 contractEventListener
   .addContract(DataExchange)
   .on('DataOrderCreated', createDataOrderUpdater('created'))
-  .on('DataOrderClosed', createDataOrderUpdater('closed'));
+  .on('DataOrderClosed', createCloseDataOrder);
+
