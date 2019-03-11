@@ -63,7 +63,7 @@ const router = express.Router();
  *         description: Number of sellers that need to be registered during transfer
  *         example: '12'
  *         required: true
- *       roothash:
+ *       rootHash:
  *         type: string
  *         description: Root hash of the sellers' merkle tree
  *         example: '"0x468e49a01f8bc984472a1991b383c90731f114c042a6a1c39959c774d45028f4"'

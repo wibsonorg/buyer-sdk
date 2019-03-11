@@ -29,11 +29,16 @@ const config = {
     BatPay: {
       address: env.BAT_PAY_ADDRESS,
       transfer: { gasLimit: env.TX_BAT_PAY_TRANSFER_GAS_LIMIT },
+      deposit: { gasLimit: env.TX_BAT_PAY_DEPOSIT_GAS_LIMIT },
+    },
+    Wibcoin: {
+      address: env.WIBCOIN_ADDRESS,
+      increaseApproval: { gasLimit: env.TX_TOKEN_INCREASE_APPROVAL_GAS_LIMIT },
     },
   },
   buyer: {
     privateKey: env.BUYER_PRIVATE_KEY,
-    id: env.BUYER_ID,
+    id: Number(env.BUYER_ID),
   },
 };
 

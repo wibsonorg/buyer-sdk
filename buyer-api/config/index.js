@@ -20,6 +20,7 @@ const config = {
     addresses: {
       wibcoin: env.WIBCOIN_ADDRESS,
       dataExchange: env.DATA_EXCHANGE_ADDRESS,
+      batPay: env.BAT_PAY_ADDRESS,
     },
     gasPrice: {
       standard: env.GAS_PRICE_STANDARD,
@@ -59,14 +60,14 @@ const config = {
     interval: Number(env.CONTRACT_EVENT_LISTENER_INTERVAL),
     lastProcessedBlock: Number(env.CONTRACT_EVENT_LISTENER_LAST_PROCESSED_BLOCK),
   },
-  allowance: {
-    interval: env.ALLOWANCE_INTERVAL,
-    minimumAllowance: env.ALLOWANCE_MINIMUM,
-    multiplier: env.ALLOWANCE_MULTIPLIER,
+  checkBatPayBalance: {
+    interval: Number(env.CHECK_BAT_PAY_BALANCE_INTERVAL),
+    multiplier: Number(env.CHECK_BAT_PAY_BALANCE_MULTIPLIER),
   },
   balance: {
-    minWib: env.BALANCE_MINIMUM_WIB,
     minWei: env.BALANCE_MINIMUM_WEI,
+    minWib: env.BALANCE_MINIMUM_WIB,
+    minBatPay: env.BALANCE_MINIMUM_BAT_PAY,
   },
   transactionQueue: {
     maxIterations: env.TRANSACTION_QUEUE_MAX_ITERATIONS,

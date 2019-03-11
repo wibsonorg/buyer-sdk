@@ -1,6 +1,6 @@
 import test from 'ava';
 import { dataOrders, fetchDataOrder, getAccount } from './contractEventSubscribers.mock';
-import { createDataOrderUpdater, closeDataOrder } from '../../src/blockchain/contractEventSubscribers';
+import { createDataOrderUpdater, createCloseDataOrder } from '../../src/blockchain/contractEventSubscribers';
 
 const it = test.serial;
 
@@ -8,14 +8,14 @@ const data = { owner: 'someOwner', orderId: 1 };
 
 it('if owner diferents from account does not updates order status', async (assert) => {
   getAccount.returns({ address: 'someAccount' });
-  await closeDataOrder(data);
+  await createCloseDataOrder(data);
   assert.false(dataOrders.update.called);
 });
 
 it('update data order status to closed', async (assert) => {
   getAccount.returns({ address: 'someOwner' });
   fetchDataOrder.returns({ buyerUrl: '/orders/2/offchain-data' });
-  await closeDataOrder(data);
+  await createCloseDataOrder(data);
   assert.is(dataOrders.update.firstCall.args[1].status, 'closed');
 });
 

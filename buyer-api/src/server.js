@@ -3,6 +3,7 @@ import app from './app';
 import config from '../config';
 import { logger } from './utils';
 import { contractEventListener } from './blockchain/contractEventSubscribers';
+import './recurrent';
 
 const server = () => {
   const { port, host, env } = config;
