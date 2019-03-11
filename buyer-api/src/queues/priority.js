@@ -8,6 +8,7 @@ export const priority = {
 
 export const TxPriorities = {
   IncreaseApproval: priority.URGENT,
+  Deposit: priority.URGENT,
   CreateDataOrder: priority.HIGH,
   CloseDataOrder: priority.LOW,
   BuyDataBatch: priority.LOWEST,

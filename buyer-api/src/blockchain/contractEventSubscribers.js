@@ -1,9 +1,10 @@
 import apicache from 'apicache';
 import { contractEventListener } from './contractEventListener';
-import { DataExchange } from './contracts';
+import { DataExchange, Wibcoin } from './contracts';
 import { fetchDataOrder } from './dataOrder';
 import { getAccount } from '../services/signingService';
 import { dataOrders } from '../utils/stores';
+import { sendDeposit } from '../recurrent/checkBatPayBalance';
 
 export { contractEventListener };
 const statusOrder = {
@@ -46,4 +47,7 @@ const createDataOrderUpdater = status => async ({ owner, orderId: dxId }, { tran
 contractEventListener
   .addContract(DataExchange)
   .on('DataOrderCreated', createDataOrderUpdater('created'))
-  .on('DataOrderClosed', createDataOrderUpdater('closed'));
+  .on('DataOrderClosed', createDataOrderUpdater('closed'))
+  .addContract(Wibcoin)
+  .on('Approval', sendDeposit);
+
