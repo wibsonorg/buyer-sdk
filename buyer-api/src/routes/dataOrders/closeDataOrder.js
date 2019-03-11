@@ -48,7 +48,7 @@ router.post(
 
     const response = await closeDataOrder(req.params.id, req.dataOrder);
 
-    res.json(response.result);
+    res.status(200).json(response.result);
   }),
 );
 
