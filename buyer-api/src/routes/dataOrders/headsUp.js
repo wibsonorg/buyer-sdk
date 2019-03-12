@@ -39,7 +39,7 @@ const router = express.Router();
 router.post('/:id/heads-up', fetchDataOrder, asyncError(async (req, res) => {
   const { sellerAddress, sellerId } = req.body;
   if (await saveSeller(sellerAddress, sellerId)) {
-    const { error, ...result } = await enqueueDataResponse(req.params.id, sellerAddress, sellerId);
+    const { error, ...result } = await enqueueDataResponse(req.dataOrder.dxId, sellerAddress, sellerId);
 
     if (error) {
       res.boom.badData('Operation failed', { error });
