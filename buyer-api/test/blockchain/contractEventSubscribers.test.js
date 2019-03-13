@@ -25,7 +25,7 @@ it('does not update the order when the owner param is not the current account ',
   assert.false(dataOrders.store.called);
 });
 
-it('if data order status is closed it does not store order', async (assert) => {
+it('does not update the order when the order is already closed', async (assert) => {
   getAccount.returns({ address: 'someOwner' });
   fetchDataOrder.returns({ buyerUrl: '/orders/2/offchain-data' });
   dataOrders.fetch.returns({ status: 'closed' });
