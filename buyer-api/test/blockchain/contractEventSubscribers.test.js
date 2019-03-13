@@ -12,7 +12,7 @@ it('does not update the order status when the owner param is not the current acc
   assert.false(dataOrders.update.called);
 });
 
-it('update data order status to closed', async (assert) => {
+it('updates the order status to closed', async (assert) => {
   getAccount.returns({ address: 'someOwner' });
   fetchDataOrder.returns({ buyerUrl: '/orders/2/offchain-data' });
   await createCloseDataOrder(data);
