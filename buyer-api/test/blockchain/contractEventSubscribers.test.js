@@ -19,7 +19,7 @@ it('updates the order status to closed', async (assert) => {
   assert.is(dataOrders.update.firstCall.args[1].status, 'closed');
 });
 
-it('if owner diferents from account does not updates order', async (assert) => {
+it('does not update the order when the owner param is not the current account ', async (assert) => {
   getAccount.returns({ address: 'someAccount' });
   await createDataOrderUpdater('created')(data, { transactionHash: 'somehash' });
   assert.false(dataOrders.store.called);
