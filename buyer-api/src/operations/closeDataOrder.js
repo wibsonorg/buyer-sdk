@@ -3,8 +3,8 @@ import { dataOrders } from '../utils/stores';
 
 /**
  * @async
- * @param {String} orderAddr Order address to be closed.
- * @returns {Response} The result of the operation.
+ * @param {String} orderId the internal id of the order to be closed.
+ * @param {import('../utils/stores').DataOrder} the order to be closed.
  */
 export const closeDataOrder = async (orderId, order) => {
   addTransactionJob(
