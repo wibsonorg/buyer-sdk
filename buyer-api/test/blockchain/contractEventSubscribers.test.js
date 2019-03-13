@@ -33,7 +33,7 @@ it('does not update the order when the order is already closed', async (assert) 
   assert.false(dataOrders.store.called);
 });
 
-it('store data order', async (assert) => {
+it('stores the order', async (assert) => {
   getAccount.returns({ address: 'someOwner' });
   fetchDataOrder.returns({ buyerUrl: '/orders/2/offchain-data' });
   dataOrders.fetch.returns({ status: 'creating' });
