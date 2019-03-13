@@ -6,7 +6,7 @@ const it = test.serial;
 
 const data = { owner: 'someOwner', orderId: 1 };
 
-it('if owner diferents from account does not updates order status', async (assert) => {
+it('does not update the order status when the owner param is not the current account', async (assert) => {
   getAccount.returns({ address: 'someAccount' });
   await createCloseDataOrder(data);
   assert.false(dataOrders.update.called);
