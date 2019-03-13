@@ -26,16 +26,15 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
 
   const {
     orderId,
-    sellerAddress: checkSummedSellerAddress,
+    sellerAddress,
     sellerId,
     encryptedData,
     notaryAddress,
     ...rest
   } = dataResponse;
-  const sellerAddress = checkSummedSellerAddress.toLowerCase();
   const id = `${orderId}:${sellerAddress}`;
 
-  if (!notariesAddresses.includes(notaryAddress.toLowerCase())) {
+  if (!notariesAddresses.includes(notaryAddress)) {
     return { error: `Can't accept DataReponse for notary ${notaryAddress}` };
   }
 
