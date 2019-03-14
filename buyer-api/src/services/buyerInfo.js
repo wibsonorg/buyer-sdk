@@ -32,6 +32,8 @@ const listBuyerInfos = async () => buyerInfos.listValues();
 const storeBuyerInfo = async (id, payload) => {
   const { category: { terms } } = payload;
   if (!terms) throw new Error('Field \'terms\' is required');
+  if (!payload.name) throw new Error('Field \'name\' is required');
+  if (!payload.logo) throw new Error('Field \'logo\' is required');
   const termsHash = web3.utils.sha3(terms).replace(/^0x/, '');
   buyerInfos.put(id, JSON.stringify({ ...payload, termsHash }));
 };
