@@ -82,7 +82,7 @@ router.get(
  *         required: true
  *         type: string
  *         in: body
- *       - name: category.terms
+ *       - name: terms
  *         description: |
  *           Terms and Conditions to be published in data orders associated to
  *           this buyer info
