@@ -8,7 +8,7 @@ import { dataOrders } from '../utils/stores';
  */
 export const closeDataOrder = async (orderId, order) => {
   addTransactionJob(
-    'closeDataOrder',
+    'CloseDataOrder',
     { orderId: order.dxId },
   );
 
