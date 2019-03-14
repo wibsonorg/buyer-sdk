@@ -30,7 +30,7 @@ const listBuyerInfos = async () => buyerInfos.listValues();
  * @throws When field terms is not present
  */
 const storeBuyerInfo = async (id, payload) => {
-  const { terms } = payload;
+  const { category: { terms } } = payload;
   if (!terms) throw new Error('Field \'terms\' is required');
   const termsHash = web3.utils.sha3(terms).replace(/^0x/, '');
   buyerInfos.put(id, JSON.stringify({ ...payload, termsHash }));
