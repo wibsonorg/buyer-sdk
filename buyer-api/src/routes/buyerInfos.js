@@ -41,11 +41,24 @@ router.get(
  *         required: true
  *         type: string
  *         in: body
- *       - name: label
- *         description: The label that will appear as the company/project name in the data order.
+ *       - name: name
+ *         description: The name of the company.
  *         required: true
  *         type: string
  *         in: body
+ *         example: '"Wibson LTD"'
+ *       - name: logo
+ *         description: The logo url of the company.
+ *         required: true
+ *         type: string
+ *         in: body
+ *         example: '"https://dummyimage.com/50x50/3b78fb/fff.png?text=Wibson"'
+ *       - name: label
+ *         description: The label that will appear as the project name in the data order.
+ *         required: true
+ *         type: string
+ *         in: body
+ *         example: '"Wibson || Social Good"'
  *       - name: description
  *         description: The description that will appear for the company/project in the data order.
  *         required: true
