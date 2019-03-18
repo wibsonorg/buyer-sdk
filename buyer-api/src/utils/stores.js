@@ -108,6 +108,7 @@ export const notaries = {
       name: 'Fake Notary',
       address: 'fake-notary-address',
       notarizationUrl: 'http://localhost:9200/request-notarization',
+      dataResponsesUrl: 'http://localhost:9200/data-responses',
       isRegistered: false,
       headsUpUrl: 'http://localhost:9200/sellers/heads-up',
       publicKey: 'some-public-key',
