@@ -44,7 +44,6 @@ export const transferNotarizationResult = async (notarizationRequestId) => {
    */
   // data payload
   const {
-    price,
     result: {
       notarizationFee: fee,
       orderId,
@@ -52,16 +51,16 @@ export const transferNotarizationResult = async (notarizationRequestId) => {
       lock,
     },
   } = await notarizations.fetch(notarizationRequestId);
-  const { transactionHash } = await dataOrders.fetch(orderId);
+  const { transactionHash, price } = await dataOrders.fetch(orderId);
 
   const payload = {
     amount: fromWib(price),
-    payData: packPayData(sellers.map(s => s.id)),
+    payData: packPayData(sellers.map(s => s.sellerId)),
     lock,
     metadata: transactionHash,
     fee,
     newCount: '0x',
-    roothash: '0x',
+    rootHash: '0x',
   };
 
   await addTransactionJob('Transfer', payload);
