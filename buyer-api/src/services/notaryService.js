@@ -51,11 +51,11 @@ export const transferNotarizationResult = async (notarizationRequestId) => {
       lock,
     },
   } = await notarizations.fetch(notarizationRequestId);
-  const { transactionHash, price } = await dataOrders.fetch(orderId);
+  const { transactionHash, price } = await dataOrders.fetchByDxId(orderId);
 
   const payload = {
     amount: fromWib(price),
-    payData: packPayData(sellers.map(s => s.sellerId)),
+    payData: packPayData(sellers.map(({ sellerId }) => sellerId)),
     lock,
     metadata: transactionHash,
     fee,
