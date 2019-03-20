@@ -8,13 +8,13 @@ td.replace('../../src/queues/transactionQueue', { addTransactionJob });
 
 export const notarizations = {
   fetch: sinon.stub().withArgs('not-req-id').returns({
-    price: 666,
     result: someNotarizationResult,
   }),
 };
 export const dataOrders = {
-  fetch: sinon.stub().resolves({
+  fetchByDxId: sinon.stub().resolves({
     transactionHash: '0xSomeDataOrderCreationHash',
+    price: 666,
   }),
 };
 td.replace('../../src/utils/stores', { dataOrders, notarizations });
