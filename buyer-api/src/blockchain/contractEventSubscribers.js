@@ -31,7 +31,8 @@ const getOrderId = async (dxId) => {
  * @function onDataOrderCreated Creates a dataOrderUpdater with the given status
  * @returns {dataOrderUpdater}
  */
-export const onDataOrderCreated = async ({ owner, orderId: dxId }, { transactionHash }) => {
+export const onDataOrderCreated = async ({ owner, orderId }, { transactionHash }) => {
+  const dxId = Number(orderId);
   const { address } = await getAccount();
   if (address.toLowerCase() === owner.toLowerCase()) {
     const { chainOrder, id } = await getOrderId(dxId);
@@ -56,7 +57,8 @@ export const onDataOrderCreated = async ({ owner, orderId: dxId }, { transaction
  * @function onDataOrderClosed Creates a closeDataOrder
  * @returns {closeDataOrder}
  */
-export const onDataOrderClosed = async ({ owner, orderId: dxId }) => {
+export const onDataOrderClosed = async ({ owner, orderId }) => {
+  const dxId = Number(orderId);
   const { address } = await getAccount();
   if (address.toLowerCase() === owner.toLowerCase()) {
     const { id } = await getOrderId(dxId);
