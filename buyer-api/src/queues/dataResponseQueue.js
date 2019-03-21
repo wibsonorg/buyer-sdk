@@ -57,7 +57,6 @@ export const addProcessDataResponseJob = params =>
 /**
  * @typedef ProcessDataResponseJobData
  * @property {number} orderId DataOrder's id in the DataExchange
- * @property {number} price DataOrder's price
  * @property {string} dataResponseId Offchain DataResponse's id
  * @property {number} maximumBatchSize Configured batch maximum size
  *
@@ -72,7 +71,7 @@ export const addProcessDataResponseJob = params =>
 export const processDataResponseJob = async (job) => {
   const {
     id, data: {
-      orderId, price, dataResponseId, batchSize,
+      orderId, dataResponseId, batchSize,
     },
   } = job;
 
@@ -91,7 +90,6 @@ export const processDataResponseJob = async (job) => {
     addProcessDataResponseJob({
       accumulatorId,
       orderId,
-      price,
       notaryAddress,
       type: 'sendNotarizationBatch',
     });
@@ -100,7 +98,7 @@ export const processDataResponseJob = async (job) => {
   const updateDataResponse = { ...dataResponse, status: 'batched' };
   await dataResponses.store(dataResponseId, updateDataResponse);
 
-  await dataResponsesLastAdded.store(accumulatorId, { notaryAddress, orderId, price });
+  await dataResponsesLastAdded.store(accumulatorId, { notaryAddress, orderId });
 
   return updateDataResponse;
 };
@@ -108,14 +106,14 @@ export const processDataResponseJob = async (job) => {
 export const sendNotarizationBatchJob = async (job) => {
   const {
     data: {
-      accumulatorId, orderId, price, notaryAddress,
+      accumulatorId, orderId, notaryAddress,
     },
   } = job;
 
   const dataResponseIds = await accumulator.fetch(accumulatorId);
 
   const batchId = await createBatch({ orderId, notaryAddress, dataResponseIds });
-  await addPrepareNotarizationJob({ batchId, price });
+  await addPrepareNotarizationJob({ batchId });
 
   await clear(accumulatorId);
   await dataResponsesLastAdded.del(accumulatorId);
