@@ -1,54 +1,52 @@
-import express from 'express';
-import { asyncError, validateFields } from '../utils';
+import Router from 'express-promise-router';
 import { receiveNotarizationResult } from '../operations/receiveNotarizationResult';
 
-const router = express.Router();
+const router = Router();
 
 /**
  * @swagger
  * /notarization-result/{notarizationRequestId}:
  *   post:
  *     parameters:
- *       - name: notarizationRequestId
+ *       - in: path
+ *         name: notarizationRequestId
+ *         type: string
+ *         required: true
  *         description: Notarization request id
+ *       - in: body
+ *         name: notarizationResult
  *         required: true
- *         type: string
- *         in: uri
- *       - name: orderId
- *         description: The unique identifier for the order.
- *         required: true
- *         type: number
- *         in: body
- *       - name: notaryAddress
- *         description: Notary's ethereum address.
- *         required: true
- *         type: string
- *         in: body
- *       - name: notarizationPercentage
- *         description: Percentage of orders that have been notarized.
- *         required: true
- *         type: number
- *         in: body
- *       - name: notarizationFee
- *         description: Flat one-time payment for the notarization services.
- *         required: true
- *         type: number
- *         in: body
- *       - name: payDataHash
- *         description: .
- *         required: true
- *         type: string
- *         in: body
- *       - name: lock
- *         description: .
- *         required: true
- *         type: string
- *         in: body
- *       - name: sellers
- *         description: List of sellers send to notary.
- *         required: true
- *         type: array
- *         in: body
+ *         schema:
+ *           required:
+ *             - orderId
+ *             - notaryAddress
+ *             - notarizationPercentage
+ *             - notarizationFee
+ *             - payDataHash
+ *             - lock
+ *             - sellers
+ *           properties:
+ *             orderId:
+ *               type: number
+ *               description: The unique identifier for the order.
+ *             notaryAddress:
+ *               type: string
+ *               description: Notary's ethereum address.
+ *             notarizationPercentage:
+ *               type: number
+ *               description: Percentage of orders that have been notarized.
+ *             notarizationFee:
+ *               type: number
+ *               description: Flat one-time payment for the notarization services.
+ *             payDataHash:
+ *               type: string
+ *               description: Seller ids array hash.
+ *             lock:
+ *               type: string
+ *               description: The lock for the BatPay.Transfer.
+ *             sellers:
+ *               type: array
+ *               description: List of sellers send to notary.
  *     produces:
  *       - application/json
  *     responses:
@@ -61,21 +59,16 @@ const router = express.Router();
  *       500:
  *         description: When the fetch failed.
  */
-router.post(
-  '/:notarizationRequestId',
-  validateFields(),
-  asyncError(async (req, res) => {
-    const { notarizationRequestId } = req.params;
-    const notarizationResult = req.body;
-
-    try {
-      receiveNotarizationResult(notarizationRequestId, notarizationResult);
-      res.status(202).json({ message: 'OK' });
-    } catch (error) {
-      const { message } = error;
-      res.boom.notFound(message);
-    }
-  }),
-);
+router.post('/:notarizationRequestId', async (req, res) => {
+  const { notarizationRequestId } = req.params;
+  const notarizationResult = req.body;
+  try {
+    receiveNotarizationResult(notarizationRequestId, notarizationResult);
+    res.status(202).json({ message: 'OK' });
+  } catch (error) {
+    const { message } = error;
+    res.boom.notFound(message);
+  }
+});
 
 export default router;

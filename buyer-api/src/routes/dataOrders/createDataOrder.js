@@ -1,5 +1,6 @@
 import Router from 'express-promise-router';
 import { createDataOrder } from '../../operations/createDataOrder';
+import { validateAddress } from '../../utils';
 
 const router = Router();
 
@@ -13,7 +14,6 @@ const router = Router();
  *     parameters:
  *       - in: body
  *         name: dataOrder
- *         type: object
  *         required: true
  *         schema:
  *           $ref: "#/definitions/DataOrder"
@@ -39,39 +39,49 @@ const router = Router();
  * definitions:
  *   DataOrder:
  *     type: object
+ *     required:
+ *        - audience
+ *        - price
+ *        - requestedData
+ *        - buyerInfoId
+ *        - buyerUrl
+ *        - notariesAddresses
  *     properties:
  *       audience:
  *         type: object
- *         required: true
  *         description: Target audience of the order
  *         example: '{ "age": 20 }'
  *       price:
  *         type: number
- *         required: true
  *         description: Price per added Data Response
  *         example: '42'
  *       requestedData:
- *         type: string[]
- *         required: true
+ *         type: array
+ *         items:
+ *           type: string
+ *           pattern: '^[0-9a-z\-]+$'
  *         description: Requested data type (Geolocation, Facebook, etc)
  *         example: '["some-data-type"]'
  *       buyerInfoId:
  *         type: string
- *         required: true
  *         description: The ID for the buyer info
  *         example: '"some-buyer-id"'
  *       buyerUrl:
  *         type: string
- *         required: true
  *         description: Public URL of the buyer to get extra information
  *         example: '"https://api.buyer.com"'
  *       notariesAddresses:
- *         type: string[]
- *         required: true
+ *         type: array
+ *         items:
+ *           type: string
+ *           pattern: '^0x[0-9a-fA-F]{40}$'
  *         description: Notaries' Ethereum addresses
- *         example: '["0xnotary-ethereum-address"]'
+ *         example: '["0x7befc633bd282f7938ef8349a9fca281cf06bada"]'
  */
-router.post('/', async (req, res) => res.json(await createDataOrder(req.body.dataOrder)));
-// TODO: validate notariesAddresses
+router.post(
+  '/',
+  validateAddress('body.notariesAddresses'),
+  async (req, res) => res.json(await createDataOrder(req.body)),
+);
 
 export default router;

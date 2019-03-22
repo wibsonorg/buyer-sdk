@@ -32,7 +32,7 @@ router.get(
  *   get:
  *     description: Returns the data order information.
  *     parameters:
- *       - in: params
+ *       - in: path
  *         name: id
  *         type: string
  *         required: true

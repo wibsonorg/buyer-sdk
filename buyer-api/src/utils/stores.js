@@ -5,7 +5,7 @@ import { createLevelStore, createRedisStore } from './storage';
  * @template V
  */
 /**
- * @typedef {"creating" | "created" | "closeing" | "closed"} DataOrderStatus
+ * @typedef {"creating" | "created" | "closing" | "closed"} DataOrderStatus
  * @typedef DataOrder
  * @property {Object<string, *>} audience Target audience of the order
  * @property {number} price Price per added Data Response
