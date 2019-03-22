@@ -2,6 +2,7 @@ import Router from 'express-promise-router';
 import { cache } from '../../utils';
 import { notaries } from '../../utils/stores';
 import fetchDataOrder from './middlewares/fetchDataOrder';
+import { getBuyerInfo } from '../../services/buyerInfo';
 
 const router = Router();
 
@@ -33,18 +34,38 @@ router.get(
   async (req, res) => {
     req.apicacheGroup = '/orders/*';
     const {
-      buyer,
-      audience,
-      price,
-      requestedData,
-      termsAndConditionsHash,
-      buyerUrl,
-      createdAt,
-      closedAt,
-      ...offchainData
+      status,
+      headsUpUrl,
+      dataResponsesUrl,
+      transactionHash,
+      notariesAddresses,
+      buyerInfoId,
     } = req.dataOrder;
-    offchainData.notaries = await Promise.all(offchainData.notariesAddresses
+
+    const allowedNotaries = await Promise.all(notariesAddresses
       .map(notaryAddress => notaries.fetch(notaryAddress)));
+
+    const {
+      name,
+      logo,
+      label,
+      category,
+      terms,
+    } = await getBuyerInfo(buyerInfoId);
+
+    const offchainData = {
+      status,
+      headsUpUrl,
+      dataResponsesUrl,
+      transactionHash,
+      notariesAddresses,
+      notaries: allowedNotaries,
+      buyer: { name, logo },
+      label,
+      category,
+      terms,
+    };
+
     res.json(offchainData);
   },
 );

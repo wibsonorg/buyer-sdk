@@ -5,7 +5,7 @@ import { addDataResponse } from '../../src/operations/addDataResponse';
 const dataOrder = {
   price: 45,
   status: 'created',
-  notariesAddresses: ['0xcccf90140fcc2d260186637d59f541e94ff9288f'],
+  notariesAddresses: ['0xccCF90140Fcc2d260186637D59F541E94Ff9288f'],
 };
 const someDataResponse = {
   orderId: 42,
@@ -20,7 +20,7 @@ const someDataResponse = {
 
 it('returns id and status', async (assert) => {
   const { id, status } = await addDataResponse(dataOrder, someDataResponse);
-  assert.is(id, '42:0xa42df59c5e17df255cadff9f52a004221f774f36');
+  assert.is(id, '42:0xa42df59C5e17df255CaDfF9F52a004221f774f36');
   assert.is(status, 'queued');
 });
 

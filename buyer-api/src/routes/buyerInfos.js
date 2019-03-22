@@ -38,12 +38,20 @@ router.get('/', cache('30 days'), async (req, res) => {
  *          schema:
  *            required:
  *              - id
+ *              - name
+ *              - logo
  *              - label
  *              - description
  *            properties:
  *              id:
  *               type: string
  *               description: The unique identifier for the piece of information.
+ *              name:
+ *               type: string
+ *               description: The name of the company.
+ *              logo:
+ *               type: string
+ *               description: The logo url of the company.
  *              label:
  *                type: string
  *                description: |

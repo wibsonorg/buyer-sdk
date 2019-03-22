@@ -63,11 +63,10 @@ router.post('/:notarizationRequestId', async (req, res) => {
   const { notarizationRequestId } = req.params;
   const notarizationResult = req.body;
   try {
-    receiveNotarizationResult(notarizationRequestId, notarizationResult);
+    await receiveNotarizationResult(notarizationRequestId, notarizationResult);
     res.status(202).json({ message: 'OK' });
   } catch (error) {
-    const { message } = error;
-    res.boom.notFound(message);
+    res.boom.notFound(error.message);
   }
 });
 

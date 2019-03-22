@@ -86,8 +86,21 @@ import { createLevelStore, createRedisStore } from './storage';
  * @typedef Notary
  * @property {string} notarizationUrl Notary's API URL used to request notarizations
  */
+/** @type {LevelStore<number, string>} */
+const dataOrdersByDxId = createLevelStore('data_orders_by_dx_id');
 /** @type {LevelStore<string, DataOrder>} */
 export const dataOrders = createLevelStore('data_orders');
+const storeFn = dataOrders.store;
+Object.assign(dataOrders, {
+  store: async (id, dataOrder) => Promise.all([
+    storeFn(id, dataOrder),
+    dataOrder.dxId && dataOrdersByDxId.store(dataOrder.dxId, id),
+  ]),
+  fetchByDxId: async (dxId) => {
+    const id = await dataOrdersByDxId.fetch(dxId);
+    return dataOrders.fetch(id);
+  },
+});
 /** @type {LevelStore<string, DataResponse>} */
 export const dataResponses = createLevelStore('data_responses');
 /** @type {LevelStore<string, string[]>} */
@@ -107,7 +120,8 @@ export const notaries = {
     'fake-notary-address': {
       name: 'Fake Notary',
       address: 'fake-notary-address',
-      notarizationUrl: 'http://localhost:9200/request-notarization',
+      notarizationUrl: 'http://localhost:9200/buyers/notarization-request',
+      dataResponsesUrl: 'http://localhost:9200/data-responses',
       isRegistered: false,
       headsUpUrl: 'http://localhost:9200/sellers/heads-up',
       publicKey: 'some-public-key',

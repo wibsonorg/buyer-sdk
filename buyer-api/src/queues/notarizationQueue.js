@@ -18,18 +18,17 @@ const { buyerPublicBaseUrl } = config;
  *  Creates a Notarization record containing the NotarizationRequest.
  * @param {string} notaryAddress Notary's Ethereum address
  * @param {number} orderId Order ID in the DataExchange contract
- * @param {number} price DataOrder's price
  * @param {import('../utils/stores').NotarizationSeller[]} sellers List of sellers data
  * @returns {string} ID of the Notarization record
  */
-const createNotarizationRequest = async (notaryAddress, orderId, price, sellers) => {
+const createNotarizationRequest = async (notaryAddress, orderId, sellers) => {
   const id = uuid();
   const callbackUrl = `${buyerPublicBaseUrl}/notarization-result/${id}`;
   const request = {
     orderId, sellers, callbackUrl,
   };
   await notarizations.store(id, {
-    notaryAddress, price, request, status: 'created',
+    notaryAddress, request, status: 'created',
   });
   return id;
 };
@@ -63,10 +62,9 @@ const addSendNotarizationJob = params => queue.add('send', params);
  *  enqueues another job to send the request to the notary.
  * @param {number} job.id
  * @param {string} job.data.batchId Batch ID from where the Notarization is built.
- * @param {number} job.data.price DataOrder's price
  * @returns {string} The Notarization ID
  */
-export const prepare = async ({ id, data: { batchId, price } }) => {
+export const prepare = async ({ id, data: { batchId } }) => {
   const {
     orderId,
     notaryAddress,
@@ -84,7 +82,6 @@ export const prepare = async ({ id, data: { batchId, price } }) => {
   const notarizationRequestId = await createNotarizationRequest(
     notaryAddress,
     orderId,
-    price,
     sellers,
   );
   await addSendNotarizationJob({ notarizationRequestId });
