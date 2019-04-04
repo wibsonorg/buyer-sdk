@@ -1,15 +1,13 @@
 import web3 from '../../utils/web3';
 import signingService from '../../services/signingService';
+import notaryService from '../../services/notaryService';
 import { getDataResponse } from '../../utils/wibson-lib/s3';
 import { dataExchange, dataOrderAt, wibcoin, logger } from '../../utils';
+import { getNotaryInfo } from '../notariesFacade';
 import config from '../../../config';
 
 const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
-  const [
-    priceStr,
-    notaryInfo,
-    remainingBudgetForAuditsStr,
-  ] = await Promise.all([
+  const [priceStr, notaryInfo, remainingBudgetForAuditsStr] = await Promise.all([
     dataOrder.methods.price().call(),
     dataOrder.methods.getNotaryInfo(notaryAccount).call(),
     dataExchange.methods.buyerRemainingBudgetForAudits(myAddress, dataOrder.options.address).call(),
@@ -24,6 +22,26 @@ const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
 
 const getAllowance = async myAddress =>
   Number(await wibcoin.methods.allowance(myAddress, dataExchange.options.address).call());
+
+// hack to avoid spending gas when trying to get scammed.
+const freeRideNotarization = async (order, seller, notary, buyer) => {
+  const notaryInfo = await getNotaryInfo(notary);
+  const notaryApi = notaryInfo.publicUrls.api;
+
+  await notaryService.demandAudit(notaryApi, order, seller, buyer, true);
+  const { wasAudited, isDataValid } = await notaryService.auditResult(
+    notaryApi,
+    order,
+    seller,
+    buyer,
+  );
+
+  logger.info(`Notarization was done: ${wasAudited}. Result: ${isDataValid}`);
+
+  if (wasAudited && !isDataValid) {
+    throw new Error('Failed notarization');
+  }
+};
 
 /**
  * @async
@@ -69,6 +87,9 @@ const addDataResponse = async (order, seller, enqueueTransaction) => {
     throw new Error('Not enough allowance to add DataResponse');
   }
 
+  // hack to avoid spending gas when trying to get scammed.
+  await freeRideNotarization(order, seller, notaryAccount, account.address);
+
   enqueueTransaction(
     account,
     'AddDataResponse',
@@ -91,20 +112,19 @@ const onBuyData = async (orderAddress, sellerAddress, enqueueTx) => {
   } catch (error) {
     const { message } = error;
 
-    if (message === 'Invalid order|seller address'
-      || message === 'Invalid data response payload'
-      || message === 'Invalid notary'
+    if (
+      message === 'Invalid order|seller address' ||
+      message === 'Invalid data response payload' ||
+      message === 'Invalid notary' ||
+      message === 'Failed notarization'
     ) {
       logger.error('Could not buy data (it will not be retried)' +
-        ` | reason: ${error.message}` +
-        ` | params ${JSON.stringify({ orderAddress, sellerAddress })}`);
+          ` | reason: ${error.message}` +
+          ` | params ${JSON.stringify({ orderAddress, sellerAddress })}`);
     } else {
       throw error;
     }
   }
 };
 
-export {
-  onBuyData,
-  addDataResponse,
-};
+export { onBuyData, addDataResponse };
