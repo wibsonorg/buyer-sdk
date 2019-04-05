@@ -75,22 +75,6 @@ async function createBuyerDataOrder(
   return res.json();
 }
 
-const addNotariesToOrder = async (orderAddress, notariesAddresses) => {
-  const res = await fetch(`${apiUrl}/orders/${orderAddress}/notaries`, {
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: authorization()
-    },
-    method: 'POST',
-    body: JSON.stringify({ notariesAddresses }),
-  });
-  if (!res.ok) {
-    throw new Error('Could not add notaries to order');
-  }
-  return res.json();
-};
-
 const closeOrder = async orderAddress => {
   const res = await fetch(`${apiUrl}/orders/${orderAddress}/end`, {
     headers: {
@@ -110,6 +94,5 @@ export {
   listBuyerDataOrders,
   createBuyerDataOrder,
   getBuyerDataOrdersAmount,
-  addNotariesToOrder,
   closeOrder,
 };

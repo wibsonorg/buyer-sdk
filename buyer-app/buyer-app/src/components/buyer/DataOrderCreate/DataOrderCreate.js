@@ -29,10 +29,11 @@ import Subtitle from "base-app-src/components/Subtitle";
 
 import Loading from "base-app-src/components/Loading";
 
-import AudiencePicker from "./AudiencePicker";
 import Config from "../../../config";
 
 import authorization from "../../../utils/headers";
+
+import { getNotariesFromAudience } from "../../../lib/protocol-helpers/notaries";
 
 import "./DataOrderCreate.css";
 
@@ -44,20 +45,14 @@ class DataOrderCreate extends Component {
     this.state = {
       buyerInfos: [],
       selectedBuyer: undefined,
-      audience: [],
+      audience: undefined,
       requestedData: [],
-      requestedNotaries: [],
-      publicURL: Config.get("buyerPublicURL"),
       errors: {},
       loading: false,
       creationError: undefined,
       price: 15,
     };
   }
-
-  handleOnAudienceChange = audience => {
-    this.setState({ audience });
-  };
 
   handleRequestClose = () => {
     this.props.history.replace("/");
@@ -89,24 +84,17 @@ class DataOrderCreate extends Component {
     const {
       audience,
       requestedData,
-      requestedNotaries,
-      publicURL,
       price,
       selectedBuyer
     } = this.state;
 
-    const selectedAudience = audience.map(filter => {
-      return {
-        filter: filter.variable,
-        values: [filter.value]
-      };
-    });
+    const notaries = getNotariesFromAudience(audience, this.props.availableNotaries);
 
     this.props.createDataOrder(
-      selectedAudience,
+      [audience.value],
       requestedData.map(d => d.value),
-      requestedNotaries.map(n => n.value),
-      publicURL,
+      notaries,
+      Config.get("buyerPublicURL"),
       price,
       selectedBuyer.id,
     );
@@ -115,21 +103,16 @@ class DataOrderCreate extends Component {
   shouldDisableSubmitButton() {
     const {
       audience,
-      requestedNotaries,
-      publicURL,
       requestedData
     } = this.state;
 
     return (
-      audience.length === 0
-      || !publicURL
-      || !requestedNotaries || !requestedNotaries.length
-      || !requestedData || !requestedData.length
+      !audience || !requestedData || !requestedData.length
     );
   }
 
   renderCreateForm() {
-    const { audienceOntology, dataOntology, availableNotaries } = this.props;
+    const { audienceOntology, dataOntology } = this.props;
     return (
       <Form>
         <FormSection>
@@ -145,12 +128,13 @@ class DataOrderCreate extends Component {
         </FormSection>
         <FormSection>
           <Subtitle>Audience</Subtitle>
-          <AudiencePicker
-            requestableAudience={audienceOntology.filters}
-            audience={this.state.audience}
-            onChange={this.handleOnAudienceChange}
-            errors={this.state.errors.audience}
-          />
+          <InfoItem>
+            <ReactSelect
+              options={audienceOntology.options}
+              value={this.state.audience}
+              onChange={audience => this.setState({ audience })}
+            />
+          </InfoItem>
         </FormSection>
         <FormSection>
           <Subtitle>Orders settings</Subtitle>
@@ -171,15 +155,6 @@ class DataOrderCreate extends Component {
               step={1}
               value={this.state.price}
               onChange={value => this.setState({ price: value })}
-            />
-          </InfoItem>
-          <InfoItem>
-            <Label color="light-dark">Notary</Label>
-            <ReactSelect
-              options={availableNotaries.list}
-              value={this.state.requestedNotaries}
-              onChange={requestedNotaries => this.setState({ requestedNotaries })}
-              isMulti={true}
             />
           </InfoItem>
         </FormSection>
