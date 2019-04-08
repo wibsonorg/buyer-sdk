@@ -4,7 +4,7 @@ const getNotariesFromAudience = (audience, availableNotaries) => {
   }
 
   return availableNotaries.filter(notary =>
-    audience.notaries.some(rule => rule.test(notary.name))
+    audience.notaries.some(rule => rule.test(notary.label))
   );
 };
 

@@ -88,12 +88,12 @@ class DataOrderCreate extends Component {
       selectedBuyer
     } = this.state;
 
-    const notaries = getNotariesFromAudience(audience, this.props.availableNotaries);
+    const notaries = getNotariesFromAudience(audience, this.props.availableNotaries.list);
 
     this.props.createDataOrder(
       [audience.value],
       requestedData.map(d => d.value),
-      notaries,
+      notaries.map(d => d.value),
       Config.get("buyerPublicURL"),
       price,
       selectedBuyer.id,
