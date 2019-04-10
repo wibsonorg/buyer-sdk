@@ -127,6 +127,7 @@ class Buyer extends React.Component {
     const {
       history,
       activeDataOrders,
+      dataOrdersAddress,
       dataOrdersAddressAmount,
       boughtDataOrders,
       closedDataOrders,
@@ -188,6 +189,7 @@ class Buyer extends React.Component {
                 onClick={() => {
                   history.push("/open-orders/new-data-order");
                 }}
+                disabled={!dataOrdersAddress.fulfilled}
               >
                 Place an order
               </Button>
