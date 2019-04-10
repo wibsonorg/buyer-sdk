@@ -15,7 +15,7 @@ if (process.env.DEPLOY_ENVIRONMENT === "development") {
   console.error("DEPLOY_ENVIRONMENT not recognized")
 }
 
-baseConf.env = process.env.DEPLOY_ENVIRONMENT;
+baseConf.env = process.env.NODE_ENV;
 
 const config = new Config(baseConf);
 export default config;
