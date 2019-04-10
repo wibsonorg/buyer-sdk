@@ -2,7 +2,8 @@ import config from '../../config';
 import { logger, dataExchange, dataOrderAt } from '../utils';
 import { getElements } from './helpers/blockchain';
 import { dateOrNull } from './helpers/date';
-import { storage as offchainStorage, coin } from '../utils/wibson-lib';
+import { coin } from '../utils/wibson-lib';
+// import { storage as offchainStorage } from '../utils/wibson-lib';
 
 const ordersTTL = Number(config.contracts.cache.ordersTTL);
 const { toWib } = coin;
@@ -34,7 +35,9 @@ const fetchOrderFromCache = async (orderAddress, ordersCache) =>
 const addOffChainInfo = async dataOrder => ({
   ...dataOrder,
   offChain: {
-    dataResponsesCount: await offchainStorage.countDataResponses(dataOrder.orderAddress),
+    // THIS IS HIGHLY INEFFICIENT, WAIT FOR V2
+    // dataResponsesCount: await offchainStorage.countDataResponses(dataOrder.orderAddress),
+    dataResponsesCount: 0,
   },
 });
 
@@ -138,8 +141,12 @@ const getOrdersForBuyer = async (
   ordersCache,
   offset = 0,
   limit = undefined,
+  ordering = 'DESC',
 ) => {
   const orderAddresses = await dataExchange.methods.getOrdersForBuyer(buyerAddress).call();
+  if (ordering === 'DESC') {
+    orderAddresses.reverse();
+  }
   const upperBound = limit && offset >= 0 ? offset + limit : orderAddresses.length;
   const ordersPage = orderAddresses.slice(offset, upperBound);
 
