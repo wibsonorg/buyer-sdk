@@ -40,7 +40,7 @@ import DataOrderCreate from "./DataOrderCreate";
 import R from "ramda";
 import config from "../../config";
 
-const limit = config.get('env') === 'production' ? 1 : 30;
+const limit = config.get('env') === 'production' ? 5 : 30;
 
 class Buyer extends React.Component {
   constructor(props) {
