@@ -1,0 +1,7 @@
+{
+	"api.url": "https://api.jampp.wibson-buyers.org",
+	"buyerPublicURL": {
+		"api": "https://api.jampp.wibson-buyers.org",
+		"storage": "s3://AKIAJQUO7VPG5EHGP2SA:fywQlTzAkSCHMmhZfXOBbNe1I%2FZVVb7hhJG4SVFm@wib-prd-jampp-storage"
+	}
+}

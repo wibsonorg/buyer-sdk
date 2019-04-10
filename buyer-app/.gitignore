@@ -68,7 +68,7 @@ typings/
 .env
 
 package-lock.json
-build/
+build*
 *.DS_Store
 *playground.db
 
