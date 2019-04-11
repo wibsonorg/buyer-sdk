@@ -6,6 +6,9 @@ import { dataExchange, dataOrderAt, wibcoin, logger } from '../../utils';
 import { getNotaryInfo } from '../notariesFacade';
 import config from '../../../config';
 
+const freeRidesConfig = JSON.parse(config.notary.freeRides) || [];
+const freeRideNotaries = freeRidesConfig.map(n => n.toLowerCase());
+
 const getTotalPrice = async (myAddress, dataOrder, notaryAccount) => {
   const [priceStr, notaryInfo, remainingBudgetForAuditsStr] = await Promise.all([
     dataOrder.methods.price().call(),
@@ -88,7 +91,7 @@ const addDataResponse = async (order, seller, enqueueTransaction) => {
   }
 
   // hack to avoid spending gas when trying to get scammed.
-  if (config.notary.freeRides.some(freeRideNotary => freeRideNotary === notaryAccount)) {
+  if (freeRideNotaries.some(freeRideNotary => freeRideNotary === notaryAccount)) {
     await freeRideNotarization(order, seller, notaryAccount, account.address);
   }
 
