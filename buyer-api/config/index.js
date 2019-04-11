@@ -31,6 +31,7 @@ const config = {
   },
   notary: {
     demandAuditsFrom: env.NOTARY_DEMAND_AUDITS_FROM,
+    freeRides: env.NOTARY_FREE_RIDES,
   },
   cache: {
     enabled: env.CACHE === 'enabled',

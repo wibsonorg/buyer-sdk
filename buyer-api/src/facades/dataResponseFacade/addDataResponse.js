@@ -88,7 +88,9 @@ const addDataResponse = async (order, seller, enqueueTransaction) => {
   }
 
   // hack to avoid spending gas when trying to get scammed.
-  await freeRideNotarization(order, seller, notaryAccount, account.address);
+  if (config.notary.freeRides.some(freeRideNotary => freeRideNotary === notaryAccount)) {
+    await freeRideNotarization(order, seller, notaryAccount, account.address);
+  }
 
   enqueueTransaction(
     account,
