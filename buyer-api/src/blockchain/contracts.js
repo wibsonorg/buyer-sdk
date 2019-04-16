@@ -2,7 +2,7 @@ import abiDecoder from 'abi-decoder';
 import { web3 } from '../utils';
 import config from '../../config';
 
-import WibcoinDefinition from '../../contracts/Wibcoin.json';
+import WibcoinDefinition from '../../contracts/WIBToken.json';
 import DataExchangeDefinition from '../../contracts/DataExchange.json';
 import BatPayDefinition from '../../contracts/BatPay.json';
 
@@ -46,6 +46,8 @@ export async function getElements(contract, property, start = 0) {
       elements.push(e);
       e = await getElement(i);
     }
-  } catch (_) { /**/ }
+  } catch (_) {
+    /**/
+  }
   return elements;
 }

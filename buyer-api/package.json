@@ -15,7 +15,7 @@
     "test:performance": "ava -t **/*.test.js | faucet",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "publish": "scripts/publish.sh $npm_package_name",
+    "publish": "scripts/publish.sh $npm_package_name-v$npm_package_version",
     "task:production": "node dist/tasks/index.js",
     "task": "babel-node src/tasks/index.js"
   },
