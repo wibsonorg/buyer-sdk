@@ -31,7 +31,9 @@ export function validateAddress(fieldPath) {
     const address = fieldProps.reduce((r, c) => r && r[c], req);
     const fieldIsValid = (
       typeof address === 'string' && isValidAddress(address)
-    ) || address.every(isValidAddress);
+    ) || (
+      address.every && address.every(isValidAddress)
+    );
 
     if (fieldIsValid) {
       next();
