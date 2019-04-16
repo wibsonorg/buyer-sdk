@@ -2,7 +2,7 @@ import td from 'testdouble';
 import sinon from 'sinon';
 import test from 'ava';
 
-import WibcoinDefinition from '../../contracts/Wibcoin.json';
+import WibcoinDefinition from '../../contracts/WIBToken.json';
 import DataExchangeDefinition from '../../contracts/DataExchange.json';
 
 export const config = {
@@ -20,12 +20,13 @@ export const dxContract = {
   dataOrders: sinon.stub(),
   methods: {},
 };
-[
-  'dataOrders',
-].forEach((m) => { dxContract.methods[m] = () => dxContract[m]; });
+['dataOrders'].forEach((m) => {
+  dxContract.methods[m] = () => dxContract[m];
+});
 export const web3 = {
   eth: {
-    Contract: sinon.stub()
+    Contract: sinon
+      .stub()
       .withArgs(WibcoinDefinition, 'someWibcoinAddress')
       .returns(wibContract)
       .withArgs(DataExchangeDefinition, 'someDataExchangeddress')
