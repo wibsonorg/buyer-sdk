@@ -16,18 +16,18 @@ import { toWib } from '../utils/wibson-lib/coin';
  * @param {Number} dxId Data order id on the data exchange
  * @returns {Promise<DataOrder>} DataOrder information on the DataExchange
  */
-export async function fetchDataOrder(dxId) {
-  if (dxId >= 0) {
+export async function fetchDataOrder(orderId) {
+  if (orderId >= 0) {
     const {
-      buyer,
-      audience,
-      price,
-      requestedData,
-      termsAndConditionsHash,
-      buyerUrl,
-      createdAt,
-      closedAt,
-    } = await DataExchange.methods.dataOrders(dxId).call();
+      0: buyer,
+      1: audience,
+      2: price,
+      3: requestedData,
+      4: termsAndConditionsHash,
+      5: buyerUrl,
+      6: createdAt,
+      7: closedAt,
+    } = await DataExchange.methods.getDataOrder(orderId).call();
     return {
       buyer: buyer.toLowerCase(),
       audience: JSON.parse(audience),
@@ -39,5 +39,5 @@ export async function fetchDataOrder(dxId) {
       closedAt: toDate(closedAt),
     };
   }
-  throw new Error(`Invalid DataExchange-Id ${dxId}`);
+  throw new Error(`Invalid DataExchange-Id ${orderId}`);
 }
