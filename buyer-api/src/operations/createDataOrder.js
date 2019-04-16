@@ -3,6 +3,7 @@ import { fromWib } from '../utils/wibson-lib/coin';
 import { getBuyerInfo } from '../services/buyerInfo';
 import { dataOrders } from '../utils/stores';
 import { addTransactionJob } from '../queues/transactionQueue';
+import config from '../../config';
 
 /**
  * @typedef BuyerInfoType
@@ -26,7 +27,10 @@ export async function createDataOrder(dataOrder) {
   // TODO: use env.BUYER_PUBLIC_BASE_URL instead
   const buyerUrl = `${dataOrder.buyerUrl}/orders/${id}/offchain-data`;
   const headsUpUrl = `${dataOrder.buyerUrl}/orders/${id}/heads-up`;
-  const dataResponsesUrl = `${dataOrder.buyerUrl}/orders/${id}/data-responses`;
+  let dataResponsesUrl = `${dataOrder.buyerUrl}/orders/${id}/data-responses`;
+  if (config.env === 'development') {
+    dataResponsesUrl = `http://10.0.2.2:9100/orders/${id}/data-responses`;
+  }
   const { termsHash } = await getBuyerInfo(dataOrder.buyerInfoId);
   const termsAndConditionsHash = termsHash.startsWith('0x') ? termsHash : `0x${termsHash}`;
   const notariesAddresses = dataOrder.notariesAddresses.map(n => n.toLowerCase());

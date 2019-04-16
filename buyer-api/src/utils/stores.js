@@ -92,10 +92,11 @@ const dataOrdersByDxId = createLevelStore('data_orders_by_dx_id');
 export const dataOrders = createLevelStore('data_orders');
 const storeFn = dataOrders.store;
 Object.assign(dataOrders, {
-  store: async (id, dataOrder) => Promise.all([
-    storeFn(id, dataOrder),
-    dataOrder.dxId && dataOrdersByDxId.store(dataOrder.dxId, id),
-  ]),
+  store: async (id, dataOrder) =>
+    Promise.all([
+      storeFn(id, dataOrder),
+      dataOrder.dxId && dataOrdersByDxId.store(dataOrder.dxId, id),
+    ]),
   fetchByDxId: async (dxId) => {
     const id = await dataOrdersByDxId.fetch(dxId);
     return dataOrders.fetch(id);
@@ -121,7 +122,7 @@ export const notaries = {
       name: 'Fake Notary',
       address: 'fake-notary-address',
       notarizationUrl: 'http://localhost:9200/buyers/notarization-request',
-      dataResponsesUrl: 'http://localhost:9200/data-responses',
+      dataResponsesUrl: 'http://10.0.2.2:9200/data-responses',
       isRegistered: false,
       headsUpUrl: 'http://localhost:9200/sellers/heads-up',
       publicKey: 'some-public-key',
