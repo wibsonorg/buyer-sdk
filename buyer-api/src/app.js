@@ -42,7 +42,7 @@ swagger.initializeMiddleware(schema, ({ swaggerMetadata, swaggerValidator, swagg
 
   app.use('/authentication', auth);
   app.use('/health', health);
-  app.use('/api-docs', swaggerUi());
+  app.get('/api-docs', swaggerUi());
   app.get('/api-docs.json', (_, res) => res.json(schema));
   app.use('/orders', dataOrders);
   app.use('/notarization-result', notarizationResult);

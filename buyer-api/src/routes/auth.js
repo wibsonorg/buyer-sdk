@@ -13,7 +13,7 @@ const router = Router();
  *     description: Gets a jwt token from a password
  *     parameters:
  *       - in: body
- *         name: credentials
+ *         name: body
  *         schema:
  *            required:
  *              - password

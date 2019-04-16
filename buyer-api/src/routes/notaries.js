@@ -56,7 +56,7 @@ router.get(
     if (result.isRegistered) {
       res.json(result);
     } else {
-      res.status(404).send();
+      res.boom.notFound('Notary not registered');
     }
   },
 );

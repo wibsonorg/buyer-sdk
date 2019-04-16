@@ -33,7 +33,7 @@ router.get('/', cache('30 days'), async (req, res) => {
  *     description: Creates a new possible information set to be selected on future data orders.
  *     parameters:
  *        - in: body
- *          name: buyerInfo
+ *          name: body
  *          required: true
  *          schema:
  *            required:

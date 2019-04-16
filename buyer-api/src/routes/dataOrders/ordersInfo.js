@@ -39,7 +39,7 @@ router.get(
       const buyerInfo = await getOrderInfo(orderAddress);
       res.json(buyerInfo);
     } catch (err) {
-      res.status(404).send();
+      res.boom.notFound(err.message);
     }
   },
 );
@@ -56,7 +56,7 @@ router.get(
  *         required: true
  *         description: Ethereum address of the Data Order.
  *       - in: body
- *         name: buyerInfo
+ *         name: body
  *         required: true
  *         schema:
  *           required:
@@ -86,7 +86,7 @@ router.post(
       await associateBuyerInfoToOrder(orderAddress, buyerInfoId);
       res.json({});
     } catch (err) {
-      res.status(404).send();
+      res.boom.notFound(err.message);
     }
   },
 );

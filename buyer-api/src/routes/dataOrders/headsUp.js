@@ -18,7 +18,7 @@ const router = Router();
  *         required: true
  *         description: Order ID in the DataExchange contract
  *       - in: body
- *         name: seller
+ *         name: body
  *         required: true
  *         schema:
  *            required:

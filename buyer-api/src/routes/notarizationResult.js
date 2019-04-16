@@ -14,7 +14,7 @@ const router = Router();
  *         required: true
  *         description: Notarization request id
  *       - in: body
- *         name: notarizationResult
+ *         name: body
  *         required: true
  *         schema:
  *           required:

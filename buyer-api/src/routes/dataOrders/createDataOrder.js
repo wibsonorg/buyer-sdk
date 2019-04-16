@@ -13,7 +13,7 @@ const router = Router();
  *       ## Buyer creates a DataOrder
  *     parameters:
  *       - in: body
- *         name: dataOrder
+ *         name: body
  *         required: true
  *         schema:
  *           $ref: "#/definitions/DataOrder"

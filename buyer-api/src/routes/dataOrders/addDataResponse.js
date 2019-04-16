@@ -17,7 +17,7 @@ const router = Router();
  *         type: string
  *         required: true
  *       - in: body
- *         name: dataResponse
+ *         name: body
  *         required: true
  *         schema:
  *           $ref: "#/definitions/DataResponse"
