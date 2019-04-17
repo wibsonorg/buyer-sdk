@@ -18,16 +18,16 @@ import { toWib } from '../utils/wibson-lib/coin';
  */
 export async function fetchDataOrder(orderId) {
   if (orderId >= 0) {
-    const {
-      0: buyer,
-      1: audience,
-      2: price,
-      3: requestedData,
-      4: termsAndConditionsHash,
-      5: buyerUrl,
-      6: createdAt,
-      7: closedAt,
-    } = await DataExchange.methods.getDataOrder(orderId).call();
+    const [
+      buyer,
+      audience,
+      price,
+      requestedData,
+      termsAndConditionsHash,
+      buyerUrl,
+      createdAt,
+      closedAt,
+    ] = Object.values(await DataExchange.methods.getDataOrder(orderId).call());
     return {
       buyer: buyer.toLowerCase(),
       audience: JSON.parse(audience),
