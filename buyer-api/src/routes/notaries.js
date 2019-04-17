@@ -1,9 +1,9 @@
-import express from 'express';
-import { asyncError, cache, validateAddress } from '../utils';
+import Router from 'express-promise-router';
+import { cache, validateAddress } from '../utils';
 
 import { getNotaryInfo, getNotariesInfo } from '../facades/notariesFacade';
 
-const router = express.Router();
+const router = Router();
 
 /**
  * @swagger
@@ -18,24 +18,22 @@ const router = express.Router();
  *       500:
  *         description: When the fetch failed.
  */
-router.get('/', cache('1 day'), asyncError(async (req, res) => {
+router.get('/', cache('1 day'), async (req, res) => {
   req.apicacheGroup = '/notaries/*';
-
-  res.json({
-    notaries: await getNotariesInfo(),
-  });
-}));
+  res.json({ notaries: await getNotariesInfo() });
+});
 
 /**
  * @swagger
- * /notaries/:notaryAddress:
+ * /notaries/{notaryAddress}:
  *   get:
  *     description: Returns the notary's information registered in the Data Exchange
  *     parameters:
- *       - name: notaryAddress
- *         description: Notary's ethereum address
- *         required: true
+ *       - in: path
+ *         name: notaryAddress
  *         type: string
+ *         required: true
+ *         description: Notary's ethereum address
  *     produces:
  *       - application/json
  *     responses:
@@ -49,8 +47,8 @@ router.get('/', cache('1 day'), asyncError(async (req, res) => {
 router.get(
   '/:notaryAddress',
   cache('1 day'),
-  validateAddress('notaryAddress'),
-  asyncError(async (req, res) => {
+  validateAddress('params.notaryAddress'),
+  async (req, res) => {
     req.apicacheGroup = '/notaries/*';
     const { notaryAddress } = req.params;
 
@@ -58,9 +56,9 @@ router.get(
     if (result.isRegistered) {
       res.json(result);
     } else {
-      res.status(404).send();
+      res.boom.notFound('Notary not registered');
     }
-  }),
+  },
 );
 
 export default router;

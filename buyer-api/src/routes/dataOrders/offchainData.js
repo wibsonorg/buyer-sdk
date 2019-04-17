@@ -14,7 +14,7 @@ const router = Router();
  *        Returns the data order information thats missing from the Data Exchange
  *        (offchain data)
  *     parameters:
- *       - in: params
+ *       - in: path
  *         name: id
  *         type: string
  *         required: true

@@ -1,23 +1,24 @@
-import express from 'express';
-import { asyncError, cache, validateAddress, checkAuthorization } from '../../utils';
+import Router from 'express-promise-router';
+import { cache, validateAddress, checkAuthorization } from '../../utils';
 import {
   getOrderInfo,
   associateBuyerInfoToOrder,
 } from '../../services/buyerInfo';
 
-const router = express.Router();
+const router = Router();
 
 /**
  * @swagger
- * /orders/:orderAddress/info:
+ * /orders/{orderAddress}/info:
  *   get:
  *     description: Returns extra information about the Data Order, such as buyer and project names,
  *                  category, etc.
  *     parameters:
- *       - name: orderAddress
- *         description: Ethereum address of the Data Order.
- *         required: true
+ *       - in: path
+ *         name: orderAddress
  *         type: string
+ *         required: true
+ *         description: Ethereum address of the Data Order.
  *     produces:
  *       - application/json
  *     responses:
@@ -31,34 +32,39 @@ const router = express.Router();
 router.get(
   '/:orderAddress/info',
   cache('30 days'),
-  validateAddress('orderAddress'),
-  asyncError(async (req, res) => {
+  validateAddress('params.orderAddress'),
+  async (req, res) => {
     const { orderAddress } = req.params;
-
     try {
       const buyerInfo = await getOrderInfo(orderAddress);
       res.json(buyerInfo);
     } catch (err) {
-      res.status(404).send();
+      res.boom.notFound(err.message);
     }
-  }),
+  },
 );
 
 /**
  * @swagger
- * /orders/:orderAddress/info:
+ * /orders/{orderAddress}/info:
  *   post:
  *     description: Associates a buyer info ID with a data order
  *     parameters:
- *       - name: orderAddress
+ *       - in: path
+ *         name: orderAddress
+ *         type: string
+ *         required: true
  *         description: Ethereum address of the Data Order.
+ *       - in: body
+ *         name: body
  *         required: true
- *         type: string
- *       - name: buyerInfoId
- *         description: The ID for the buyer info
- *         required: true
- *         type: string
- *         in: body
+ *         schema:
+ *           required:
+ *             - buyerInfoId
+ *           properties:
+ *             buyerInfoId:
+ *              type: string
+ *              description: The ID for the buyer info.
  *     produces:
  *       - application/json
  *     responses:
@@ -72,18 +78,17 @@ router.get(
 router.post(
   '/:orderAddress/info',
   checkAuthorization,
-  validateAddress('orderAddress'),
-  asyncError(async (req, res) => {
+  validateAddress('params.orderAddress'),
+  async (req, res) => {
     const { orderAddress } = req.params;
     const { buyerInfoId } = req.body;
-
     try {
       await associateBuyerInfoToOrder(orderAddress, buyerInfoId);
       res.json({});
     } catch (err) {
-      res.status(404).send();
+      res.boom.notFound(err.message);
     }
-  }),
+  },
 );
 
 export default router;
