@@ -7,13 +7,7 @@ import { dataOrders } from '../utils/stores';
  * @param {import('../utils/stores').DataOrder} the order to be closed.
  */
 export const closeDataOrder = async (orderId, order) => {
-  addTransactionJob(
-    'CloseDataOrder',
-    { orderId: order.dxId },
-  );
-
+  await addTransactionJob('CloseDataOrder', { orderId: order.dxId });
   await dataOrders.update(orderId, { status: 'closing' });
-
   return { status: 'pending' };
 };
-

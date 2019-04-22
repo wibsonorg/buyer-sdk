@@ -48,8 +48,8 @@
     "redis": "^2.8.0",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5",
-    "swagger-jsdoc": "^3.2.7",
-    "swagger-ui-express": "^3.0.10",
+    "swagger-jsdoc": "^3.2.9",
+    "swagger-tools": "^0.10.4",
     "truffle-contract": "3.0.6",
     "uuid": "^3.3.2",
     "web3": "1.0.0-beta.33",
@@ -85,7 +85,7 @@
       "__test__/*",
       "*.test.js"
     ],
-    "delay": "7000"
+    "delay": 3000
   },
   "nyc": {
     "check-coverage": true,

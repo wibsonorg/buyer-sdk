@@ -1,20 +1,20 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-unused-vars */
 import jwt from 'jsonwebtoken';
 import config from '../../config';
 import { fetchToken } from './';
 
-function checkAuthorization(req, res, next) {
+async function checkAuthorization(req, res, next) {
   const token = fetchToken(req);
   if (!token) {
-    return res.boom.unauthorized('No token provided');
-  }
-  jwt.verify(token, config.jwt.secret, (err, decoded) => {
-    if (err) {
-      return res.boom.unauthorized('Failed to authenticate token');
+    res.boom.unauthorized('No token provided');
+  } else {
+    const error = await new Promise(resolve => // eslint-disable-next-line no-unused-vars
+      jwt.verify(token, config.jwt.secret, (err, decoded) => resolve(err)));
+    if (error) {
+      res.boom.unauthorized('Failed to authenticate token');
+    } else {
+      next();
     }
-    next();
-  });
+  }
 }
 
 export default checkAuthorization;

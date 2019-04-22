@@ -1,9 +1,8 @@
-import express from 'express';
-import { closeDataOrder } from '../../operations/closeDataOrder';
-import { asyncError } from '../../utils';
+import Router from 'express-promise-router';
 import fetchDataOrder from './middlewares/fetchDataOrder';
+import { closeDataOrder } from '../../operations/closeDataOrder';
 
-const router = express.Router();
+const router = Router();
 
 /**
  * @swagger
@@ -13,9 +12,9 @@ const router = express.Router();
  *       # Wibson's Protocol final step
  *       ## The Buyer closes the DataOrder it had created on the first step.
  *     parameters:
- *       - in: params
+ *       - in: path
  *         name: id
- *         type: string
+ *         type: number
  *         required: true
  *         description: The order id that will be closed
  *     produces:
@@ -37,19 +36,12 @@ const router = express.Router();
  *       500:
  *         description: Problem on our side
  */
-router.post(
-  '/:id/close',
-  fetchDataOrder,
-  asyncError(async (req, res) => {
-    if (req.dataOrder.status !== 'created') {
-      res.status(422).json({ message: 'The order can not be closed' });
-      return;
-    }
-
+router.post('/:id/close', fetchDataOrder, async (req, res) => {
+  if (req.dataOrder.status === 'created') {
     const response = await closeDataOrder(req.params.id, req.dataOrder);
-
     res.status(200).json(response.result);
-  }),
-);
+  }
+  res.status(422).json({ message: 'The order can not be closed' });
+});
 
 export default router;

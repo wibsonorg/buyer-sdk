@@ -6,4 +6,4 @@ import checkAuthorization from './checkAuthorization';
 import * as stores from './stores';
 
 export { web3, stores, cache, logger, fetchToken, checkAuthorization };
-export { errorHandler, asyncError, validateAddress, validateFields } from './routes';
+export { errorHandler, validateAddress, isValidAddress } from './routes';

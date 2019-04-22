@@ -1,38 +1,59 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-unused-vars */
-import express from 'express';
+import Router from 'express-promise-router';
 import jsonwebtoken from 'jsonwebtoken';
 
 import config from '../../config';
-import { asyncError, fetchToken } from '../utils';
+import { fetchToken } from '../utils';
 
-const router = express.Router();
+const router = Router();
 
-router.post('/', asyncError(async (req, res) => {
+/**
+ * @swagger
+ * /authentication:
+ *   post:
+ *     description: Gets a jwt token from a password
+ *     parameters:
+ *       - in: body
+ *         name: body
+ *         schema:
+ *            required:
+ *              - password
+ *            properties:
+ *              password:
+ *                type: string
+ *                description: Login password
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: When the password is correct.
+ *       422:
+ *         description: When the password is incorrect.
+ *       500:
+ *         description: When the login fails.
+ */
+router.post('/', async (req, res) => {
   const { jwt, passphrase } = config;
-  const { password } = req.body;
-  if (!password || password !== passphrase) {
-    return res.boom.unauthorized('password is incorrect', { authenticated: false });
+  if (req.body.password === passphrase) {
+    const token = jsonwebtoken.sign({}, jwt.secret, { expiresIn: jwt.expiration });
+    res.status(200).json({ token, authenticated: true });
+  } else {
+    res.boom.unauthorized('Incorrect Password', { authenticated: false });
   }
-  const token = jsonwebtoken.sign({}, jwt.secret, { expiresIn: jwt.expiration });
-  res.status(200).json({
-    authenticated: true,
-    token,
-  });
-}));
+});
 
-router.get('/verify-token', asyncError(async (req, res) => {
+router.get('/verify-token', async (req, res) => {
   const token = fetchToken(req);
   if (!token) {
-    return res.boom.unauthorized('No token provided');
-  }
-  jsonwebtoken.verify(token, config.jwt.secret, (err, decoded) => {
-    const error = err && err.name;
+    res.boom.unauthorized('No token provided');
+  } else {
+    const error = await new Promise(resolve => // eslint-disable-next-line no-unused-vars
+      jsonwebtoken.verify(token, config.jwt.secret, (err, decoded) => resolve(err && err.name)));
     if (error === 'TokenExpiredError') {
-      return res.boom.unauthorized('token is expired');
+      res.boom.unauthorized('Token expired');
+    } else {
+      res.json({ statusCode: 'OK' });
     }
-    return res.json({ statusCode: 'OK' });
-  });
-}));
+  }
+});
 
 export default router;

@@ -1,10 +1,9 @@
-import express from 'express';
-import { asyncError } from '../../utils';
+import Router from 'express-promise-router';
 import fetchDataOrder from './middlewares/fetchDataOrder';
 import { saveSeller } from '../../operations/saveSeller';
 import { enqueueDataResponse } from '../../operations/enqueueDataResponse';
 
-const router = express.Router();
+const router = Router();
 
 /**
  * @swagger
@@ -13,21 +12,25 @@ const router = express.Router();
  *     description: |
  *       Endpoint where the sellers registrerer will send the information regarding a new seller.
  *     parameters:
- *       - name: id
+ *       - in: path
+ *         name: id
+ *         type: number
+ *         required: true
  *         description: Order ID in the DataExchange contract
+ *       - in: body
+ *         name: body
  *         required: true
- *         type: number
- *         in: uri
- *       - name: sellerAddress
- *         description: Seller's ethereum address.
- *         required: true
- *         type: string
- *         in: body
- *       - name: sellerId
- *         description: Seller's unique ID.
- *         required: true
- *         type: number
- *         in: body
+ *         schema:
+ *            required:
+ *              - sellerId
+ *              - sellerAddress
+ *            properties:
+ *              sellerId:
+ *                type: number
+ *                description: Seller's unique ID.
+ *              sellerAddress:
+ *                type: string
+ *                description: Seller's ethereum address.
  *     produces:
  *       - application/json
  *     responses:
@@ -36,7 +39,7 @@ const router = express.Router();
  *       422:
  *         description: When seller has already been registered
  */
-router.post('/:id/heads-up', fetchDataOrder, asyncError(async (req, res) => {
+router.post('/:id/heads-up', fetchDataOrder, async (req, res) => {
   const { sellerAddress, sellerId } = req.body;
   if (await saveSeller(sellerAddress, sellerId)) {
     const {
@@ -52,6 +55,6 @@ router.post('/:id/heads-up', fetchDataOrder, asyncError(async (req, res) => {
   } else {
     res.boom.badData('Seller has already been registered');
   }
-}));
+});
 
 export default router;
