@@ -1,9 +1,5 @@
 import express from 'express';
-import {
-  asyncError,
-  buildMethodSigner as builder,
-  buyer,
-} from '../../helpers';
+import { asyncError, buildMethodSigner as builder, buyer } from '../../helpers';
 
 const router = express.Router();
 
@@ -68,7 +64,7 @@ const router = express.Router();
  *         description: Root hash of the sellers' merkle tree
  *         example: '"0x468e49a01f8bc984472a1991b383c90731f114c042a6a1c39959c774d45028f4"'
  *         required: true
- *       lock:
+ *       lockingKeyHash:
  *         type: string
  *         description: Hash of the master key for the specified payData
  *         example: '"0x6168652c307c1e813ca11cfb3a601f1cf3b22452021a5052d8b05f1f1f8a3e92"'
@@ -79,17 +75,22 @@ const router = express.Router();
  *         example: '"0x7a9d3a032b8ff274f09714b56ba8e5ed776ec9638ca303069bc3a3267bb22f65"'
  *         required: true
  */
-router.post('/bat-pay/transfer', asyncError(async (req, res) => {
-  const { contracts: { batPay } } = req.app.locals;
-  const { nonce, gasPrice, params } = req.body;
-  const sign = builder(batPay, 'transfer');
-  const { errors, result } = sign(nonce, gasPrice, { ...params, fromId: buyer.getId() });
+router.post(
+  '/bat-pay/transfer',
+  asyncError(async (req, res) => {
+    const {
+      contracts: { batPay },
+    } = req.app.locals;
+    const { nonce, gasPrice, params } = req.body;
+    const sign = builder(batPay, 'registerPayment');
+    const { errors, result } = sign(nonce, gasPrice, { ...params, fromId: buyer.getId() });
 
-  if (errors) {
-    res.boom.badData('Operation failed', { errors });
-  } else {
-    res.json({ signedTransaction: result });
-  }
-}));
+    if (errors) {
+      res.boom.badData('Operation failed', { errors });
+    } else {
+      res.json({ signedTransaction: result });
+    }
+  }),
+);
 
 export default router;
