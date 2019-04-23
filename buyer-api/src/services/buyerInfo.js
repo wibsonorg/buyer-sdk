@@ -1,3 +1,4 @@
+// TODO: DEPRECATED
 import { web3 } from '../utils';
 import { buyerInfos, buyerInfoPerOrder } from '../utils/stores';
 
@@ -26,16 +27,12 @@ const listBuyerInfos = async () => buyerInfos.listValues();
  * @async
  * @function storeBuyerInfo
  * @param {String} id buyer information identifier
- * @param {Object} payload buyer information
+ * @param {Object} buyerInfo buyer information
  * @throws When field terms is not present
  */
-const storeBuyerInfo = async (id, payload) => {
-  const { terms } = payload;
-  if (!terms) throw new Error('Field \'terms\' is required');
-  if (!payload.name) throw new Error('Field \'name\' is required');
-  if (!payload.logo) throw new Error('Field \'logo\' is required');
-  const termsHash = web3.utils.sha3(terms).replace(/^0x/, '');
-  buyerInfos.put(id, JSON.stringify({ ...payload, termsHash }));
+const storeBuyerInfo = async (id, buyerInfo) => {
+  const termsHash = web3.utils.sha3(buyerInfo.terms).replace(/^0x/, '');
+  buyerInfos.put(id, JSON.stringify({ ...buyerInfo, termsHash }));
 };
 
 /**

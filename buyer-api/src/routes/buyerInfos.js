@@ -33,61 +33,10 @@ router.get('/', cache('30 days'), async (req, res) => {
  *     description: Creates a new possible information set to be selected on future data orders.
  *     parameters:
  *        - in: body
- *          name: body
+ *          name: buyerInfo
  *          required: true
  *          schema:
- *            required:
- *              - id
- *              - name
- *              - logo
- *              - label
- *              - description
- *            properties:
- *              id:
- *               type: string
- *               description: The unique identifier for the piece of information.
- *              name:
- *               type: string
- *               description: The name of the company.
- *              logo:
- *               type: string
- *               description: The logo url of the company.
- *              label:
- *                type: string
- *                description: |
- *                   The label that will appear as the company/project name in the data order.
- *              description:
- *                type: string
- *                description: |
- *                   The description that will appear for the company/project in the data order.
- *              category:
- *                 type: object
- *                 required:
- *                   - id
- *                   - label
- *                   - description
- *                   - terms
- *                 properties:
- *                    id:
- *                      type: string
- *                      description: |
- *                       The unique identifier for the category
- *                       of the company/project in the data order.
- *                    label:
- *                      type: string
- *                      description: |
- *                         The label for the category
- *                         of the company/project in the data order.
- *                    description:
- *                      type: string
- *                      description: |
- *                        The description that will appear for the category
- *                        of the company/project in the data order.
- *                    terms:
- *                      type: string
- *                      description: |
- *                        Terms and Conditions to be published in data orders associated to
- *                        this buyer info
+ *            $ref: "#/definitions/BuyerInfo"
  *     responses:
  *       200:
  *         description: When the buyer info was created correctly.
@@ -95,23 +44,74 @@ router.get('/', cache('30 days'), async (req, res) => {
  *         description: When the information ID already exists.
  *       500:
  *         description: When the creation failed.
+ *
+ * definitions:
+ *   BuyerInfo:
+ *     type: object
+ *     required:
+ *       - id
+ *       - name
+ *       - logo
+ *       - label
+ *       - description
+ *     properties:
+ *       id:
+ *        type: string
+ *        description: The unique identifier for the piece of information.
+ *       name:
+ *        type: string
+ *        description: The name of the company.
+ *       logo:
+ *        type: string
+ *        description: The logo url of the company.
+ *       label:
+ *         type: string
+ *         description: |
+ *            The label that will appear as the company/project name in the data order.
+ *       description:
+ *         type: string
+ *         description: |
+ *            The description that will appear for the company/project in the data order.
+ *       category:
+ *          type: object
+ *          required:
+ *            - id
+ *            - label
+ *            - description
+ *            - terms
+ *          properties:
+ *             id:
+ *               type: string
+ *               description: |
+ *                The unique identifier for the category
+ *                of the company/project in the data order.
+ *             label:
+ *               type: string
+ *               description: |
+ *                  The label for the category
+ *                  of the company/project in the data order.
+ *             description:
+ *               type: string
+ *               description: |
+ *                 The description that will appear for the category
+ *                 of the company/project in the data order.
+ *             terms:
+ *               type: string
+ *               description: |
+ *                 Terms and Conditions to be published in data orders associated to
+ *                 this buyer info
  */
 router.post('/', async (req, res) => {
-  const info = req.body;
-  let status = 200;
-  let message = 'OK';
-
+  const buyerInfo = req.body;
   try {
-    await getBuyerInfo(info.id);
-    status = 400;
-    message = 'The ID already exists';
+    await getBuyerInfo(buyerInfo.id);
+    res.status(400).json({ message: 'The ID already exists' });
   } catch (err) {
     // no previous buyer info was found
-    await storeBuyerInfo(info.id, info);
+    await storeBuyerInfo(buyerInfo.id, buyerInfo);
     apicache.clear('/infos/*');
+    res.status(200).json({ message: 'OK' });
   }
-
-  res.status(status).json({ message });
 });
 
 export default router;

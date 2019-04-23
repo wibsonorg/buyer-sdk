@@ -17,7 +17,7 @@ const router = Router();
  *         type: string
  *         required: true
  *       - in: body
- *         name: body
+ *         name: dataResponse
  *         required: true
  *         schema:
  *           $ref: "#/definitions/DataResponse"
@@ -77,7 +77,7 @@ const router = Router();
  *         example: 'true'
  */
 router.post('/:id/data-responses', fetchDataOrder, async (req, res) => {
-  const { error, ...result } = await addDataResponse(req.dataOrder, req.body.dataResponse);
+  const { error, ...result } = await addDataResponse(req.dataOrder, req.body);
   if (error) {
     res.boom.badData('Operation failed', { error });
   } else {
