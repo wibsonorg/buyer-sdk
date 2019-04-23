@@ -76,7 +76,7 @@ const router = express.Router();
  *         required: true
  */
 router.post(
-  '/bat-pay/transfer',
+  '/bat-pay/register-payment',
   asyncError(async (req, res) => {
     const {
       contracts: { batPay },
