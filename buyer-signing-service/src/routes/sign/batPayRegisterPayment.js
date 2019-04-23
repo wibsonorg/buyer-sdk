@@ -5,11 +5,11 @@ const router = express.Router();
 
 /**
  * @swagger
- * /sign/bat-pay/transfer:
+ * /sign/bat-pay/register-payment:
  *   post:
  *     description: |
- *       ## Sign BatPay.transfer Transaction
- *       Receives BatPay.transfer parameters and responds with the serialized
+ *       ## Sign BatPay.registerPayment Transaction
+ *       Receives BatPay.registerPayment parameters and responds with the serialized
  *       transaction ready to be sent to the network.
  *     produces:
  *       - application/json
@@ -28,7 +28,7 @@ const router = express.Router();
  *         name: params
  *         description: Parameters to be used in the transaction call.
  *         schema:
- *           $ref: "#/definitions/BatPayTransferParameters"
+ *           $ref: "#/definitions/BatPayRegisterPaymentParameters"
  *     responses:
  *       200:
  *         description: When the signing performs successfully
@@ -36,7 +36,7 @@ const router = express.Router();
  *         description: Any other case
  *
  * definitions:
- *   BatPayTransferParameters:
+ *   BatPayRegisterPaymentParameters:
  *     type: object
  *     properties:
  *       amount:

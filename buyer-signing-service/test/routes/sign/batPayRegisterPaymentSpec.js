@@ -2,7 +2,7 @@ import request from 'supertest';
 import config from '../../../config';
 import app from '../../../src/app';
 
-describe('POST /sign/bat-pay/transfer', () => {
+describe('POST /sign/bat-pay/register-payment', () => {
   const amount = 100;
   const fee = 1;
   const payData = '0x6964313b696432';
@@ -23,7 +23,7 @@ describe('POST /sign/bat-pay/transfer', () => {
 
   it('responds with an Unprocessable Entity status when amount is not present', (done) => {
     request(app)
-      .post('/sign/bat-pay/transfer')
+      .post('/sign/bat-pay/register-payment')
       .send({
         nonce,
         gasPrice,
@@ -57,7 +57,7 @@ describe('POST /sign/bat-pay/transfer', () => {
 
   it('responds with an OK status', (done) => {
     request(app)
-      .post('/sign/bat-pay/transfer')
+      .post('/sign/bat-pay/register-payment')
       .send({
         nonce,
         gasPrice,
