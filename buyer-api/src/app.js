@@ -32,18 +32,15 @@ swagger.initializeMiddleware(schema, ({ swaggerMetadata, swaggerValidator, swagg
   }));
   app.use(cors());
   app.use(boom());
-  app.use(bodyParser.urlencoded({
-    extended: true,
-  }));
+  app.use(bodyParser.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.use(swaggerValidator());
+  app.use(swaggerUi({ swaggerUi: '/api-docs', apiDocs: '/api-docs.json' }));
   // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => { throw error; });
 
   app.use('/authentication', auth);
   app.use('/health', health);
-  app.get('/api-docs', swaggerUi());
-  app.get('/api-docs.json', (_, res) => res.json(schema));
   app.use('/orders', dataOrders);
   app.use('/notarization-result', notarizationResult);
   app.use('/batch-data-responses', batchDataResponse);
