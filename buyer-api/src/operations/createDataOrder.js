@@ -3,7 +3,6 @@ import { fromWib } from '../utils/wibson-lib/coin';
 import { getBuyerInfo } from '../services/buyerInfo';
 import { dataOrders } from '../utils/stores';
 import { addTransactionJob } from '../queues/transactionQueue';
-import config from '../../config';
 
 /**
  * @typedef BuyerInfoType
