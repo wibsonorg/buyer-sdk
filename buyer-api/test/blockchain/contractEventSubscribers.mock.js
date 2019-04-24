@@ -15,10 +15,9 @@ addContract.addContract.returns(addContract);
 export const contractEventListener = { addContract: sinon.stub().returns(addContract) };
 td.replace('../../src/blockchain/contractEventListener', { contractEventListener });
 export const DataExchange = sinon.spy();
-export const Wibcoin = sinon.spy();
-td.replace('../../src/blockchain/contracts', { DataExchange, Wibcoin });
+export const WIBToken = sinon.spy();
+td.replace('../../src/blockchain/contracts', { DataExchange, WIBToken });
 export const sendDeposit = sinon.spy();
 td.replace('../../src/recurrent/checkBatPayBalance', { sendDeposit });
 
 test.afterEach(sinon.reset);
-

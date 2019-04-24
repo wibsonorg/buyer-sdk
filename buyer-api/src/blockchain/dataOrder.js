@@ -13,31 +13,28 @@ import { toWib } from '../utils/wibson-lib/coin';
  * @property {?Date} closedAt Date of clousure
 
  * @function fetchDataOrder Fetches a specific DataOrder by dxId
- * @param {Number} dxId Data order id on the data exchange
+ * @param {Number} orderId Data order id on the data exchange
  * @returns {Promise<DataOrder>} DataOrder information on the DataExchange
  */
-export async function fetchDataOrder(dxId) {
-  if (dxId >= 0) {
-    const {
-      buyer,
-      audience,
-      price,
-      requestedData,
-      termsAndConditionsHash,
-      buyerUrl,
-      createdAt,
-      closedAt,
-    } = await DataExchange.methods.dataOrders(dxId).call();
-    return {
-      buyer: buyer.toLowerCase(),
-      audience: JSON.parse(audience),
-      price: Number(toWib(price)),
-      requestedData: JSON.parse(requestedData),
-      termsAndConditionsHash,
-      buyerUrl,
-      createdAt: toDate(createdAt),
-      closedAt: toDate(closedAt),
-    };
-  }
-  throw new Error(`Invalid DataExchange-Id ${dxId}`);
+export async function fetchDataOrder(orderId) {
+  const [
+    buyer,
+    audience,
+    price,
+    requestedData,
+    termsAndConditionsHash,
+    buyerUrl,
+    createdAt,
+    closedAt,
+  ] = Object.values(await DataExchange.methods.getDataOrder(orderId).call());
+  return {
+    buyer: buyer.toLowerCase(),
+    audience: JSON.parse(audience),
+    price: Number(toWib(price)),
+    requestedData: JSON.parse(requestedData),
+    termsAndConditionsHash,
+    buyerUrl,
+    createdAt: toDate(createdAt),
+    closedAt: toDate(closedAt),
+  };
 }

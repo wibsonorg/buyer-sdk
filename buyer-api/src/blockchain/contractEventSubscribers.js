@@ -22,7 +22,7 @@ const getOrderId = async (dxId) => {
 
 /**
  * @typedef DataOrderEventValues
- * @property {string} owner The buyer that created the DataOrder
+ * @property {string} buyer The buyer that created the DataOrder
  * @property {number} orderId The DataExchange id of the DataOrder
 
  * @callback dataOrderUpdater Updates DataOrder in the store with data from the DataExchange
@@ -31,10 +31,10 @@ const getOrderId = async (dxId) => {
  * @function onDataOrderCreated Creates a dataOrderUpdater with the given status
  * @returns {dataOrderUpdater}
  */
-export const onDataOrderCreated = async ({ owner, orderId }, { transactionHash }) => {
+export const onDataOrderCreated = async ({ buyer, orderId }, { transactionHash }) => {
   const dxId = Number(orderId);
   const { address } = await getAccount();
-  if (address.toLowerCase() === owner.toLowerCase()) {
+  if (address.toLowerCase() === buyer.toLowerCase()) {
     const { chainOrder, id } = await getOrderId(dxId);
     const storedOrder = await dataOrders.fetch(id);
     if (statusOrder[storedOrder.status] < statusOrder.created) {
@@ -57,10 +57,10 @@ export const onDataOrderCreated = async ({ owner, orderId }, { transactionHash }
  * @function onDataOrderClosed Creates a closeDataOrder
  * @returns {closeDataOrder}
  */
-export const onDataOrderClosed = async ({ owner, orderId }) => {
+export const onDataOrderClosed = async ({ buyer, orderId }) => {
   const dxId = Number(orderId);
   const { address } = await getAccount();
-  if (address.toLowerCase() === owner.toLowerCase()) {
+  if (address.toLowerCase() === buyer.toLowerCase()) {
     const { id } = await getOrderId(dxId);
     await dataOrders.update(id, { status: 'closed' });
     apicache.clear('/orders/*');
@@ -73,4 +73,3 @@ contractEventListener
   .on('DataOrderClosed', onDataOrderClosed)
   .addContract(Wibcoin)
   .on('Approval', sendDeposit);
-
