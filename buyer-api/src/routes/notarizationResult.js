@@ -64,7 +64,27 @@ const router = Router();
  *         type: array
  *         description: List of sellers send to notary.
  *         items:
- *           type: string
+ *           $ref: "#/definitions/NotarizationResultSeller"
+ *   NotarizationResultSeller:
+ *     type: object
+ *     required:
+ *       - address
+ *       - id
+ *       - result
+ *       - decryptionKeyEncryptedWithMasterKey
+ *     properties:
+ *       address:
+ *         type: string
+ *         description: Seller's ethereum address
+ *       id:
+ *         type: number
+ *         description: Seller ID in the DataExchange contract
+ *       result:
+ *         type: string
+ *         description: The result of the notarization for the current seller
+ *       decryptionKeyEncryptedWithMasterKey:
+ *         type: string
+ *         description: Encrypted key
  */
 router.post('/:notarizationRequestId', async (req, res) => {
   const { notarizationRequestId } = req.params;
