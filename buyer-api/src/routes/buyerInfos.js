@@ -1,11 +1,7 @@
 import Router from 'express-promise-router';
 import apicache from 'apicache';
 import { cache } from '../utils';
-import {
-  getBuyerInfo,
-  listBuyerInfos,
-  storeBuyerInfo,
-} from '../services/buyerInfo';
+import { getBuyerInfo, listBuyerInfos, storeBuyerInfo } from '../services/buyerInfo';
 
 const router = Router();
 /**
@@ -42,6 +38,7 @@ router.get('/', cache('30 days'), async (req, res) => {
  *              - logo
  *              - label
  *              - description
+ *              - terms
  *            properties:
  *              id:
  *               type: string
@@ -60,13 +57,17 @@ router.get('/', cache('30 days'), async (req, res) => {
  *                type: string
  *                description: |
  *                   The description that will appear for the company/project in the data order.
+ *              terms:
+ *                type: string
+ *                description: |
+ *                    Terms and Conditions to be published in data orders associated to this
+ *                    buyer info
  *              category:
  *                 type: object
  *                 required:
  *                   - id
  *                   - label
  *                   - description
- *                   - terms
  *                 properties:
  *                    id:
  *                      type: string
@@ -83,11 +84,6 @@ router.get('/', cache('30 days'), async (req, res) => {
  *                      description: |
  *                        The description that will appear for the category
  *                        of the company/project in the data order.
- *                    terms:
- *                      type: string
- *                      description: |
- *                        Terms and Conditions to be published in data orders associated to
- *                        this buyer info
  *     responses:
  *       200:
  *         description: When the buyer info was created correctly.

@@ -23,7 +23,7 @@ const router = Router();
  *             - notarizationPercentage
  *             - notarizationFee
  *             - payDataHash
- *             - lock
+ *             - lockingKeyHash
  *             - sellers
  *           properties:
  *             orderId:
@@ -41,7 +41,7 @@ const router = Router();
  *             payDataHash:
  *               type: string
  *               description: Seller ids array hash.
- *             lock:
+ *             lockingKeyHash:
  *               type: string
  *               description: The lock for the BatPay.Transfer.
  *             sellers:
