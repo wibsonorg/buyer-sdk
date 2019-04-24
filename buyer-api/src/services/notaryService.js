@@ -12,8 +12,7 @@ import { fromWib } from '../utils/wibson-lib/coin';
  */
 const timeout = 10000;
 
-export const notarize = async (url, id, payload) =>
-  client.post(url, { json: payload, timeout });
+export const notarize = async (url, id, payload) => client.post(url, { json: payload, timeout });
 
 /**
  * TODO: Move this function elsewhere since the purpose of the service modules
@@ -45,10 +44,7 @@ export const transferNotarizationResult = async (notarizationRequestId) => {
   // data payload
   const {
     result: {
-      notarizationFee: fee,
-      orderId,
-      sellers,
-      lock,
+      notarizationFee: fee, orderId, sellers, lockingKeyHash,
     },
   } = await notarizations.fetch(notarizationRequestId);
   const { transactionHash, price } = await dataOrders.fetchByDxId(orderId);
@@ -56,14 +52,14 @@ export const transferNotarizationResult = async (notarizationRequestId) => {
   const payload = {
     amount: fromWib(price),
     payData: packPayData(sellers.map(({ sellerId }) => sellerId)),
-    lock,
+    lockingKeyHash,
     metadata: transactionHash,
     fee,
     newCount: '0x',
     rootHash: '0x',
   };
 
-  await addTransactionJob('Transfer', payload);
+  await addTransactionJob('registerPayment', payload);
 
   return payload;
 };
