@@ -92,3 +92,28 @@ export const hasEnoughBatPayBalance = async (account, amount = minBatPay) => {
 
   return enough;
 };
+
+/**
+ * @async
+ * @function hasBatPayEnoughTokenAllowance
+ *  Checks if BatPay contract is able to take `amount` from `account`.
+ *  If no `amount` is supplied it will fallback to the configured one via ENV.
+ * @param {Account} account Subject's account
+ * @param {?BigNumber} amount Amount to test with the current allowance.
+ * @returns {Boolean} `true` if has enough allowance, `false` otherwise.
+ */
+export const hasBatPayEnoughTokenAllowance = async (account, amount = minBatPay) => {
+  const { address, role } = account;
+  const batPay = toBN(await Wibcoin.methods.allowance(address, BatPay.options.address).call());
+  const enough = batPay.gt(amount);
+
+  if (!enough) {
+    logger.error(`
+    BatPay does not have enough allowance to spend WIB from Account (${role} '${address}') .
+    Current allowance: ${batPay} WIB
+    Minimum allowance: ${amount} WIB
+    `);
+  }
+
+  return enough;
+};

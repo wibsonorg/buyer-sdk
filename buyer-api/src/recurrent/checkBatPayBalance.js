@@ -1,6 +1,9 @@
 import { BigNumber } from 'bignumber.js';
 import { getAccount } from '../services/signingService';
-import { hasEnoughBatPayBalance } from '../blockchain/balance';
+import {
+  hasEnoughBatPayBalance,
+  hasBatPayEnoughTokenAllowance,
+} from '../blockchain/balance';
 import { addTransactionJob } from '../queues/transactionQueue';
 import logger from '../utils/logger';
 import config from '../../config';
@@ -23,15 +26,22 @@ const {
  */
 export const checkBatPayBalance = async () => {
   const account = await getAccount();
-  const hasEnough = await hasEnoughBatPayBalance(account);
-  if (!hasEnough) {
+  const enoughBalance = await hasEnoughBatPayBalance(account);
+  if (!enoughBalance) {
     const required = new BigNumber(minBatPay);
     const amount = required.multipliedBy(multiplier);
-    await addTransactionJob('IncreaseApproval', {
-      _spender: BatPay.options.address,
-      _addedValue: amount,
-    });
-    logger.info('BatPay Balance Check :: Deposit requested');
+
+    const enoughAllowance = await hasBatPayEnoughTokenAllowance(account);
+    if (!enoughAllowance) {
+      await addTransactionJob('IncreaseApproval', {
+        _spender: BatPay.options.address,
+        _addedValue: amount,
+      });
+      logger.info('BatPay Balance Check :: Allowance increase requested');
+    } else {
+      await addTransactionJob('Deposit', { amount });
+      logger.info('BatPay Balance Check :: Deposit requested');
+    }
   } else {
     logger.info('BatPay Balance Check :: No deposit needed');
   }
@@ -52,10 +62,15 @@ export const checkBatPayBalance = async () => {
  */
 export const sendDeposit = async (event) => {
   const { owner, spender, value: amount } = event;
-  const { address } = await getAccount();
-  if (address.toLowerCase() !== owner.toLowerCase()) return;
+  const account = await getAccount();
+  if (account.address.toLowerCase() !== owner.toLowerCase()) return;
   if (spender.toLowerCase() !== BatPay.options.address.toLowerCase()) return;
-  await addTransactionJob('Deposit', { amount });
+
+  const enoughBalance = await hasEnoughBatPayBalance(account);
+  if (!enoughBalance) {
+    await addTransactionJob('Deposit', { amount });
+    logger.info('BatPay Balance Check :: Deposit requested');
+  }
 };
 
 export const runCheckBatPayBalance = () =>
