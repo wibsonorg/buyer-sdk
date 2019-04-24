@@ -13,7 +13,7 @@ import { toWib } from '../utils/wibson-lib/coin';
  * @property {?Date} closedAt Date of clousure
 
  * @function fetchDataOrder Fetches a specific DataOrder by dxId
- * @param {Number} dxId Data order id on the data exchange
+ * @param {Number} orderId Data order id on the data exchange
  * @returns {Promise<DataOrder>} DataOrder information on the DataExchange
  */
 export async function fetchDataOrder(orderId) {
