@@ -27,16 +27,17 @@ export const getHealth = () => client.get(`${url}/health`, { json: true, timeout
  * Buyer Account information from the signing service
  * @type {BuyerAccount}
  */
-export const getAccount = () => client.get(`${url}/account`, {
-  json: true,
-  timeout,
-});
+export const getAccount = () =>
+  client.get(`${url}/account`, {
+    json: true,
+    timeout,
+  });
 
 const createSigningMethod = endpoint => payload =>
   client.post(`${url}${endpoint}`, { json: payload, timeout });
 
 export const signCreateDataOrder = createSigningMethod('/sign/create-data-order');
 export const signCloseDataOrder = createSigningMethod('/sign/close-data-order');
-export const signTransfer = createSigningMethod('/sign/bat-pay/transfer');
+export const signTransfer = createSigningMethod('/sign/bat-pay/register-payment');
 export const signDeposit = createSigningMethod('/sign/bat-pay/deposit');
 export const signIncreaseApproval = createSigningMethod('/sign/token/increase-approval');
