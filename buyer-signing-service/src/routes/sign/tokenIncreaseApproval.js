@@ -45,12 +45,12 @@ const router = express.Router();
  *       _spender:
  *         type: string
  *         description: Ethereum address of the spender
- *         example: '"0xethereum-address"'
+ *         example: '0xethereum-address'
  *         required: true
  *       _addedValue:
  *         type: number
  *         description: Amount of WIBs to allow the spender to spend
- *         example: '100000000000'
+ *         example: 100000000000
  *         required: true
  */
 router.post('/token/increase-approval', asyncError(async (req, res) => {
