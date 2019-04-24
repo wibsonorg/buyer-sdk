@@ -28,10 +28,10 @@ const config = {
     },
     BatPay: {
       address: env.BAT_PAY_ADDRESS,
-      transfer: { gasLimit: env.TX_BAT_PAY_TRANSFER_GAS_LIMIT },
+      registerPayment: { gasLimit: env.TX_BAT_PAY_REGISTER_PAYMENT_GAS_LIMIT },
       deposit: { gasLimit: env.TX_BAT_PAY_DEPOSIT_GAS_LIMIT },
     },
-    Wibcoin: {
+    WIBToken: {
       address: env.WIBCOIN_ADDRESS,
       increaseApproval: { gasLimit: env.TX_TOKEN_INCREASE_APPROVAL_GAS_LIMIT },
     },

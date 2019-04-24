@@ -1,9 +1,5 @@
 import express from 'express';
-import {
-  asyncError,
-  buildMethodSigner as builder,
-  buyer,
-} from '../../helpers';
+import { asyncError, buildMethodSigner as builder, buyer } from '../../helpers';
 
 const router = express.Router();
 
@@ -49,17 +45,22 @@ const router = express.Router();
  *         example: '100000000000'
  *         required: true
  */
-router.post('/bat-pay/deposit', asyncError(async (req, res) => {
-  const { contracts: { batPay } } = req.app.locals;
-  const { nonce, gasPrice, params } = req.body;
-  const sign = builder(batPay, 'deposit');
-  const { errors, result } = sign(nonce, gasPrice, { ...params, id: buyer.getId() });
+router.post(
+  '/bat-pay/deposit',
+  asyncError(async (req, res) => {
+    const {
+      contracts: { batPay },
+    } = req.app.locals;
+    const { nonce, gasPrice, params } = req.body;
+    const sign = builder(batPay, 'deposit');
+    const { errors, result } = sign(nonce, gasPrice, { ...params, accountId: buyer.getId() });
 
-  if (errors) {
-    res.boom.badData('Operation failed', { errors });
-  } else {
-    res.json({ signedTransaction: result });
-  }
-}));
+    if (errors) {
+      res.boom.badData('Operation failed', { errors });
+    } else {
+      res.json({ signedTransaction: result });
+    }
+  }),
+);
 
 export default router;
