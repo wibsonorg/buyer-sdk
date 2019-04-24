@@ -54,6 +54,7 @@ router.get('/', cache('30 days'), async (req, res) => {
  *       - logo
  *       - label
  *       - description
+ *       - terms
  *     properties:
  *       id:
  *        type: string
@@ -72,13 +73,17 @@ router.get('/', cache('30 days'), async (req, res) => {
  *         type: string
  *         description: |
  *            The description that will appear for the company/project in the data order.
+ *       terms:
+ *         type: string
+ *         description: |
+ *           Terms and Conditions to be published in data orders associated to
+ *           this buyer info
  *       category:
  *          type: object
  *          required:
  *            - id
  *            - label
  *            - description
- *            - terms
  *          properties:
  *             id:
  *               type: string
@@ -95,11 +100,6 @@ router.get('/', cache('30 days'), async (req, res) => {
  *               description: |
  *                 The description that will appear for the category
  *                 of the company/project in the data order.
- *             terms:
- *               type: string
- *               description: |
- *                 Terms and Conditions to be published in data orders associated to
- *                 this buyer info
  */
 router.post('/', async (req, res) => {
   const buyerInfo = req.body;
