@@ -42,7 +42,7 @@ const router = express.Router();
  *       amount:
  *         type: number
  *         description: Amount of WIBs to transfer to BatPay account (including decimals)
- *         example: '100000000000'
+ *         example: 100000000000
  *         required: true
  */
 router.post(

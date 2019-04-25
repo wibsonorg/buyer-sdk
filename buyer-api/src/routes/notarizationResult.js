@@ -14,39 +14,10 @@ const router = Router();
  *         required: true
  *         description: Notarization request id
  *       - in: body
- *         name: body
+ *         name: notarizationResult
  *         required: true
  *         schema:
- *           required:
- *             - orderId
- *             - notaryAddress
- *             - notarizationPercentage
- *             - notarizationFee
- *             - payDataHash
- *             - lock
- *             - sellers
- *           properties:
- *             orderId:
- *               type: number
- *               description: The unique identifier for the order.
- *             notaryAddress:
- *               type: string
- *               description: Notary's ethereum address.
- *             notarizationPercentage:
- *               type: number
- *               description: Percentage of orders that have been notarized.
- *             notarizationFee:
- *               type: number
- *               description: Flat one-time payment for the notarization services.
- *             payDataHash:
- *               type: string
- *               description: Seller ids array hash.
- *             lock:
- *               type: string
- *               description: The lock for the BatPay.Transfer.
- *             sellers:
- *               type: array
- *               description: List of sellers send to notary.
+ *           $ref: "#/definitions/NotarizationResult"
  *     produces:
  *       - application/json
  *     responses:
@@ -58,12 +29,67 @@ const router = Router();
  *         description: When some field is missing or incorrect.
  *       500:
  *         description: When the fetch failed.
+ *
+ * definitions:
+ *   NotarizationResult:
+ *     type: object
+ *     required:
+ *       - orderId
+ *       - notaryAddress
+ *       - notarizationPercentage
+ *       - notarizationFee
+ *       - payDataHash
+ *       - lock
+ *       - sellers
+ *     properties:
+ *       orderId:
+ *         type: number
+ *         description: The unique identifier for the order.
+ *       notaryAddress:
+ *         type: string
+ *         description: Notary's ethereum address.
+ *       notarizationPercentage:
+ *         type: number
+ *         description: Percentage of orders that have been notarized.
+ *       notarizationFee:
+ *         type: number
+ *         description: Flat one-time payment for the notarization services.
+ *       payDataHash:
+ *         type: string
+ *         description: Seller ids array hash.
+ *       lock:
+ *         type: string
+ *         description: The lock for the BatPay.Transfer.
+ *       sellers:
+ *         type: array
+ *         description: List of sellers send to notary.
+ *         items:
+ *           $ref: "#/definitions/NotarizationResultSeller"
+ *   NotarizationResultSeller:
+ *     type: object
+ *     required:
+ *       - address
+ *       - id
+ *       - result
+ *       - decryptionKeyEncryptedWithMasterKey
+ *     properties:
+ *       address:
+ *         type: string
+ *         description: Seller's ethereum address
+ *       id:
+ *         type: number
+ *         description: Seller ID in the DataExchange contract
+ *       result:
+ *         type: string
+ *         description: The result of the notarization for the current seller
+ *       decryptionKeyEncryptedWithMasterKey:
+ *         type: string
+ *         description: Encrypted key
  */
 router.post('/:notarizationRequestId', async (req, res) => {
   const { notarizationRequestId } = req.params;
-  const notarizationResult = req.body;
   try {
-    await receiveNotarizationResult(notarizationRequestId, notarizationResult);
+    await receiveNotarizationResult(notarizationRequestId, req.body);
     res.status(202).json({ message: 'OK' });
   } catch (error) {
     res.boom.notFound(error.message);
