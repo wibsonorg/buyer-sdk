@@ -21,30 +21,32 @@ const {
  *  If there is not enough balance, it adds a job to increase BatPay's allowance.
  *  The process continues with the `sendDeposit` function when the `Approval` event
  *  arrives.
- *
- *  See `sendDeposit` and `contractEventSubscribers` module for more information.
+ * @returns `true` when a transaction has been issued to fulfill pending balance,
+ *  `false` otherwise.
+ * @see `sendDeposit` and `contractEventSubscribers` module for more information.
  */
 export const checkBatPayBalance = async () => {
   const account = await getAccount();
-  const enoughBalance = await hasEnoughBatPayBalance(account);
-  if (!enoughBalance) {
-    const required = new BigNumber(minBatPay);
-    const amount = required.multipliedBy(multiplier);
-
-    const enoughAllowance = await hasBatPayEnoughTokenAllowance(account);
-    if (!enoughAllowance) {
-      await addTransactionJob('IncreaseApproval', {
-        _spender: BatPay.options.address,
-        _addedValue: amount,
-      });
-      logger.info('BatPay Balance Check :: Allowance increase requested');
-    } else {
-      await addTransactionJob('Deposit', { amount });
-      logger.info('BatPay Balance Check :: Deposit requested');
-    }
-  } else {
-    logger.info('BatPay Balance Check :: No deposit needed');
+  if (await hasEnoughBatPayBalance(account)) {
+    logger.debug('BatPay Balance Check :: No deposit needed');
+    return false;
   }
+
+  const required = new BigNumber(minBatPay);
+  const amount = required.multipliedBy(multiplier);
+
+  if (await hasBatPayEnoughTokenAllowance(account)) {
+    await addTransactionJob('Deposit', { amount });
+    logger.info('BatPay Balance Check :: Deposit requested');
+  } else {
+    await addTransactionJob('IncreaseApproval', {
+      _spender: BatPay.options.address,
+      _addedValue: amount,
+    });
+    logger.info('BatPay Balance Check :: Allowance increase requested');
+  }
+
+  return true;
 };
 
 /**
@@ -66,8 +68,7 @@ export const sendDeposit = async (event) => {
   if (account.address.toLowerCase() !== owner.toLowerCase()) return;
   if (spender.toLowerCase() !== BatPay.options.address.toLowerCase()) return;
 
-  const enoughBalance = await hasEnoughBatPayBalance(account);
-  if (!enoughBalance) {
+  if (!await hasEnoughBatPayBalance(account)) {
     await addTransactionJob('Deposit', { amount });
     logger.info('BatPay Balance Check :: Deposit requested');
   }
