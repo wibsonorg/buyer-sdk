@@ -7,6 +7,7 @@ import config from '../../config';
 import { BatPay } from '../blockchain/contracts';
 
 const {
+  batPayId,
   balance: { minBatPay },
   checkBatPayBalance: { interval, multiplier },
 } = config;
@@ -55,7 +56,7 @@ export const sendDeposit = async (event) => {
   const { address } = await getAccount();
   if (address.toLowerCase() !== owner.toLowerCase()) return;
   if (spender.toLowerCase() !== BatPay.options.address.toLowerCase()) return;
-  await addTransactionJob('Deposit', { amount });
+  await addTransactionJob('Deposit', { accountId: batPayId, amount });
 };
 
 export const runCheckBatPayBalance = () =>

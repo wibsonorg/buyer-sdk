@@ -2,11 +2,11 @@ import td from 'testdouble';
 import sinon from 'sinon';
 import test from 'ava';
 
-export const config = {
+export const config = td.replace('../../config', {
+  batPayId: 13,
   balance: { minBatPay: '100' },
   checkBatPayBalance: { interval: 10000, multiplier: 5 },
-};
-td.replace('../../config', config);
+});
 
 export const hasEnoughBatPayBalance = sinon.stub();
 td.replace('../../src/blockchain/balance', { hasEnoughBatPayBalance });

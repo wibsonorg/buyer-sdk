@@ -1,5 +1,5 @@
 import express from 'express';
-import { asyncError, buildMethodSigner as builder, buyer } from '../../helpers';
+import { asyncError, buildMethodSigner as builder } from '../../helpers';
 
 const router = express.Router();
 
@@ -53,7 +53,7 @@ router.post(
     } = req.app.locals;
     const { nonce, gasPrice, params } = req.body;
     const sign = builder(batPay, 'deposit');
-    const { errors, result } = sign(nonce, gasPrice, { ...params, accountId: buyer.getId() });
+    const { errors, result } = sign(nonce, gasPrice, params);
 
     if (errors) {
       res.boom.badData('Operation failed', { errors });
