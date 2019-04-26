@@ -61,13 +61,13 @@ const config = {
     lastProcessedBlock: Number(env.CONTRACT_EVENT_LISTENER_LAST_PROCESSED_BLOCK),
   },
   checkBatPayBalance: {
-    interval: Number(env.CHECK_BAT_PAY_BALANCE_INTERVAL),
-    multiplier: Number(env.CHECK_BAT_PAY_BALANCE_MULTIPLIER),
+    interval: Number(env.CHECK_BATPAY_BALANCE_INTERVAL),
+    multiplier: Number(env.CHECK_BATPAY_BALANCE_MULTIPLIER),
   },
   balance: {
     minWei: env.BALANCE_MINIMUM_WEI,
     minWib: env.BALANCE_MINIMUM_WIB,
-    minBatPay: env.BALANCE_MINIMUM_BAT_PAY,
+    minBatPay: env.BALANCE_MINIMUM_BATPAY,
   },
   transactionQueue: {
     maxIterations: env.TRANSACTION_QUEUE_MAX_ITERATIONS,
