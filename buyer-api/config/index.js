@@ -20,7 +20,7 @@ const config = {
     addresses: {
       wibcoin: env.WIBCOIN_ADDRESS,
       dataExchange: env.DATA_EXCHANGE_ADDRESS,
-      batPay: env.BAT_PAY_ADDRESS,
+      batPay: env.BATPAY_ADDRESS,
     },
     gasPrice: {
       standard: env.GAS_PRICE_STANDARD,
