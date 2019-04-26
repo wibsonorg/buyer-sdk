@@ -48,13 +48,13 @@ export const transferNotarizationResult = async (notarizationRequestId) => {
   const { transactionHash, price } = await dataOrders.fetchByDxId(orderId);
 
   const payload = {
-    amount: fromWib(price),
+    amount: Number(fromWib(price)),
     payData: packPayData(sellers.map(({ sellerId }) => sellerId)),
     lockingKeyHash,
     metadata: transactionHash,
     fee,
-    newCount: '0x',
-    rootHash: '0x',
+    newCount: '0x0000000000000000000000000000000000000000000000000000000000000000',
+    rootHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
   };
 
   await addTransactionJob('registerPayment', payload);
