@@ -17,7 +17,7 @@ const router = Router();
  *         required: true
  *         description: uuid of the DataOrder been created
  *       - in: body
- *         name: body
+ *         name: seller
  *         required: true
  *         schema:
  *            required:

@@ -6,7 +6,8 @@ import { notarizations } from '../utils/stores';
  * take notarization result, validate and enqueue for transfer
  * WARNING keep in mind that notarizationResult will be updated with the validated sellers
  * @param {string} notarizationRequestId original request sent for notarization
- * @param {NotarizationResult} notarizationResult results related with request done by notary
+ * @param {import('../utils/stores').NotarizationResult} notarizationResult
+ *    results related with request done by notary
  */
 export async function receiveNotarizationResult(notarizationRequestId, notarizationResult) {
   // validate input

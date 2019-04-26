@@ -8,7 +8,7 @@ import {
 const router = Router();
 
 /**
- * @swagger
+ * TODO: remove this endpoint (DEPRECATED)
  * /orders/{orderAddress}/info:
  *   get:
  *     description: Returns extra information about the Data Order, such as buyer and project names,
@@ -45,7 +45,7 @@ router.get(
 );
 
 /**
- * @swagger
+ * TODO: remove this endpoint (DEPRECATED)
  * /orders/{orderAddress}/info:
  *   post:
  *     description: Associates a buyer info ID with a data order
@@ -56,7 +56,7 @@ router.get(
  *         required: true
  *         description: Ethereum address of the Data Order.
  *       - in: body
- *         name: body
+ *         name: buyerInfo
  *         required: true
  *         schema:
  *           required:

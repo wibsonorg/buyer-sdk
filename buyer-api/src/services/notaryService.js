@@ -17,10 +17,8 @@ export const notarize = async (url, id, payload) => client.post(url, { json: pay
 /**
  * TODO: Move this function elsewhere since the purpose of the service modules
  * is to build and send http (or other protocol) requests to external services.
- *
- * @typedef {import('../operations/receiveNotarizationResult').NotarizationResult}
- *          NotarizationResult
- * @param {NotarizationResult} notarizationResult filtered results from notary
+ * @param {import('../utils/stores').NotarizationResult} notarizationResult
+ *    filtered results from notary
  */
 export const transferNotarizationResult = async (notarizationRequestId) => {
   logger.info(`transferNotarizacionResult :: ${notarizationRequestId}`);

@@ -27,9 +27,9 @@ const config = {
       closeDataOrder: { gasLimit: env.TX_CLOSE_DATA_ORDER_GAS_LIMIT },
     },
     BatPay: {
-      address: env.BAT_PAY_ADDRESS,
-      registerPayment: { gasLimit: env.TX_BAT_PAY_REGISTER_PAYMENT_GAS_LIMIT },
-      deposit: { gasLimit: env.TX_BAT_PAY_DEPOSIT_GAS_LIMIT },
+      address: env.BATPAY_ADDRESS,
+      registerPayment: { gasLimit: env.TX_BATPAY_REGISTER_PAYMENT_GAS_LIMIT },
+      deposit: { gasLimit: env.TX_BATPAY_DEPOSIT_GAS_LIMIT },
     },
     WIBToken: {
       address: env.WIBCOIN_ADDRESS,

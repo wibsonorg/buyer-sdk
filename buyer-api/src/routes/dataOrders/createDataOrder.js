@@ -13,7 +13,7 @@ const router = Router();
  *       ## Buyer creates a DataOrder
  *     parameters:
  *       - in: body
- *         name: body
+ *         name: dataOrder
  *         required: true
  *         schema:
  *           $ref: "#/definitions/DataOrder"
@@ -50,33 +50,33 @@ const router = Router();
  *       audience:
  *         type: object
  *         description: Target audience of the order
- *         example: '{ "age": 20 }'
+ *         example: { "age": 20 }
  *       price:
  *         type: number
  *         description: Price per added Data Response
- *         example: '42'
+ *         example: 42
  *       requestedData:
  *         type: array
  *         items:
  *           type: string
  *           pattern: '^[0-9a-z\-]+$'
  *         description: Requested data type (Geolocation, Facebook, etc)
- *         example: '["some-data-type"]'
+ *         example: ["some-data-type"]
  *       buyerInfoId:
  *         type: string
  *         description: The ID for the buyer info
- *         example: '"some-buyer-id"'
+ *         example: 'some-buyer-id'
  *       buyerUrl:
  *         type: string
  *         description: Public URL of the buyer to get extra information
- *         example: '"https://api.buyer.com"'
+ *         example: 'https://api.buyer.com'
  *       notariesAddresses:
  *         type: array
  *         items:
  *           type: string
  *           pattern: '^0x[0-9a-fA-F]{40}$'
  *         description: Notaries' Ethereum addresses
- *         example: '["0x7befc633bd282f7938ef8349a9fca281cf06bada"]'
+ *         example: ["0x7befc633bd282f7938ef8349a9fca281cf06bada"]
  */
 router.post(
   '/',
