@@ -4,6 +4,9 @@ import { notarizations, dataOrders } from '../utils/stores';
 import { packPayData } from '../blockchain/batPay';
 import logger from '../utils/logger';
 import { fromWib } from '../utils/wibson-lib/coin';
+import config from '../../config';
+
+const { batPayId } = config;
 
 /**
  * We are not going to wait the service to respond mora than `timeout`
@@ -48,7 +51,8 @@ export const transferNotarizationResult = async (notarizationRequestId) => {
   const { transactionHash, price } = await dataOrders.fetchByDxId(orderId);
 
   const payload = {
-    amount: Number(fromWib(price)),
+    fromId: batPayId,
+    amount: fromWib(price),
     payData: packPayData(sellers.map(({ sellerId }) => sellerId)),
     lockingKeyHash,
     metadata: transactionHash,

@@ -3,6 +3,8 @@ import sinon from 'sinon';
 import test from 'ava';
 import { someNotarizationResult } from './receiveNotarizationResult.fixture';
 
+export const config = td.replace('../../config', { batPayId: 13 });
+
 export const addTransactionJob = sinon.spy();
 td.replace('../../src/queues/transactionQueue', { addTransactionJob });
 

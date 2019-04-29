@@ -1,5 +1,5 @@
 import express from 'express';
-import { asyncError, buildMethodSigner as builder, buyer } from '../../helpers';
+import { asyncError, buildMethodSigner as builder } from '../../helpers';
 
 const router = express.Router();
 
@@ -38,12 +38,18 @@ const router = express.Router();
  * definitions:
  *   BatPayDepositParameters:
  *     type: object
+ *     required:
+ *       - accountId
+ *       - amount
  *     properties:
+ *       accountId:
+ *         type: integer
+ *         description: Account id in the BatchPayments contract
+ *         example: 13
  *       amount:
  *         type: number
  *         description: Amount of WIBs to transfer to BatPay account (including decimals)
  *         example: 100000000000
- *         required: true
  */
 router.post(
   '/bat-pay/deposit',
@@ -53,7 +59,7 @@ router.post(
     } = req.app.locals;
     const { nonce, gasPrice, params } = req.body;
     const sign = builder(batPay, 'deposit');
-    const { errors, result } = sign(nonce, gasPrice, { ...params, accountId: buyer.getId() });
+    const { errors, result } = sign(nonce, gasPrice, params);
 
     if (errors) {
       res.boom.badData('Operation failed', { errors });
