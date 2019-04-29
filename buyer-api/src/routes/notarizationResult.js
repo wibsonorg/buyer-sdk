@@ -59,7 +59,7 @@ const router = Router();
  *         description: Seller ids array hash.
  *       lockingKeyHash:
  *         type: string
- *         description: The lockingKeyHash for the BatPay.Transfer.
+ *         description: The lockingKeyHash for the BatPay.registerPayment.
  *       sellers:
  *         type: array
  *         description: List of sellers send to notary.
