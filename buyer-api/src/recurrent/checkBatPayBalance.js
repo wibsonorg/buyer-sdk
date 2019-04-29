@@ -37,7 +37,7 @@ export const checkBatPayBalance = async () => {
   const amount = required.multipliedBy(multiplier);
 
   if (await hasBatPayEnoughTokenAllowance(account)) {
-    await addTransactionJob('Deposit', { amount });
+    await addTransactionJob('Deposit', { accountId: batPayId, amount });
     logger.info('BatPay Balance Check :: Deposit requested');
   } else {
     await addTransactionJob('IncreaseApproval', {

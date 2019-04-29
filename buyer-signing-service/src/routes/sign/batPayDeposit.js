@@ -38,12 +38,18 @@ const router = express.Router();
  * definitions:
  *   BatPayDepositParameters:
  *     type: object
+ *     required:
+ *       - accountId
+ *       - amount
  *     properties:
+ *       accountId:
+ *         type: integer
+ *         description: Account id in the BatchPayments contract
+ *         example: 13
  *       amount:
  *         type: number
  *         description: Amount of WIBs to transfer to BatPay account (including decimals)
  *         example: 100000000000
- *         required: true
  */
 router.post(
   '/bat-pay/deposit',
