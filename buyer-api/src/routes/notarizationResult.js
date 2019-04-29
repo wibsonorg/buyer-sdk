@@ -68,15 +68,15 @@ const router = Router();
  *   NotarizationResultSeller:
  *     type: object
  *     required:
- *       - sellerAddress
- *       - sellerId
+ *       - address
+ *       - id
  *       - result
  *       - decryptionKeyEncryptedWithMasterKey
  *     properties:
- *       sellerAddress:
+ *       address:
  *         type: string
  *         description: Seller's ethereum address
- *       sellerId:
+ *       id:
  *         type: number
  *         description: Seller ID in the DataExchange contract
  *       result:
