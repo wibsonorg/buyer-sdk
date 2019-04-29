@@ -57,7 +57,7 @@ export const transferNotarizationResult = async (notarizationRequestId) => {
     rootHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
   };
 
-  await addTransactionJob('registerPayment', payload);
+  await addTransactionJob('RegisterPayment', payload);
 
   return payload;
 };
