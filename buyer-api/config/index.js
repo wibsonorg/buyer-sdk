@@ -77,6 +77,7 @@ const config = {
     batchSize: Number(env.DATA_RESPONSE_QUEUE_MAX_BATCH_SIZE),
   },
   sendBatchPassphrase: env.SEND_BATCH_PASSPHRASE,
+  batPayId: Number(env.BATPAY_ID),
 };
 
 exports.default = config;
