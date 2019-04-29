@@ -9,7 +9,11 @@ export const config = td.replace('../../config', {
 });
 
 export const hasEnoughBatPayBalance = sinon.stub();
-td.replace('../../src/blockchain/balance', { hasEnoughBatPayBalance });
+export const hasBatPayEnoughTokenAllowance = sinon.stub();
+td.replace('../../src/blockchain/balance', {
+  hasEnoughBatPayBalance,
+  hasBatPayEnoughTokenAllowance,
+});
 export const addTransactionJob = sinon.spy();
 td.replace('../../src/queues/transactionQueue', { addTransactionJob });
 export const getAccount = sinon.stub();
@@ -27,6 +31,7 @@ td.replace('../../src/blockchain/contracts', { BatPay });
 
 test.beforeEach(() => {
   hasEnoughBatPayBalance.returns(false);
+  hasBatPayEnoughTokenAllowance.returns(false);
   getAccount.returns({ address: buyerAddress });
 });
 test.afterEach(sinon.reset);
