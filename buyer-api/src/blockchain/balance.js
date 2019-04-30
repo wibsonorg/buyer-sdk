@@ -14,7 +14,7 @@ export const getWeiBalance = async address =>
   toBN(await web3.eth.getBalance(address));
 export const getWibBalance = async address =>
   toBN(await Wibcoin.methods.balanceOf(address).call());
-export const getBatPayBalance = async ({ id }) =>
+export const getBatPayBalance = async (id) =>
   toBN(await BatPay.methods.balanceOf(id).call());
 
 export const getFunds = async (address) => {
@@ -64,27 +64,21 @@ export const hasEnoughBalance = async (address) => {
 };
 
 /**
- * @typedef Account
- * @property {string} role Account's role (`seller`, `buyer` or `notary`)
- * @property {string} address Account's Ethereum address
- * @property {number} id Account's BatPay ID
- *
  * @async
  * @function hasEnoughBatPayBalance
  *  Checks if account's balance in BatPay is less than `amount`.
  *  If no `amount` is supplied it will fallback to the configured one via ENV.
- * @param {Account} account Subject's account
+ * @param {number} id Subject's ID in BatPay
  * @param {?BigNumber} amount Amount to test with the current balance.
  * @returns {Boolean} `true` if has enough balance, `false` otherwise.
  */
-export const hasEnoughBatPayBalance = async (account, amount = minBatPay) => {
-  const { address, role } = account;
-  const batPay = await getBatPayBalance(account);
+export const hasEnoughBatPayBalance = async (id, amount = minBatPay) => {
+  const batPay = await getBatPayBalance(id);
   const enough = batPay.gt(amount);
 
   if (!enough) {
     logger.error(`
-    Account (${role} '${address}') does not have enough WIB in BatPay.
+    BatPay.Account '${id}' does not have enough WIB.
     Current balance: ${batPay} WIB
     Minimum balance: ${amount} WIB
     `);
@@ -94,6 +88,11 @@ export const hasEnoughBatPayBalance = async (account, amount = minBatPay) => {
 };
 
 /**
+ * @typedef Account
+ * @property {string} role Account's role (`seller`, `buyer` or `notary`)
+ * @property {string} address Account's Ethereum address
+ * @property {number} id Account's BatPay ID
+ *
  * @async
  * @function hasBatPayEnoughTokenAllowance
  *  Checks if BatPay contract is able to take `amount` from `account`.

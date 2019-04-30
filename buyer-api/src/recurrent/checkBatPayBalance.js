@@ -28,7 +28,7 @@ const {
  */
 export const checkBatPayBalance = async () => {
   const account = await getAccount();
-  if (await hasEnoughBatPayBalance(account)) {
+  if (await hasEnoughBatPayBalance(batPayId)) {
     logger.debug('BatPay Balance Check :: No deposit needed');
     return false;
   }
@@ -68,7 +68,7 @@ export const sendDeposit = async (event) => {
   const account = await getAccount();
   if (account.address.toLowerCase() !== owner.toLowerCase()) return;
   if (spender.toLowerCase() !== BatPay.options.address.toLowerCase()) return;
-  if (!await hasEnoughBatPayBalance(account)) {
+  if (!await hasEnoughBatPayBalance(batPayId)) {
     await addTransactionJob('Deposit', { accountId: batPayId, amount });
     logger.info('BatPay Balance Check :: Deposit requested');
   }
