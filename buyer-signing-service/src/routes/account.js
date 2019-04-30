@@ -19,7 +19,6 @@ router.get('/', async (_req, res) => {
     role: 'buyer',
     address: buyer.getAddress(),
     publicKey: buyer.getPublicKey(),
-    id: buyer.getId(),
   });
 });
 
