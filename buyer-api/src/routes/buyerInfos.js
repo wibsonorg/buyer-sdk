@@ -1,11 +1,7 @@
 import Router from 'express-promise-router';
 import apicache from 'apicache';
 import { cache } from '../utils';
-import {
-  getBuyerInfo,
-  listBuyerInfos,
-  storeBuyerInfo,
-} from '../services/buyerInfo';
+import { getBuyerInfo, listBuyerInfos, storeBuyerInfo } from '../services/buyerInfo';
 
 const router = Router();
 /**

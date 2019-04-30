@@ -38,6 +38,6 @@ const createSigningMethod = endpoint => payload =>
 
 export const signCreateDataOrder = createSigningMethod('/sign/create-data-order');
 export const signCloseDataOrder = createSigningMethod('/sign/close-data-order');
-export const signTransfer = createSigningMethod('/sign/bat-pay/register-payment');
+export const signRegisterPayment = createSigningMethod('/sign/bat-pay/register-payment');
 export const signDeposit = createSigningMethod('/sign/bat-pay/deposit');
 export const signIncreaseApproval = createSigningMethod('/sign/token/increase-approval');
