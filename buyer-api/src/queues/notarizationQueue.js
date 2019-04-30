@@ -43,11 +43,11 @@ const createNotarizationRequest = async (notaryAddress, orderId, sellers) => {
 const collectNotarizationSellers = dataResponseIds =>
   dataResponseIds.map(async (dataResponseId) => {
     const {
-      sellerAddress,
-      sellerId,
+      sellerId: id,
+      sellerAddress: address,
       decryptionKeyHash,
     } = await dataResponses.fetch(dataResponseId);
-    return { sellerAddress, sellerId, decryptionKeyHash };
+    return { id, address, decryptionKeyHash };
   });
 
 const queue = createQueue('NotarizationQueue');

@@ -10,6 +10,7 @@ import config from '../../config';
 import { BatPay } from '../blockchain/contracts';
 
 const {
+  batPayId,
   balance: { minBatPay },
   checkBatPayBalance: { interval, multiplier },
 } = config;
@@ -27,7 +28,7 @@ const {
  */
 export const checkBatPayBalance = async () => {
   const account = await getAccount();
-  if (await hasEnoughBatPayBalance(account)) {
+  if (await hasEnoughBatPayBalance(batPayId)) {
     logger.debug('BatPay Balance Check :: No deposit needed');
     return false;
   }
@@ -36,7 +37,7 @@ export const checkBatPayBalance = async () => {
   const amount = required.multipliedBy(multiplier);
 
   if (await hasBatPayEnoughTokenAllowance(account)) {
-    await addTransactionJob('Deposit', { amount });
+    await addTransactionJob('Deposit', { accountId: batPayId, amount });
     logger.info('BatPay Balance Check :: Deposit requested');
   } else {
     await addTransactionJob('IncreaseApproval', {
@@ -67,9 +68,8 @@ export const sendDeposit = async (event) => {
   const account = await getAccount();
   if (account.address.toLowerCase() !== owner.toLowerCase()) return;
   if (spender.toLowerCase() !== BatPay.options.address.toLowerCase()) return;
-
-  if (!await hasEnoughBatPayBalance(account)) {
-    await addTransactionJob('Deposit', { amount });
+  if (!await hasEnoughBatPayBalance(batPayId)) {
+    await addTransactionJob('Deposit', { accountId: batPayId, amount });
     logger.info('BatPay Balance Check :: Deposit requested');
   }
 };
