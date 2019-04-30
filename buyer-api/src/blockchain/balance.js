@@ -14,7 +14,7 @@ export const getWeiBalance = async address =>
   toBN(await web3.eth.getBalance(address));
 export const getWibBalance = async address =>
   toBN(await Wibcoin.methods.balanceOf(address).call());
-export const getBatPayBalance = async (id) =>
+export const getBatPayBalance = async id =>
   toBN(await BatPay.methods.balanceOf(id).call());
 
 export const getFunds = async (address) => {
