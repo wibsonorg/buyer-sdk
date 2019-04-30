@@ -4,7 +4,6 @@ import { saveSeller } from '../../operations/saveSeller';
 import { enqueueDataResponse } from '../../operations/enqueueDataResponse';
 
 const router = Router();
-
 /**
  * @swagger
  * /orders/{id}/heads-up:
@@ -14,9 +13,9 @@ const router = Router();
  *     parameters:
  *       - in: path
  *         name: id
- *         type: number
+ *         type: string
  *         required: true
- *         description: Order ID in the DataExchange contract
+ *         description: uuid of the DataOrder been created
  *       - in: body
  *         name: seller
  *         required: true
@@ -42,10 +41,11 @@ const router = Router();
 router.post('/:id/heads-up', fetchDataOrder, async (req, res) => {
   const { sellerAddress, sellerId } = req.body;
   if (await saveSeller(sellerAddress, sellerId)) {
-    const {
-      error,
-      ...result
-    } = await enqueueDataResponse(req.dataOrder.dxId, sellerAddress, sellerId);
+    const { error, ...result } = await enqueueDataResponse(
+      req.dataOrder.dxId,
+      sellerAddress,
+      sellerId,
+    );
 
     if (error) {
       res.boom.badData('Operation failed', { error });

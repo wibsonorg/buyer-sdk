@@ -4,13 +4,15 @@ export const someNotarizationResult = {
       id: 78,
       address: '0x338fff484061da07323e994990c901d322b6927a',
       result: 'ok',
-      decryptionKeyEncryptedWithMasterKey: '0x912f8f484454e3a38f7535fbf6b7f0035a0fe27c028163348965eb9369fcca8c',
+      decryptionKeyEncryptedWithMasterKey:
+        '0x912f8f484454e3a38f7535fbf6b7f0035a0fe27c028163348965eb9369fcca8c',
     },
     {
       id: 84,
       address: '0x2d419c641352e0baa7f54328ecabf58c5e4a56f1',
       result: 'not_audited',
-      decryptionKeyEncryptedWithMasterKey: '0x912f8f484454e3a38f7535fbf6b7f0035a0fe27c028163348965eb9369fcca8c',
+      decryptionKeyEncryptedWithMasterKey:
+        '0x912f8f484454e3a38f7535fbf6b7f0035a0fe27c028163348965eb9369fcca8c',
     },
   ],
   orderId: 114,
@@ -18,17 +20,21 @@ export const someNotarizationResult = {
   notarizationPercentage: 30,
   notarizationFee: 10000000000,
   payDataHash: '0x0bb68ec2b34b7b611727f7340d7c6e0ee5a580090583d92b7639861802b9e116',
-  lock: '0xde916ce0390bd5408b7a0a52aae818fd973858c7e9b5d368ec1e6a9b0db44cf9',
+  lockingKeyHash: '0xde916ce0390bd5408b7a0a52aae818fd973858c7e9b5d368ec1e6a9b0db44cf9',
 };
 
 export const someNotarizationResultWithNonRequestedAddresses = {
   ...someNotarizationResult,
-  sellers: [...someNotarizationResult.sellers, {
-    id: 94,
-    address: '0x2d419c641351e0baa7f54328ecabf58c5e4a56f1',
-    result: 'not_audited',
-    decryptionKeyEncryptedWithMasterKey: '0x912f8f484454e3a38f7535fbf6b7f0035a0fe27c028163348965eb9369fcca8c',
-  }],
+  sellers: [
+    ...someNotarizationResult.sellers,
+    {
+      id: 94,
+      address: '0x2d419c641351e0baa7f54328ecabf58c5e4a56f1',
+      result: 'not_audited',
+      decryptionKeyEncryptedWithMasterKey:
+        '0x912f8f484454e3a38f7535fbf6b7f0035a0fe27c028163348965eb9369fcca8c',
+    },
+  ],
 };
 
 export const someNotarizationResultWithDuplicatedAddresses = {
@@ -38,7 +44,8 @@ export const someNotarizationResultWithDuplicatedAddresses = {
 
 export const someNotarizationRequest = {
   orderId: 114,
-  callbackUrl: 'http://api.wibson.org/notarization-result/0x87c2d362de99f75a4f2755cdaaad2d11bf6cc65dc71356593c445535ff28f43d',
+  callbackUrl:
+    'http://api.wibson.org/notarization-result/0x87c2d362de99f75a4f2755cdaaad2d11bf6cc65dc71356593c445535ff28f43d',
   sellers: [
     {
       id: 78,
@@ -52,4 +59,3 @@ export const someNotarizationRequest = {
     },
   ],
 };
-

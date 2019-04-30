@@ -70,7 +70,7 @@ import { createLevelStore, createRedisStore } from './storage';
  * @property {number} notarizationPercentage notarized seller percentage
  * @property {number} notarizationFee fee for the notarized data
  * @property {String} payDataHash Hash for the payData
- * @property {String} lock Hash used to lock a batch of sellers to validate decryption key
+ * @property {String} lockingKeyHash Hash used to lock a batch of sellers to validate decryption key
  * @property {NotarizationResultSeller[]} sellers List of NotarizationResultSeller
  *
  * @typedef {"created" | "requested" | "responded"} NotarizationStatus
@@ -118,9 +118,9 @@ export const notarizations = createLevelStore('notarizations');
  */
 export const notaries = {
   collection: {
-    'fake-notary-address': {
+    '0x7befc633bd282f7938ef8349a9fca281cf06bada': {
       name: 'Fake Notary',
-      address: 'fake-notary-address',
+      address: '0x7befc633bd282f7938ef8349a9fca281cf06bada',
       notarizationUrl: 'http://localhost:9200/buyers/notarization-request',
       dataResponsesUrl: 'http://10.0.2.2:9200/data-responses',
       isRegistered: false,
