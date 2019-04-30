@@ -53,7 +53,7 @@ export const transferNotarizationResult = async (notarizationRequestId) => {
   const payload = {
     fromId: batPayId,
     amount: fromWib(price),
-    payData: packPayData(sellers.map(({ sellerId }) => sellerId)),
+    payData: packPayData(sellers.map(({ id }) => id)),
     lockingKeyHash,
     metadata: transactionHash,
     fee,
