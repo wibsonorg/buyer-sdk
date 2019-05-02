@@ -24,7 +24,7 @@ export const notarize = async (url, id, payload) => client.post(url, { json: pay
  *    filtered results from notary
  */
 export const transferNotarizationResult = async (notarizationRequestId) => {
-  logger.info(`transferNotarizacionResult :: ${notarizationRequestId}`);
+  logger.info(`transferNotarizationResult :: ${notarizationRequestId}`);
   /**
    * 4.4 The transfer operation will receive the NotarizationResult,
    * it will build the data payload containing:
