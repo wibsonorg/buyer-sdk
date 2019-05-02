@@ -37,7 +37,7 @@ it('returns id and waiting status when sellerId is not present', async (assert) 
     dataOrder,
     {
       ...someDataResponse,
-      sellerId: undefined,
+      sellerAddress: undefined,
     },
   );
   assert.is(status, 'waiting');
