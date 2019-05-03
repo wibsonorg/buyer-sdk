@@ -47,10 +47,6 @@ const router = Router();
  *         type: number
  *         description: Order ID in the DataExchange contract
  *         example: 42
- *       sellerId:
- *         type: number
- *         description: Seller's ID in the BatPay contract
- *         example: 1085
  *       sellerAddress:
  *         type: string
  *         description: Seller's Ethereum address

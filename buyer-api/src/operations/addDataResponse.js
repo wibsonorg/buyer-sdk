@@ -1,4 +1,4 @@
-import { dataResponses } from '../utils/stores';
+import { dataResponses, sellers } from '../utils/stores';
 import { putData } from '../utils/wibson-lib/s3';
 import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
 
@@ -8,7 +8,6 @@ import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
  * @param {Object} dataOrder DataOrder object
  * @param {Number} dataResponse.orderId Order ID in the DataExchange contract
  * @param {String} dataResponse.sellerAddress Seller's Ethereum address
- * @param {Number} dataResponse.sellerId Seller's ID in the BatPay contract
  * @param {String} dataResponse.encryptedData Data encrypted with symmetric-key algorithm
  * @param {String} dataResponse.decryptedDataHash Hash of the raw data
  * @param {String} dataResponse.decryptionKeyHash Hash of the key used to encrypt the data
@@ -27,11 +26,13 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
   const {
     orderId,
     sellerAddress,
-    sellerId,
     encryptedData,
     notaryAddress,
     ...rest
   } = dataResponse;
+
+  const sellerId = await sellers.safeFetch(sellerAddress, 0);
+
   const id = `${orderId}:${sellerAddress}`;
 
   if (!notariesAddresses.includes(notaryAddress)) {

@@ -1,17 +1,16 @@
-
 import { createQueue } from './createQueue';
-import { transferNotarizationResult } from '../services/notaryService';
+import { registerPayment } from '../operations/registerPayment';
 import logger from '../utils/logger';
 
 const process = async ({ id, data: { notarizationRequestId } }) => {
   logger.info(`NR[${id}] :: Process :: ${notarizationRequestId}`);
-  return transferNotarizationResult(notarizationRequestId);
+  return registerPayment(notarizationRequestId);
 };
 
-const queue = createQueue('TranferNotarizationResult');
+const queue = createQueue('RegisterPayments');
 queue.process(process);
 queue.on('failed', ({ id, failedReason }) => {
   logger.error(`NR[${id}] :: Process :: ${failedReason} (will be retried)`);
 });
 
-export const addNotarizationResultJob = params => queue.add(params);
+export const addRegisterPaymentJob = params => queue.add(params);
