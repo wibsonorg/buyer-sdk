@@ -1,4 +1,4 @@
-import { addNotarizationResultJob } from '../queues/tranferNotarizationResultQueue';
+import { addRegisterPaymentJob } from '../queues/registerPaymentsQueue';
 import { notarizations } from '../utils/stores';
 
 /**
@@ -32,5 +32,5 @@ export async function receiveNotarizationResult(notarizationRequestId, notarizat
     respondedAt: new Date(),
   });
 
-  return addNotarizationResultJob({ notarizationRequestId });
+  return addRegisterPaymentJob({ notarizationRequestId });
 }

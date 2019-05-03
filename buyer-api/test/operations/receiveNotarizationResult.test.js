@@ -1,5 +1,5 @@
 import test from 'ava';
-import { notarizations, addNotarizationResultJob } from './receiveNotarizationResult.mock';
+import { notarizations, addRegisterPaymentJob } from './receiveNotarizationResult.mock';
 import { receiveNotarizationResult } from '../../src/operations/receiveNotarizationResult';
 import {
   someNotarizationResult,
@@ -14,7 +14,7 @@ it('enqueues correct list of sellers for NotarizationResult', async (assert) => 
     '1',
     someNotarizationResult,
   );
-  assert.snapshot(addNotarizationResultJob.lastCall.args, { id: 'addNotarizationResultJob().args' });
+  assert.snapshot(addRegisterPaymentJob.lastCall.args, { id: 'addRegisterPaymentJob().args' });
 });
 
 it('filters not requested addresses', async (assert) => {
