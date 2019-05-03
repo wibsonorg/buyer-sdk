@@ -21,11 +21,8 @@ const getOrderId = async (dxId) => {
  * @property {string} buyer The buyer that created the DataOrder
  * @property {number} orderId The DataExchange id of the DataOrder
 
- * @callback dataOrderUpdater Updates DataOrder in the store with data from the DataExchange
+ * @callback onDataOrderCreated Updates DataOrder in the store with data from the DataExchange
  * @param {DataOrderEventValues} eventValues The values emmited by the DataExchange event
-
- * @function onDataOrderCreated Creates a dataOrderUpdater with the given status
- * @returns {dataOrderUpdater}
  */
 export const onDataOrderCreated = async ({ buyer, orderId }, { transactionHash }) => {
   const dxId = Number(orderId);
@@ -47,11 +44,8 @@ export const onDataOrderCreated = async ({ buyer, orderId }, { transactionHash }
 };
 
 /**
- * @callback closeDataOrder Updates DataOrder in the store with closed status
+ * @callback onDataOrderClosed Updates DataOrder in the store with closed status
  * @param {DataOrderEventValues} eventValues The values emmited by the DataExchange event
- *
- * @function onDataOrderClosed Creates a closeDataOrder
- * @returns {closeDataOrder}
  */
 export const onDataOrderClosed = async ({ buyer, orderId }) => {
   const dxId = Number(orderId);
