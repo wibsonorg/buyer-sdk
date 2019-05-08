@@ -29,7 +29,7 @@ export const createQueue = sinon.stub().returns(notarizationQueue);
 td.replace('../../src/queues/createQueue', { createQueue });
 
 export const notarize = sinon.spy();
-td.replace('../../src/services/notaryService', { notarize });
+td.replace('../../src/facades/notariesFacade', { notarize });
 
 export const notaryAddress = '0xcccf90140fcc2d260186637d59f541e94ff9288f';
 
