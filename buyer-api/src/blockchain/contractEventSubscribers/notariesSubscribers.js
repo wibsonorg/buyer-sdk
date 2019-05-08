@@ -1,6 +1,11 @@
 import apicache from 'apicache';
 import { notaries } from '../../utils/stores';
 
+const updateNotary = async ({ notary, ...params }) => {
+  await notaries.update(notary.toLowerCase(), params);
+  apicache.clear('/notaries/*');
+};
+
 /**
  * @typedef NotaryRegisteredEventValues
  * @property {string} notary The registered notary
@@ -9,30 +14,33 @@ import { notaries } from '../../utils/stores';
  * @callback onNotaryRegistered Updates the notary in the store with data from the DataExchange
  * @param {NotaryRegisteredEventValues} eventValues The values emmited by the DataExchange event
  */
-export const onNotaryRegistered = async ({ notary, notaryUrl }) => {
-  const offchainData = {
-    name: 'Fake Notary',
-    address: '0x7befc633bd282f7938ef8349a9fca281cf06bada',
-    notarizationUrl: 'http://localhost:9200/buyers/notarization-request',
-    dataResponsesUrl: 'http://10.0.2.2:9200/data-responses',
-    isRegistered: false,
-    headsUpUrl: 'http://localhost:9200/sellers/heads-up',
-    publicKey: 'some-public-key',
-  };
-  return notaries.store(notary.toLowerCase(), offchainData);
-};
+export const onNotaryRegistered = async ({ notary, notaryUrl }) =>
+  updateNotary({ notary, infoUrl: notaryUrl, isRegistered: true });
 
 /**
- * @callback closeDataOrder Updates DataOrder in the store with closed status
- * @param {DataOrderEventValues} eventValues The values emmited by the DataExchange event
+ * @typedef NotaryUpdatedEventValues
+ * @property {string} notary The registered notary
+ * @property {string} oldNotaryUrl The notary's old URL for off-chain data
+ * @property {string} newNotaryUrl The notary's new URL for off-chain data
  *
- * @function onDataOrderClosed Creates a closeDataOrder
- * @returns {closeDataOrder}
+ * @callback onNotaryUpdated Updates the notary in the store with data from the DataExchange
+ * @param {NotaryUpdatedEventValues} eventValues The values emmited by the DataExchange event
  */
-export const onNotaryUpdated = async ({ notary, oldNotaryUrl, newNotaryUrl }) => {
+export const onNotaryUpdated = async ({ notary, oldNotaryUrl, newNotaryUrl }) =>
+  updateNotary({ notary, infoUrl: newNotaryUrl, oldInfoUrl: oldNotaryUrl });
 
-};
-
-export const onNotaryUnregistered = async ({ notary, oldNotaryUrl }) => {
-
-};
+/**
+ * @typedef NotaryUnregisteredEventValues
+ * @property {string} notary The registered notary
+ * @property {string} oldNotaryUrl The notary's old URL for off-chain data
+ *
+ * @callback onNotaryUnregistered Deletes the notary in the store
+ * @param {NotaryUnregisteredEventValues} eventValues The values emmited by the DataExchange event
+ */
+export const onNotaryUnregistered = async ({ notary, oldNotaryUrl }) =>
+  updateNotary({
+    notary,
+    infoUrl: undefined,
+    oldInfoUrl: oldNotaryUrl,
+    isRegistered: false,
+  });
