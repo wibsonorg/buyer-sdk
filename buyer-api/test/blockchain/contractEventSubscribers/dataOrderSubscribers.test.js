@@ -1,5 +1,6 @@
 import test from 'ava';
 import { dataOrders, fetchDataOrder, getAccount } from './dataOrderSubscribers.mock';
+import './contractEventSubscribers.mock';
 import {
   onDataOrderCreated,
   onDataOrderClosed,
