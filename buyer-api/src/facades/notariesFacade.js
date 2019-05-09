@@ -1,5 +1,6 @@
 import { notaries } from '../utils/stores';
 import * as notaryService from '../services/notaryService';
+import { promisify } from '../utils/wibson-lib/collection';
 
 /**
  * @typedef NotaryInfo
@@ -48,8 +49,7 @@ const getNotaryInfo = async (address) => {
 const getNotariesInfo = async (specificAddresses) => {
   const addresses = specificAddresses || await notaries.list();
   const promises = addresses.map(address => getNotaryInfo(address));
-  // TODO: I don't like this. If one service is not available, no data is shown
-  return Promise.all(promises);
+  return promisify(promises, { removeRejected: true });
 };
 
 /**
