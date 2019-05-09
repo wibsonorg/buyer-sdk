@@ -82,7 +82,10 @@
     ],
     "exclude": [
       "src/utils/logger.js",
-      "src/utils/storage.js"
+      "src/utils/storage.js",
+      "test/**",
+      "config/**",
+      "babel.config.js"
     ]
   },
   "ava": {
