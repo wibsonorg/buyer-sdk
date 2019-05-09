@@ -21,6 +21,23 @@ import { promisify } from '../utils/wibson-lib/collection';
 
 /**
  * @async
+ * @function addAdditionalInfo
+ * @param {Object} onchainInfo contains the Notary's on-chain info.
+ * @throws When can not connect to Notary's API.
+ * @returns {Promise<NotaryInfo>} Promise which resolves to the notary's onchain and
+ * offchain information.
+ */
+const addAdditionalInfo = async (onchainInfo) => {
+  const { infoUrl } = onchainInfo;
+  const additionalInfo = infoUrl && (await notaryService.getAdditionalNotaryInfo(infoUrl));
+  return {
+    ...onchainInfo,
+    ...additionalInfo,
+  };
+};
+
+/**
+ * @async
  * @function getNotaryInfo
  * @param {String} address the notary's ethereum address.
  * @throws When can not connect to blockchain or cache is not set up correctly.
@@ -29,13 +46,7 @@ import { promisify } from '../utils/wibson-lib/collection';
  */
 const getNotaryInfo = async (address) => {
   const onchainInfo = await notaries.fetch(address);
-  const { infoUrl } = onchainInfo;
-
-  const additionalInfo = infoUrl && (await notaryService.getAdditionalNotaryInfo(infoUrl));
-  return {
-    ...onchainInfo,
-    ...additionalInfo,
-  };
+  return addAdditionalInfo(onchainInfo);
 };
 
 /**
@@ -47,8 +58,15 @@ const getNotaryInfo = async (address) => {
  * notaries' onchain and offchain information.
  */
 const getNotariesInfo = async (specificAddresses) => {
-  const addresses = specificAddresses || await notaries.list();
-  const promises = addresses.map(address => getNotaryInfo(address));
+  let promises;
+
+  if (specificAddresses) {
+    promises = specificAddresses.map(address => getNotaryInfo(address));
+  } else {
+    const onchainInfos = await notaries.list();
+    promises = onchainInfos.map(({ id, ...onchainInfo }) => addAdditionalInfo(onchainInfo));
+  }
+
   return promisify(promises, { removeRejected: true });
 };
 
