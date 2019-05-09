@@ -1,8 +1,10 @@
 import Router from 'express-promise-router';
 import fetchDataOrder from './middlewares/fetchDataOrder';
 import { addDataResponse } from '../../operations/addDataResponse';
+import { restrictCountryByIp } from '../../services/ipGeofencing';
 
 const router = Router();
+router.use(restrictCountryByIp);
 
 /**
  * @swagger
