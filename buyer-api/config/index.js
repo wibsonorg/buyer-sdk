@@ -76,6 +76,7 @@ const config = {
   dataResponseQueue: {
     batchSize: Number(env.DATA_RESPONSE_QUEUE_MAX_BATCH_SIZE),
   },
+  allowedCountries: env.ALLOWED_COUNTRIES,
   sendBatchPassphrase: env.SEND_BATCH_PASSPHRASE,
   batPayId: Number(env.BATPAY_ID),
 };
