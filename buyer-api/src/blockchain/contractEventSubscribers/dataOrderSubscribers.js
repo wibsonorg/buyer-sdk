@@ -2,6 +2,7 @@ import apicache from 'apicache';
 import { fetchDataOrder } from '../dataOrder';
 import { getAccount } from '../../services/signingService';
 import { dataOrders } from '../../utils/stores';
+import { jobify } from '../../utils/jobify';
 
 const statusOrder = {
   creating: 0,
@@ -36,6 +37,7 @@ export const onDataOrderCreated = async ({ buyer, orderId }, { transactionHash }
     }
   }
 };
+export const onDataOrderCreatedJob = jobify(onDataOrderCreated);
 
 /**
  * @callback onDataOrderClosed Updates DataOrder in the store with closed status
@@ -50,3 +52,4 @@ export const onDataOrderClosed = async ({ buyer, orderId }) => {
     apicache.clear('/orders/*');
   }
 };
+export const onDataOrderClosedJob = jobify(onDataOrderClosed);

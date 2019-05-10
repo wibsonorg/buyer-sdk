@@ -18,8 +18,9 @@ export const { DataExchange, WIBToken } = td.replace('../../../src/blockchain/co
   DataExchange: sinon.spy(),
   WIBToken: sinon.spy(),
 });
-export const { sendDeposit } = td.replace('../../../src/recurrent/checkBatPayBalance', {
-  sendDeposit: sinon.stub(),
+export const { jobify } = td.replace('../../../ssrc/utils/jobify', {
+  jobify: sinon.spy(),
 });
+
 
 test.afterEach(sinon.resetHistory);
