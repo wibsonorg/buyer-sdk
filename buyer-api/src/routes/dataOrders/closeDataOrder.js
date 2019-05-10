@@ -14,7 +14,7 @@ const router = Router();
  *     parameters:
  *       - in: path
  *         name: id
- *         type: number
+ *         type: string
  *         required: true
  *         description: The order id that will be closed
  *     produces:
