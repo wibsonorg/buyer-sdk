@@ -45,6 +45,7 @@ const config = {
   redis: {
     url: env.REDIS_URL,
     prefix: env.REDIS_PREFIX,
+    jobs: { concurrency: env.REDIS_JOBS_CONCURRENCY },
   },
   storage: {
     url: env.STORAGE_URL,
