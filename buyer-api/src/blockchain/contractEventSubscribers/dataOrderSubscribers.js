@@ -24,17 +24,18 @@ export const onDataOrderCreated = async ({ buyer, orderId }, { transactionHash }
   const { address } = await getAccount();
   if (address.toLowerCase() === buyer.toLowerCase()) {
     const { id, ...chainOrder } = await fetchDataOrder(dxId);
-    const storedOrder = await dataOrders.fetch(id);
-    if (statusOrder[storedOrder.status] < statusOrder.created) {
-      await dataOrders.store(id, {
-        ...storedOrder,
-        ...chainOrder,
-        dxId,
-        transactionHash,
-        status: 'created',
-      });
-      apicache.clear('/orders/*');
-    }
+    await dataOrders.update(id, (oldOrder) => {
+      if (statusOrder[oldOrder.status] < statusOrder.created) {
+        apicache.clear('/orders/*');
+        return {
+          ...chainOrder,
+          dxId,
+          transactionHash,
+          status: 'created',
+        };
+      }
+      return undefined;
+    });
   }
 };
 export const onDataOrderCreatedJob = jobify(onDataOrderCreated);
@@ -47,8 +48,8 @@ export const onDataOrderClosed = async ({ buyer, orderId }) => {
   const dxId = Number(orderId);
   const { address } = await getAccount();
   if (address.toLowerCase() === buyer.toLowerCase()) {
-    const { id } = await fetchDataOrder(dxId);
-    await dataOrders.update(id, { status: 'closed' });
+    const { id, closedAt } = await fetchDataOrder(dxId);
+    await dataOrders.update(id, { status: 'closed', closedAt });
     apicache.clear('/orders/*');
   }
 };
