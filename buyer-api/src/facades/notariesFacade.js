@@ -52,7 +52,7 @@ const getNotaryInfo = async (address) => {
 /**
  * @async
  * @function getNotariesInfo
- * @param {Array} addresses specific notary addresses to fetch. Fetches all if param is undefined.
+ * @param {Array} specificAddresses specific notary addresses to fetch. Fetches all if param is undefined.
  * @throws When can not connect to blockchain or cache is not set up correctly.
  * @returns {Promise<Array<NotaryInfo>>} Promise which resolves to the list with the
  * notaries' onchain and offchain information.
