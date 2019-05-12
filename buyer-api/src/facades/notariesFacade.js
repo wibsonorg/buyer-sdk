@@ -61,7 +61,7 @@ const getNotariesInfo = async (specificAddresses) => {
   let promises;
 
   if (specificAddresses) {
-    promises = specificAddresses.map(address => getNotaryInfo(address));
+    promises = specificAddresses.map(getNotaryInfo);
   } else {
     const onchainInfos = await notaries.list();
     promises = onchainInfos.map(({ id, ...onchainInfo }) => addAdditionalInfo(onchainInfo));
