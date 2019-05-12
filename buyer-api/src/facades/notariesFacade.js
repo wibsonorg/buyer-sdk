@@ -64,7 +64,7 @@ const getNotariesInfo = async (specificAddresses) => {
     promises = specificAddresses.map(getNotaryInfo);
   } else {
     const onchainInfos = await notaries.list();
-    promises = onchainInfos.map(({ id, ...onchainInfo }) => addAdditionalInfo(onchainInfo));
+    promises = (await notaries.listValues()).map(addAdditionalInfo);
   }
 
   return promisify(promises, { removeRejected: true });
