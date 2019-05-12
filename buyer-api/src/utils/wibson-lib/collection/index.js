@@ -23,7 +23,7 @@ const partition = (collection, partitionFunc) => {
  * @param {PromisifyOptions} options Options to configure behaviour.
  * @returns {Promise<Array>} Promise that resolves to the array of the promises results.
  */
-const promisify = async (promises, options) => {
+const promisify = async (promises, { catchCallback, removeRejected } = {}) => {
   const { catchCallback, removeRejected } = options || {};
 
   const caughtPromises = promises.map(prom =>
