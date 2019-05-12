@@ -24,8 +24,6 @@ const partition = (collection, partitionFunc) => {
  * @returns {Promise<Array>} Promise that resolves to the array of the promises results.
  */
 const promisify = async (promises, { catchCallback, removeRejected } = {}) => {
-  const { catchCallback, removeRejected } = options || {};
-
   const caughtPromises = promises.map(prom =>
     prom.catch(error => (catchCallback ? catchCallback(error) : { error })));
 
