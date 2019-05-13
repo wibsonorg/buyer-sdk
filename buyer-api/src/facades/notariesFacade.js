@@ -1,6 +1,5 @@
 import { notaries } from '../utils/stores';
 import * as notaryService from '../services/notaryService';
-import { promisify } from '../utils/wibson-lib/collection';
 
 /**
  * @typedef NotaryInfo
@@ -28,12 +27,16 @@ import { promisify } from '../utils/wibson-lib/collection';
  * offchain information.
  */
 const addAdditionalInfo = async (onchainInfo) => {
-  const { infoUrl } = onchainInfo;
-  const additionalInfo = infoUrl && (await notaryService.getAdditionalNotaryInfo(infoUrl));
-  return {
-    ...onchainInfo,
-    ...additionalInfo,
-  };
+  try {
+    const { infoUrl } = onchainInfo;
+    const additionalInfo = infoUrl && (await notaryService.getAdditionalNotaryInfo(infoUrl));
+    return {
+      ...onchainInfo,
+      ...additionalInfo,
+    };
+  } catch (err) {
+    return onchainInfo;
+  }
 };
 
 /**
@@ -54,16 +57,16 @@ const getNotaryInfo = async (address) => {
  * @function getNotariesInfo
  * @param {Array} specificAddresses specific notary addresses to fetch. Fetches
  * all if param is undefined.
- * @throws When can not connect to blockchain or cache is not set up correctly.
  * @returns {Promise<Array<NotaryInfo>>} Promise which resolves to the list with the
- * notaries' onchain and offchain information.
+ * notaries' onchain and offchain information. If it fails to fetch a notary's additional
+ * information, it will resolve to the onchain information only.
  */
 const getNotariesInfo = async (specificAddresses) => {
   const promises = specificAddresses
     ? specificAddresses.map(getNotaryInfo)
-    : (await notaries.listValues()).map(addAdditionalInfo);
+    : (await notaries.list()).map(addAdditionalInfo);
 
-  return promisify(promises, { removeRejected: true });
+  return Promise.all(promises);
 };
 
 /**
