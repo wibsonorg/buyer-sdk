@@ -1,6 +1,5 @@
 import { notaries } from '../utils/stores';
 import * as notaryService from '../services/notaryService';
-import { promisify } from '../utils/wibson-lib/collection';
 
 /**
  * @typedef NotaryInfo
@@ -28,12 +27,16 @@ import { promisify } from '../utils/wibson-lib/collection';
  * offchain information.
  */
 const addAdditionalInfo = async (onchainInfo) => {
-  const { infoUrl } = onchainInfo;
-  const additionalInfo = infoUrl && (await notaryService.getAdditionalNotaryInfo(infoUrl));
-  return {
-    ...onchainInfo,
-    ...additionalInfo,
-  };
+  try {
+    const { infoUrl } = onchainInfo;
+    const additionalInfo = infoUrl && (await notaryService.getAdditionalNotaryInfo(infoUrl));
+    return {
+      ...onchainInfo,
+      ...additionalInfo,
+    };
+  } catch (err) {
+    return onchainInfo;
+  }
 };
 
 /**
@@ -52,22 +55,18 @@ const getNotaryInfo = async (address) => {
 /**
  * @async
  * @function getNotariesInfo
- * @param {Array} addresses specific notary addresses to fetch. Fetches all if param is undefined.
- * @throws When can not connect to blockchain or cache is not set up correctly.
+ * @param {Array} specificAddresses specific notary addresses to fetch. Fetches
+ * all if param is undefined.
  * @returns {Promise<Array<NotaryInfo>>} Promise which resolves to the list with the
- * notaries' onchain and offchain information.
+ * notaries' onchain and offchain information. If it fails to fetch a notary's additional
+ * information, it will resolve to the onchain information only.
  */
 const getNotariesInfo = async (specificAddresses) => {
-  let promises;
+  const promises = specificAddresses
+    ? specificAddresses.map(getNotaryInfo)
+    : (await notaries.list()).map(addAdditionalInfo);
 
-  if (specificAddresses) {
-    promises = specificAddresses.map(address => getNotaryInfo(address));
-  } else {
-    const onchainInfos = await notaries.list();
-    promises = onchainInfos.map(({ id, ...onchainInfo }) => addAdditionalInfo(onchainInfo));
-  }
-
-  return promisify(promises, { removeRejected: true });
+  return Promise.all(promises);
 };
 
 /**
