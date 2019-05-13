@@ -84,8 +84,13 @@ import { createLevelStore, createRedisStore } from './storage';
  */
 /**
  * @typedef Notary
- * @property {string} notarizationUrl Notary's API URL used to request notarizations
+ * @property {string} infoUrl Notary's API URL used to ask for its information.
+ * @property {string} oldInfoUrl Notary's previous API URL, if it updated the information
+ * or unregistered.
+ * @property {boolean} isRegistered Flag indicating if the Notary is registered or not in
+ * DataExchange.
  */
+
 /** @type {LevelStore<number, string>} */
 const dataOrdersByDxId = createLevelStore('data_orders_by_dx_id');
 /** @type {LevelStore<string, DataOrder>} */
@@ -112,29 +117,8 @@ export const dataResponsesBatches = createLevelStore('data_responses_batches');
 export const dataResponsesLastAdded = createLevelStore('data_responses_last_added');
 /** @type {LevelStore<string, Notarization>} */
 export const notarizations = createLevelStore('notarizations');
-/**
- * TODO: This will be removed when the Notary sync is added.
- * @type {LevelStore<string, Notary>}
- */
-export const notaries = {
-  collection: {
-    '0x7befc633bd282f7938ef8349a9fca281cf06bada': {
-      name: 'Fake Notary',
-      address: '0x7befc633bd282f7938ef8349a9fca281cf06bada',
-      notarizationUrl: 'http://localhost:9200/buyers/notarization-request',
-      dataResponsesUrl: 'http://10.0.2.2:9200/data-responses',
-      isRegistered: false,
-      headsUpUrl: 'http://localhost:9200/sellers/heads-up',
-      publicKey: 'some-public-key',
-    },
-  },
-  async fetch(id) {
-    return this.collection[id];
-  },
-  async list() {
-    return Object.values(this.collection);
-  },
-};
+/** @type {LevelStore<string, Notary>} */
+export const notaries = createLevelStore('notaries');
 /** @type {LevelStore<string, number>} */
 export const eventBlocks = createLevelStore('event_blocks');
 /** @type {LevelStore<string, BuyerInfo>} */

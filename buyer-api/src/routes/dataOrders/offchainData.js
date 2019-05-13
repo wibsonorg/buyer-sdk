@@ -1,6 +1,6 @@
 import Router from 'express-promise-router';
 import { cache } from '../../utils';
-import { notaries } from '../../utils/stores';
+import { getNotariesInfo } from '../../facades/notariesFacade';
 import fetchDataOrder from './middlewares/fetchDataOrder';
 import { getBuyerInfo } from '../../services/buyerInfo';
 
@@ -42,8 +42,7 @@ router.get(
       buyerInfoId,
     } = req.dataOrder;
 
-    const allowedNotaries = await Promise.all(notariesAddresses
-      .map(notaryAddress => notaries.fetch(notaryAddress)));
+    const allowedNotaries = await getNotariesInfo(notariesAddresses);
 
     const {
       name,

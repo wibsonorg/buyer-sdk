@@ -1,11 +1,10 @@
 import uuid from 'uuid/v4';
 import { createQueue } from './createQueue';
-import { notarize } from '../services/notaryService';
+import { notarize } from '../facades/notariesFacade';
 import {
   dataResponses,
   dataResponsesBatches as batches,
   notarizations,
-  notaries,
 } from '../utils/stores';
 import logger from '../utils/logger';
 import config from '../../config';
@@ -105,9 +104,8 @@ export const prepare = async ({ id, data: { batchId } }) => {
  */
 export const send = async ({ data: { notarizationRequestId } }) => {
   const { notaryAddress, request } = await notarizations.fetch(notarizationRequestId);
-  const { notarizationUrl } = await notaries.fetch(notaryAddress);
+  await notarize(notaryAddress, notarizationRequestId, request);
 
-  await notarize(notarizationUrl, notarizationRequestId, request);
   await notarizations.update(
     notarizationRequestId,
     {

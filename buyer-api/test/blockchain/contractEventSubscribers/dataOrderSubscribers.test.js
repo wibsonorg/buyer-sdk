@@ -1,9 +1,10 @@
 import test from 'ava';
-import { dataOrders, fetchDataOrder, getAccount } from './contractEventSubscribers.mock';
+import { dataOrders, fetchDataOrder, getAccount } from './dataOrderSubscribers.mock';
+import './contractEventSubscribers.mock';
 import {
   onDataOrderCreated,
   onDataOrderClosed,
-} from '../../src/blockchain/contractEventSubscribers';
+} from '../../../src/blockchain/contractEventSubscribers/dataOrderSubscribers';
 
 const it = test.serial;
 

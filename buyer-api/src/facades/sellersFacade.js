@@ -24,7 +24,7 @@ const getSellerInfo = async (web3, dataOrder, address) => {
 
 /**
  * @async
- * @function getNotariesInfo
+ * @function getSellersInfo
  * @param {Object} web3 the web3 object.
  * @param {Object} dataOrder instance of a DataOrder.
  * @param {Array} addresses specific sellers addresses to fetch.
@@ -36,10 +36,10 @@ const getSellersInfo = async (web3, dataOrder, addresses = []) => {
     ? addresses
     : await getElements(dataOrder, 'sellers');
 
-  const notaries = sellersAddresses.map(address =>
+  const sellerInfos = sellersAddresses.map(address =>
     getSellerInfo(web3, dataOrder, address));
 
-  return Promise.all(notaries);
+  return Promise.all(sellerInfos);
 };
 
 export { getSellerInfo, getSellersInfo };
