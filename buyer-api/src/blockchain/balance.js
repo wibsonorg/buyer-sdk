@@ -6,22 +6,18 @@ import { toWib } from '../utils/wibson-lib/coin';
 const { toBN, fromWei } = web3.utils;
 const minWib = toBN(config.balance.minWib);
 const minWei = toBN(config.balance.minWei);
-const minBatPay = toBN(config.balance.minBatPay);
+const {
+  balance: { minBatPay },
+} = config;
 
 export const toEth = wei => Number(fromWei(wei.toString(), 'ether'));
 
-export const getWeiBalance = async address =>
-  toBN(await web3.eth.getBalance(address));
-export const getWibBalance = async address =>
-  toBN(await Wibcoin.methods.balanceOf(address).call());
-export const getBatPayBalance = async id =>
-  toBN(await BatPay.methods.balanceOf(id).call());
+export const getWeiBalance = async address => toBN(await web3.eth.getBalance(address));
+export const getWibBalance = async address => toBN(await Wibcoin.methods.balanceOf(address).call());
+export const getBatPayBalance = async id => toBN(await BatPay.methods.balanceOf(id).call());
 
 export const getFunds = async (address) => {
-  const [wei, wib] = await Promise.all([
-    getWeiBalance(address),
-    getWibBalance(address),
-  ]);
+  const [wei, wib] = await Promise.all([getWeiBalance(address), getWibBalance(address)]);
   return { wei, wib };
 };
 
@@ -74,7 +70,11 @@ export const hasEnoughBalance = async (address) => {
  */
 export const hasEnoughBatPayBalance = async (id, amount = minBatPay) => {
   const batPay = await getBatPayBalance(id);
-  const enough = batPay.gt(amount);
+  console.log({ batPay: batPay.toString() });
+  const enough = batPay.gt(toBN(amount));
+
+  console.log({ amount });
+  console.log({ enough });
 
   if (!enough) {
     logger.error(`
@@ -82,6 +82,7 @@ export const hasEnoughBatPayBalance = async (id, amount = minBatPay) => {
     Current balance: ${batPay} WIB
     Minimum balance: ${amount} WIB
     `);
+    return false;
   }
 
   return enough;
