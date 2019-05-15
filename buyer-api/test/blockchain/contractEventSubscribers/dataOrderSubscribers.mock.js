@@ -2,13 +2,18 @@ import td from 'testdouble';
 import sinon from 'sinon';
 import test from 'ava';
 
-export const { dataOrders } = td.replace('../../../src/utils/stores', {
-  dataOrders: {
-    update: sinon.spy(), store: sinon.spy(), fetch: sinon.stub(),
-  },
+import { mockUpdate } from '../../utils/store.mocks';
+
+export const apicache = td.replace('apicache', {
+  clear: sinon.spy(),
 });
+export const fakeStoredDataOrder = { status: 'created' };
+export const { dataOrders } = td.replace('../../../src/utils/stores', {
+  dataOrders: { update: mockUpdate(fakeStoredDataOrder) },
+});
+export const fakeFetchedDataOrder = { id: '2', buyerUrl: '/orders/2/offchain-data' };
 export const { fetchDataOrder } = td.replace('../../../src/blockchain/dataOrder', {
-  fetchDataOrder: sinon.stub().resolves({ id: '2', buyerUrl: '/orders/2/offchain-data' }),
+  fetchDataOrder: sinon.stub().resolves(fakeFetchedDataOrder),
 });
 export const { getAccount } = td.replace('../../../src/services/signingService', {
   getAccount: sinon.stub(),
