@@ -18,7 +18,7 @@ const oneWibcoin = new BN(1e9);
  */
 export const toWib = (bigNumber, opts = {}) => {
   const bn = new BN(bigNumber);
-  const { base = 10, decimals } = opts;
+  const { base = 10 } = opts;
   if (bn.isGreaterThan(wibcoinSupply)) {
     throw new Error('Argument out of range');
   }
@@ -27,8 +27,7 @@ export const toWib = (bigNumber, opts = {}) => {
     throw new Error('Argument is not a number');
   }
 
-  let result = bn.dividedBy(oneWibcoin);
-  result = result.toFormat(decimals || 0, BN.ROUND_DOWN);
+  const result = bn.dividedBy(oneWibcoin);
 
   return result.toString(base);
 };

@@ -4,14 +4,14 @@ import { toWib, fromWib } from '../../../src/utils/wibson-lib/coin';
 test('toWib returns the correct amount of wibcoins', (assert) => {
   assert.is(toWib('0'), '0');
   assert.is(toWib('0'), '0');
-  assert.is(toWib('1', { decimals: 9 }), '0.000000001');
+  assert.is(toWib('1'), '0.000000001');
   assert.is(toWib('1000000000'), '1');
-  assert.is(toWib('9000000000000000000'), '9,000,000,000');
+  assert.is(toWib('9000000000000000000'), '9000000000');
 });
 
 test('toWib returns the correct amount of wibcoins when exponential notation is used', (assert) => {
   assert.is(toWib('1e+9'), '1');
-  assert.is(toWib('9e+18'), '9,000,000,000');
+  assert.is(toWib('9e+18'), '9000000000');
 });
 
 test('toWib throws an Error when an invalid number is specified', (assert) => {
