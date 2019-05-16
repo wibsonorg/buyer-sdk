@@ -30,4 +30,13 @@ td.replace('../../src/blockchain/batPay', { packPayData });
 export const fromWib = sinon.stub().returns('6000000000');
 td.replace('../../src/utils/wibson-lib/coin', { fromWib });
 
+export const hasEnoughBatPayBalance = sinon.stub().resolves(true);
+td.replace('../../src/blockchain/balance', {
+  hasEnoughBatPayBalance,
+});
+
+const queue = { pause: sinon.stub() };
+
+export const fakePauseQueue = sinon.stub().resolves(queue.pause());
+
 test.afterEach(sinon.resetHistory);

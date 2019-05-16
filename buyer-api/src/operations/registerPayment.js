@@ -30,6 +30,8 @@ export const registerPayment = async (notarizationRequestId, pauseQueue, queueId
    * The operation sends the transaction to the Buyer SS and wait for it to respond.
    * Once the signature is responded,
    * the operation will add new job to the transaction queue to send the transaction to the network.
+   * if account's balance in BatPay is less than the amount to pay, register payments queue will be
+   * paused
    */
   // data payload
   const {
@@ -37,6 +39,7 @@ export const registerPayment = async (notarizationRequestId, pauseQueue, queueId
       notarizationFee: fee, orderId, sellers, lockingKeyHash,
     },
   } = await notarizations.fetch(notarizationRequestId);
+
   const { transactionHash, price } = await dataOrders.fetchByDxId(orderId);
   const amount = fromWib(price);
   if (!(await hasEnoughBatPayBalance(batPayId, amount))) {

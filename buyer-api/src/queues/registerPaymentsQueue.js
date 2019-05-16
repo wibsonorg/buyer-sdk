@@ -4,7 +4,7 @@ import logger from '../utils/logger';
 
 const queue = createQueue('RegisterPayments');
 
-const pauseQueue = () => queue.pause();
+const pauseQueue = async () => queue.pause();
 
 const process = async ({ id, data: { notarizationRequestId } }) => {
   logger.info(`NR[${id}] :: Process :: ${notarizationRequestId}`);
