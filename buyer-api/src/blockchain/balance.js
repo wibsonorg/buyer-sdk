@@ -70,11 +70,7 @@ export const hasEnoughBalance = async (address) => {
  */
 export const hasEnoughBatPayBalance = async (id, amount = minBatPay) => {
   const batPay = await getBatPayBalance(id);
-  console.log({ batPay: batPay.toString() });
   const enough = batPay.gt(toBN(amount));
-
-  console.log({ amount });
-  console.log({ enough });
 
   if (!enough) {
     logger.error(`
