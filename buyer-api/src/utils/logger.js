@@ -5,15 +5,22 @@ const logger = winston.createLogger();
 
 switch (config.env) {
   case 'production':
+    const format = winston.format.combine(
+      winston.format.simple(),
+      winston.format.timestamp(),
+      winston.format.printf(info => `${info.timestamp} [${info.level}]: ${info.message}`),
+    );
     logger.add(new winston.transports.Console({ handleExceptions: true }));
     logger.add(new winston.transports.File({
       filename: config.log.combined,
       handleExceptions: true,
+      format,
     }));
     logger.add(new winston.transports.File({
       filename: config.log.error,
       handleExceptions: true,
       level: 'error',
+      format,
     }));
     break;
   case 'development':
