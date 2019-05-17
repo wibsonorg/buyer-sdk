@@ -78,7 +78,6 @@ export const hasEnoughBatPayBalance = async (id, amount = minBatPay) => {
     Current balance: ${batPay} WIB
     Minimum balance: ${amount} WIB
     `);
-    return false;
   }
 
   return enough;
