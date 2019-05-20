@@ -1,18 +1,18 @@
 import { contractEventListener } from '../contractEventListener';
 import { DataExchange, Wibcoin } from '../contracts';
-import { onDataOrderCreated, onDataOrderClosed } from './dataOrderSubscribers';
+import { onDataOrderCreatedJob, onDataOrderClosedJob } from './dataOrderSubscribers';
 import { onNotaryRegistered, onNotaryUpdated, onNotaryUnregistered } from './notariesSubscribers';
-import { sendDeposit } from '../../recurrent/checkBatPayBalance';
+import { sendDepositJob } from '../../recurrent/checkBatPayBalance';
 
 
 contractEventListener
   .addContract(DataExchange)
-  .on('DataOrderCreated', onDataOrderCreated)
-  .on('DataOrderClosed', onDataOrderClosed)
+  .on('DataOrderCreated', onDataOrderCreatedJob)
+  .on('DataOrderClosed', onDataOrderClosedJob)
   .on('NotaryRegistered', onNotaryRegistered)
   .on('NotaryUpdated', onNotaryUpdated)
   .on('NotaryUnregistered', onNotaryUnregistered)
   .addContract(Wibcoin)
-  .on('Approval', sendDeposit);
+  .on('Approval', sendDepositJob);
 
 export { contractEventListener };

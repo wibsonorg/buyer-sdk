@@ -15,41 +15,25 @@ const newNotaryUrl = 'https://www.napi.com/new-notary-info';
 
 it('stores the new notary', async (assert) => {
   await onNotaryRegistered({ notary, notaryUrl });
-  assert.true(notaries.update.calledOnce);
-  assert.is(notaries.update.firstCall.args[0], notary);
-  assert.truthy(notaries.update.firstCall.args[1], { infoUrl: notaryUrl, isRegistered: true });
+  assert.true(notaries.update.calledOnceWithExactly(notary, {
+    infoUrl: notaryUrl, isRegistered: true,
+  }));
 });
 
-it('updates existing notary on NotaryUpdated', async (assert) => {
-  await onNotaryRegistered({ notary, notaryUrl });
+it('updates notary on NotaryUpdated', async (assert) => {
   await onNotaryUpdated({ notary, oldNotaryUrl: notaryUrl, newNotaryUrl });
-  assert.true(notaries.update.calledTwice);
-  assert.is(notaries.update.lastCall.args[0], notary);
-  assert.truthy(notaries.update.lastCall.args[1], {
+  assert.true(notaries.update.calledOnceWith(notary, {
     infoUrl: newNotaryUrl,
-    oldNotaryUrl: notaryUrl,
+    oldInfoUrl: notaryUrl,
     isRegistered: true,
-  });
-});
-
-it('stores notary on NotaryUpdated even if it was not stored before', async (assert) => {
-  await onNotaryUpdated({ notary, oldNotaryUrl: notaryUrl, newNotaryUrl });
-  assert.true(notaries.update.calledOnce);
-  assert.is(notaries.update.lastCall.args[0], notary);
-  assert.truthy(notaries.update.lastCall.args[1], {
-    infoUrl: newNotaryUrl,
-    oldNotaryUrl: notaryUrl,
-    isRegistered: true,
-  });
+  }));
 });
 
 it('flags notary as unregistered on NotaryUnregistered', async (assert) => {
   await onNotaryUnregistered({ notary, oldNotaryUrl: notaryUrl });
-  assert.true(notaries.update.calledOnce);
-  assert.is(notaries.update.lastCall.args[0], notary);
-  assert.truthy(notaries.update.lastCall.args[1], {
+  assert.true(notaries.update.calledOnceWith(notary, {
     infoUrl: undefined,
     oldInfoUrl: notaryUrl,
     isRegistered: false,
-  });
+  }));
 });

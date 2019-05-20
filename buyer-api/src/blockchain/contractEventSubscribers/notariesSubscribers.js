@@ -1,7 +1,7 @@
 import apicache from 'apicache';
 import { notaries } from '../../utils/stores';
 
-const updateNotary = async ({ notary, ...params }) => {
+const updateNotary = async (notary, params) => {
   await notaries.update(notary.toLowerCase(), params);
   apicache.clear('/notaries/*');
 };
@@ -15,7 +15,7 @@ const updateNotary = async ({ notary, ...params }) => {
  * @param {NotaryRegisteredEventValues} eventValues The values emmited by the DataExchange event
  */
 export const onNotaryRegistered = async ({ notary, notaryUrl }) =>
-  updateNotary({ notary, infoUrl: notaryUrl, isRegistered: true });
+  updateNotary(notary, { infoUrl: notaryUrl, isRegistered: true });
 
 /**
  * @typedef NotaryUpdatedEventValues
@@ -27,7 +27,11 @@ export const onNotaryRegistered = async ({ notary, notaryUrl }) =>
  * @param {NotaryUpdatedEventValues} eventValues The values emmited by the DataExchange event
  */
 export const onNotaryUpdated = async ({ notary, oldNotaryUrl, newNotaryUrl }) =>
-  updateNotary({ notary, infoUrl: newNotaryUrl, oldInfoUrl: oldNotaryUrl });
+  updateNotary(notary, {
+    infoUrl: newNotaryUrl,
+    oldInfoUrl: oldNotaryUrl,
+    isRegistered: true,
+  });
 
 /**
  * @typedef NotaryUnregisteredEventValues
@@ -38,8 +42,7 @@ export const onNotaryUpdated = async ({ notary, oldNotaryUrl, newNotaryUrl }) =>
  * @param {NotaryUnregisteredEventValues} eventValues The values emmited by the DataExchange event
  */
 export const onNotaryUnregistered = async ({ notary, oldNotaryUrl }) =>
-  updateNotary({
-    notary,
+  updateNotary(notary, {
     infoUrl: undefined,
     oldInfoUrl: oldNotaryUrl,
     isRegistered: false,
