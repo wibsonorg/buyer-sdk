@@ -2,17 +2,30 @@ import td from 'testdouble';
 import sinon from 'sinon';
 import test from 'ava';
 
-export const dataOrders = { update: sinon.spy(), store: sinon.spy(), fetch: sinon.stub() };
-td.replace('../../../src/utils/stores', { dataOrders });
-export const fetchDataOrder = sinon.stub();
-td.replace('../../../src/blockchain/dataOrder', { fetchDataOrder });
-export const getAccount = sinon.stub();
-td.replace('../../../src/services/signingService', { getAccount });
+import { mockUpdate } from '../../utils/store.mocks';
 
-export const DataExchange = sinon.spy();
-export const WIBToken = sinon.spy();
-td.replace('../../../src/blockchain/contracts', { DataExchange, WIBToken });
-export const sendDeposit = sinon.spy();
-td.replace('../../../src/recurrent/checkBatPayBalance', { sendDeposit });
+export const apicache = td.replace('apicache', {
+  clear: sinon.spy(),
+});
+export const fakeStoredDataOrder = { status: 'created' };
+export const { dataOrders } = td.replace('../../../src/utils/stores', {
+  dataOrders: { update: mockUpdate(fakeStoredDataOrder) },
+});
+export const fakeFetchedDataOrder = { id: '2', buyerUrl: '/orders/2/offchain-data' };
+export const { fetchDataOrder } = td.replace('../../../src/blockchain/dataOrder', {
+  fetchDataOrder: sinon.stub().resolves(fakeFetchedDataOrder),
+});
+export const { getAccount } = td.replace('../../../src/services/signingService', {
+  getAccount: sinon.stub(),
+});
 
-test.afterEach(sinon.reset);
+export const { DataExchange, WIBToken } = td.replace('../../../src/blockchain/contracts', {
+  DataExchange: sinon.spy(),
+  WIBToken: sinon.spy(),
+});
+export const { jobify } = td.replace('../../../ssrc/utils/jobify', {
+  jobify: sinon.spy(),
+});
+
+
+test.afterEach(sinon.resetHistory);

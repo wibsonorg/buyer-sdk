@@ -8,6 +8,7 @@ import { addTransactionJob } from '../queues/transactionQueue';
 import logger from '../utils/logger';
 import config from '../../config';
 import { BatPay } from '../blockchain/contracts';
+import { jobify } from '../utils/jobify';
 
 const {
   batPayId,
@@ -73,6 +74,8 @@ export const sendDeposit = async (event) => {
     logger.info('BatPay Balance Check :: Deposit requested');
   }
 };
+
+export const sendDepositJob = jobify(sendDeposit);
 
 export const runCheckBatPayBalance = () =>
   setInterval(checkBatPayBalance, interval);
