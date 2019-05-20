@@ -42,7 +42,7 @@ export const registerPayment = async (notarizationRequestId, pauseQueue, queueId
 
   const { transactionHash, price } = await dataOrders.fetchByDxId(orderId);
   const amount = fromWib(price);
-  if (!(await hasEnoughBatPayBalance(batPayId, amount))) {
+  if (!(await hasEnoughBatPayBalance(batPayId, toBN(amount).muln(sellers.length)))) {
     logger.info(`Tx[${queueId}] :: RegisterPayments queue paused, account's balance in BatPay is less than amount.`);
     await pauseQueue();
     return false;
