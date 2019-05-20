@@ -2,18 +2,13 @@ import apicache from 'apicache';
 import { fetchDataOrder } from '../dataOrder';
 import { getAccount } from '../../services/signingService';
 import { dataOrders } from '../../utils/stores';
+import { jobify } from '../../utils/jobify';
 
 const statusOrder = {
   creating: 0,
   created: 1,
   closing: 2,
   closed: 3,
-};
-
-const getOrderId = async (dxId) => {
-  const { buyer, ...chainOrder } = await fetchDataOrder(dxId);
-  const id = chainOrder.buyerUrl.match(/\/orders\/(.+)\/offchain-data/)[1];
-  return { chainOrder, id };
 };
 
 /**
@@ -28,20 +23,22 @@ export const onDataOrderCreated = async ({ buyer, orderId }, { transactionHash }
   const dxId = Number(orderId);
   const { address } = await getAccount();
   if (address.toLowerCase() === buyer.toLowerCase()) {
-    const { chainOrder, id } = await getOrderId(dxId);
-    const storedOrder = await dataOrders.fetch(id);
-    if (statusOrder[storedOrder.status] < statusOrder.created) {
-      await dataOrders.store(id, {
-        ...storedOrder,
-        ...chainOrder,
-        dxId,
-        transactionHash,
-        status: 'created',
-      });
-      apicache.clear('/orders/*');
-    }
+    const { id, ...chainOrder } = await fetchDataOrder(dxId);
+    await dataOrders.update(id, (oldOrder) => {
+      if (statusOrder[oldOrder.status] < statusOrder.created) {
+        apicache.clear('/orders/*');
+        return {
+          ...chainOrder,
+          dxId,
+          transactionHash,
+          status: 'created',
+        };
+      }
+      return undefined;
+    });
   }
 };
+export const onDataOrderCreatedJob = jobify(onDataOrderCreated);
 
 /**
  * @callback onDataOrderClosed Updates DataOrder in the store with closed status
@@ -51,8 +48,9 @@ export const onDataOrderClosed = async ({ buyer, orderId }) => {
   const dxId = Number(orderId);
   const { address } = await getAccount();
   if (address.toLowerCase() === buyer.toLowerCase()) {
-    const { id } = await getOrderId(dxId);
-    await dataOrders.update(id, { status: 'closed' });
+    const { id, closedAt } = await fetchDataOrder(dxId);
+    await dataOrders.update(id, { status: 'closed', closedAt });
     apicache.clear('/orders/*');
   }
 };
+export const onDataOrderClosedJob = jobify(onDataOrderClosed);

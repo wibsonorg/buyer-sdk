@@ -1,4 +1,4 @@
-import { DataExchange, toDate } from './contracts';
+import { DataExchange } from './contracts';
 import { toWib } from '../utils/wibson-lib/coin';
 
 /**
@@ -27,14 +27,16 @@ export async function fetchDataOrder(orderId) {
     createdAt,
     closedAt,
   ] = Object.values(await DataExchange.methods.getDataOrder(orderId).call());
+  const id = buyerUrl.match(/\/orders\/(.+)\/offchain-data/)[1];
   return {
+    id,
     buyer: buyer.toLowerCase(),
     audience: JSON.parse(audience),
     price: Number(toWib(price)),
     requestedData: JSON.parse(requestedData),
     termsAndConditionsHash,
     buyerUrl,
-    createdAt: toDate(createdAt),
-    closedAt: toDate(closedAt),
+    createdAt: Number(createdAt),
+    closedAt: Number(closedAt),
   };
 }
