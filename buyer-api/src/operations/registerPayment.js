@@ -2,11 +2,12 @@ import { addTransactionJob } from '../queues/transactionQueue';
 import { notarizations, dataOrders } from '../utils/stores';
 import { packPayData } from '../blockchain/batPay';
 import { hasEnoughBatPayBalance } from '../blockchain/balance';
-import logger from '../utils/logger';
+import { web3, logger } from '../utils';
 import { fromWib } from '../utils/wibson-lib/coin';
 import config from '../../config';
 
 const { batPayId } = config;
+const { toBN } = web3.utils;
 
 /**
  * @param {import('../utils/stores').NotarizationResult} notarizationResult
@@ -41,16 +42,15 @@ export const registerPayment = async (notarizationRequestId, pauseQueue, queueId
   } = await notarizations.fetch(notarizationRequestId);
 
   const { transactionHash, price } = await dataOrders.fetchByDxId(orderId);
-  const amount = fromWib(price);
-  if (!(await hasEnoughBatPayBalance(batPayId, toBN(amount).muln(sellers.length)))) {
-    logger.info(`Tx[${queueId}] :: RegisterPayments queue paused, account's balance in BatPay is less than amount.`);
-    await pauseQueue();
+  const amount = toBN(fromWib(price) * sellers.length);
+  if (!(await hasEnoughBatPayBalance(batPayId, amount))) {
+    await pauseQueue(queueId);
     return false;
   }
 
   const payload = {
     fromId: batPayId,
-    amount,
+    amount: fromWib(price),
     payData: packPayData(sellers.map(({ id }) => id)),
     lockingKeyHash,
     metadata: transactionHash,

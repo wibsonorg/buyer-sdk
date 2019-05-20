@@ -6,9 +6,7 @@ import { toWib } from '../utils/wibson-lib/coin';
 const { toBN, fromWei } = web3.utils;
 const minWib = toBN(config.balance.minWib);
 const minWei = toBN(config.balance.minWei);
-const {
-  balance: { minBatPay },
-} = config;
+const minBatPay = toBN(config.balance.minBatPay);
 
 export const toEth = wei => Number(fromWei(wei.toString(), 'ether'));
 
@@ -70,7 +68,7 @@ export const hasEnoughBalance = async (address) => {
  */
 export const hasEnoughBatPayBalance = async (id, amount = minBatPay) => {
   const batPay = await getBatPayBalance(id);
-  const enough = batPay.gt(toBN(amount));
+  const enough = batPay.gt(amount);
 
   if (!enough) {
     logger.error(`
