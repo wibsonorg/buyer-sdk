@@ -29,6 +29,10 @@ export const BatPay = {
 };
 td.replace('../../src/blockchain/contracts', { BatPay });
 
+export const { jobify } = td.replace('../../src/utils/jobify', {
+  jobify: sinon.spy(),
+});
+
 test.beforeEach(() => {
   hasEnoughBatPayBalance.returns(false);
   hasBatPayEnoughTokenAllowance.returns(false);
