@@ -12,8 +12,10 @@ const { toBN } = web3.utils;
 /**
  * @param {import('../utils/stores').NotarizationResult} notarizationResult
  *    filtered results from notary
+ * @param {Function} pauseQueue function that pauses the queue in which
+ *    registerPayment is running
  */
-export const registerPayment = async (notarizationRequestId, pauseQueue, queueId) => {
+export const registerPayment = async (notarizationRequestId, pauseQueue) => {
   logger.info(`registerPayment :: Notarization Request ID ${notarizationRequestId}`);
   /**
    * 4.4 The registerPayment operation will receive the NotarizationResult,
@@ -44,7 +46,7 @@ export const registerPayment = async (notarizationRequestId, pauseQueue, queueId
   const { transactionHash, price } = await dataOrders.fetchByDxId(orderId);
   const amount = toBN(fromWib(price) * sellers.length);
   if (!(await hasEnoughBatPayBalance(batPayId, amount))) {
-    await pauseQueue(queueId);
+    await pauseQueue("account's balance in BatPay is less than amount.");
     return false;
   }
 

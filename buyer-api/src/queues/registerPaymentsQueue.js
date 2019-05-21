@@ -4,14 +4,14 @@ import logger from '../utils/logger';
 
 const queue = createQueue('RegisterPayments');
 
-const pauseQueue = async (id) => {
-  logger.info(`Tx[${id}] :: RegisterPayments queue paused, account's balance in BatPay is less than amount.`);
+const pauseQueue = id => async (reason) => {
+  logger.info(`NR[${id}] :: RegisterPayments queue paused, ${reason}`);
   queue.pause();
 };
 
 const process = async ({ id, data: { notarizationRequestId } }) => {
   logger.info(`NR[${id}] :: Process :: ${notarizationRequestId}`);
-  return registerPayment(notarizationRequestId, pauseQueue, id);
+  return registerPayment(notarizationRequestId, pauseQueue(id));
 };
 
 queue.process(process);
