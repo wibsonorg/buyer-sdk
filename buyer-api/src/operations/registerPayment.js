@@ -1,17 +1,21 @@
 import { addTransactionJob } from '../queues/transactionQueue';
 import { notarizations, dataOrders } from '../utils/stores';
 import { packPayData } from '../blockchain/batPay';
-import logger from '../utils/logger';
+import { hasEnoughBatPayBalance } from '../blockchain/balance';
+import { web3, logger } from '../utils';
 import { fromWib } from '../utils/wibson-lib/coin';
 import config from '../../config';
 
 const { batPayId } = config;
+const { toBN } = web3.utils;
 
 /**
  * @param {import('../utils/stores').NotarizationResult} notarizationResult
  *    filtered results from notary
+ * @param {Function} pauseQueue function that pauses the queue in which
+ *    registerPayment is running
  */
-export const registerPayment = async (notarizationRequestId) => {
+export const registerPayment = async (notarizationRequestId, pauseQueue) => {
   logger.info(`registerPayment :: Notarization Request ID ${notarizationRequestId}`);
   /**
    * 4.4 The registerPayment operation will receive the NotarizationResult,
@@ -29,6 +33,8 @@ export const registerPayment = async (notarizationRequestId) => {
    * The operation sends the transaction to the Buyer SS and wait for it to respond.
    * Once the signature is responded,
    * the operation will add new job to the transaction queue to send the transaction to the network.
+   * if account's balance in BatPay is less than the amount to pay, register payments queue will be
+   * paused
    */
   // data payload
   const {
@@ -36,7 +42,13 @@ export const registerPayment = async (notarizationRequestId) => {
       notarizationFee: fee, orderId, sellers, lockingKeyHash,
     },
   } = await notarizations.fetch(notarizationRequestId);
+
   const { transactionHash, price } = await dataOrders.fetchByDxId(orderId);
+  const amount = toBN(fromWib(price)).muln(sellers.length);
+  if (!(await hasEnoughBatPayBalance(batPayId, amount))) {
+    await pauseQueue("account's balance in BatPay is less than amount.");
+    return false;
+  }
 
   const payload = {
     fromId: batPayId,

@@ -10,18 +10,12 @@ const minBatPay = toBN(config.balance.minBatPay);
 
 export const toEth = wei => Number(fromWei(wei.toString(), 'ether'));
 
-export const getWeiBalance = async address =>
-  toBN(await web3.eth.getBalance(address));
-export const getWibBalance = async address =>
-  toBN(await Wibcoin.methods.balanceOf(address).call());
-export const getBatPayBalance = async id =>
-  toBN(await BatPay.methods.balanceOf(id).call());
+export const getWeiBalance = async address => toBN(await web3.eth.getBalance(address));
+export const getWibBalance = async address => toBN(await Wibcoin.methods.balanceOf(address).call());
+export const getBatPayBalance = async id => toBN(await BatPay.methods.balanceOf(id).call());
 
 export const getFunds = async (address) => {
-  const [wei, wib] = await Promise.all([
-    getWeiBalance(address),
-    getWibBalance(address),
-  ]);
+  const [wei, wib] = await Promise.all([getWeiBalance(address), getWibBalance(address)]);
   return { wei, wib };
 };
 
