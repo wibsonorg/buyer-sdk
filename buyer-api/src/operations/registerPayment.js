@@ -44,7 +44,7 @@ export const registerPayment = async (notarizationRequestId, pauseQueue) => {
   } = await notarizations.fetch(notarizationRequestId);
 
   const { transactionHash, price } = await dataOrders.fetchByDxId(orderId);
-  const amount = toBN(fromWib(price) * sellers.length);
+  const amount = toBN(fromWib(price)).muln(sellers.length);
   if (!(await hasEnoughBatPayBalance(batPayId, amount))) {
     await pauseQueue("account's balance in BatPay is less than amount.");
     return false;

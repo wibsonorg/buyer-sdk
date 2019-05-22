@@ -39,7 +39,9 @@ const queue = { pause: sinon.stub() };
 export const fakePauseQueue = sinon.stub().resolves(queue.pause());
 
 export const web3 = {
-  utils: { toBN: sinon.stub() },
+  utils: {
+    toBN: () => ({ muln: sinon.stub() }),
+  },
 };
 
 export const logger = {
