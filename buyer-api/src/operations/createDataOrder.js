@@ -1,7 +1,7 @@
 import uuidv4 from 'uuid/v4';
 import { fromWib } from '../utils/wibson-lib/coin';
 import { getBuyerInfo } from '../services/buyerInfo';
-import { dataOrders } from '../utils/stores';
+import { dataOrders, notaries } from '../utils/stores';
 import { addTransactionJob } from '../queues/transactionQueue';
 
 /**
@@ -30,6 +30,7 @@ export async function createDataOrder(dataOrder) {
   const { termsHash } = await getBuyerInfo(dataOrder.buyerInfoId);
   const termsAndConditionsHash = termsHash.startsWith('0x') ? termsHash : `0x${termsHash}`;
   const notariesAddresses = dataOrder.notariesAddresses.map(n => n.toLowerCase());
+  await Promise.all(notariesAddresses.map(na => notaries.fetch(na)));
   await dataOrders.store(id, {
     ...dataOrder,
     status,
