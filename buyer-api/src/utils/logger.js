@@ -2,6 +2,12 @@ import winston from 'winston';
 import config from '../../config';
 
 const logger = winston.createLogger();
+const buildFormatter = () =>
+  winston.format.combine(
+    winston.format.simple(),
+    winston.format.timestamp(),
+    winston.format.printf(info => `${info.timestamp} [${info.level}]: ${info.message}`),
+  );
 
 switch (config.env) {
   case 'production':
@@ -9,11 +15,13 @@ switch (config.env) {
     logger.add(new winston.transports.File({
       filename: config.log.combined,
       handleExceptions: true,
+      format: buildFormatter(),
     }));
     logger.add(new winston.transports.File({
       filename: config.log.error,
       handleExceptions: true,
       level: 'error',
+      format: buildFormatter(),
     }));
     break;
   case 'development':
