@@ -2,12 +2,13 @@ import Router from 'express-promise-router';
 import config from '../../config';
 import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
 import { dataResponsesLastAdded } from '../utils/stores';
+import { validateAuthorizationToken } from '../utils/routes';
 
 const router = Router();
 
 /**
  * @swagger
- * /recurrent/batch-data-responses:
+ * /batch-data-responses:
  *   post:
  *     description: Endpoint to launch the batches to notarize
  *     produces:
@@ -18,16 +19,18 @@ const router = Router();
  *       422:
  *         description: When passphrase is incorrect
  */
-router.post('/', async (req, res) => {
-  if (req.headers.authorization === `Bearer ${config.sendBatchPassphrase}`) {
+router.post(
+  '/',
+  validateAuthorizationToken(config.sendBatchPassphrase),
+  async (_req, res) => {
     const batches = await dataResponsesLastAdded.list();
-    batches.forEach((batch) => {
-      addProcessDataResponseJob({ ...batch, accumulatorId: batch.id, type: 'sendNotarizationBatch' });
-    });
+    batches.forEach((batch) => addProcessDataResponseJob({
+      ...batch,
+      accumulatorId: batch.id,
+      type: 'sendNotarizationBatch'
+    }));
     res.sendStatus(202);
-  } else {
-    res.sendStatus(401);
-  }
-});
+  },
+);
 
 export default router;
