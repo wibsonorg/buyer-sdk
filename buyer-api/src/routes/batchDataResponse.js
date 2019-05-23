@@ -24,10 +24,10 @@ router.post(
   validateAuthorizationToken(config.sendBatchPassphrase),
   async (_req, res) => {
     const batches = await dataResponsesLastAdded.list();
-    batches.forEach((batch) => addProcessDataResponseJob({
+    batches.forEach(batch => addProcessDataResponseJob({
       ...batch,
       accumulatorId: batch.id,
-      type: 'sendNotarizationBatch'
+      type: 'sendNotarizationBatch',
     }));
     res.sendStatus(202);
   },
