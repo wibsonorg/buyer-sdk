@@ -46,8 +46,8 @@ router.get('/ss', async (_req, res) => {
   const diff = process.hrtime(time);
 
   res.json({
-    ...response,
     ns: `Took ${(diff[0] * NS_PER_SEC) + diff[1]} nanoseconds`,
+    status: response.status,
   });
 });
 
