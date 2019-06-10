@@ -20,15 +20,11 @@ import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
 export const addDataResponse = async (dataOrder, dataResponse) => {
   const { status: st, notariesAddresses } = dataOrder;
   if (st !== 'created') {
-    return { error: 'Can\'t accept DataReponse' };
+    return { error: { message: "Can't accept DataReponse", status: 410 } };
   }
 
   const {
-    orderId,
-    sellerAddress,
-    encryptedData,
-    notaryAddress,
-    ...rest
+    orderId, sellerAddress, encryptedData, notaryAddress, ...rest
   } = dataResponse;
 
   const sellerId = await sellers.safeFetch(sellerAddress, 0);
@@ -36,7 +32,9 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
   const id = `${orderId}:${sellerAddress}`;
 
   if (!notariesAddresses.includes(notaryAddress)) {
-    return { error: `Can't accept DataReponse for notary ${notaryAddress}` };
+    return {
+      error: { message: `Can't accept DataReponse for notary ${notaryAddress}`, status: 422 },
+    };
   }
 
   const existingDataResponse = await dataResponses.safeFetch(id);
@@ -54,6 +52,7 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
   // * it's weak: if communication with S3 fails for any reason, user will be
   //   forced to "try again later".
   const s3 = putData(orderId, sellerAddress, encryptedData);
+
   const db = dataResponses.store(id, {
     orderId,
     sellerAddress,

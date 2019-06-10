@@ -16,7 +16,7 @@ const router = Router();
  *         name: id
  *         type: string
  *         required: true
- *         description: The order id that will be closed
+ *         description: uuid of the DataOrder been created
  *     produces:
  *       - application/json
  *     responses:

@@ -76,10 +76,12 @@ router.use(restrictCountryByIp);
  */
 router.post('/:id/data-responses', fetchDataOrder, async (req, res) => {
   const { error, ...result } = await addDataResponse(req.dataOrder, req.body);
-  if (error) {
-    res.boom.badData('Operation failed', { error });
-  } else {
+  if (!error) {
     res.json(result);
+  } else if (error.status === 410) {
+    res.boom.resourceGone(error.message);
+  } else if (error.status === 422) {
+    res.boom.badData(error.message);
   }
 });
 
