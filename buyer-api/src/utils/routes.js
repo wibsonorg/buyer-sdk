@@ -52,3 +52,18 @@ export function validateAddress(fieldPath) {
     }
   };
 }
+
+/**
+ * Middleware to check if an Authorization Bearer token is valid or not.
+ * @param {String} token token to check agaisnt.
+ * @public
+ */
+export function validateAuthorizationToken(token) {
+  return async (req, res, next) => {
+    if (req.headers.authorization === `Bearer ${token}`) {
+      next();
+    } else {
+      res.boom.unauthorized('Token invalid');
+    }
+  };
+}

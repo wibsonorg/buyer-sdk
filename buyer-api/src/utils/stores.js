@@ -100,7 +100,7 @@ Object.assign(dataOrders, {
   store: async (id, dataOrder) =>
     Promise.all([
       storeFn(id, dataOrder),
-      dataOrder.dxId && dataOrdersByDxId.store(dataOrder.dxId, id),
+      typeof dataOrder.dxId === 'number' && dataOrdersByDxId.store(dataOrder.dxId, id),
     ]),
   fetchByDxId: async (dxId) => {
     const id = await dataOrdersByDxId.fetch(dxId);
