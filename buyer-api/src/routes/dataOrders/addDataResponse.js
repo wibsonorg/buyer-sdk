@@ -78,9 +78,9 @@ router.post('/:id/data-responses', fetchDataOrder, async (req, res) => {
   const { error, ...result } = await addDataResponse(req.dataOrder, req.body);
   if (!error) {
     res.json(result);
-  } else if (error.status === 410) {
+  } else if (error.status === 'closed') {
     res.boom.resourceGone(error.message);
-  } else if (error.status === 422) {
+  } else {
     res.boom.badData(error.message);
   }
 });

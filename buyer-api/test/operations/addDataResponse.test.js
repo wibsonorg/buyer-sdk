@@ -33,35 +33,26 @@ it('returns the id and status of the already stored DataResponse', async (assert
 });
 
 it('returns id and waiting status when sellerId is not present', async (assert) => {
-  const { status } = await addDataResponse(
-    dataOrder,
-    {
-      ...someDataResponse,
-      sellerAddress: undefined,
-    },
-  );
+  const { status } = await addDataResponse(dataOrder, {
+    ...someDataResponse,
+    sellerAddress: undefined,
+  });
   assert.is(status, 'waiting');
 });
 
 it('returns an error when DataOrder is closed', async (assert) => {
-  const { error, status } = await addDataResponse(
-    { status: 'closed' },
-    someDataResponse,
-  );
-  assert.is(status, undefined);
-  assert.is(error, 'Can\'t accept DataReponse');
+  const { error } = await addDataResponse({ status: 'closed' }, someDataResponse);
+  assert.is(error.status, 'closed');
+  assert.is(error.message, "Can't accept DataReponse");
 });
 
 it('returns an error when the notary is not in the preferred ones', async (assert) => {
-  const { error, status } = await addDataResponse(
-    dataOrder,
-    {
-      ...someDataResponse,
-      notaryAddress: '0xasd',
-    },
-  );
-  assert.is(status, undefined);
-  assert.is(error, 'Can\'t accept DataReponse for notary 0xasd');
+  const { error } = await addDataResponse(dataOrder, {
+    ...someDataResponse,
+    notaryAddress: '0xasd',
+  });
+  assert.is(error.status, 'unprocessable');
+  assert.is(error.message, "Can't accept DataReponse for notary 0xasd");
 });
 
 it('stores the DataResponse', async (assert) => {
@@ -76,5 +67,7 @@ it('stores the Data in S3', async (assert) => {
 
 it('adds job to process the DataResponse', async (assert) => {
   await addDataResponse(dataOrder, someDataResponse);
-  assert.snapshot(addProcessDataResponseJob.lastCall.args, { id: 'addProcessDataResponseJob().args' });
+  assert.snapshot(addProcessDataResponseJob.lastCall.args, {
+    id: 'addProcessDataResponseJob().args',
+  });
 });

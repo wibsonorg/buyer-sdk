@@ -20,7 +20,7 @@ import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
 export const addDataResponse = async (dataOrder, dataResponse) => {
   const { status: st, notariesAddresses } = dataOrder;
   if (st !== 'created') {
-    return { error: { message: "Can't accept DataReponse", status: 410 } };
+    return { error: { message: "Can't accept DataReponse", status: 'closed' } };
   }
 
   const {
@@ -33,7 +33,10 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
 
   if (!notariesAddresses.includes(notaryAddress)) {
     return {
-      error: { message: `Can't accept DataReponse for notary ${notaryAddress}`, status: 422 },
+      error: {
+        message: `Can't accept DataReponse for notary ${notaryAddress}`,
+        status: 'unprocessable',
+      },
     };
   }
 
