@@ -16,7 +16,7 @@ const router = Router();
  *         name: id
  *         type: string
  *         required: true
- *         description: uuid of the DataOrder been created
+ *         description: uuid of the created DataOrder
  *     produces:
  *       - application/json
  *     responses:
