@@ -19,7 +19,7 @@ import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
  */
 export const addDataResponse = async (dataOrder, dataResponse) => {
   const { status: st, notariesAddresses } = dataOrder;
-  if (st !== 'created') {
+  if (st === 'creating' || st === 'closed') {
     return { error: { message: "Can't accept DataReponse", status: 'closed' } };
   }
 
