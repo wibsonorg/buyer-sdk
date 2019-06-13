@@ -42,8 +42,8 @@ it('returns id and waiting status when sellerId is not present', async (assert) 
 
 it('returns an error when DataOrder is closed', async (assert) => {
   const { error } = await addDataResponse({ status: 'closed' }, someDataResponse);
-  assert.is(error.status, 'closed');
-  assert.is(error.message, "Can't accept DataReponse");
+  assert.is(error.code, 'add_data_response.closed_data_order');
+  assert.is(error.message, "Can't accept DataReponse, closed data order");
 });
 
 it('returns an error when the notary is not in the preferred ones', async (assert) => {
@@ -51,8 +51,8 @@ it('returns an error when the notary is not in the preferred ones', async (asser
     ...someDataResponse,
     notaryAddress: '0xasd',
   });
-  assert.is(error.status, 'unprocessable');
-  assert.is(error.message, "Can't accept DataReponse for notary 0xasd");
+  assert.is(error.code, 'add_data_response.invalid_notary');
+  assert.is(error.message, "Can't accept DataReponse, invalid notary");
 });
 
 it('stores the DataResponse', async (assert) => {
