@@ -28,6 +28,8 @@ router.use(restrictCountryByIp);
  *     responses:
  *       200:
  *         description: When the DataResponse was accepted
+ *       410:
+ *         description: When the data order was closed
  *       422:
  *         description: When the DataResponse has missing or invalid fields
  *       500:
@@ -78,7 +80,7 @@ router.post('/:id/data-responses', fetchDataOrder, async (req, res) => {
   const { error, ...result } = await addDataResponse(req.dataOrder, req.body);
   if (!error) {
     res.json(result);
-  } else if (error.status === 'closed') {
+  } else if (error.code === 'add_data_response.closed_data_order') {
     res.boom.resourceGone(error.message);
   } else {
     res.boom.badData(error.message);

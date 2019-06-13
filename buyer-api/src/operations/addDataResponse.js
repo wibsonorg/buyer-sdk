@@ -17,10 +17,21 @@ import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
  * @returns {Object} Object with either the id and status of the DataResponse
  *                   or the error if any.
  */
+
+const ERROR_CLOSED_DATA_RESPONSE = {
+  message: "Can't accept DataReponse, closed data order",
+  code: 'add_data_response.closed_data_order',
+};
+
+const ERROR_ADD_DATA_RESPONSE_INVALID_NOTARY = {
+  message: "Can't accept DataReponse, invalid notary",
+  code: 'add_data_response.invalid_notary',
+};
+
 export const addDataResponse = async (dataOrder, dataResponse) => {
   const { status: st, notariesAddresses } = dataOrder;
   if (st === 'creating' || st === 'closed') {
-    return { error: { message: "Can't accept DataReponse", status: 'closed' } };
+    return { error: ERROR_CLOSED_DATA_RESPONSE };
   }
 
   const {
@@ -33,10 +44,7 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
 
   if (!notariesAddresses.includes(notaryAddress)) {
     return {
-      error: {
-        message: `Can't accept DataReponse for notary ${notaryAddress}`,
-        status: 'unprocessable',
-      },
+      error: ERROR_ADD_DATA_RESPONSE_INVALID_NOTARY,
     };
   }
 
