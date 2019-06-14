@@ -11,7 +11,10 @@ const buildFormatter = () =>
 
 switch (config.env) {
   case 'production':
-    logger.add(new winston.transports.Console({ handleExceptions: true }));
+    logger.add(new winston.transports.Console({
+      handleExceptions: true,
+      format: buildFormatter(),
+    }));
     logger.add(new winston.transports.File({
       filename: config.log.combined,
       handleExceptions: true,

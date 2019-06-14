@@ -1,6 +1,6 @@
 {
   "name": "buyer-api",
-  "version": "2.0.0-alpha.3",
+  "version": "2.0.0",
   "description": "Buyer API",
   "author": "Wibson Development Team",
   "main": "src/app.js",
