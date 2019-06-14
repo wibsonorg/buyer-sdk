@@ -17,18 +17,25 @@ import { addProcessDataResponseJob } from '../queues/dataResponseQueue';
  * @returns {Object} Object with either the id and status of the DataResponse
  *                   or the error if any.
  */
+
+const ERROR_CLOSED_DATA_RESPONSE = {
+  message: "Can't accept DataReponse, closed data order",
+  code: 'add_data_response.closed_data_order',
+};
+
+const ERROR_ADD_DATA_RESPONSE_INVALID_NOTARY = {
+  message: "Can't accept DataReponse, invalid notary",
+  code: 'add_data_response.invalid_notary',
+};
+
 export const addDataResponse = async (dataOrder, dataResponse) => {
   const { status: st, notariesAddresses } = dataOrder;
-  if (st !== 'created') {
-    return { error: 'Can\'t accept DataReponse' };
+  if (st === 'creating' || st === 'closed') {
+    return { error: ERROR_CLOSED_DATA_RESPONSE };
   }
 
   const {
-    orderId,
-    sellerAddress,
-    encryptedData,
-    notaryAddress,
-    ...rest
+    orderId, sellerAddress, encryptedData, notaryAddress, ...rest
   } = dataResponse;
 
   const sellerId = await sellers.safeFetch(sellerAddress, 0);
@@ -36,7 +43,9 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
   const id = `${orderId}:${sellerAddress}`;
 
   if (!notariesAddresses.includes(notaryAddress)) {
-    return { error: `Can't accept DataReponse for notary ${notaryAddress}` };
+    return {
+      error: ERROR_ADD_DATA_RESPONSE_INVALID_NOTARY,
+    };
   }
 
   const existingDataResponse = await dataResponses.safeFetch(id);
@@ -54,6 +63,7 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
   // * it's weak: if communication with S3 fails for any reason, user will be
   //   forced to "try again later".
   const s3 = putData(orderId, sellerAddress, encryptedData);
+
   const db = dataResponses.store(id, {
     orderId,
     sellerAddress,
