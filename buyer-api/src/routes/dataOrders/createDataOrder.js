@@ -59,7 +59,7 @@ const router = Router();
  *         type: array
  *         items:
  *           type: string
- *           pattern: '^[0-9a-z\-]+$'
+ *           pattern: '^[0-9a-zA-Z\-]+$'
  *         description: Requested data type (Geolocation, Facebook, etc)
  *         example: ["some-data-type"]
  *       buyerInfoId:
@@ -78,10 +78,7 @@ const router = Router();
  *         description: Notaries' Ethereum addresses
  *         example: ["0x7befc633bd282f7938ef8349a9fca281cf06bada"]
  */
-router.post(
-  '/',
-  validateAddress('body.notariesAddresses'),
-  async (req, res) => res.json(await createDataOrder(req.body)),
-);
+router.post('/', validateAddress('body.notariesAddresses'), async (req, res) =>
+  res.json(await createDataOrder(req.body)));
 
 export default router;
