@@ -1,6 +1,6 @@
 {
   "name": "buyer-signing-service",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Buyer Signing Service",
   "author": "Wibson Development Team",
   "main": "src/app.js",
@@ -38,7 +38,7 @@
     "safe-buffer": "^5.1.2",
     "swagger-jsdoc": "^3.2.7",
     "swagger-ui-express": "^3.0.10",
-    "web3-eth-abi": "^1.0.0-beta.34",
+    "web3-eth-abi": "1.0.0-beta.34",
     "web3-utils": "1.0.0-beta.34",
     "winston": "^3.0.0"
   },
