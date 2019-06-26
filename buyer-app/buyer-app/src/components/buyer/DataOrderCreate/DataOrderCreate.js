@@ -44,7 +44,7 @@ class DataOrderCreate extends Component {
     this.state = {
       buyerInfos: [],
       selectedBuyer: undefined,
-      audience: [],
+      audience: { "age": 20 }, // Hardcoded value for audience
       requestedData: [],
       requestedNotaries: [],
       publicURL: Config.get("buyerPublicURL"),
@@ -95,15 +95,15 @@ class DataOrderCreate extends Component {
       selectedBuyer
     } = this.state;
 
-    const selectedAudience = audience.map(filter => {
-      return {
-        filter: filter.variable,
-        values: [filter.value]
-      };
-    });
+    // const selectedAudience = audience.map(filter => {
+    //   return {
+    //     filter: filter.variable,
+    //     values: [filter.value]
+    //   };
+    // });
 
     this.props.createDataOrder(
-      selectedAudience,
+      audience,
       requestedData.map(d => d.value),
       requestedNotaries.map(n => n.value),
       publicURL,
@@ -114,15 +114,13 @@ class DataOrderCreate extends Component {
 
   shouldDisableSubmitButton() {
     const {
-      audience,
       requestedNotaries,
       publicURL,
       requestedData
     } = this.state;
 
     return (
-      audience.length === 0
-      || !publicURL
+      !publicURL
       || !requestedNotaries || !requestedNotaries.length
       || !requestedData || !requestedData.length
     );
@@ -143,7 +141,7 @@ class DataOrderCreate extends Component {
             />
           </InfoItem>
         </FormSection>
-        <FormSection>
+        {/*<FormSection>
           <Subtitle>Audience</Subtitle>
           <AudiencePicker
             requestableAudience={audienceOntology.filters}
@@ -151,7 +149,7 @@ class DataOrderCreate extends Component {
             onChange={this.handleOnAudienceChange}
             errors={this.state.errors.audience}
           />
-        </FormSection>
+        </FormSection>*/}
         <FormSection>
           <Subtitle>Orders settings</Subtitle>
           <InfoItem>
