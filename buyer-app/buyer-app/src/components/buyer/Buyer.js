@@ -115,7 +115,7 @@ class Buyer extends React.Component {
       />,
       <InfoPanel
         key={4}
-        titLole="Active Data Responses"
+        title="Active Data Responses"
         data={availableDataResponsesCount}
         units="Responses"
       />

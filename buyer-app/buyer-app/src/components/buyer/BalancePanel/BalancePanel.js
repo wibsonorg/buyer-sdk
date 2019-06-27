@@ -52,7 +52,7 @@ class BalancePanel extends React.Component {
     }
 
     if (typeof this.props.ether !== "undefined") {
-      ether = this.props.ether;
+      ether = this.props.ether.toFixed(4);
     }
 
     const styleWib = this.state.showTooltipWib ? {} : { display: "none" };
@@ -87,7 +87,7 @@ class BalancePanel extends React.Component {
           onMouseLeave={()=>(this.handleToggleTooltip("showTooltipEther"))}
           style={{ flex: 1 }}
         >
-          <span className={cx("panel-text-eth-balance")}>{`ETH ${ether.toFixed(4)}`}</span>
+          <span className={cx("panel-text-eth-balance")}>{`ETH ${ether}`}</span>
           <div style={{ position: "relative" }}>
             <Tooltip
               direction="down"
