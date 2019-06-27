@@ -35,7 +35,7 @@ const flattenDataOrders = R.compose(
 
 class OpenDataOrders extends Component {
   renderStatus(order) {
-    if (order.notaries.length > 0) {
+    if (order.notariesAddresses.length > 0) {
       return "Active";
     } else {
       return "Waiting for notary";
