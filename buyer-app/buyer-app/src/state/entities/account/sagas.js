@@ -12,8 +12,6 @@ import * as Actions from "./actions";
 function* updateAccount(action) {
   let loggedIn = true;
   while (loggedIn) {
-    yield call(delay, 5000);
-
     try {
       const account = yield call(getAccount);
 
@@ -30,6 +28,7 @@ function* updateAccount(action) {
     };
     const auth = yield select(AuthenticationSelectors.getAuthentication);
     loggedIn = auth.authenticated;
+    yield call(delay, 30000);
   };
 };
 

@@ -47,7 +47,7 @@ class DataOrderCreate extends Component {
       audience: { "age": 20 }, // Hardcoded value for audience
       requestedData: [],
       requestedNotaries: [],
-      publicURL: Config.get("buyerPublicURL"),
+      publicURL: Config.get("buyerPublicURL").api,
       errors: {},
       loading: false,
       creationError: undefined,
