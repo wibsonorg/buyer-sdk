@@ -29,7 +29,6 @@ import Subtitle from "base-app-src/components/Subtitle";
 
 import Loading from "base-app-src/components/Loading";
 
-import AudiencePicker from "./AudiencePicker";
 import Config from "../../../config";
 
 import authorization from "../../../utils/headers";
@@ -127,7 +126,7 @@ class DataOrderCreate extends Component {
   }
 
   renderCreateForm() {
-    const { audienceOntology, dataOntology, availableNotaries } = this.props;
+    const { dataOntology, availableNotaries } = this.props;
     return (
       <Form>
         <FormSection>
