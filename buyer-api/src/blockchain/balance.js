@@ -20,7 +20,7 @@ export const getFunds = async (address) => {
 };
 
 export const getBalance = async (address) => {
-  const [wei, wib] = await getFunds(address);
+  const { wei, wib } = await getFunds(address);
   return {
     address,
     balance: Number(wib),
