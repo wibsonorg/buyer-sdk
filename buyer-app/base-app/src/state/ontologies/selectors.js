@@ -1,10 +1,6 @@
 const dataOntology = {
   options: [
     {
-      value: "browsing_history",
-      label: "Browsing History"
-    },
-    {
       value: "geolocation",
       label: "Geolocation"
     },
@@ -13,20 +9,12 @@ const dataOntology = {
       label: "Facebook"
     },
     {
-      value: "bbva",
-      label: "BBVA Banking"
-    },
-    {
       value: "device-info",
       label: "Device Information"
     },
     {
       value: "google-fitness",
       label: "Google Fitness"
-    },
-    {
-      value: "google-plus",
-      label: "Google Plus"
     },
     {
       value: "google-profile",
