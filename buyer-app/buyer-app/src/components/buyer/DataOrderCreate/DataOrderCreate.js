@@ -71,8 +71,13 @@ class DataOrderCreate extends Component {
       const res = await fetch(`${apiUrl}/infos`, {
         headers: { Authorization: authorization() }
       });
+      const { availableNotaries } = this.props;
       const result = await res.json();
-      this.setState({ buyerInfos: result.infos });
+      const firstNotary = availableNotaries.list[0]
+      this.setState({
+        buyerInfos: result.infos,
+        requestedNotaries: firstNotary ? [firstNotary] : []
+      });
     } catch (error) {
       console.log(error);
     };
@@ -93,13 +98,6 @@ class DataOrderCreate extends Component {
       price,
       selectedBuyer
     } = this.state;
-
-    // const selectedAudience = audience.map(filter => {
-    //   return {
-    //     filter: filter.variable,
-    //     values: [filter.value]
-    //   };
-    // });
 
     this.props.createDataOrder(
       audience,
@@ -140,15 +138,6 @@ class DataOrderCreate extends Component {
             />
           </InfoItem>
         </FormSection>
-        {/*<FormSection>
-          <Subtitle>Audience</Subtitle>
-          <AudiencePicker
-            requestableAudience={audienceOntology.filters}
-            audience={this.state.audience}
-            onChange={this.handleOnAudienceChange}
-            errors={this.state.errors.audience}
-          />
-        </FormSection>*/}
         <FormSection>
           <Subtitle>Orders settings</Subtitle>
           <InfoItem>
