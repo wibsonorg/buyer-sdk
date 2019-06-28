@@ -6,8 +6,6 @@ import Select from "base-app-src/components/Select/Select";
 import SelectItem from "base-app-src/components/Select/SelectItem";
 import LoadingBar from "base-app-src/components/LoadingBar";
 
-import Config from "../../config";
-
 import cn from "classnames/bind";
 import styles from "./Buyer.css";
 const cx = cn.bind(styles);
@@ -28,9 +26,8 @@ import * as DataOrdersAddressesAmountActions from "state/entities/dataOrdersAddr
 import * as authenticationActions from "state/entities/authentication/actions";
 import { withNotaries } from "state/entities/notaries/hoc";
 
-import InfoPanel from "./headerPanels/InfoPanel";
-
 import AppNotifications from "../AppNotifications";
+import InfoPanel from "./headerPanels/InfoPanel";
 import BalancePanel from "./BalancePanel";
 import OpenDataOrders from "./OpenDataOrders";
 import BoughtDataOrders from "./BoughtDataOrders";
@@ -40,32 +37,32 @@ import DataOrderCreate from "./DataOrderCreate";
 import R from "ramda";
 import config from "../../config";
 
-const limit = config.get('env') === 'production' ? 1 : 30;
+const limit = config.get("env") === "production" ? 1 : 30;
 
 class Buyer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentOffset: 0,
+      currentOffset: 0
     };
   }
 
   componentDidMount() {
     this.props.fetchDataOrders();
     this.props.fetchDataOrdersAmount();
-    window.addEventListener('scroll', this.handleScroll, true);
+    window.addEventListener("scroll", this.handleScroll, true);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll, true);
+    window.removeEventListener("scroll", this.handleScroll, true);
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.location.pathname !== prevProps.location.pathname) {
-      if ((/.*-orders\/.+$/img).test(this.props.location.pathname)) {
-        window.removeEventListener('scroll', this.handleScroll, true);
-      } else if (this.props.location.pathname !== '/') {
-        window.addEventListener('scroll', this.handleScroll, true);
+      if (/.*-orders\/.+$/gim.test(this.props.location.pathname)) {
+        window.removeEventListener("scroll", this.handleScroll, true);
+      } else if (this.props.location.pathname !== "/") {
+        window.addEventListener("scroll", this.handleScroll, true);
       }
     }
   }
@@ -80,30 +77,30 @@ class Buyer extends React.Component {
     this.props.logOutUser();
   };
 
-  handleScroll = (e) =>{
-    // const bottom = e.target.scrollingElement.scrollHeight - e.target.scrollingElement.scrollTop === e.target.scrollingElement.clientHeight;
-    const bottom = window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight;
+  handleScroll = e => {
+    const bottom =
+      window.innerHeight + document.documentElement.scrollTop >=
+      document.documentElement.offsetHeight;
     const {
       activeDataOrders,
       dataOrdersAddressAmount,
-      closedDataOrders,
+      closedDataOrders
     } = this.props;
-    const loadedOrders = Object.entries(activeDataOrders) + Object.entries(closedDataOrders);
-    if (bottom && !this.isLoading() && loadedOrders < dataOrdersAddressAmount)
-    {
+    const loadedOrders =
+      Object.entries(activeDataOrders) + Object.entries(closedDataOrders);
+    if (bottom && !this.isLoading() && loadedOrders < dataOrdersAddressAmount) {
       this.setState((state, props) => ({
-        currentOffset: state.currentOffset + limit,
+        currentOffset: state.currentOffset + limit
       }));
       this.props.fetchDataOrders(this.state);
     }
-  }
+  };
 
   renderSelect() {
     return (
       <Select
         value={this.props.currentRoute}
-        itemsContainerClassName="page-selector-items-container"
-      >
+        itemsContainerClassName="page-selector-items-container">
         <SelectItem
           value="open-orders"
           label="Open Data Orders"
@@ -136,38 +133,39 @@ class Buyer extends React.Component {
 
     const availableDataResponsesCount = R.compose(
       R.sum,
-      R.map(R.pathOr(0, ['data', 'offChain', 'dataResponsesCount'])),
+      R.map(R.pathOr(0, ["data", "offChain", "dataResponsesCount"])),
       R.values
     )(activeDataOrders);
 
-    const openOrders = dataOrdersAddressAmount.data? dataOrdersAddressAmount.data.totalOpenOrders : 0;
+    const openOrders = dataOrdersAddressAmount.data
+      ? dataOrdersAddressAmount.data.totalOpenOrders
+      : 0;
 
     const panels = [
       <BalancePanel
         key={1}
-        tokenDollarRate={Config.get("simpleToken.conversion.usd")}
+        title={"Balance general"}
+        currencies={[
+          { currencyName: "Wib", value: account.wib },
+          { currencyName: "Eth", value: account.ether }
+        ]}
       />,
-      <InfoPanel
+      <BalancePanel
         key={2}
-        title="Available datasets"
-        data={R.values(boughtDataOrders).length}
+        title={"Balance in BatPay"}
+        currencies={[{ currencyName: "Wib", value: account.batPay }]}
       />,
-      <InfoPanel
-        key={3}
-        title="Open Data Orders"
-        data={openOrders}
-      />,
-      <InfoPanel
-        key={4}
-        title="Active Data Responses"
-        data={availableDataResponsesCount}
-        units="Responses"
-      />
+      <InfoPanel key={3} title="Open Data Orders" data={openOrders} />
     ];
 
     return (
       <div>
-        <AppHeader userRole="buyer" account={account.address} panels={panels} logOut={this.handleLogOut} />
+        <AppHeader
+          userRole="buyer"
+          account={account.address}
+          panels={panels}
+          logOut={this.handleLogOut}
+        />
         <LoadingBar loading={this.isLoading()} />
         <AppNotifications />
         <div className={cx("page-content")}>
@@ -180,15 +178,13 @@ class Buyer extends React.Component {
               <Button
                 onClick={() => {
                   this.props.fetchDataOrders(this.state);
-                }}
-              >
+                }}>
                 Refresh
               </Button>
               <Button
                 onClick={() => {
                   history.push("/open-orders/new-data-order");
-                }}
-              >
+                }}>
                 Place an order
               </Button>
             </div>
@@ -230,7 +226,9 @@ const mapStateToProps = state => ({
   boughtDataOrders: DataOrdersByAddress.getBoughtDataOrders(state),
   closedDataOrders: DataOrdersByAddress.getClosedDataOrders(state),
   dataOrdersAddress: DataOrdersAddresses.getDataOrdersAddresses(state),
-  dataOrdersAddressAmount: DataOrdersAddressesAmount.getDataOrdersAddressesAmount(state),
+  dataOrdersAddressAmount: DataOrdersAddressesAmount.getDataOrdersAddressesAmount(
+    state
+  ),
   isFetching: DataOrdersByAddress.isFetching(state),
   account: Account.getAccount(state)
 });
@@ -239,7 +237,7 @@ const mapDispatchToProps = (dispatch, props) => ({
   startPollingDataOrders: () => {
     dispatch(PollingActions.startPollingDataOrders());
   },
-  fetchDataOrders: (params) => {
+  fetchDataOrders: params => {
     const { currentOffset } = params || {};
     dispatch(
       DataOrdersAddressesActions.fetchDataOrdersAddresses({
@@ -255,7 +253,7 @@ const mapDispatchToProps = (dispatch, props) => ({
   },
   logOutUser: () => {
     dispatch(authenticationActions.logOut());
-  },
+  }
 });
 
 export default compose(
@@ -264,5 +262,8 @@ export default compose(
   withProps(props => ({
     currentRoute: props.location.pathname.split("/")[1]
   })),
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(Buyer);
