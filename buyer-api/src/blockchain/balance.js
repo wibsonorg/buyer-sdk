@@ -25,7 +25,7 @@ export const getBalance = async (address) => {
     address,
     balance: Number(wib),
     wib: toWib(wib, { decimals: 2 }),
-    ether: web3.utils.fromWei(wei.toString(), 'ether'),
+    ether: Number(web3.utils.fromWei(wei.toString(), 'ether')),
   };
 };
 
