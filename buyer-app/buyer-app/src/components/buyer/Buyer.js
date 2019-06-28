@@ -18,13 +18,11 @@ import { Route, withRouter, Redirect } from "react-router-dom";
 
 import * as DataOrdersByAddress from "state/entities/dataOrdersByAddress/selectors";
 import * as DataOrdersAddresses from "state/entities/dataOrdersAddresses/selectors";
-import * as DataOrdersAddressesAmount from "state/entities/dataOrdersAddressesAmount/selectors";
 import * as Account from "state/entities/account/selectors";
 
 import * as PollingActions from "state/entities/polling/actions";
 
 import * as DataOrdersAddressesActions from "state/entities/dataOrdersAddresses/actions";
-import * as DataOrdersAddressesAmountActions from "state/entities/dataOrdersAddressesAmount/actions";
 import * as authenticationActions from "state/entities/authentication/actions";
 import { withNotaries } from "state/entities/notaries/hoc";
 
@@ -52,22 +50,6 @@ class Buyer extends React.Component {
 
   componentDidMount() {
     this.props.fetchDataOrders();
-    this.props.fetchDataOrdersAmount();
-    window.addEventListener('scroll', this.handleScroll, true);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll, true);
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.location.pathname !== prevProps.location.pathname) {
-      if ((/.*-orders\/.+$/img).test(this.props.location.pathname)) {
-        window.removeEventListener('scroll', this.handleScroll, true);
-      } else if (this.props.location.pathname !== '/') {
-        window.addEventListener('scroll', this.handleScroll, true);
-      }
-    }
   }
 
   handleSelectClick = value => {
@@ -79,24 +61,6 @@ class Buyer extends React.Component {
   handleLogOut = () => {
     this.props.logOutUser();
   };
-
-  handleScroll = (e) =>{
-    // const bottom = e.target.scrollingElement.scrollHeight - e.target.scrollingElement.scrollTop === e.target.scrollingElement.clientHeight;
-    const bottom = window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight;
-    const {
-      activeDataOrders,
-      dataOrdersAddressAmount,
-      closedDataOrders,
-    } = this.props;
-    const loadedOrders = Object.entries(activeDataOrders) + Object.entries(closedDataOrders);
-    if (bottom && !this.isLoading() && loadedOrders < dataOrdersAddressAmount)
-    {
-      this.setState((state, props) => ({
-        currentOffset: state.currentOffset + limit,
-      }));
-      this.props.fetchDataOrders(this.state);
-    }
-  }
 
   renderSelect() {
     return (
@@ -127,7 +91,6 @@ class Buyer extends React.Component {
     const {
       history,
       activeDataOrders,
-      dataOrdersAddressAmount,
       boughtDataOrders,
       closedDataOrders,
       failedDataOrders,
@@ -140,8 +103,6 @@ class Buyer extends React.Component {
       R.values
     )(activeDataOrders);
 
-    const openOrders = dataOrdersAddressAmount.data? dataOrdersAddressAmount.data.totalOpenOrders : 0;
-
     const panels = [
       <BalancePanel
         key={1}
@@ -151,11 +112,6 @@ class Buyer extends React.Component {
         key={2}
         title="Available datasets"
         data={R.values(boughtDataOrders).length}
-      />,
-      <InfoPanel
-        key={3}
-        title="Open Data Orders"
-        data={openOrders}
       />,
       <InfoPanel
         key={4}
@@ -230,7 +186,6 @@ const mapStateToProps = state => ({
   boughtDataOrders: DataOrdersByAddress.getBoughtDataOrders(state),
   closedDataOrders: DataOrdersByAddress.getClosedDataOrders(state),
   dataOrdersAddress: DataOrdersAddresses.getDataOrdersAddresses(state),
-  dataOrdersAddressAmount: DataOrdersAddressesAmount.getDataOrdersAddressesAmount(state),
   isFetching: DataOrdersByAddress.isFetching(state),
   account: Account.getAccount(state)
 });
@@ -246,11 +201,6 @@ const mapDispatchToProps = (dispatch, props) => ({
         limit: Number(limit),
         offset: Number(currentOffset || 0)
       })
-    );
-  },
-  fetchDataOrdersAmount: () => {
-    dispatch(
-      DataOrdersAddressesAmountActions.fetchDataOrdersAddressesAmount({})
     );
   },
   logOutUser: () => {
