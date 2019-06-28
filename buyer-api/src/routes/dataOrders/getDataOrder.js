@@ -1,6 +1,7 @@
 import Router from 'express-promise-router';
 import { cache } from '../../utils';
 import { dataOrders } from '../../utils/stores';
+import { getBuyerInfo } from '../../services/buyerInfo';
 
 const router = Router();
 
@@ -22,7 +23,12 @@ router.get(
   cache('1 minute'),
   async (req, res) => {
     req.apicacheGroup = '/orders/*';
-    res.json(await dataOrders.list());
+    const orders = await Promise.all((await dataOrders.list()).map(async o => ({
+      ...o,
+      buyerName: (await getBuyerInfo(o.buyerInfoId)).name,
+    })));
+
+    res.json(orders);
   },
 );
 
