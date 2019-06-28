@@ -40,12 +40,11 @@ async function getBuyerDataOrdersAmount() {
 }
 
 async function createBuyerDataOrder(
-  filters,
-  dataRequest,
-  buyerURL,
+  audience,
+  requestedData,
+  buyerUrl,
   price,
-  initialBudgetForAudits,
-  notaries,
+  notariesAddresses,
   buyerInfoId,
 ) {
   const res = await fetch(`${apiUrl}/orders`, {
@@ -56,15 +55,12 @@ async function createBuyerDataOrder(
     },
     method: 'POST',
     body: JSON.stringify({
-      dataOrder: {
-        filters,
-        dataRequest,
-        buyerURL,
-        price,
-        initialBudgetForAudits,
-        notaries,
-        buyerInfoId,
-      },
+      audience,
+      price,
+      requestedData,
+      buyerInfoId,
+      buyerUrl,
+      notariesAddresses,
     }),
   });
 
