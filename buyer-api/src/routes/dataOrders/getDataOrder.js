@@ -25,6 +25,10 @@ router.get(
     req.apicacheGroup = '/orders/*';
     const orders = await Promise.all((await dataOrders.list()).map(async o => ({
       ...o,
+      sellersProcessed: 0,
+      wibSpent: 0,
+      ethSpent: 0,
+      paymentsRegistered: 0,
       buyerName: (await getBuyerInfo(o.buyerInfoId)).name,
     })));
 

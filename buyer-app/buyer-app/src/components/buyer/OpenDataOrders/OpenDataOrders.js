@@ -35,11 +35,12 @@ const flattenDataOrders = R.compose(
 class OpenDataOrders extends Component {
 
   renderActions(order) {
-    const { closeDataOrder, dataOrders } = this.props;
+    const { closeDataOrder, dataOrders, downloadData } = this.props;
 
     const fullOrder = dataOrders[order.orderAddress];
 
     const closeDisabled = fullOrder.data.transactionCompleted || fullOrder.closePending;
+    const downloadDisabled = fullOrder.data.sellersProcessed === 0;
 
     return (
       <div className="wibson-bought-data-orders-actions">
@@ -49,6 +50,13 @@ class OpenDataOrders extends Component {
           size="sm"
         >
           {fullOrder.closePending ? "Closing" : "Close"}
+        </Button>
+        <Button
+          onClick={() => downloadData(order)}
+          disabled={downloadDisabled}
+          size="sm"
+        >
+          Download Data
         </Button>
       </div>
     );
@@ -108,18 +116,30 @@ class OpenDataOrders extends Component {
               width: "150",
               renderer: value => <Label>{value || 0}</Label>
             },
-            {
-              name: "dataResponsesCount",
-              label: "Responses Received",
-              width: "245",
-              renderer: value => <Label>{value || 0}</Label>
-            },
-            {
-              name: "responsesBought",
-              label: "Responses Bought",
-              width: "245",
-              renderer: value => <Label>{value || 0}</Label>
-            },
+             {
+               name: "sellersProcessed",
+               label: "Sellers Processed",
+               width: "245",
+               renderer: value => <Label>{value || 0}</Label>
+             },
+             {
+               name: "wibSpent",
+               label: "WIB Spent",
+               width: "245",
+               renderer: value => <Label>{value || 0}</Label>
+             },
+             {
+               name: "ethSpent",
+               label: "ETH Spent",
+               width: "245",
+               renderer: value => <Label>{value || 0}</Label>
+             },
+             {
+               name: "paymentsRegistered",
+               label: "Payments",
+               width: "245",
+               renderer: value => <Label>{value || 0}</Label>
+             },
             {
               name: "status",
               label: "Status",
