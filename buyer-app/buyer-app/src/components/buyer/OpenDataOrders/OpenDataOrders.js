@@ -11,7 +11,6 @@ import Button from "base-app-src/components/Button";
 import Label from "base-app-src/components/Label";
 import DataTable from "base-app-src/components/DataTable";
 import DateDetail from "base-app-src/components/DateDetail";
-import NotariesDetail from "base-app-src/components/NotariesDetail";
 import RequestedDataDetail from "base-app-src/components/RequestedDataDetail";
 
 import * as OntologySelectors from "base-app-src/state/ontologies/selectors";
@@ -66,7 +65,6 @@ class OpenDataOrders extends Component {
     const {
       dataOntology,
       dataOrders,
-      availableNotaries
     } = this.props;
 
     const flatDataOrdersList = flattenDataOrders(dataOrders);
@@ -84,7 +82,7 @@ class OpenDataOrders extends Component {
               width: "250",
               sortable: true,
               sortFunction: compareDesc,
-              renderer: value => <DateDetail value={value} />
+              renderer: value => <DateDetail value={value*1000} />
             },
             {
               name: "orderAddress",
@@ -93,28 +91,6 @@ class OpenDataOrders extends Component {
               sortable: false,
               renderer: value => <Label color="light-dark">{value}</Label>
             },
-            {
-              name: "notaries",
-              label: "Notaries",
-              width: "150",
-              renderer: value => (
-                <NotariesDetail
-                  value={value}
-                  notariesSchema={availableNotaries.list}
-                />
-              )
-            },
-            // {
-            //   name: "audience",
-            //   label: "Audience",
-            //   width: "402",
-            //   renderer: value => (
-            //     <AudienceDetail
-            //       audience={value}
-            //       requestableAudience={audienceOntology}
-            //     />
-            //   )
-            // },
             {
               name: "requestedData",
               label: "Requested Data",
