@@ -19,7 +19,7 @@ const getNotariesFromContract = async () => {
   const { notaries } = await res.json();
 
   return notaries.map(notary => ({
-    value: notary.notary,
+    value: notary.id,
     label: notary.name
   }));
 };
