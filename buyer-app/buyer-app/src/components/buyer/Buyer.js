@@ -25,7 +25,6 @@ import * as authenticationActions from "state/entities/authentication/actions";
 import { withNotaries } from "state/entities/notaries/hoc";
 
 import AppNotifications from "../AppNotifications";
-import InfoPanel from "./headerPanels/InfoPanel";
 import BalancePanel from "./BalancePanel";
 import OpenDataOrders from "./OpenDataOrders";
 import BoughtDataOrders from "./BoughtDataOrders";
@@ -105,15 +104,14 @@ class Buyer extends React.Component {
         title={"Balance general"}
         currencies={[
           { currencyName: "Wib", value: account.wib },
-          { currencyName: "Eth", value: account.ether }
+          { currencyName: "Eth", value: account.ether.toFixed(4) }
         ]}
       />,
       <BalancePanel
         key={2}
         title={"Balance in BatPay"}
         currencies={[{ currencyName: "Wib", value: account.batPay }]}
-      />,
-      <InfoPanel key={3} title="Open Data Orders" data={openOrders} />
+      />
     ];
 
     return (

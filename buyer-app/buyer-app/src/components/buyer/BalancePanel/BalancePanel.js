@@ -13,7 +13,7 @@ const cx = cn.bind(styles);
 const currencyFormat = num =>
   num &&
   num
-    .toFixed(2) // always two decimal digits
+    .toFixed(0) // always two decimal digits
     .replace(".", ",") // replace decimal point character with ,
     .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
 
@@ -41,7 +41,7 @@ class BalancePanel extends React.Component {
   tooltip = ({
     direction = "up left",
     top = -60,
-    left = 50,
+    left = 0,
     position = "absolute",
     value,
     currencyName = "Wib"
@@ -58,27 +58,37 @@ class BalancePanel extends React.Component {
     );
   };
 
-  balances = currencies => {
+  balances = (currencies, tooltip) => {
     return currencies.map(({ currencyName, value = 0 }, index) => (
       <div key={index} style={{ flex: 1 }}>
         <span
-          onMouseEnter={() => this.handleToggleTooltip(currencyName)}
-          onMouseLeave={() => this.handleToggleTooltip(currencyName)}
+          onMouseEnter={
+            tooltip && (() => this.handleToggleTooltip(currencyName))
+          }
+          onMouseLeave={
+            tooltip && (() => this.handleToggleTooltip(currencyName))
+          }
           className={cx("panel-text-balance")}>
-          {currencyName + " " + currencyFormat(value)}
+          {currencyName !== "Eth"
+            ? currencyName + " " + currencyFormat(value)
+            : currencyName + " " + value}
         </span>
-        <div style={{ position: "relative" }}>
-          {this.tooltip({ currencyName, value })}
-        </div>
+        {tooltip && (
+          <div style={{ position: "relative" }}>
+            {this.tooltip({ currencyName, value })}
+          </div>
+        )}
       </div>
     ));
   };
 
   render() {
-    const { currencies, title } = this.props;
+    const { currencies, title, tooltip } = this.props;
     return (
       <Panel title={title}>
-        <div className={cx("panel-balance")}>{this.balances(currencies)}</div>
+        <div className={cx("panel-balance")}>
+          {this.balances(currencies, tooltip)}
+        </div>
       </Panel>
     );
   }
