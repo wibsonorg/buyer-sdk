@@ -23,6 +23,13 @@ async function listBuyerDataOrders() {
   return {orders};
 }
 
+async function getBuyerInfos(){
+  const res = await fetch(`${apiUrl}/infos`, {
+    headers: { Authorization: authorization() }
+  });
+  return await res.json();
+}
+
 async function getBuyerDataOrdersAmount() {
   const res = await fetch(`${apiUrl}/orders/total`,
   {
@@ -108,4 +115,5 @@ export {
   getBuyerDataOrdersAmount,
   addNotariesToOrder,
   closeOrder,
+  getBuyerInfos,
 };

@@ -33,13 +33,6 @@ const flattenDataOrders = R.compose(
 );
 
 class OpenDataOrders extends Component {
-  renderStatus(order) {
-    if (order.notariesAddresses.length > 0) {
-      return "Active";
-    } else {
-      return "Waiting for notary";
-    }
-  }
 
   renderActions(order) {
     const { closeDataOrder, dataOrders } = this.props;
@@ -103,6 +96,13 @@ class OpenDataOrders extends Component {
               )
             },
             {
+              name: "buyerName",
+              label: "Buyer Name",
+              width: "250",
+              sortable: false,
+              renderer: value => <Label color="light-dark">{value}</Label>
+            },
+            {
               name: "price",
               label: "Price",
               width: "150",
@@ -124,7 +124,7 @@ class OpenDataOrders extends Component {
               name: "status",
               label: "Status",
               width: "234",
-              renderer: (value, order) => this.renderStatus(order)
+              renderer: value => <Label color="light-dark">{value.charAt(0).toUpperCase() + value.slice(1)}</Label>
             },
             {
               name: "actions",
