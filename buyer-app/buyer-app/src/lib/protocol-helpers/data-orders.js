@@ -95,7 +95,7 @@ const addNotariesToOrder = async (orderAddress, notariesAddresses) => {
 };
 
 const closeOrder = async orderAddress => {
-  const res = await fetch(`${apiUrl}/orders/${orderAddress}/end`, {
+  const res = await fetch(`${apiUrl}/orders/${orderAddress}/close`, {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
