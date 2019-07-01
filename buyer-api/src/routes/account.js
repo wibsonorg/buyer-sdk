@@ -1,4 +1,5 @@
 import Router from 'express-promise-router';
+import config from '../../config';
 import { cache } from '../utils';
 import { getAccount } from '../services/signingService';
 import { getBalance } from '../blockchain/balance';
@@ -19,7 +20,8 @@ const router = Router();
  */
 router.get('/', cache('10 minutes'), async (req, res) => {
   const { address } = await getAccount();
-  res.json(await getBalance(address));
+  const { batPayId } = config;
+  res.json(await getBalance(address, batPayId));
 });
 
 export default router;

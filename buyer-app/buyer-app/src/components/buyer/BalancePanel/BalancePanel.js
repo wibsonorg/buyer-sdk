@@ -1,125 +1,109 @@
 import React from "react";
 
-import { compose } from "recompose";
+import { withRouter } from "react-router";
+import cn from "classnames/bind";
+
 import Panel from "base-app-src/components/Panel";
 import Text from "base-app-src/components/Text";
 import Tooltip from "base-app-src/components/Tooltip";
-import { withRouter } from "react-router";
-
-import { connect } from "react-redux";
-
-import * as AccountSelectors from "state/entities/account/selectors";
-
-import {
-  shortenLargeNumber
-} from "base-app-src/lib/balance";
-
-import cn from "classnames/bind";
 import styles from "./panels.css";
+
 const cx = cn.bind(styles);
+
+const currencyFormat = num =>
+  num &&
+  num
+    .toFixed(0) // always two decimal digits
+    .replace(".", ",") // replace decimal point character with ,
+    .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
 
 class BalancePanel extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showTooltipWib: false,
-      showTooltipEther: false,
+      tooltips: this.props.currencies.reduce((obj, item) => {
+        obj[item.currencyName] = false;
+        return obj;
+      }, {})
     };
   }
 
-  handleToggleTooltip = (showTooltip) => {
-    if (showTooltip === 'showTooltipWib'){
-      this.setState({ showTooltipWib: !this.state.showTooltipWib, showTooltipEther: false });
-    }
-    if (showTooltip === 'showTooltipEther'){
-      this.setState({ showTooltipWib: false, showTooltipEther: !this.state.showTooltipEther });
-    }
+  handleToggleTooltip = tooltipName => {
+    this.setState({
+      ...this.state,
+      tooltips: {
+        ...this.state.tooltips,
+        [tooltipName]: !this.state.tooltips[tooltipName]
+      }
+    });
+  };
+
+  tooltip = ({
+    direction = "up left",
+    top = -60,
+    left = 0,
+    position = "absolute",
+    value,
+    currencyName = "Wib"
+  }) => {
+    return (
+      <Tooltip
+        direction={direction}
+        position={{ top, left, position }}
+        style={this.state.tooltips[currencyName] ? {} : { display: "none" }}>
+        <Text color="light-dark" size="sm">
+          {value + " Wibson tokens"}
+        </Text>
+      </Tooltip>
+    );
+  };
+
+  balances = (currencies, tooltip) => {
+    return currencies.map(({ currencyName, value = 0 }, index) => (
+      <div key={index} style={{ flex: 1 }}>
+        <span
+          onMouseEnter={
+            tooltip && (() => this.handleToggleTooltip(currencyName))
+          }
+          onMouseLeave={
+            tooltip && (() => this.handleToggleTooltip(currencyName))
+          }
+          className={cx("panel-text-balance")}>
+          {currencyName !== "Eth"
+            ? currencyName + " " + currencyFormat(value)
+            : currencyName + " " + value}
+        </span>
+        {tooltip && (
+          <div style={{ position: "relative" }}>
+            {this.tooltip({ currencyName, value })}
+          </div>
+        )}
+      </div>
+    ));
   };
 
   render() {
-    let balance = "N/A";
-    let balanceScaled = balance;
-    let ether = "N/A";
-    let wib = "N/A";
-
-    if (typeof this.props.balance !== "undefined") {
-      balance = this.props.balance / Math.pow(10, 9); // TODO: unhardcode 9 decimal places
-      balanceScaled = shortenLargeNumber(this.props.balance, 2);
-    }
-
-    if (typeof this.props.wib !== "undefined") {
-      wib = this.props.wib;
-    }
-
-    if (typeof this.props.ether !== "undefined") {
-      ether = this.props.ether.toFixed(4);
-    }
-
-    const styleWib = this.state.showTooltipWib ? {} : { display: "none" };
-    const styleEther = this.state.showTooltipEther ? {} : { display: "none" };
-
+    const { currencies, title, tooltip } = this.props;
     return (
-      <Panel title="Balance">
-      <div className={cx("panel-balance")}>
-        <div
-          onMouseEnter={()=>(this.handleToggleTooltip("showTooltipWib"))}
-          onMouseLeave={()=>(this.handleToggleTooltip("showTooltipWib"))}
-          style={{ flex: 1 }}
-        >
-          <span className={cx("panel-text-balance")}>{`WIB ${wib}`}</span>
-          <span className={cx("panel-note")}>
-            {"(" + balanceScaled + " WIB)"}
-          </span>
-          <div style={{ position: "relative" }}>
-            <Tooltip
-              direction="up left"
-              position={{ top: -60, left: 50, position: "absolute" }}
-              style={styleWib}
-            >
-              <Text color="light-dark" size="sm">
-                {balance + " Wibson tokens"}
-              </Text>
-            </Tooltip>
-          </div>
+      <Panel title={title}>
+        <div className={cx("panel-balance")}>
+          {this.balances(currencies, tooltip)}
         </div>
-        <div
-          onMouseEnter={()=>(this.handleToggleTooltip("showTooltipEther"))}
-          onMouseLeave={()=>(this.handleToggleTooltip("showTooltipEther"))}
-          style={{ flex: 1 }}
-        >
-          <span className={cx("panel-text-eth-balance")}>{`ETH ${ether}`}</span>
-          <div style={{ position: "relative" }}>
-            <Tooltip
-              direction="down"
-              position={{ top: 0, left: 55, position: "absolute" }}
-              style={styleEther}
-            >
-              <Text color="light-dark" size="sm">
-                {ether + " Ether"}
-              </Text>
-            </Tooltip>
-          </div>
-        </div>
-      </div>
       </Panel>
     );
   }
 }
 
 BalancePanel.defaultProps = {
-  balance: undefined,
-  ether: undefined,
+  currencies: [
+    { currencyName: "Wib", value: 0 },
+    { currencyName: "Eth", value: 0 }
+  ]
 };
 
 BalancePanel.propTypes = {
-  balance: React.PropTypes.number,
-  ether: React.PropTypes.number
+  currencies: React.PropTypes.array,
+  title: React.PropTypes.string
 };
 
-const mapStateToProps = state => ({
-  balance: AccountSelectors.getTokensBalance(state),
-  ether: AccountSelectors.getTokensEther(state),
-  wib: AccountSelectors.getTokensWib(state),
-});
-
-export default compose(withRouter, connect(mapStateToProps))(BalancePanel);
+export default withRouter(BalancePanel);
