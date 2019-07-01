@@ -36,18 +36,8 @@ import FailedDataOrders from "./FailedDataOrders";
 import DataOrderCreate from "./DataOrderCreate";
 
 import R from "ramda";
-import config from "../../config";
-
-const limit = config.get('env') === 'production' ? 1 : 30;
 
 class Buyer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentOffset: 0,
-    };
-  }
-
   componentDidMount() {
     this.props.fetchDataOrders();
   }
@@ -195,12 +185,8 @@ const mapDispatchToProps = (dispatch, props) => ({
     dispatch(PollingActions.startPollingDataOrders());
   },
   fetchDataOrders: (params) => {
-    const { currentOffset } = params || {};
     dispatch(
-      DataOrdersAddressesActions.fetchDataOrdersAddresses({
-        limit: Number(limit),
-        offset: Number(currentOffset || 0)
-      })
+      DataOrdersAddressesActions.fetchDataOrdersAddresses()
     );
   },
   logOutUser: () => {
