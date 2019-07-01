@@ -20,7 +20,7 @@ function* closeDataOrder(action) {
     yield put(
       NotificationActions.createNotification({
         message:
-        "The data order is closed. Data sellers will receive their payments.",
+        "The data order has started to close.",
         status: "ok"
       })
     );
