@@ -76,7 +76,10 @@ class Buyer extends React.Component {
         title={"Wallet Balance"}
         currencies={[
           { currencyName: "WIB", value: account.wib },
-          { currencyName: "ETH", value: account.ether.toFixed(4) }
+          {
+            currencyName: "ETH",
+            value: account.ether && account.ether.toFixed(4)
+          }
         ]}
       />,
       <BalancePanel
