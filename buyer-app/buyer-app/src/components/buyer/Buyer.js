@@ -31,8 +31,6 @@ import BoughtDataOrders from "./BoughtDataOrders";
 import FailedDataOrders from "./FailedDataOrders";
 import DataOrderCreate from "./DataOrderCreate";
 
-import R from "ramda";
-
 class Buyer extends React.Component {
   componentDidMount() {
     this.props.fetchDataOrders();
