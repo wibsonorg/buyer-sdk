@@ -12,6 +12,8 @@ import * as NotariesSelectors from "state/entities/notaries/selectors";
 import * as DataOrdersActions from "state/entities/createDataOrder/actions";
 import * as DataOrdersSelectors from "state/entities/createDataOrder/selectors";
 
+import {getBuyerInfos} from "lib/protocol-helpers/data-orders"
+
 import { compose } from "recompose";
 
 import Modal, { ModalTitle, ModalContent } from "base-app-src/components/Modal";
@@ -31,11 +33,7 @@ import Loading from "base-app-src/components/Loading";
 
 import Config from "../../../config";
 
-import authorization from "../../../utils/headers";
-
 import "./DataOrderCreate.css";
-
-const apiUrl = Config.get("api.url");
 
 class DataOrderCreate extends Component {
   constructor(opts) {
@@ -68,14 +66,11 @@ class DataOrderCreate extends Component {
 
   async componentDidMount() {
     try {
-      const res = await fetch(`${apiUrl}/infos`, {
-        headers: { Authorization: authorization() }
-      });
       const { availableNotaries } = this.props;
-      const result = await res.json();
       const firstNotary = availableNotaries.list[0]
+      const {infos} = await getBuyerInfos();
       this.setState({
-        buyerInfos: result.infos,
+        buyerInfos: infos,
         requestedNotaries: firstNotary ? [firstNotary] : []
       });
     } catch (error) {

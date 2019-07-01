@@ -39,14 +39,14 @@
 .wibson-header .info-section .account-info .account-name {
   font-size: 14px;
 	font-weight: 500;
-  text-align: right;
+  text-align: center;
   text-transform: capitalize;
 }
 
 .wibson-header .info-section .account-info .account-address {
   margin-top: 9px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   font-size: 12px;
   font-weight: 300;
   color: #AAB3BD;
@@ -70,10 +70,7 @@
 .wibson-header .panels-section {
   padding: 40px 0px;
   display: flex;
-}
-
-.wibson-header .panels-section > *:not(:first-child) {
-  flex: 1;
+  justify-content: center;
 }
 
 .wibson-header .panels-section > *:not(:last-child) {

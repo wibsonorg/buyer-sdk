@@ -6,8 +6,6 @@ import Select from "base-app-src/components/Select/Select";
 import SelectItem from "base-app-src/components/Select/SelectItem";
 import LoadingBar from "base-app-src/components/LoadingBar";
 
-import Config from "../../config";
-
 import cn from "classnames/bind";
 import styles from "./Buyer.css";
 const cx = cn.bind(styles);
@@ -30,18 +28,7 @@ import BalancePanel from "./BalancePanel";
 import ListDataOrders from "./ListDataOrders";
 import DataOrderCreate from "./DataOrderCreate";
 
-import config from "../../config";
-
-const limit = config.get("env") === "production" ? 1 : 30;
-
 class Buyer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentOffset: 0
-    };
-  }
-
   componentDidMount() {
     this.props.fetchDataOrders();
   }
@@ -86,7 +73,16 @@ class Buyer extends React.Component {
     const panels = [
       <BalancePanel
         key={1}
-        tokenDollarRate={Config.get("simpleToken.conversion.usd")}
+        title={"Wallet Balance"}
+        currencies={[
+          { currencyName: "WIB", value: account.wib },
+          { currencyName: "ETH", value: account.ether.toFixed(4) }
+        ]}
+      />,
+      <BalancePanel
+        key={2}
+        title={"BatPay Balance"}
+        currencies={[{ currencyName: "WIB", value: account.batPay }]}
       />
     ];
 
@@ -156,13 +152,7 @@ const mapDispatchToProps = (dispatch, props) => ({
     dispatch(PollingActions.startPollingDataOrders());
   },
   fetchDataOrders: params => {
-    const { currentOffset } = params || {};
-    dispatch(
-      DataOrdersAddressesActions.fetchDataOrdersAddresses({
-        limit: Number(limit),
-        offset: Number(currentOffset || 0)
-      })
-    );
+    dispatch(DataOrdersAddressesActions.fetchDataOrdersAddresses());
   },
   logOutUser: () => {
     dispatch(authenticationActions.logOut());

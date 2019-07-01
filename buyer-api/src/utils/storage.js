@@ -67,14 +67,20 @@ export const createLevelStore = (dir) => {
     await store.store(id, newValue);
     return true;
   });
-  store.update = (id, mutations, defaultValue) => lock([[store, id]], async () => {
-    const oldValue = await store.safeFetch(id, defaultValue);
-    const newValue = typeof mutations === 'function' ? await mutations(oldValue) : mutations;
-    return store.store(id, typeof newValue === 'object' || newValue === undefined ? {
-      ...oldValue,
-      ...newValue,
-    } : newValue);
-  });
+  store.update = (id, mutations, defaultValue) =>
+    lock([[store, id]], async () => {
+      let updatedValue;
+      const oldValue = await store.safeFetch(id, defaultValue);
+      const newValue = typeof mutations === 'function' ? await mutations(oldValue) : mutations;
+      if (newValue instanceof Array) updatedValue = [...oldValue, ...newValue];
+      // eslint-disable-next-line max-len
+      else if (newValue instanceof Object || newValue === undefined) updatedValue = { ...oldValue, ...newValue };
+      else updatedValue = newValue;
+      return store.store(
+        id,
+        updatedValue,
+      );
+    });
   store.storeGreatest = (id, newValue) => store
     .update(id, oldValue => Math.max(oldValue, newValue));
   store.storeList = async (list) => {

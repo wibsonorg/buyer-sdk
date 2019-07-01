@@ -1,25 +1,5 @@
 import { createReducer } from "redux-act";
 
-// # State shape
-
-// ```
-// dataOrdersByAddress: {
-//   "0xffffff": {
-//     data: {
-
-//     },
-//     pending: true,
-//     fulfilled: false,
-//     closePending: true
-//   },
-//   "0xeeeeee": {
-//     data: null,
-//     fulfilled: false,
-//     error: "Something went wrong"
-//   }
-// }
-// ```
-
 import * as Actions from "./actions";
 import * as CloseDataOrderActions from "state/entities/closeDataOrder/actions";
 import * as BuyDataOrderActions from "state/entities/buyDataOrder/actions";

@@ -11,7 +11,6 @@ import Button from "base-app-src/components/Button";
 import Label from "base-app-src/components/Label";
 import DataTable from "base-app-src/components/DataTable";
 import DateDetail from "base-app-src/components/DateDetail";
-import NotariesDetail from "base-app-src/components/NotariesDetail";
 import RequestedDataDetail from "base-app-src/components/RequestedDataDetail";
 
 import * as OntologySelectors from "base-app-src/state/ontologies/selectors";
@@ -35,7 +34,7 @@ const flattenDataOrders = R.compose(
 
 class ListDataOrders extends Component {
   renderActions(order) {
-    const { closeDataOrder, dataOrders } = this.props;
+    const { closeDataOrder, dataOrders, downloadData } = this.props;
 
     const fullOrder = dataOrders[order.orderAddress];
 
@@ -93,28 +92,6 @@ class ListDataOrders extends Component {
               renderer: value => <Label color="light-dark">{value}</Label>
             },
             {
-              name: "notaries",
-              label: "Notaries",
-              width: "150",
-              renderer: value => (
-                <NotariesDetail
-                  value={value}
-                  notariesSchema={availableNotaries.list}
-                />
-              )
-            },
-            // {
-            //   name: "audience",
-            //   label: "Audience",
-            //   width: "402",
-            //   renderer: value => (
-            //     <AudienceDetail
-            //       audience={value}
-            //       requestableAudience={audienceOntology}
-            //     />
-            //   )
-            // },
-            {
               name: "requestedData",
               label: "Requested Data",
               width: "234",
@@ -126,44 +103,47 @@ class ListDataOrders extends Component {
               )
             },
             {
+              name: "buyerName",
+              label: "Buyer Name",
+              width: "250",
+              sortable: false,
+              renderer: value => <Label color="light-dark">{value}</Label>
+            },
+            {
               name: "price",
               label: "Price",
               width: "150",
               renderer: value => <Label>{value || 0}</Label>
             },
-            {
-              name: "sellersProcessed",
-              label: "Sellers Processed",
-              width: "245",
-              renderer: value => <Label>{value || 0}</Label>
-            },
-            {
-              name: "wibSpent",
-              label: "WIB Spent",
-              width: "245",
-              renderer: value => <Label>{value || 0}</Label>
-            },
-            {
-              name: "ethSpent",
-              label: "ETH Spent",
-              width: "245",
-              renderer: value => <Label>{value || 0}</Label>
-            },
-            {
-              name: "paymentsRegistered",
-              label: "Payments",
-              width: "245",
-              renderer: value => <Label>{value || 0}</Label>
-            },
+             {
+               name: "sellersProcessed",
+               label: "Sellers Processed",
+               width: "245",
+               renderer: value => <Label>{value || 0}</Label>
+             },
+             {
+               name: "wibSpent",
+               label: "WIB Spent",
+               width: "245",
+               renderer: value => <Label>{value || 0}</Label>
+             },
+             {
+               name: "ethSpent",
+               label: "ETH Spent",
+               width: "245",
+               renderer: value => <Label>{value || 0}</Label>
+             },
+             {
+               name: "paymentsRegistered",
+               label: "Payments",
+               width: "245",
+               renderer: value => <Label>{value || 0}</Label>
+             },
             {
               name: "status",
               label: "Status",
               width: "234",
-              renderer: value => (
-                <Label color="light-dark">
-                  {value.charAt(0).toUpperCase() + value.slice(1)}
-                </Label>
-              )
+              renderer: value => <Label color="light-dark">{value.charAt(0).toUpperCase() + value.slice(1)}</Label>
             },
             pathname === "/open-orders" && {
               name: "actions",
