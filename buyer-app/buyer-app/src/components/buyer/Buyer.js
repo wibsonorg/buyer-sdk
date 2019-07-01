@@ -31,7 +31,6 @@ import BoughtDataOrders from "./BoughtDataOrders";
 import FailedDataOrders from "./FailedDataOrders";
 import DataOrderCreate from "./DataOrderCreate";
 
-import R from "ramda";
 import config from "../../config";
 
 const limit = config.get("env") === "production" ? 1 : 30;
