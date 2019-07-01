@@ -29,6 +29,10 @@ export async function fetchTxLogs(e) {
   return toObject(abiDecoder.decodeLogs(logs)[0].events);
 }
 
+export async function decodeLogs(logs) {
+  return toObject(abiDecoder.decodeLogs(logs)[0].events);
+}
+
 /**
  * @function getElements
  * @param {Object} contract the instance of the truffle contract to consult.
