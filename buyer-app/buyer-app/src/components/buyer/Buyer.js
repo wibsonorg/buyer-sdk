@@ -83,16 +83,16 @@ class Buyer extends React.Component {
     const panels = [
       <BalancePanel
         key={1}
-        title={"Balance general"}
+        title={"Wallet Balance"}
         currencies={[
-          { currencyName: "Wib", value: account.wib },
-          { currencyName: "Eth", value: account.ether.toFixed(4) }
+          { currencyName: "WIB", value: account.wib },
+          { currencyName: "ETH", value: account.ether.toFixed(4) }
         ]}
       />,
       <BalancePanel
         key={2}
-        title={"Balance in BatPay"}
-        currencies={[{ currencyName: "Wib", value: account.batPay }]}
+        title={"BatPay Balance"}
+        currencies={[{ currencyName: "WIB", value: account.batPay }]}
       />
     ];
 
