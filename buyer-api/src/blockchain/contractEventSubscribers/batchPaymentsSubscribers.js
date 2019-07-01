@@ -1,12 +1,12 @@
 import config from '../../../config';
 import { jobify } from '../../utils/jobify';
 import { BatPay, decodeLogs } from '../contracts';
-import { web3 } from '../../utils';
+import web3 from '../../utils/web3';
 import { orderStats } from '../../utils/stores';
 
 const { batPayId } = config;
 
-const updateBuyerStats = async ({ payIndex, from, totalNumberOfPayees }) => {
+export const updateBuyerStats = async ({ payIndex, from, totalNumberOfPayees }) => {
   if (batPayId !== Number(from)) return; // We didn't perform this payment
   const { metadata: dxHash } = await BatPay.methods.payments(payIndex).call();
   const { gasPrice } = await web3.eth.getTransaction(dxHash);
