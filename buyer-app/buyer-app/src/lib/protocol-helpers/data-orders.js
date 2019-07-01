@@ -72,7 +72,7 @@ async function createBuyerDataOrder(
   });
 
   if (!res.ok) {
-    throw new Error('Could create data order');
+    throw new Error('Could not create data order');
   }
 
   return res.json();
@@ -104,7 +104,8 @@ const closeOrder = async orderAddress => {
     method: 'POST',
   });
   if (!res.ok) {
-    throw new Error('Could close data order');
+    const body = await res.json()
+    throw new Error(`${body && body.message ? body.message : "Could not close data order."}`);
   }
   return res.json();
 };

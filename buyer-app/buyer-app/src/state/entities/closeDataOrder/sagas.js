@@ -29,7 +29,7 @@ function* closeDataOrder(action) {
     yield put(
       Actions.closeDataOrderFailed({
         dataOrder,
-        error
+        error: error.message
       })
     );
     // TODO: rollback transaction somehow if local storage failed.
