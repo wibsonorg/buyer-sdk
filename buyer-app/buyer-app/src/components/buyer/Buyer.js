@@ -17,7 +17,6 @@ import { connect } from "react-redux";
 import { Route, withRouter, Redirect } from "react-router-dom";
 
 import * as DataOrdersByAddress from "state/entities/dataOrdersByAddress/selectors";
-import * as DataOrdersAddresses from "state/entities/dataOrdersAddresses/selectors";
 import * as Account from "state/entities/account/selectors";
 
 import * as PollingActions from "state/entities/polling/actions";
@@ -26,25 +25,20 @@ import * as DataOrdersAddressesActions from "state/entities/dataOrdersAddresses/
 import * as authenticationActions from "state/entities/authentication/actions";
 import { withNotaries } from "state/entities/notaries/hoc";
 
-import InfoPanel from "./headerPanels/InfoPanel";
-
 import AppNotifications from "../AppNotifications";
 import BalancePanel from "./BalancePanel";
-import OpenDataOrders from "./OpenDataOrders";
-import BoughtDataOrders from "./BoughtDataOrders";
-import FailedDataOrders from "./FailedDataOrders";
+import ListDataOrders from "./ListDataOrders";
 import DataOrderCreate from "./DataOrderCreate";
 
-import R from "ramda";
 import config from "../../config";
 
-const limit = config.get('env') === 'production' ? 1 : 30;
+const limit = config.get("env") === "production" ? 1 : 30;
 
 class Buyer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentOffset: 0,
+      currentOffset: 0
     };
   }
 
@@ -66,8 +60,7 @@ class Buyer extends React.Component {
     return (
       <Select
         value={this.props.currentRoute}
-        itemsContainerClassName="page-selector-items-container"
-      >
+        itemsContainerClassName="page-selector-items-container">
         <SelectItem
           value="open-orders"
           label="Open Data Orders"
@@ -88,42 +81,23 @@ class Buyer extends React.Component {
   }
 
   render() {
-    const {
-      history,
-      activeDataOrders,
-      boughtDataOrders,
-      closedDataOrders,
-      failedDataOrders,
-      account
-    } = this.props;
-
-    const availableDataResponsesCount = R.compose(
-      R.sum,
-      R.map(R.pathOr(0, ['data', 'offChain', 'dataResponsesCount'])),
-      R.values
-    )(activeDataOrders);
+    const { history, activeDataOrders, closedDataOrders, account } = this.props;
 
     const panels = [
       <BalancePanel
         key={1}
         tokenDollarRate={Config.get("simpleToken.conversion.usd")}
-      />,
-      <InfoPanel
-        key={2}
-        title="Available datasets"
-        data={R.values(boughtDataOrders).length}
-      />,
-      <InfoPanel
-        key={4}
-        title="Active Data Responses"
-        data={availableDataResponsesCount}
-        units="Responses"
       />
     ];
 
     return (
       <div>
-        <AppHeader userRole="buyer" account={account.address} panels={panels} logOut={this.handleLogOut} />
+        <AppHeader
+          userRole="buyer"
+          account={account.address}
+          panels={panels}
+          logOut={this.handleLogOut}
+        />
         <LoadingBar loading={this.isLoading()} />
         <AppNotifications />
         <div className={cx("page-content")}>
@@ -136,15 +110,13 @@ class Buyer extends React.Component {
               <Button
                 onClick={() => {
                   this.props.fetchDataOrders(this.state);
-                }}
-              >
+                }}>
                 Refresh
               </Button>
               <Button
                 onClick={() => {
                   history.push("/open-orders/new-data-order");
-                }}
-              >
+                }}>
                 Place an order
               </Button>
             </div>
@@ -154,7 +126,7 @@ class Buyer extends React.Component {
             path="/open-orders"
             render={() => (
               <div>
-                <OpenDataOrders dataOrders={activeDataOrders} />
+                <ListDataOrders dataOrders={activeDataOrders} />
                 <Route
                   path="/open-orders/new-data-order"
                   render={DataOrderCreate}
@@ -163,16 +135,8 @@ class Buyer extends React.Component {
             )}
           />
           <Route
-            path="/failed-orders"
-            render={() => <FailedDataOrders dataOrders={failedDataOrders} />}
-          />
-          <Route
-            path="/data-responses"
-            render={() => <BoughtDataOrders dataOrders={boughtDataOrders} />}
-          />
-          <Route
             path="/closed-orders"
-            render={() => <BoughtDataOrders dataOrders={closedDataOrders} />}
+            render={() => <ListDataOrders dataOrders={closedDataOrders} />}
           />
         </div>
       </div>
@@ -181,11 +145,8 @@ class Buyer extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  failedDataOrders: DataOrdersByAddress.getFailedDataOrders(state),
   activeDataOrders: DataOrdersByAddress.getActiveDataOrders(state),
-  boughtDataOrders: DataOrdersByAddress.getBoughtDataOrders(state),
   closedDataOrders: DataOrdersByAddress.getClosedDataOrders(state),
-  dataOrdersAddress: DataOrdersAddresses.getDataOrdersAddresses(state),
   isFetching: DataOrdersByAddress.isFetching(state),
   account: Account.getAccount(state)
 });
@@ -194,7 +155,7 @@ const mapDispatchToProps = (dispatch, props) => ({
   startPollingDataOrders: () => {
     dispatch(PollingActions.startPollingDataOrders());
   },
-  fetchDataOrders: (params) => {
+  fetchDataOrders: params => {
     const { currentOffset } = params || {};
     dispatch(
       DataOrdersAddressesActions.fetchDataOrdersAddresses({
@@ -205,7 +166,7 @@ const mapDispatchToProps = (dispatch, props) => ({
   },
   logOutUser: () => {
     dispatch(authenticationActions.logOut());
-  },
+  }
 });
 
 export default compose(
@@ -214,5 +175,8 @@ export default compose(
   withProps(props => ({
     currentRoute: props.location.pathname.split("/")[1]
   })),
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(Buyer);

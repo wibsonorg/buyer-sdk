@@ -19,23 +19,26 @@ function getFailedDataOrders(state) {
 }
 
 function getActiveDataOrders(state) {
-  const result = R.compose(R.pickBy(isActive), pickAvailable)(
-    state.dataOrdersByAddress
-  );
+  const result = R.compose(
+    R.pickBy(isActive),
+    pickAvailable
+  )(state.dataOrdersByAddress);
   return result;
 }
 
 function getBoughtDataOrders(state) {
-  const result = R.compose(R.pickBy(isBought), pickAvailable)(
-    state.dataOrdersByAddress
-  );
+  const result = R.compose(
+    R.pickBy(isBought),
+    pickAvailable
+  )(state.dataOrdersByAddress);
   return result;
 }
 
 function getClosedDataOrders(state) {
-  const result = R.compose(R.pickBy(isClosed), pickAvailable)(
-    state.dataOrdersByAddress
-  );
+  const result = R.compose(
+    R.pickBy(isClosed),
+    pickAvailable
+  )(state.dataOrdersByAddress);
   return result;
 }
 
