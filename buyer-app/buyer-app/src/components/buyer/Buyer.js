@@ -92,12 +92,6 @@ class Buyer extends React.Component {
       account
     } = this.props;
 
-    const availableDataResponsesCount = R.compose(
-      R.sum,
-      R.map(R.pathOr(0, ["data", "offChain", "dataResponsesCount"])),
-      R.values
-    )(activeDataOrders);
-
     const panels = [
       <BalancePanel
         key={1}
