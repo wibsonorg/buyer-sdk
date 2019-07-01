@@ -7,8 +7,8 @@ const apiUrl = Config.get('api.url');
  * TODO: Implement pagination
  * @return {[type]} [description]
  */
-async function listBuyerDataOrders(limit, offset) {
-  const res = await fetch(`${apiUrl}/orders?limit=${limit}&offset=${offset}`,
+async function listBuyerDataOrders() {
+  const res = await fetch(`${apiUrl}/orders`,
   {
     headers: {
       Authorization: authorization()
@@ -20,7 +20,14 @@ async function listBuyerDataOrders(limit, offset) {
 
   const orders = await res.json();
 
-  return orders;
+  return {orders};
+}
+
+async function getBuyerInfos(){
+  const res = await fetch(`${apiUrl}/infos`, {
+    headers: { Authorization: authorization() }
+  });
+  return await res.json();
 }
 
 async function getBuyerDataOrdersAmount() {
@@ -108,4 +115,5 @@ export {
   getBuyerDataOrdersAmount,
   addNotariesToOrder,
   closeOrder,
+  getBuyerInfos,
 };

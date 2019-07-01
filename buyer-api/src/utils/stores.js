@@ -3,8 +3,7 @@ import { createLevelStore, createRedisStore } from './storage';
  * @typedef {import('./storage').LevelStore<K,V>} LevelStore
  * @template K
  * @template V
- */
-/**
+ *
  * @typedef {"creating" | "created" | "closing" | "closed"} DataOrderStatus
  * @typedef DataOrder
  * @property {Object<string, *>} audience Target audience of the order
@@ -17,8 +16,7 @@ import { createLevelStore, createRedisStore } from './storage';
  * @property {string[]} notariesAddresses Notaries' Ethereum addresses
  * @property {?Date} createdAt Creation date
  * @property {?Date} closedAt Date of clousure
- */
-/**
+ *
  * @typedef {"waiting" | "queued" | "batched"} DataResponseStatus
  * @typedef DataResponse
  * @property {number} orderId Order ID in the DataExchange contract
@@ -29,24 +27,18 @@ import { createLevelStore, createRedisStore } from './storage';
  * @property {string} notaryAddress Notary's Ethereum address
  * @property {boolean} needsRegistration Whether the Seller needs to be registered in BatPay or not
  * @property {DataResponseStatus} status Current status of the DataResponse
- */
-/**
+ *
  * @typedef {"created" | "processed"} DataResponseBatchStatus
  * @typedef DataResponseBatch
  * @property {number} orderId Order ID in the DataExchange contract
  * @property {string} notaryAddress Notary's Ethereum address
  * @property {string[]} dataResponseIds List of DataResponses IDs
  * @property {DataResponseBatchStatus} status Current status of the Batch
- */
-/**
+ *
  * @typedef DataResponseLastAdded
  * @property {string} notaryAddress Notary's Ethereum address
  * @property {number} orderId Order ID in the DataExchange contract
  * @property {number} price Price per added Data Response
- */
-/**
- * (05-02-2019)
- * TODO: This definitions will be merged with the work of Pablo and Facu.
  *
  * @typedef NotarizationRequestSeller
  * @property {string} address Seller's Ethereum address
@@ -81,14 +73,18 @@ import { createLevelStore, createRedisStore } from './storage';
  * @property {NotarizationRequest} request Data Structure to request notarization
  * @property {NotarizationResult} result Notarization response Data Structure
  * @property {NotarizationStatus} status Current status of the Notarization
- */
-/**
+ *
  * @typedef Notary
  * @property {string} infoUrl Notary's API URL used to ask for its information.
  * @property {string} oldInfoUrl Notary's previous API URL, if it updated the information
  * or unregistered.
  * @property {boolean} isRegistered Flag indicating if the Notary is registered or not in
  * DataExchange.
+ *
+ * @typedef OrderStats
+ * @property {number} ethSpent ETH consumed when registering the payment
+ * @property {number} amountOfPayees Amount of destinataries
+ *
  */
 
 /** @type {LevelStore<number, string>} */
@@ -128,3 +124,5 @@ export const notariesCache = createRedisStore('notaries.cache');
 export const notarizationRequests = createRedisStore('notarization_requests');
 /** @type {LevelStore<string, number>} */
 export const sellers = createLevelStore('sellers');
+/** @type {LevelStore<number, OrderStats[]>} */
+export const orderStats = createLevelStore('order_stats');

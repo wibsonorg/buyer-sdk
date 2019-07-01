@@ -69,10 +69,10 @@ class BalancePanel extends React.Component {
             tooltip && (() => this.handleToggleTooltip(currencyName))
           }
           className={cx("panel-text-balance")}>
-          {currencyName !== "Eth"
-            ? currencyName + " " + currencyFormat(value)
-            : currencyName + " " + value}
-        </span>
+          {currencyName !== "ETH"
+            ? currencyFormat(value) + " " + currencyName
+            : value + " " + currencyName}
+          </span>
         {tooltip && (
           <div style={{ position: "relative" }}>
             {this.tooltip({ currencyName, value })}
