@@ -2,6 +2,7 @@ import React from "react";
 import Icon from "./Icon";
 import { storiesOf } from "@storybook/react";
 import { withKnobs, select } from '@storybook/addon-knobs';
+import PropTypes from 'prop-types';
 
 const story = storiesOf('Icons', module);
 
@@ -28,7 +29,7 @@ const IconGallery = ({ size }) =>
   </div>);
 
 IconGallery.propTypes = {
-  size: React.PropTypes.string,
+  size: PropTypes.string,
 };
 
 story.add('Icon gallery', () => {

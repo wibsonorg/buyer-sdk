@@ -7,6 +7,7 @@ import Panel from "base-app-src/components/Panel";
 import Text from "base-app-src/components/Text";
 import Tooltip from "base-app-src/components/Tooltip";
 import styles from "./panels.css";
+import PropTypes from 'prop-types';
 
 const cx = cn.bind(styles);
 
@@ -102,8 +103,8 @@ BalancePanel.defaultProps = {
 };
 
 BalancePanel.propTypes = {
-  currencies: React.PropTypes.array,
-  title: React.PropTypes.string
+  currencies: PropTypes.array,
+  title: PropTypes.string
 };
 
 export default withRouter(BalancePanel);
