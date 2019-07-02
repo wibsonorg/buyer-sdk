@@ -17,7 +17,7 @@ import * as OntologySelectors from "base-app-src/state/ontologies/selectors";
 import * as NotariesSelectors from "state/entities/notaries/selectors";
 import * as CloseDataOrderActions from "state/entities/closeDataOrder/actions";
 
-import "./OpenDataOrders.css";
+import "./ListDataOrders.css";
 
 import compareDesc from "date-fns/compare_desc";
 
@@ -32,14 +32,14 @@ const flattenDataOrders = R.compose(
   R.values
 );
 
-class OpenDataOrders extends Component {
-
+class ListDataOrders extends Component {
   renderActions(order) {
     const { closeDataOrder, dataOrders, downloadData } = this.props;
 
     const fullOrder = dataOrders[order.orderAddress];
 
-    const closeDisabled = fullOrder.data.transactionCompleted || fullOrder.closePending;
+    const closeDisabled =
+      fullOrder.data.transactionCompleted || fullOrder.closePending;
     const downloadDisabled = fullOrder.data.sellersProcessed === 0;
 
     return (
@@ -47,15 +47,13 @@ class OpenDataOrders extends Component {
         <Button
           onClick={() => closeDataOrder(order)}
           disabled={closeDisabled}
-          size="sm"
-        >
+          size="sm">
           {fullOrder.closePending ? "Closing" : "Close"}
         </Button>
         <Button
           onClick={() => downloadData(order)}
           disabled={downloadDisabled}
-          size="sm"
-        >
+          size="sm">
           Download Data
         </Button>
       </div>
@@ -66,6 +64,7 @@ class OpenDataOrders extends Component {
     const {
       dataOntology,
       dataOrders,
+      location: { pathname }
     } = this.props;
 
     const flatDataOrdersList = flattenDataOrders(dataOrders);
@@ -83,7 +82,7 @@ class OpenDataOrders extends Component {
               width: "250",
               sortable: true,
               sortFunction: compareDesc,
-              renderer: value => <DateDetail value={value*1000} />
+              renderer: value => <DateDetail value={value * 1000} />
             },
             {
               name: "orderAddress",
@@ -146,7 +145,7 @@ class OpenDataOrders extends Component {
               width: "234",
               renderer: value => <Label color="light-dark">{value.charAt(0).toUpperCase() + value.slice(1)}</Label>
             },
-            {
+            pathname === "/open-orders" && {
               name: "actions",
               label: "Actions",
               width: "160",
@@ -159,7 +158,7 @@ class OpenDataOrders extends Component {
   }
 }
 
-OpenDataOrders.propTypes = {
+ListDataOrders.propTypes = {
   dataOrders: PropTypes.object.isRequired
 };
 
@@ -175,4 +174,10 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
-export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(OpenDataOrders);
+export default compose(
+  withRouter,
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(ListDataOrders);

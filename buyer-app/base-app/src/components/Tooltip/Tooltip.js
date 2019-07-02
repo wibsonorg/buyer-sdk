@@ -23,9 +23,9 @@ Tooltip.defaultProps = {
 };
 
 Tooltip.propTypes = {
-  position: React.PropTypes.shape({
-    top: React.PropTypes.number,
-    left: React.PropTypes.number
+  position: PropTypes.shape({
+    top: PropTypes.number,
+    left: PropTypes.number
   }),
   style: PropTypes.object,
   children: PropTypes.node,
