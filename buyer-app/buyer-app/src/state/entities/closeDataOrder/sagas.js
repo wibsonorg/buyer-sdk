@@ -14,22 +14,22 @@ function* closeDataOrder(action) {
 
   try {
     yield call(DataOrdersHelpers.closeOrder, dataOrder.orderAddress);
-
+    
     yield put(Actions.closeDataOrderSucceed({ dataOrder }));
-
+    
     yield put(
       NotificationActions.createNotification({
         message:
-          "The data order is closed. Data sellers will receive theis payment.",
+        "The data order has started to close.",
         status: "ok"
       })
     );
   } catch (error) {
-    console.log(error);
+    console.error(error);
     yield put(
       Actions.closeDataOrderFailed({
         dataOrder,
-        error
+        error: error.message
       })
     );
     // TODO: rollback transaction somehow if local storage failed.
