@@ -11,7 +11,6 @@ import Button from "base-app-src/components/Button";
 import Label from "base-app-src/components/Label";
 import DataTable from "base-app-src/components/DataTable";
 import DateDetail from "base-app-src/components/DateDetail";
-import NotariesDetail from "base-app-src/components/NotariesDetail";
 import RequestedDataDetail from "base-app-src/components/RequestedDataDetail";
 
 import * as OntologySelectors from "base-app-src/state/ontologies/selectors";
@@ -34,20 +33,14 @@ const flattenDataOrders = R.compose(
 );
 
 class OpenDataOrders extends Component {
-  renderStatus(order) {
-    if (order.notaries.length > 0) {
-      return "Active";
-    } else {
-      return "Waiting for notary";
-    }
-  }
 
   renderActions(order) {
-    const { closeDataOrder, dataOrders } = this.props;
+    const { closeDataOrder, dataOrders, downloadData } = this.props;
 
     const fullOrder = dataOrders[order.orderAddress];
 
     const closeDisabled = fullOrder.data.transactionCompleted || fullOrder.closePending;
+    const downloadDisabled = fullOrder.data.sellersProcessed === 0;
 
     return (
       <div className="wibson-bought-data-orders-actions">
@@ -58,6 +51,13 @@ class OpenDataOrders extends Component {
         >
           {fullOrder.closePending ? "Closing" : "Close"}
         </Button>
+        <Button
+          onClick={() => downloadData(order)}
+          disabled={downloadDisabled}
+          size="sm"
+        >
+          Download Data
+        </Button>
       </div>
     );
   }
@@ -66,7 +66,6 @@ class OpenDataOrders extends Component {
     const {
       dataOntology,
       dataOrders,
-      availableNotaries
     } = this.props;
 
     const flatDataOrdersList = flattenDataOrders(dataOrders);
@@ -84,7 +83,7 @@ class OpenDataOrders extends Component {
               width: "250",
               sortable: true,
               sortFunction: compareDesc,
-              renderer: value => <DateDetail value={value} />
+              renderer: value => <DateDetail value={value*1000} />
             },
             {
               name: "orderAddress",
@@ -93,28 +92,6 @@ class OpenDataOrders extends Component {
               sortable: false,
               renderer: value => <Label color="light-dark">{value}</Label>
             },
-            {
-              name: "notaries",
-              label: "Notaries",
-              width: "150",
-              renderer: value => (
-                <NotariesDetail
-                  value={value}
-                  notariesSchema={availableNotaries.list}
-                />
-              )
-            },
-            // {
-            //   name: "audience",
-            //   label: "Audience",
-            //   width: "402",
-            //   renderer: value => (
-            //     <AudienceDetail
-            //       audience={value}
-            //       requestableAudience={audienceOntology}
-            //     />
-            //   )
-            // },
             {
               name: "requestedData",
               label: "Requested Data",
@@ -127,28 +104,47 @@ class OpenDataOrders extends Component {
               )
             },
             {
+              name: "buyerName",
+              label: "Buyer Name",
+              width: "250",
+              sortable: false,
+              renderer: value => <Label color="light-dark">{value}</Label>
+            },
+            {
               name: "price",
               label: "Price",
               width: "150",
               renderer: value => <Label>{value || 0}</Label>
             },
-            {
-              name: "dataResponsesCount",
-              label: "Responses Received",
-              width: "245",
-              renderer: value => <Label>{value || 0}</Label>
-            },
-            {
-              name: "responsesBought",
-              label: "Responses Bought",
-              width: "245",
-              renderer: value => <Label>{value || 0}</Label>
-            },
+             {
+               name: "sellersProcessed",
+               label: "Sellers Processed",
+               width: "245",
+               renderer: value => <Label>{value || 0}</Label>
+             },
+             {
+               name: "wibSpent",
+               label: "WIB Spent",
+               width: "245",
+               renderer: value => <Label>{value || 0}</Label>
+             },
+             {
+               name: "ethSpent",
+               label: "ETH Spent",
+               width: "245",
+               renderer: value => <Label>{value || 0}</Label>
+             },
+             {
+               name: "paymentsRegistered",
+               label: "Payments",
+               width: "245",
+               renderer: value => <Label>{value || 0}</Label>
+             },
             {
               name: "status",
               label: "Status",
               width: "234",
-              renderer: (value, order) => this.renderStatus(order)
+              renderer: value => <Label color="light-dark">{value.charAt(0).toUpperCase() + value.slice(1)}</Label>
             },
             {
               name: "actions",

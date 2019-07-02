@@ -25,7 +25,7 @@ export const registerPayment = async (notarizationRequestId, pauseQueue) => {
    * amount: DataOrder’s price
    * payData: Includes the sellers’ ids
    * lock: extracted from the NotarizationResult
-   * metadata: hash of the dataEchange address concatenated with
+   * metadata: hash of the dataExchange address concatenated with
    *           the orderId involved in the transaction
    *
    * The rest of the parameters of the transfer signature are empty

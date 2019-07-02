@@ -2,8 +2,8 @@ import { contractEventListener } from '../contractEventListener';
 import { DataExchange, Wibcoin, BatPay } from '../contracts';
 import { onDataOrderCreatedJob, onDataOrderClosedJob } from './dataOrderSubscribers';
 import { onNotaryRegistered, onNotaryUpdated, onNotaryUnregistered } from './notariesSubscribers';
+import { onPaymentRegistered, onPaymentUnlocked } from './batchPaymentsSubscribers';
 import { sendDepositJob } from '../../recurrent/checkBatPayBalance';
-import { onPaymentUnlocked } from './batPayUnlockSubscribers';
 
 
 contractEventListener
@@ -16,6 +16,7 @@ contractEventListener
   .addContract(Wibcoin)
   .on('Approval', sendDepositJob)
   .addContract(BatPay)
-  .on('PaymentUnlocked', onPaymentUnlocked);
+  .on('PaymentUnlocked', onPaymentUnlocked)
+  .on('PaymentRegistered', onPaymentRegistered);
 
 export { contractEventListener };

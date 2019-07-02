@@ -38,10 +38,11 @@ const router = Router();
  */
 router.post('/:id/close', fetchDataOrder, async (req, res) => {
   if (req.dataOrder.status === 'created') {
-    const response = await closeDataOrder(req.params.id, req.dataOrder);
-    res.status(200).json(response.result);
+    const { status } = await closeDataOrder(req.params.id, req.dataOrder);
+    res.status(200).json({ status });
+  } else {
+    res.status(422).json({ message: 'The order can not be closed because it is still being created.' });
   }
-  res.status(422).json({ message: 'The order can not be closed' });
 });
 
 export default router;

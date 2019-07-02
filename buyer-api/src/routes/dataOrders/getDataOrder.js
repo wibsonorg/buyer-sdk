@@ -1,6 +1,7 @@
 import Router from 'express-promise-router';
-import { cache } from '../../utils';
-import { dataOrders } from '../../utils/stores';
+import { cache, web3 } from '../../utils';
+import { dataOrders, orderStats } from '../../utils/stores';
+import { getBuyerInfo } from '../../services/buyerInfo';
 
 const router = Router();
 
@@ -22,7 +23,32 @@ router.get(
   cache('1 minute'),
   async (req, res) => {
     req.apicacheGroup = '/orders/*';
-    res.json(await dataOrders.list());
+
+    const orders = await dataOrders.list();
+    const result = orders.map(async (order) => {
+      const buyerName = (await getBuyerInfo(order.buyerInfoId)).name;
+      const stats = await orderStats.safeFetch(order.dxId, []);
+      const paymentsRegistered = stats.length;
+      const { ethSpent, amountOfPayees } = stats.reduce(
+        (sum, stat) =>
+          ({
+            ethSpent: sum.ethSpent + stat.ethSpent,
+            amountOfPayees: sum.amountOfPayees + stat.amountOfPayees,
+          })
+        , {
+          ethSpent: 0, amountOfPayees: 0,
+        },
+      );
+      return {
+        ...order,
+        sellersProcessed: amountOfPayees,
+        wibSpent: (amountOfPayees * order.price),
+        ethSpent: ethSpent ? Number(web3.utils.fromWei(`${ethSpent}`)).toFixed(3) : 0,
+        paymentsRegistered,
+        buyerName,
+      };
+    });
+    res.json(await Promise.all(result));
   },
 );
 
