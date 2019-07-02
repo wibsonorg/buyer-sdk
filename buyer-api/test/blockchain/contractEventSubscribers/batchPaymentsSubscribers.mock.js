@@ -18,9 +18,7 @@ const BatPay = {
 };
 const decodeLogs = sinon.stub().resolves({ orderId: orderIdTest });
 
-const fetchTxData = sinon.stub().resolves(undefined);
-
-td.replace('../../../src/blockchain/contracts', { BatPay, decodeLogs, fetchTxData });
+td.replace('../../../src/blockchain/contracts', { BatPay, decodeLogs });
 
 const web3 = {
   eth: {
