@@ -2,6 +2,7 @@ import config from '../../../config';
 import { BatPay, decodeLogs, fetchTxData } from '../contracts';
 import web3 from '../../utils/web3';
 import { orderStats, paymentsTransactionHashes, notarizationsPerLockingKeyHash, notarizations } from '../../utils/stores';
+import { addDecryptJob } from '../../queues/decryptSellerKeys';
 
 const { batPayId } = config;
 
@@ -41,11 +42,8 @@ export const decryptSellerKeys = async ({ payIndex, key: masterKey }) => {
   const transactionHash = await paymentsTransactionHashes.fetch(payIndex);
   const { lockingKeyHash } = await fetchTxData(transactionHash);
   const notarizationId = await notarizationsPerLockingKeyHash.fetch(lockingKeyHash);
-  const notarization = await notarizations.fetch(notarizationId);
   notarizations.update(notarizationId, {
     masterKey,
   });
-  // enqueue notarizatioId
-  console.log(notarization);
-  // remove notarization ?
+  addDecryptJob({ notarizationId });
 };
