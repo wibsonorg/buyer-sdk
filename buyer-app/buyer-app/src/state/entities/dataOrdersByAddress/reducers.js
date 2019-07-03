@@ -49,7 +49,7 @@ export default createReducer(
     // CLOSE
     [CloseDataOrderActions.closeDataOrderSucceed]: (
       state,
-      { dataOrder: { orderAddress } }
+      { dataOrder: { orderAddress }, status }
     ) => {
       return {
         ...state,
@@ -58,7 +58,7 @@ export default createReducer(
             ...state[orderAddress].data,
             transactionCompleted: true,
             transactionCompletedAt: Date.now() / 1000,
-            status: "TransactionCompleted"
+            status
           },
           closePending: false
         }
