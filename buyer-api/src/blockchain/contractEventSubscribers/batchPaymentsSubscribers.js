@@ -28,13 +28,23 @@ export const updateBuyerStats = async (
   );
 };
 
+/**
+ * @function storeLockingKeyHashByPayIndex Is triggered when
+ * the payment is registered,
+ * storing locally a relationship between the pay index and
+ * the payment transaction hash
+ * @typedef PaymentRegisteredEventValues
+ * @property {number} payIndex Pay index
+ * @param {UnlockEventValues} eventValues The values emmited by the BatPay PaymentRegistered event
+ */
 export const storeLockingKeyHashByPayIndex = async ({ payIndex }, { transactionHash }) =>
   paymentsTransactionHashes.store(payIndex, transactionHash);
 
 /**
  * @function decryptSellerKeys Is triggered when the payment to the seller is unlocked
  * @typedef PaymentUnlockedEventValues
- * @property {string} buyer The buyer that created the DataOrder
+ * @property {number} payIndex Pay index
+ * @property {string} key Master key to decrypt seller keys
  * @param {UnlockEventValues} eventValues The values emmited by the BatPay PaymentUnlocked event
  */
 export const decryptSellerKeys = async ({ payIndex, key: masterKey }) => {
