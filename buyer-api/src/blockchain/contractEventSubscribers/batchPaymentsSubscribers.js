@@ -16,7 +16,7 @@ export const updateBuyerStats = async (
   const ethUsed = Number(gasPrice) * Number(gasUsed);
   const { orderId } = await decodeLogs(logs);
 
-  orderStats.update(
+  await orderStats.update(
     Number(orderId),
     oldStat => ({
       ethSpent: oldStat.ethSpent + ethUsed,
