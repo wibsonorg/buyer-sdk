@@ -15,10 +15,16 @@ export const updateBuyerStats = async (
   const { gasPrice } = await web3.eth.getTransaction(transactionHash);
   const ethUsed = Number(gasPrice) * Number(gasUsed);
   const { orderId } = await decodeLogs(logs);
-  orderStats.update(Number(orderId), [{
-    ethSpent: ethUsed,
-    amountOfPayees: Number(totalNumberOfPayees),
-  }], []);
+
+  orderStats.update(
+    Number(orderId),
+    oldStat => ({
+      ethSpent: oldStat.ethSpent + ethUsed,
+      amountOfPayees: oldStat.amountOfPayees + Number(totalNumberOfPayees),
+      paymentsRegistered: oldStat.paymentsRegistered + 1,
+    }),
+    { ethSpent: 0, amountOfPayees: 0, paymentsRegistered: 0 },
+  );
 };
 
 export const storeLockingKeyHashByPayIndex = async ({ payIndex }, { transactionHash }) =>
