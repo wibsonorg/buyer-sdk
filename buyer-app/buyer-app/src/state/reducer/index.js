@@ -10,6 +10,7 @@ import notaries from "state/entities/notaries/reducers";
 import account from "state/entities/account/reducers";
 import notifications from "state/entities/notifications/reducers";
 import authentication from "state/entities/authentication/reducers";
+import downloadData from "state/entities/downloadData/reducers";
 
 const reducers = {
   routing: routerReducer,
@@ -21,7 +22,8 @@ const reducers = {
   account,
   notifications,
   createDataOrder,
-  authentication
+  authentication,
+  downloadData
 };
 
 export default combineReducers(reducers);

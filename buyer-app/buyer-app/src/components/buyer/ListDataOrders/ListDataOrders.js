@@ -16,6 +16,7 @@ import RequestedDataDetail from "base-app-src/components/RequestedDataDetail";
 import * as OntologySelectors from "base-app-src/state/ontologies/selectors";
 import * as NotariesSelectors from "state/entities/notaries/selectors";
 import * as CloseDataOrderActions from "state/entities/closeDataOrder/actions";
+import * as DownloadDataActions from "state/entities/downloadData/actions";
 
 import "./ListDataOrders.css";
 
@@ -175,6 +176,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   closeDataOrder: dataOrder => {
     dispatch(CloseDataOrderActions.closeDataOrder({ dataOrder }));
+  },
+  downloadData: dataOrder => {
+    dispatch(DownloadDataActions.downloadData({ dataOrder }));
   }
 });
 
