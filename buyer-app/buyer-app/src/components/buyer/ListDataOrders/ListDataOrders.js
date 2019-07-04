@@ -39,7 +39,7 @@ class ListDataOrders extends Component {
     const fullOrder = dataOrders[order.orderAddress];
 
     const closeDisabled =
-      fullOrder.data.transactionCompleted || fullOrder.closePending;
+      fullOrder.data.status === "closed" || fullOrder.data.status === "closing";
     const downloadDisabled = fullOrder.data.sellersProcessed === 0;
 
     return (
@@ -115,35 +115,39 @@ class ListDataOrders extends Component {
               width: "150",
               renderer: value => <Label>{value || 0}</Label>
             },
-             {
-               name: "sellersProcessed",
-               label: "Sellers Processed",
-               width: "245",
-               renderer: value => <Label>{value || 0}</Label>
-             },
-             {
-               name: "wibSpent",
-               label: "WIB Spent",
-               width: "245",
-               renderer: value => <Label>{value || 0}</Label>
-             },
-             {
-               name: "ethSpent",
-               label: "ETH Spent",
-               width: "245",
-               renderer: value => <Label>{value || 0}</Label>
-             },
-             {
-               name: "paymentsRegistered",
-               label: "Payments",
-               width: "245",
-               renderer: value => <Label>{value || 0}</Label>
-             },
+            {
+              name: "sellersProcessed",
+              label: "Sellers Processed",
+              width: "245",
+              renderer: value => <Label>{value || 0}</Label>
+            },
+            {
+              name: "wibSpent",
+              label: "WIB Spent",
+              width: "245",
+              renderer: value => <Label>{value || 0}</Label>
+            },
+            {
+              name: "ethSpent",
+              label: "ETH Spent",
+              width: "245",
+              renderer: value => <Label>{value || 0}</Label>
+            },
+            {
+              name: "paymentsRegistered",
+              label: "Payments",
+              width: "245",
+              renderer: value => <Label>{value || 0}</Label>
+            },
             {
               name: "status",
               label: "Status",
               width: "234",
-              renderer: value => <Label color="light-dark">{value.charAt(0).toUpperCase() + value.slice(1)}</Label>
+              renderer: value => (
+                <Label color="light-dark">
+                  {value.charAt(0).toUpperCase() + value.slice(1)}
+                </Label>
+              )
             },
             pathname === "/open-orders" && {
               name: "actions",

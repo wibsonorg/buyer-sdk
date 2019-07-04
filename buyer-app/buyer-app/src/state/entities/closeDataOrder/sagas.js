@@ -13,14 +13,16 @@ function* closeDataOrder(action) {
   const { dataOrder } = action.payload;
 
   try {
-    yield call(DataOrdersHelpers.closeOrder, dataOrder.orderAddress);
-    
-    yield put(Actions.closeDataOrderSucceed({ dataOrder }));
-    
+    const { status } = yield call(
+      DataOrdersHelpers.closeOrder,
+      dataOrder.orderAddress
+    );
+
+    yield put(Actions.closeDataOrderSucceed({ dataOrder, status }));
+
     yield put(
       NotificationActions.createNotification({
-        message:
-        "The data order has started to close.",
+        message: "The data order has started to close.",
         status: "ok"
       })
     );
