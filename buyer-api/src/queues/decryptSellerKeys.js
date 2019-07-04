@@ -44,7 +44,7 @@ export const decryptSellersKeysJobListener = async ({ id, data: { notarizationId
   );
   logger.debug('All batch sellers', { allBatchSellers });
   // put order object
-  putRawOrderData(orderId, { ...rawOrderData, ...allBatchSellers });
+  await putRawOrderData(orderId, { ...rawOrderData, ...allBatchSellers });
   logger.debug('Bucket updated with decrypted data.');
 };
 
