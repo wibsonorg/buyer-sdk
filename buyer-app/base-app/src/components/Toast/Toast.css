@@ -39,9 +39,8 @@
   font-stretch: normal;
   line-height: normal;
   letter-spacing: normal;
-  text-align: left;
   color: #e6ecf2;
-  margin-left: 24px;
+  margin: 0 auto;
 }
 
 .wibson-toast-close-container {
