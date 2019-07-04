@@ -3,6 +3,7 @@ import logger from '../utils/logger';
 import { notarizations } from '../utils/stores';
 import { AESdecrypt } from '../utils/wibson-lib/cryptography/encription';
 import { getData, getRawOrderData, putRawOrderData } from '../utils/wibson-lib/s3';
+import { /* decryptWithPrivateKey */ } from '../utils/wibson-lib/cryptography/ec-encription';
 
 const queue = createQueue('DecryptSellerKeys');
 
@@ -13,13 +14,14 @@ export const addDecryptJob = params => queue.add('decrypt', params);
 const getDecryptedSellerData = async (orderId, sellerAddress, key) => {
   logger.debug(`getDecryptedSellerData begins ${orderId}/${sellerAddress}/${key}`);
   const encryptedData = await getData(orderId, sellerAddress);
-  // TODO: confirm this, or use eliptic curves
-  const result = AESdecrypt(key, encryptedData);
+  // TODO: use eliptic curves when ready
+  // const result = decryptWithPrivateKey(key, encryptedData);
+  const result = JSON.parse(AESdecrypt(key, encryptedData));
   logger.debug('getDecryptedSellerData ends', { result, encryptedData });
   return result;
 };
 
-const decryptSellersKeysJobListener = async ({ id, data: { notarizationId } }) => {
+export const decryptSellersKeysJobListener = async ({ id, data: { notarizationId } }) => {
   logger.debug(`Processing Decrypt Sellers Keys Job id ${id} with notarizationId ${notarizationId}`);
   const { masterKey, orderId, result: { sellers } } = await notarizations.fetch(notarizationId);
   const sellersWithData = await Promise.all(sellers
