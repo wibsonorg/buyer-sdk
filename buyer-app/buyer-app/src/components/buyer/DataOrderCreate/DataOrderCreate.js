@@ -31,8 +31,6 @@ import Subtitle from "base-app-src/components/Subtitle";
 
 import Loading from "base-app-src/components/Loading";
 
-import Config from "../../../config";
-
 import "./DataOrderCreate.css";
 
 class DataOrderCreate extends Component {
@@ -44,7 +42,6 @@ class DataOrderCreate extends Component {
       audience: { "age": 20 }, // Hardcoded value for audience
       requestedData: [],
       requestedNotaries: [],
-      publicURL: Config.get("buyerPublicURL").api,
       errors: {},
       loading: false,
       creationError: undefined,
@@ -89,7 +86,6 @@ class DataOrderCreate extends Component {
       audience,
       requestedData,
       requestedNotaries,
-      publicURL,
       price,
       selectedBuyer
     } = this.state;
@@ -98,7 +94,6 @@ class DataOrderCreate extends Component {
       audience,
       requestedData.map(d => d.value),
       requestedNotaries.map(n => n.value),
-      publicURL,
       price,
       selectedBuyer.id,
     );
@@ -107,13 +102,11 @@ class DataOrderCreate extends Component {
   shouldDisableSubmitButton() {
     const {
       requestedNotaries,
-      publicURL,
       requestedData
     } = this.state;
 
     return (
-      !publicURL
-      || !requestedNotaries || !requestedNotaries.length
+      !requestedNotaries || !requestedNotaries.length
       || !requestedData || !requestedData.length
     );
   }
@@ -217,7 +210,6 @@ const mapDispatchToProps = dispatch => ({
     audience,
     requestedData,
     notaries,
-    publicURL,
     price,
     buyerId
   ) => {
@@ -226,7 +218,6 @@ const mapDispatchToProps = dispatch => ({
         audience,
         requestedData,
         notaries,
-        publicURL,
         price,
         buyerId
       })
