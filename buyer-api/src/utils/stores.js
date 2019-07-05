@@ -126,8 +126,3 @@ export const notarizationRequests = createRedisStore('notarization_requests');
 export const sellers = createLevelStore('sellers');
 /** @type {LevelStore<number, OrderStats[]>} */
 export const orderStats = createLevelStore('order_stats');
-
-/** @type {LevelStore<number, string>} */
-export const paymentsTransactionHashes = createLevelStore('payments_transaction_hashes');
-/** @type {LevelStore<string, string>} */
-export const notarizationsPerLockingKeyHash = createLevelStore('notarizations_per_locking_hash');

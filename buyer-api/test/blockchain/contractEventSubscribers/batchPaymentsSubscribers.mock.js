@@ -2,25 +2,8 @@ import td from 'testdouble';
 import sinon from 'sinon';
 import test from 'ava';
 
-
 export const orderStats = { update: sinon.spy() };
-
-export const lockingKeyHash = 'alockingkeyhash123';
-export const notarizationId = 43444;
-export const transactionHash = 'atransactionhash124';
-
-export const paymentsTransactionHashes = {
-  store: sinon.spy(),
-  fetch: sinon.stub().returns(transactionHash),
-};
-export const notarizationsPerLockingKeyHash = {
-  fetch: sinon.spy(async () => Promise.resolve(notarizationId)),
-};
-export const notarizations = { update: sinon.spy() };
-
-td.replace('../../../src/utils/stores', {
-  orderStats, paymentsTransactionHashes, notarizationsPerLockingKeyHash, notarizations,
-});
+td.replace('../../../src/utils/stores', { orderStats });
 td.replace('../../../src/utils/jobify', { jobify: sinon.stub() });
 td.replace('../../../config', { batPayId: 16 });
 
@@ -35,16 +18,11 @@ const BatPay = {
 };
 const decodeLogs = sinon.stub().resolves({ orderId: orderIdTest });
 
-export const fetchTxData = sinon.spy(async () => ({ lockingKeyHash }));
+td.replace('../../../src/blockchain/contracts', { BatPay, decodeLogs });
 
-td.replace('../../../src/blockchain/contracts', { BatPay, decodeLogs, fetchTxData });
-
-export const web3 = {
+const web3 = {
   eth: {
-    getTransaction: sinon.spy(() => ({
-      gasPrice: gasPriceTest,
-      lockingKeyHash,
-    })),
+    getTransaction: sinon.stub().resolves({ gasPrice: gasPriceTest }),
     getTransactionReceipt: sinon.stub().resolves({ gasUsed: gasUsedTest, logs: 'some-logs' }),
   },
 };
@@ -54,7 +32,3 @@ test.beforeEach(() => {
   BatPay.methods.payments.returns({ call: sinon.stub().resolves({ metadata: 'metadata!' }) });
 });
 test.afterEach(sinon.reset);
-
-// mock decrypt job queue addition
-export const addDecryptJob = sinon.stub();
-td.replace('../../../src/queues/decryptSellerKeys', { addDecryptJob });

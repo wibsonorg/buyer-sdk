@@ -27,9 +27,17 @@ router.get(
     const orders = await dataOrders.list();
     const result = orders.map(async (order) => {
       const buyerName = (await getBuyerInfo(order.buyerInfoId)).name;
-      const { ethSpent, amountOfPayees, paymentsRegistered } = await orderStats.safeFetch(
-        order.dxId,
-        { ethSpent: 0, amountOfPayees: 0, paymentsRegistered: 0 },
+      const stats = await orderStats.safeFetch(order.dxId, []);
+      const paymentsRegistered = stats.length;
+      const { ethSpent, amountOfPayees } = stats.reduce(
+        (sum, stat) =>
+          ({
+            ethSpent: sum.ethSpent + stat.ethSpent,
+            amountOfPayees: sum.amountOfPayees + stat.amountOfPayees,
+          })
+        , {
+          ethSpent: 0, amountOfPayees: 0,
+        },
       );
       return {
         ...order,

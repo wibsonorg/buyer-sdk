@@ -59,16 +59,6 @@ const putObject = (orderAddress, seller, type, data) => {
   return putS3Object(name, data);
 };
 
-const getOrderObject = (orderAddress, type) => {
-  const name = `${prefix}/${orderAddress}/${type}.json`;
-  return getS3Object(name);
-};
-
-const putOrderObject = (orderAddress, type, data) => {
-  const name = `${prefix}/${orderAddress}/${type}.json`;
-  return putS3Object(name, data);
-};
-
 // //
 
 const countDataResponses = orderAddress => countObjects(orderAddress, 'data-responses');
@@ -85,10 +75,6 @@ const getData = (orderAddress, seller) => getObject(orderAddress, seller, 'data'
 
 const putData = (orderAddress, seller, data) => putObject(orderAddress, seller, 'data', data);
 
-const getRawOrderData = orderId => getOrderObject(orderId, 'rawData');
-
-const putRawOrderData = (orderId, data) => putOrderObject(orderId, 'rawData', data);
-
 export {
   countDataResponses,
   listDataResponses,
@@ -96,7 +82,5 @@ export {
   countData,
   listData,
   getData,
-  getRawOrderData,
   putData,
-  putRawOrderData,
 };
