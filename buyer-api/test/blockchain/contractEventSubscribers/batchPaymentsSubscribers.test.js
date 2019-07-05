@@ -35,7 +35,6 @@ it('does not store stats if payment was triggered by another buyer', async (asse
   assert.false(orderStats.update.called);
 });
 
-
 it('decryptSellerKeys > is handled', async (assert) => {
   const key = 'akey';
   const data = { key, payIndex };
