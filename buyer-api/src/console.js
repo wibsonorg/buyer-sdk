@@ -1,5 +1,5 @@
 const repl = require('repl');
-const { loadEnv } = require('./utils/wibson-lib');
+const { loadEnv } = require('./utils/wibson-lib/loadEnv');
 
 loadEnv();
 
