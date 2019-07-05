@@ -1,22 +1,59 @@
 import config from '../../../config';
-import { jobify } from '../../utils/jobify';
-import { BatPay, decodeLogs } from '../contracts';
+import { BatPay, decodeLogs, fetchTxData } from '../contracts';
 import web3 from '../../utils/web3';
-import { orderStats } from '../../utils/stores';
+import { orderStats, paymentsTransactionHashes, notarizationsPerLockingKeyHash, notarizations } from '../../utils/stores';
+import { addDecryptJob } from '../../queues/decryptSellerKeys';
 
 const { batPayId } = config;
 
-export const updateBuyerStats = async ({ payIndex, from, totalNumberOfPayees }) => {
+export const updateBuyerStats = async (
+  { payIndex, from, totalNumberOfPayees }, { transactionHash },
+) => {
   if (batPayId !== Number(from)) return; // We didn't perform this payment
   const { metadata: dxHash } = await BatPay.methods.payments(payIndex).call();
-  const { gasPrice } = await web3.eth.getTransaction(dxHash);
-  const { gasUsed, logs } = await web3.eth.getTransactionReceipt(dxHash);
+  const { logs } = await web3.eth.getTransactionReceipt(dxHash);
+  const { gasUsed } = await web3.eth.getTransactionReceipt(transactionHash);
+  const { gasPrice } = await web3.eth.getTransaction(transactionHash);
   const ethUsed = Number(gasPrice) * Number(gasUsed);
   const { orderId } = await decodeLogs(logs);
-  orderStats.update(Number(orderId), [{
-    ethSpent: ethUsed,
-    amountOfPayees: Number(totalNumberOfPayees),
-  }], []);
+
+  await orderStats.update(
+    Number(orderId),
+    oldStat => ({
+      ethSpent: oldStat.ethSpent + ethUsed,
+      amountOfPayees: oldStat.amountOfPayees + Number(totalNumberOfPayees),
+      paymentsRegistered: oldStat.paymentsRegistered + 1,
+    }),
+    { ethSpent: 0, amountOfPayees: 0, paymentsRegistered: 0 },
+  );
 };
 
-export const onPaymentRegistered = jobify(updateBuyerStats);
+/**
+ * @function storeLockingKeyHashByPayIndex Is triggered when
+ * the payment is registered,
+ * storing locally a relationship between the pay index and
+ * the payment transaction hash
+ * @typedef PaymentRegisteredEventValues
+ * @property {number} payIndex Pay index
+ * @param {UnlockEventValues} eventValues The values emmited by the BatPay PaymentRegistered event
+ */
+export const storeLockingKeyHashByPayIndex = async ({ payIndex }, { transactionHash }) =>
+  paymentsTransactionHashes.store(payIndex, transactionHash);
+
+/**
+ * @function decryptSellerKeys Is triggered when the payment to the seller is unlocked
+ * @typedef PaymentUnlockedEventValues
+ * @property {number} payIndex Pay index
+ * @property {string} key Master key to decrypt seller keys
+ * @param {UnlockEventValues} eventValues The values emmited by the BatPay PaymentUnlocked event
+ */
+export const decryptSellerKeys = async ({ payIndex, key: masterKey }) => {
+  // get trx hash from payIndex
+  const transactionHash = await paymentsTransactionHashes.fetch(payIndex);
+  const { lockingKeyHash } = await fetchTxData(transactionHash);
+  const notarizationId = await notarizationsPerLockingKeyHash.fetch(lockingKeyHash);
+  notarizations.update(notarizationId, {
+    masterKey,
+  });
+  addDecryptJob({ notarizationId });
+};
