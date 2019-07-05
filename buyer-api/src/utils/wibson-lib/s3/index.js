@@ -90,7 +90,7 @@ const getRawOrderData = (orderId, data) => getOrderObject(orderId, 'rawData', da
 
 const safeGetRawOrderData = async (orderId, defaultValue = {}) => {
   try {
-    return getRawOrderData(orderId);
+    return await getRawOrderData(orderId);
   } catch (e) {
     return defaultValue;
   }
