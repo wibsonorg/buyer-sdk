@@ -1,5 +1,5 @@
 import { addRegisterPaymentJob } from '../queues/registerPaymentsQueue';
-import { notarizations } from '../utils/stores';
+import { notarizations, notarizationsPerLockingKeyHash } from '../utils/stores';
 
 /**
  * @function receiveNotarizationResult
@@ -10,15 +10,10 @@ import { notarizations } from '../utils/stores';
  *    results related with request done by notary
  */
 export async function receiveNotarizationResult(notarizationRequestId, notarizationResult) {
-  // validate input
-  // notarizationRequest.sellers matches notarizationResult.sellers (address field)
-  // avoid duplicated addresses, avoid not requested addresses
-
   const notarization = await notarizations.safeFetch(notarizationRequestId);
   if (!notarization) {
     throw new Error('Notarization request not found');
   }
-
   await notarizations.store(notarizationRequestId, {
     ...notarization,
     result: {
@@ -31,6 +26,10 @@ export async function receiveNotarizationResult(notarizationRequestId, notarizat
     status: 'responded',
     respondedAt: new Date(),
   });
+  await notarizationsPerLockingKeyHash.store(
+    notarizationResult.lockingKeyHash,
+    notarizationRequestId,
+  );
 
   return addRegisterPaymentJob({ notarizationRequestId });
 }
