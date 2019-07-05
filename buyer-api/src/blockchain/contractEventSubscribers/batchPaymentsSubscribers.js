@@ -55,7 +55,8 @@ export const storeLockingKeyHashByPayIndex = async ({ payIndex }, { transactionH
  * @param {UnlockEventValues} event The values emmited by the BatPay PaymentUnlocked event
  */
 export const decryptSellerKeys = async ({ payIndex, key: masterKey }) => {
-  const transactionHash = await paymentsTransactionHashes.fetch(payIndex);
+  const transactionHash = await paymentsTransactionHashes.safeFetch(payIndex, null);
+  if (!transactionHash) return; // Not our payment
   const { lockingKeyHash } = await fetchTxData(transactionHash);
   const notarizationId = await notarizationsPerLockingKeyHash.fetch(lockingKeyHash);
   notarizations.update(notarizationId, {
