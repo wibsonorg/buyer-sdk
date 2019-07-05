@@ -23,7 +23,11 @@ const getDecryptedSellerData = async (orderId, sellerAddress, key) => {
 
 export const decryptSellersKeysJobListener = async ({ id, data: { notarizationId } }) => {
   logger.debug(`Processing Decrypt Sellers Keys Job id ${id} with notarizationId ${notarizationId}`);
-  const { masterKey, orderId, result: { sellers } } = await notarizations.fetch(notarizationId);
+  const {
+    masterKey,
+    request: { orderId },
+    result: { sellers },
+  } = await notarizations.fetch(notarizationId);
   const sellersWithData = await Promise.all(sellers
     .map(async ({ address, decryptionKeyEncryptedWithMasterKey }) => {
       const key = AESdecrypt(masterKey, decryptionKeyEncryptedWithMasterKey);
