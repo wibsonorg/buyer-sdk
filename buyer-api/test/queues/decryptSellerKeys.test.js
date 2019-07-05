@@ -1,5 +1,5 @@
 import { serial as it } from 'ava';
-import { prepareTests, fakeQueue, notarizations, job, getData, getOrCreateRawOrderData, putRawOrderData, fakeNotarization, data, sellerAddress, initialRawData } from './decryptSellerKeys.mock';
+import { prepareTests, fakeQueue, notarizations, job, getData, safeGetRawOrderData, putRawOrderData, fakeNotarization, data, sellerAddress, initialRawData } from './decryptSellerKeys.mock';
 import { addDecryptJob, decryptSellersKeysJobListener } from '../../src/queues/decryptSellerKeys';
 
 prepareTests();
@@ -20,7 +20,7 @@ it('decryptSellersKeysJobListener works as expected', async (t) => {
   const { orderId } = fakeNotarization.request;
   t.deepEqual(getData.firstCall.args, [orderId, fakeNotarization.result.sellers[0].address]);
   t.true(getData.calledOnceWithExactly(orderId, fakeNotarization.result.sellers[0].address));
-  t.true(getOrCreateRawOrderData.calledOnceWithExactly(orderId));
+  t.true(safeGetRawOrderData.calledOnceWithExactly(orderId));
 
   const expected = {
     ...initialRawData,

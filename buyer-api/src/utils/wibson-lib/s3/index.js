@@ -88,11 +88,11 @@ const putData = (orderAddress, seller, data) => putObject(orderAddress, seller, 
 const putRawOrderData = (orderId, data) => putOrderObject(orderId, 'rawData', data);
 const getRawOrderData = (orderId, data) => getOrderObject(orderId, 'rawData', data);
 
-const getOrCreateRawOrderData = async (orderId) => {
+const safeGetRawOrderData = async (orderId, defaultValue = {}) => {
   try {
     return getRawOrderData(orderId);
   } catch (e) {
-    return putRawOrderData(orderId, {});
+    return defaultValue;
   }
 };
 
@@ -104,7 +104,7 @@ export {
   listData,
   getData,
   getRawOrderData,
-  getOrCreateRawOrderData,
+  safeGetRawOrderData,
   putData,
   putRawOrderData,
 };
