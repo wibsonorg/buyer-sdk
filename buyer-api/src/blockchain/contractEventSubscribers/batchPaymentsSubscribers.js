@@ -69,7 +69,7 @@ export const decryptSellerKeys = async ({ payIndex, key: masterKey }) => {
   if (!transactionHash) return; // Not our payment
   const { lockingKeyHash } = await fetchTxData(transactionHash);
   const notarizationId = await notarizationsPerLockingKeyHash.fetch(lockingKeyHash);
-  notarizations.update(notarizationId, {
+  await notarizations.update(notarizationId, {
     masterKey,
   });
   addDecryptJob({ notarizationId });
