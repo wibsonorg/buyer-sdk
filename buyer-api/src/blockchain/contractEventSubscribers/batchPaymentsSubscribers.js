@@ -1,7 +1,12 @@
 import config from '../../../config';
 import { BatPay, decodeLogs, fetchTxData } from '../contracts';
 import web3 from '../../utils/web3';
-import { orderStats, paymentsTransactionHashes, notarizationsPerLockingKeyHash, notarizations } from '../../utils/stores';
+import {
+  orderStats,
+  paymentsTransactionHashes,
+  notarizationsPerLockingKeyHash,
+  notarizations,
+} from '../../utils/stores';
 import { addDecryptJob } from '../../queues/decryptSellerKeys';
 
 const { batPayId } = config;
@@ -42,8 +47,13 @@ export const updateBuyerStats = async (
  * @param {PaymentRegisteredEventValues} event
  * @param {ExtraEventValues} eventValues The values emmited by the BatPay PaymentRegistered event
  */
-export const storeLockingKeyHashByPayIndex = async ({ payIndex }, { transactionHash }) =>
-  paymentsTransactionHashes.store(payIndex, transactionHash);
+export const storeLockingKeyHashByPayIndex = async (
+  { payIndex, from },
+  { transactionHash },
+) => {
+  if (batPayId !== Number(from)) return; // We didn't perform this payment
+  return paymentsTransactionHashes.store(payIndex, transactionHash);
+}
 
 /**
  * @function decryptSellerKeys Is triggered when the payment to the seller is unlocked

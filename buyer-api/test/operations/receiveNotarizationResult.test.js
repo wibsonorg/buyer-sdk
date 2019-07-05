@@ -1,5 +1,9 @@
 import test from 'ava';
-import { notarizations, addRegisterPaymentJob } from './receiveNotarizationResult.mock';
+import {
+  notarizations,
+  addRegisterPaymentJob,
+  notarizationsPerLockingKeyHash,
+} from './receiveNotarizationResult.mock';
 import { receiveNotarizationResult } from '../../src/operations/receiveNotarizationResult';
 import {
   someNotarizationResult,
@@ -15,6 +19,14 @@ it('enqueues correct list of sellers for NotarizationResult', async (assert) => 
     someNotarizationResult,
   );
   assert.snapshot(addRegisterPaymentJob.lastCall.args, { id: 'addRegisterPaymentJob().args' });
+});
+
+it('stores notarization request id indexed by locking key hash', async (assert) => {
+  await receiveNotarizationResult('1', someNotarizationResult);
+  assert.deepEqual(notarizationsPerLockingKeyHash.store.lastCall.args, [
+    someNotarizationResult.lockingKeyHash,
+    '1',
+  ]);
 });
 
 it('filters not requested addresses', async (assert) => {
