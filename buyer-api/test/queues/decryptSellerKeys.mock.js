@@ -18,8 +18,12 @@ export const data = {
   },
 };
 
+export const initialRawData = {
+  '123dddd': data,
+};
+
 export const getData = sinon.spy(() => encryptWithPublicKey(buyerPublicKey, JSON.stringify(data)));
-export const getRawOrderData = sinon.spy(() => undefined); // TODO: check real return value
+export const getRawOrderData = sinon.spy(() => initialRawData);
 export const putRawOrderData = sinon.spy(() => undefined);
 
 td.replace('../../src/utils/wibson-lib/s3', {
