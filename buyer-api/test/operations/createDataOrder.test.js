@@ -8,7 +8,6 @@ const someDataOrder = {
   audience: { age: 42 },
   requestedData: ['geolocation'],
   buyerInfoId: 'someBuyerInfoId',
-  buyerUrl: 'someBuyerUrl',
   notariesAddresses: ['0xNotaryA', '0xNotaryB'],
 };
 
@@ -32,9 +31,9 @@ it('stores data order', async (assert) => {
 
 it('stores the correct url /orders/:uuid/offchain-data', async (assert) => {
   await createDataOrder(someDataOrder);
-  assert.is(
+  assert.regex(
     dataOrders.store.lastCall.args[1].buyerUrl,
-    'someBuyerUrl/orders/uuid/offchain-data',
+    /\/orders\/uuid\/offchain-data/,
   );
 });
 
