@@ -3,6 +3,9 @@ import { fromWib } from '../utils/wibson-lib/coin';
 import { getBuyerInfo } from '../services/buyerInfo';
 import { dataOrders, notaries } from '../utils/stores';
 import { addTransactionJob } from '../queues/transactionQueue';
+import config from '../../config';
+
+const { buyerPublicBaseUrl } = config;
 
 /**
  * @typedef BuyerInfoType
@@ -22,11 +25,10 @@ import { addTransactionJob } from '../queues/transactionQueue';
 export async function createDataOrder(dataOrder) {
   const id = uuidv4();
   const status = 'creating';
-  // (05-02-2019)
-  // TODO: use env.BUYER_PUBLIC_BASE_URL instead
-  const buyerUrl = `${dataOrder.buyerUrl}/orders/${id}/offchain-data`;
-  const headsUpUrl = `${dataOrder.buyerUrl}/orders/${id}/heads-up`;
-  const dataResponsesUrl = `${dataOrder.buyerUrl}/orders/${id}/data-responses`;
+
+  const buyerUrl = `${buyerPublicBaseUrl}/orders/${id}/offchain-data`;
+  const headsUpUrl = `${buyerPublicBaseUrl}/orders/${id}/heads-up`;
+  const dataResponsesUrl = `${buyerPublicBaseUrl}/orders/${id}/data-responses`;
   const { termsHash } = await getBuyerInfo(dataOrder.buyerInfoId);
   const termsAndConditionsHash = termsHash.startsWith('0x') ? termsHash : `0x${termsHash}`;
   const notariesAddresses = dataOrder.notariesAddresses.map(n => n.toLowerCase());

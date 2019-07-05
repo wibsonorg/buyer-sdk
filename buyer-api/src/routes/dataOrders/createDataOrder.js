@@ -44,7 +44,6 @@ const router = Router();
  *        - price
  *        - requestedData
  *        - buyerInfoId
- *        - buyerUrl
  *        - notariesAddresses
  *     properties:
  *       audience:
@@ -66,10 +65,6 @@ const router = Router();
  *         type: string
  *         description: The ID for the buyer info
  *         example: 'some-buyer-id'
- *       buyerUrl:
- *         type: string
- *         description: Public URL of the buyer to get extra information
- *         example: 'https://api.buyer.com'
  *       notariesAddresses:
  *         type: array
  *         items:
