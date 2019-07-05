@@ -12,7 +12,6 @@ function* createDataOrderSaga(action) {
     audience,
     requestedData,
     notaries,
-    publicURL,
     price,
     buyerId
   } = action.payload;
@@ -22,7 +21,6 @@ function* createDataOrderSaga(action) {
       DataOrdersHelpers.createBuyerDataOrder,
       audience,
       requestedData,
-      publicURL,
       price,
       notaries,
       buyerId
@@ -35,7 +33,6 @@ function* createDataOrderSaga(action) {
           audience,
           requestedData,
           notaries,
-          publicURL,
           createdAt: formatDate(Date.now()),
           transactionCompleted: false,
           price,

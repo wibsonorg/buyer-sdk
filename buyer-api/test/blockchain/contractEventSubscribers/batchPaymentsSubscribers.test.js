@@ -40,7 +40,7 @@ it('decryptSellerKeys > is handled', async (assert) => {
   const key = 'akey';
   const data = { key, payIndex };
   await decryptSellerKeys(data);
-  assert.true(paymentsTransactionHashes.fetch.calledOnceWithExactly(payIndex));
+  assert.true(paymentsTransactionHashes.safeFetch.calledOnceWithExactly(payIndex, null));
   assert.true(fetchTxData.calledOnce);
   assert.true(notarizationsPerLockingKeyHash.fetch.calledOnceWithExactly(lockingKeyHash));
   assert.deepEqual(notarizations.update.firstCall.args, [notarizationId, { masterKey: key }]);

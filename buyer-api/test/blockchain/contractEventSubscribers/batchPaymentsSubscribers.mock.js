@@ -11,7 +11,7 @@ export const transactionHash = 'atransactionhash124';
 
 export const paymentsTransactionHashes = {
   store: sinon.spy(),
-  fetch: sinon.stub().returns(transactionHash),
+  safeFetch: sinon.spy(() => transactionHash),
 };
 export const notarizationsPerLockingKeyHash = {
   fetch: sinon.spy(async () => Promise.resolve(notarizationId)),
