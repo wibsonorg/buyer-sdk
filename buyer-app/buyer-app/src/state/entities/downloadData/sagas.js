@@ -1,6 +1,7 @@
 import { put, takeLatest, all, call } from "redux-saga/effects";
+import download from "downloadjs";
 
-// import * as NotificationActions from "state/entities/notifications/actions";
+import * as NotificationActions from "state/entities/notifications/actions";
 import { getData } from "./helpers";
 
 import * as Actions from "./actions";
@@ -14,8 +15,17 @@ function* downloadData(action) {
 
   try {
     const response = yield call(getData, dataOrder.orderAddress);
-
-    yield put(Actions.downloadDataSucceed({ response }));
+    if (response.error) {
+      yield put(
+        NotificationActions.createNotification({
+          message: response.message,
+          status: "critical"
+        })
+      );
+    } else {
+      yield call(download, response, "data.csv", "text/csv");
+      yield put(Actions.downloadDataSucceed());
+    }
   } catch (error) {
     console.error(error);
     yield put(

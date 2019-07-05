@@ -6,18 +6,11 @@ const apiUrl = Config.get("api.url");
 const getData = async orderId => {
   const res = await fetch(`${apiUrl}/download-data/${orderId}`, {
     headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
       Authorization: authorization()
-    },
-    method: "POST"
+    }
   });
 
-  if (!res.ok) {
-    throw new Error("Could not get data");
-  }
-
-  return res.json();
+  return res.ok ? res.text() : res.json();
 };
 
 export { getData };
