@@ -14,7 +14,7 @@ const cx = cn.bind(styles);
 const currencyFormat = num =>
   num &&
   num
-    .toFixed(0) // always two decimal digits
+    .toFixed(0) // number of decimal digits
     .replace(".", ",") // replace decimal point character with ,
     .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
 
@@ -73,7 +73,7 @@ class BalancePanel extends React.Component {
           {currencyName !== "ETH"
             ? currencyFormat(value) + " " + currencyName
             : value + " " + currencyName}
-          </span>
+        </span>
         {tooltip && (
           <div style={{ position: "relative" }}>
             {this.tooltip({ currencyName, value })}

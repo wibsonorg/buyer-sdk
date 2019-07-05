@@ -9,5 +9,5 @@ import { dataOrders } from '../utils/stores';
 export const closeDataOrder = async (orderId, order) => {
   await addTransactionJob('CloseDataOrder', { orderId: order.dxId });
   await dataOrders.update(orderId, { status: 'closing' });
-  return { status: 'pending' };
+  return { status: 'closing' };
 };

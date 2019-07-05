@@ -5,7 +5,7 @@ import * as Actions from "./actions";
 import * as NotificationsActions from "state/entities/notifications/actions";
 
 import * as DataOrdersHelpers from "lib/protocol-helpers/data-orders";
-import formatDate from 'date-fns/format'
+import formatDate from "date-fns/format";
 
 function* createDataOrderSaga(action) {
   const {
@@ -47,8 +47,7 @@ function* createDataOrderSaga(action) {
 
     yield put(
       NotificationsActions.createNotification({
-        message:
-          "Your order has been created. The Notary is going to be notified.",
+        message: "Order is being created",
         status: "ok"
       })
     );

@@ -14,18 +14,15 @@ export const getWeiBalance = async address => toBN(await web3.eth.getBalance(add
 export const getWibBalance = async address => toBN(await Wibcoin.methods.balanceOf(address).call());
 export const getBatPayBalance = async id => toBN(await BatPay.methods.balanceOf(id).call());
 
-export const getFunds = async (address, batPayId) => {
-  const [wei, wib, batPayWib] = await Promise.all([
-    getWeiBalance(address),
-    getWibBalance(address),
-    getBatPayBalance(batPayId),
-  ]);
+export const getFunds = async (address) => {
+  const [wei, wib] = await Promise.all([getWeiBalance(address), getWibBalance(address)]);
 
-  return { wei, wib, batPayWib };
+  return { wei, wib };
 };
 
 export const getBalance = async (address, batPayId) => {
-  const { wei, wib, batPayWib } = await getFunds(address, batPayId);
+  const { wei, wib } = await getFunds(address);
+  const batPayWib = await getBatPayBalance(batPayId);
   return {
     address,
     balance: Number(wib),
