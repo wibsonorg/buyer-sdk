@@ -3,7 +3,7 @@ import { getRawOrderData } from '../utils/wibson-lib/s3';
 
 const NOT_FOUND = {
   code: 'getData.not_found',
-  message: "The data couldn't get",
+  message: "The data couldn't be found",
 };
 
 const CSV_FILE_ERROR = {
