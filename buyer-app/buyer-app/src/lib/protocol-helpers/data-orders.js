@@ -49,7 +49,6 @@ async function getBuyerDataOrdersAmount() {
 async function createBuyerDataOrder(
   audience,
   requestedData,
-  buyerUrl,
   price,
   notariesAddresses,
   buyerInfoId,
@@ -66,7 +65,6 @@ async function createBuyerDataOrder(
       price,
       requestedData,
       buyerInfoId,
-      buyerUrl,
       notariesAddresses,
     }),
   });
