@@ -3,7 +3,7 @@ import logger from '../utils/logger';
 import { notarizations } from '../utils/stores';
 import { AESdecrypt } from '../utils/wibson-lib/cryptography/encription';
 import { getData, getRawOrderData, putRawOrderData } from '../utils/wibson-lib/s3';
-import { /* decryptWithPrivateKey */ } from '../utils/wibson-lib/cryptography/ec-encription';
+import { decryptWithPrivateKey } from '../utils/wibson-lib/cryptography/ec-encription';
 
 const queue = createQueue('DecryptSellerKeys');
 
@@ -14,9 +14,7 @@ export const addDecryptJob = params => queue.add('decrypt', params);
 const getDecryptedSellerData = async (orderId, sellerAddress, key) => {
   logger.debug(`getDecryptedSellerData begins ${orderId}/${sellerAddress}/${key}`);
   const encryptedData = await getData(orderId, sellerAddress);
-  // TODO: use eliptic curves when ready
-  // const result = decryptWithPrivateKey(key, encryptedData);
-  const result = JSON.parse(AESdecrypt(key, encryptedData));
+  const result = JSON.parse(decryptWithPrivateKey(key, encryptedData));
   logger.debug('getDecryptedSellerData ends', { result, encryptedData });
   return result;
 };
@@ -40,7 +38,6 @@ export const decryptSellersKeysJobListener = async ({ id, data: { notarizationId
   // get existing order object
   const rawOrderData = await getRawOrderData(orderId);
   logger.debug('Took current order data object');
-  // TODO: double check, are we going to index totals by seller address?
   // append reduced sellers data to total
   const allBatchSellers = sellersWithData.reduce(
     (acc, curr) => ({ ...acc, [curr.address]: curr.data }),
