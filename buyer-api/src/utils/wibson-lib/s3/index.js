@@ -85,9 +85,16 @@ const getData = (orderAddress, seller) => getObject(orderAddress, seller, 'data'
 
 const putData = (orderAddress, seller, data) => putObject(orderAddress, seller, 'data', data);
 
-const getRawOrderData = orderId => getOrderObject(orderId, 'rawData');
-
 const putRawOrderData = (orderId, data) => putOrderObject(orderId, 'rawData', data);
+const getRawOrderData = (orderId, data) => getOrderObject(orderId, 'rawData', data);
+
+const getOrCreateRawOrderData = async (orderId) => {
+  try {
+    return getRawOrderData(orderId);
+  } catch (e) {
+    return putRawOrderData(orderId, {});
+  }
+};
 
 export {
   countDataResponses,
@@ -97,6 +104,7 @@ export {
   listData,
   getData,
   getRawOrderData,
+  getOrCreateRawOrderData,
   putData,
   putRawOrderData,
 };

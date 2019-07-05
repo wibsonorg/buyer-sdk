@@ -2,7 +2,7 @@ import { createQueue } from './createQueue';
 import logger from '../utils/logger';
 import { notarizations } from '../utils/stores';
 import { AESdecrypt } from '../utils/wibson-lib/cryptography/encription';
-import { getData, getRawOrderData, putRawOrderData } from '../utils/wibson-lib/s3';
+import { getData, putRawOrderData, getOrCreateRawOrderData } from '../utils/wibson-lib/s3';
 import { decryptWithPrivateKey } from '../utils/wibson-lib/cryptography/ec-encription';
 
 const queue = createQueue('DecryptSellerKeys');
@@ -36,7 +36,7 @@ export const decryptSellersKeysJobListener = async ({ id, data: { notarizationId
     }));
   logger.debug('Sellers prepared with Data');
   // get existing order object
-  const rawOrderData = await getRawOrderData(orderId);
+  const rawOrderData = await getOrCreateRawOrderData(orderId);
   logger.debug('Took current order data object');
   // append reduced sellers data to total
   const allBatchSellers = sellersWithData.reduce(
