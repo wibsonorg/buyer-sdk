@@ -40,7 +40,7 @@ export const decryptSellersKeysJobListener = async ({ id, data: { notarizationId
   logger.debug('Took current order data object');
   // append reduced sellers data to total
   const allBatchSellers = sellersWithData.reduce(
-    (acc, curr) => ({ ...acc, [curr.address]: curr.data }),
+    (acc, { address, data }) => ({ ...acc, [address]: data }),
     {},
   );
   logger.debug('All batch sellers', { allBatchSellers });
