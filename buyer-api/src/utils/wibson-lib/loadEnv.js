@@ -29,7 +29,7 @@ const decryptFile = async (gpgKeyPath, envFile) => {
   return decrypted.data;
 };
 
-const loadEnv = async () => {
+export const loadEnv = async () => {
   // Defined by command line, not .env file
   const gpgKeyPath = process.env.GPG_KEY_PATH;
   const envPath = process.env.ENV_PATH || '.env';
@@ -45,5 +45,3 @@ const loadEnv = async () => {
     ...process.env,
   };
 };
-
-export default loadEnv;

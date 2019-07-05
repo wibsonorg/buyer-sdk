@@ -17,7 +17,8 @@
     "lint:fix": "eslint . --fix",
     "publish": "scripts/publish.sh $npm_package_name-v$npm_package_version",
     "task:production": "node dist/tasks/index.js",
-    "task": "babel-node src/tasks/index.js"
+    "task": "babel-node src/tasks/index.js",
+    "console": "babel-node src/console.js"
   },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
