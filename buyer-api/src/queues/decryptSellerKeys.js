@@ -51,6 +51,6 @@ export const decryptSellersKeysJobListener = async ({ id, data: { notarizationId
 
 queue.process('decrypt', decryptSellersKeysJobListener);
 queue.on('failed', ({ id, name, failedReason }) => {
-  logger.error(`N[${id}] :: ${name} :: Error thrown: ${failedReason} (will be retried)`);
+  logger.error(`DSK[${id}] :: ${name} :: Error thrown: ${failedReason} (will be retried)`);
 });
 
