@@ -1,5 +1,6 @@
 import Router from 'express-promise-router';
 import { getData } from '../../operations/getData';
+import fetchDataOrder from './middlewares/fetchDataOrder';
 
 const router = Router();
 
@@ -26,10 +27,12 @@ const router = Router();
  *       422:
  *         description: Problem on our side.
  */
-router.get('/:id/data', async (req, res) => {
-  const { data, error } = await getData(req.params.id);
+router.get('/:id/data', fetchDataOrder, async (req, res) => {
+  const { data, error } = await getData(req.dataOrder);
   if (error && error.code === 'getData.not_found') {
     res.boom.notFound(error.message);
+  } else if (error && error.code === 'getData.not_found') {
+    res.boom.preconditionFailed(error.message);
   } else if (error) {
     res.boom.badData(error.message);
   } else {

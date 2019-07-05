@@ -12,9 +12,8 @@ import * as Actions from "./actions";
  */
 function* downloadData(action) {
   const { dataOrder } = action.payload;
-
   try {
-    const response = yield call(getData, dataOrder.orderAddress);
+    const response = yield call(getData, dataOrder.id);
     if (response.error) {
       yield put(
         NotificationActions.createNotification({
@@ -23,7 +22,8 @@ function* downloadData(action) {
         })
       );
     } else {
-      yield call(download, response, "data.csv", "text/csv");
+      const fileName = dataOrder.requestedData.join(" ") + ".csv";
+      yield call(download, response, fileName, "text/csv");
       yield put(Actions.downloadDataSucceed());
     }
   } catch (error) {
