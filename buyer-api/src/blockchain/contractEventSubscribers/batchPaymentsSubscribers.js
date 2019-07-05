@@ -72,5 +72,5 @@ export const decryptSellerKeys = async ({ payIndex, key: masterKey }) => {
   await notarizations.update(notarizationId, {
     masterKey,
   });
-  addDecryptJob({ notarizationId });
+  await addDecryptJob({ notarizationId });
 };
