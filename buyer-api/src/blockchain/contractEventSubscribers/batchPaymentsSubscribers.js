@@ -52,8 +52,8 @@ export const storeLockingKeyHashByPayIndex = async (
   { transactionHash },
 ) => {
   if (batPayId !== Number(from)) return; // We didn't perform this payment
-  return paymentsTransactionHashes.store(payIndex, transactionHash);
-}
+  await paymentsTransactionHashes.store(payIndex, transactionHash);
+};
 
 /**
  * @function decryptSellerKeys Is triggered when the payment to the seller is unlocked
