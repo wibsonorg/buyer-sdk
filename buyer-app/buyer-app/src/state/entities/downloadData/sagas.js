@@ -22,7 +22,7 @@ function* downloadData(action) {
         })
       );
     } else {
-      const fileName = dataOrder.requestedData.join("-") + ".csv";
+      const fileName = dataOrder.id + ".csv";
       yield call(download, data, fileName, "text/csv");
       yield put(Actions.downloadDataSucceed());
     }
