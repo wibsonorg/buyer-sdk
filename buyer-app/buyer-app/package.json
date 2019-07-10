@@ -1,7 +1,6 @@
 {
   "name": "buyer-app",
   "version": "2.0.0",
-  "private": true,
   "devDependencies": {
     "autoprefixer": "6.5.1",
     "babel-core": "6.17.0",
@@ -82,16 +81,15 @@
   },
   "scripts": {
     "start": "DEPLOY_ENVIRONMENT=development PORT=3001 ACCOUNT_INDEX=1 node scripts/start.js",
-    "start-metamask": "DEPLOY_ENVIRONMENT=development PORT=3001 node scripts/start.js",
-    "build": "NODE_ENV=production DEPLOY_ENVIRONMENT=production node scripts/build.js",
-    "build-production": "NODE_ENV=production DEPLOY_ENVIRONMENT=production node scripts/build.js",
-    "build-staging": "NODE_ENV=staging DEPLOY_ENVIRONMENT=staging node scripts/build.js",
+    "build": "npm run build-bda && npm run build-jampp",
+    "build-bda": "NODE_ENV=production DEPLOY_ENVIRONMENT=production-bda node scripts/build.js && mv build build-bda",
+    "build-jampp": "NODE_ENV=production DEPLOY_ENVIRONMENT=production-jampp node scripts/build.js && mv build build-jampp",
     "build-develop": "NODE_ENV=development DEPLOY_ENVIRONMENT=development node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
     "test:coverage": "node scripts/test.js --coverage --env=jsdom",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "publish": "scripts/publish.sh $npm_package_name",
+    "publish": "scripts/publish.sh $npm_package_name $npm_package_version",
     "preinstall": "cd ../base-app && npm install"
   },
   "proxy": "http://localhost:8080",
