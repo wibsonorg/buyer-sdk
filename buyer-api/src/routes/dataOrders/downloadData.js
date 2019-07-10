@@ -26,6 +26,8 @@ const router = Router();
  *         description: When the data is not present on S3.
  *       500:
  *         description: Problem on our side.
+ *       501:
+ *         description: Problem on our side.
  */
 router.get('/:id/data', fetchDataOrder, async (req, res) => {
   const { data, error } = await getOrderData(req.dataOrder);
@@ -35,7 +37,7 @@ router.get('/:id/data', fetchDataOrder, async (req, res) => {
         res.boom.notFound(error.message);
         break;
       case 'getOrderData.not_implemented':
-        res.boom.badImplementation(error.message);
+        res.boom.notImplemented(error.message);
         break;
       default:
         res.boom.badImplementation(error.message);
