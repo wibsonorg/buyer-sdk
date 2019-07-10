@@ -1,4 +1,8 @@
 import ethCrypto from 'eth-crypto';
+import { AES, enc } from 'crypto-js';
+
+export const AESencrypt = (key, msg) => AES.encrypt(msg, key).toString();
+export const AESdecrypt = (key, msg) => AES.decrypt(msg, key).toString(enc.Utf8);
 
 /**
  * It creates a signed and encrypted message.
