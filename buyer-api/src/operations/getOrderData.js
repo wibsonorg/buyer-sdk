@@ -8,19 +8,19 @@ const NOT_FOUND = {
 
 const PRECONDITION_FAILED = {
   code: 'getData.precondition_failed',
-  message: "The data couldn't get",
+  message: "We don't support downloads for this kind of data orders still",
 };
 
-const CSV_FILE_ERROR = {
+const CSV_FORMAT_ERROR = {
   code: 'getData.csv_error',
-  message: 'Error to generate csv file',
+  message: 'Error to generate csv',
 };
 
 /**
  * @async
  * @param {String} orderId the internal id of the order.
  */
-export const getData = async (dataOrder) => {
+export const getOrderData = async (dataOrder) => {
   if (!dataOrder.requestedData.includes('google-profile')) {
     return { error: PRECONDITION_FAILED };
   }
@@ -31,7 +31,12 @@ export const getData = async (dataOrder) => {
     return { error: NOT_FOUND };
   }
 
-  const fields = ['email.google-profile'];
+  const fields = [
+    {
+      label: 'email',
+      value: 'google-profile.email',
+    },
+  ];
   const opts = { fields };
 
   const csv = await parseAsync(Object.values(data), opts);
@@ -39,5 +44,5 @@ export const getData = async (dataOrder) => {
   if (csv) {
     return { data: csv };
   }
-  return { error: CSV_FILE_ERROR };
+  return { error: CSV_FORMAT_ERROR };
 };

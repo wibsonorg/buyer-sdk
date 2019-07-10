@@ -9,8 +9,10 @@ const getData = async orderId => {
       Authorization: authorization()
     }
   });
-
-  return res.ok ? res.text() : res.json();
+  if (!res.ok) {
+    return { error: await res.json() };
+  }
+  return { data: await res.text() };
 };
 
 export { getData };

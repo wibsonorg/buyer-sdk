@@ -13,21 +13,20 @@ import * as Actions from "./actions";
 function* downloadData(action) {
   const { dataOrder } = action.payload;
   try {
-    const response = yield call(getData, dataOrder.id);
-    if (response.error) {
+    const { data, error } = yield call(getData, dataOrder.id);
+    if (error) {
       yield put(
         NotificationActions.createNotification({
-          message: response.message,
+          message: error.message,
           status: "critical"
         })
       );
     } else {
-      const fileName = dataOrder.requestedData.join(" ") + ".csv";
-      yield call(download, response, fileName, "text/csv");
+      const fileName = dataOrder.requestedData.join("-") + ".csv";
+      yield call(download, data, fileName, "text/csv");
       yield put(Actions.downloadDataSucceed());
     }
   } catch (error) {
-    console.error(error);
     yield put(
       Actions.downloadDataFailed({
         dataOrder,
