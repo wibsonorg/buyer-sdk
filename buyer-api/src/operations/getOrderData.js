@@ -1,18 +1,18 @@
 import { parseAsync } from 'json2csv';
 import { getRawOrderData } from '../utils/wibson-lib/s3';
 
-const NOT_FOUND = {
-  code: 'getData.not_found',
+const ODER_DATA_NOT_FOUND = {
+  code: 'getOrderData.not_found',
   message: "The data couldn't be found",
 };
 
-const PRECONDITION_FAILED = {
-  code: 'getData.precondition_failed',
+const NOT_IMPLEMENTED = {
+  code: 'getOrderData.not_implemented',
   message: "We don't support downloads for this type of data yet",
 };
 
 const CSV_FORMAT_ERROR = {
-  code: 'getData.csv_error',
+  code: 'getOrderData.csv_error',
   message: 'Error to generate csv',
 };
 
@@ -22,13 +22,13 @@ const CSV_FORMAT_ERROR = {
  */
 export const getOrderData = async (dataOrder) => {
   if (!dataOrder.requestedData.includes('google-profile')) {
-    return { error: PRECONDITION_FAILED };
+    return { error: NOT_IMPLEMENTED };
   }
 
   const data = await getRawOrderData(dataOrder.dxId);
 
   if (!data) {
-    return { error: NOT_FOUND };
+    return { error: ODER_DATA_NOT_FOUND };
   }
 
   const fields = [

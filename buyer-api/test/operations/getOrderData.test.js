@@ -23,10 +23,10 @@ it('return the email of sellers in CSV format', async (assert) => {
 it('return error: not found', async (assert) => {
   getRawOrderData.returns(null);
   const { error } = await getOrderData(someDataOrderWithProfile);
-  assert.is(error.code, 'getData.not_found');
+  assert.is(error.code, 'getOrderData.not_found');
 });
 
 it("return error: don't support", async (assert) => {
   const { error } = await getOrderData(otherDataOrder);
-  assert.is(error.code, 'getData.precondition_failed');
+  assert.is(error.code, 'getOrderData.not_implemented');
 });

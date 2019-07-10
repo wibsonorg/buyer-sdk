@@ -31,11 +31,11 @@ router.get('/:id/data', fetchDataOrder, async (req, res) => {
   const { data, error } = await getOrderData(req.dataOrder);
   if (error) {
     switch (error.code) {
-      case 'getData.not_found':
+      case 'getOrderData.not_found':
         res.boom.notFound(error.message);
         break;
-      case 'getData.precondition_failed':
-        res.boom.preconditionFailed(error.message);
+      case 'getOrderData.not_implemented':
+        res.boom.badImplementation(error.message);
         break;
       default:
         res.boom.badImplementation(error.message);
