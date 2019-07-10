@@ -8,7 +8,7 @@ const NOT_FOUND = {
 
 const PRECONDITION_FAILED = {
   code: 'getData.precondition_failed',
-  message: "We don't support downloads for this kind of data orders still",
+  message: "We don't support downloads for this type of data yet",
 };
 
 const CSV_FORMAT_ERROR = {
