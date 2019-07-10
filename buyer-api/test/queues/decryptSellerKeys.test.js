@@ -15,7 +15,6 @@ it('addDecryptJob adds a decrypt job', async (t) => {
 it('decryptSellersKeysJobListener works as expected', async (t) => {
   await decryptSellersKeysJobListener(job);
   t.true(notarizations.fetch.calledOnceWithExactly(job.data.notarizationId));
-  // t.true(notarizations.fetch.calledOnceWithExactly(job.notarizationId));
   // eslint-disable-next-line max-len
   const { orderId } = fakeNotarization.request;
   t.deepEqual(getData.firstCall.args, [orderId, fakeNotarization.result.sellers[0].address]);
