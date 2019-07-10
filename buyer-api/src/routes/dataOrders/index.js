@@ -6,6 +6,7 @@ import ordersInfo from './ordersInfo';
 import addDataResponse from './addDataResponse';
 import headsUp from './headsUp';
 import offchainData from './offchainData';
+import downloadData from './downloadData';
 import checkAuthorization from '../../utils/checkAuthorization';
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.use(checkAuthorization);
 router.use(createDataOrder);
 router.use(getDataOrder);
 router.use(closeDataOrder);
+router.use(downloadData);
 
 export default router;

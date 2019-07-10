@@ -1,7 +1,7 @@
 import test from 'ava';
-import { orderStats, orderIdTest, gasPriceTest, gasUsedTest } from './batchPaymentsSubscribers.mock';
+import { orderStats, orderIdTest, gasPriceTest, gasUsedTest, fetchTxData, paymentsTransactionHashes, lockingKeyHash, notarizationsPerLockingKeyHash, notarizations, notarizationId, addDecryptJob } from './batchPaymentsSubscribers.mock';
 import './contractEventSubscribers.mock';
-import { updateBuyerStats } from '../../../src/blockchain/contractEventSubscribers/batchPaymentsSubscribers';
+import { updateBuyerStats, decryptSellerKeys } from '../../../src/blockchain/contractEventSubscribers/batchPaymentsSubscribers';
 
 const it = test.serial;
 
@@ -33,4 +33,15 @@ it('does not store stats if payment was triggered by another buyer', async (asse
     { transactionHash },
   );
   assert.false(orderStats.update.called);
+});
+
+it('decryptSellerKeys > is handled', async (assert) => {
+  const key = 'akey';
+  const data = { key, payIndex };
+  await decryptSellerKeys(data);
+  assert.true(paymentsTransactionHashes.safeFetch.calledOnceWithExactly(payIndex, null));
+  assert.true(fetchTxData.calledOnce);
+  assert.true(notarizationsPerLockingKeyHash.fetch.calledOnceWithExactly(lockingKeyHash));
+  assert.deepEqual(notarizations.update.firstCall.args, [notarizationId, { masterKey: key }]);
+  assert.deepEqual(addDecryptJob.firstCall.args, [{ notarizationId }]);
 });
