@@ -56,7 +56,7 @@ export const job = {
 export const fakeOrderUUID = 'some-data-order-uuid';
 
 export const notarizations = { fetch: sinon.spy(() => fakeNotarization) };
-export const dataOrders = { fetchByDxId: sinon.spy(() => fakeOrderUUID) };
+export const dataOrders = { fetchByDxId: sinon.spy(() => ({ id: fakeOrderUUID })) };
 export const fakeQueue = { process: sinon.stub(), on: sinon.stub(), add: sinon.spy() };
 const createQueue = sinon.stub().returns(fakeQueue);
 
