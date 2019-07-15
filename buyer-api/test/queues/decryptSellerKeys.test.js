@@ -1,5 +1,19 @@
 import { serial as it } from 'ava';
-import { prepareTests, fakeQueue, notarizations, job, getData, safeGetRawOrderData, putRawOrderData, fakeNotarization, data, sellerAddress, initialRawData } from './decryptSellerKeys.mock';
+import {
+  prepareTests,
+  fakeQueue,
+  notarizations,
+  dataOrdersByDxId,
+  job,
+  fakeOrderUUID,
+  getData,
+  safeGetRawOrderData,
+  putRawOrderData,
+  fakeNotarization,
+  data,
+  sellerAddress,
+  initialRawData,
+} from './decryptSellerKeys.mock';
 import { addDecryptJob, decryptSellersKeysJobListener } from '../../src/queues/decryptSellerKeys';
 
 prepareTests();
@@ -17,14 +31,15 @@ it('decryptSellersKeysJobListener works as expected', async (t) => {
   t.true(notarizations.fetch.calledOnceWithExactly(job.data.notarizationId));
   // eslint-disable-next-line max-len
   const { orderId } = fakeNotarization.request;
-  t.deepEqual(getData.firstCall.args, [orderId, fakeNotarization.result.sellers[0].address]);
-  t.true(getData.calledOnceWithExactly(orderId, fakeNotarization.result.sellers[0].address));
-  t.true(safeGetRawOrderData.calledOnceWithExactly(orderId));
+  t.true(dataOrdersByDxId.fetch.calledOnceWithExactly(orderId));
+  t.deepEqual(getData.firstCall.args, [fakeOrderUUID, fakeNotarization.result.sellers[0].address]);
+  t.true(getData.calledOnceWithExactly(fakeOrderUUID, fakeNotarization.result.sellers[0].address));
+  t.true(safeGetRawOrderData.calledOnceWithExactly(fakeOrderUUID));
 
   const expected = {
     ...initialRawData,
     [sellerAddress]: data,
   };
-  t.deepEqual(putRawOrderData.firstCall.args, [orderId, expected]);
-  t.truthy(putRawOrderData.calledOnceWithExactly(orderId, expected));
+  t.deepEqual(putRawOrderData.firstCall.args, [fakeOrderUUID, expected]);
+  t.truthy(putRawOrderData.calledOnceWithExactly(fakeOrderUUID, expected));
 });

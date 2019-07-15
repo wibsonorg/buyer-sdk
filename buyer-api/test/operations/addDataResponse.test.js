@@ -3,6 +3,7 @@ import { putData, dataResponses, addProcessDataResponseJob } from './addDataResp
 import { addDataResponse } from '../../src/operations/addDataResponse';
 
 const dataOrder = {
+  id: 'some-data-order-uuid',
   price: 45,
   status: 'created',
   notariesAddresses: ['0xccCF90140Fcc2d260186637D59F541E94Ff9288f'],
