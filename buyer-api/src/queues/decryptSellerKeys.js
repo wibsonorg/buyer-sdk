@@ -1,6 +1,6 @@
 import { createQueue } from './createQueue';
 import logger from '../utils/logger';
-import { notarizations, dataOrdersByDxId } from '../utils/stores';
+import { notarizations, dataOrders } from '../utils/stores';
 import { AESdecrypt } from '../utils/wibson-lib/cryptography/encription';
 import { getData, putRawOrderData, safeGetRawOrderData } from '../utils/wibson-lib/s3';
 import { decryptWithPrivateKey } from '../utils/wibson-lib/cryptography/ec-encription';
@@ -26,7 +26,7 @@ export const decryptSellersKeysJobListener = async ({ id, data: { notarizationId
     request: { orderId },
     result: { sellers },
   } = await notarizations.fetch(notarizationId);
-  const orderUUID = await dataOrdersByDxId.fetch(orderId);
+  const { id: orderUUID } = await dataOrders.fetchByDxId(orderId);
   const sellersWithData = await Promise.all(sellers
     .map(async ({ address, decryptionKeyEncryptedWithMasterKey }) => {
       const key = AESdecrypt(masterKey, decryptionKeyEncryptedWithMasterKey);

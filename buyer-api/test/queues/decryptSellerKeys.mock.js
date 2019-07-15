@@ -56,12 +56,12 @@ export const job = {
 export const fakeOrderUUID = 'some-data-order-uuid';
 
 export const notarizations = { fetch: sinon.spy(() => fakeNotarization) };
-export const dataOrdersByDxId = { fetch: sinon.spy(() => fakeOrderUUID) };
+export const dataOrders = { fetchByDxId: sinon.spy(() => fakeOrderUUID) };
 export const fakeQueue = { process: sinon.stub(), on: sinon.stub(), add: sinon.spy() };
 const createQueue = sinon.stub().returns(fakeQueue);
 
 td.replace('../../src/utils/stores', {
-  notarizations, dataOrdersByDxId,
+  notarizations, dataOrders,
 });
 
 td.replace('../../src/queues/createQueue', { createQueue });

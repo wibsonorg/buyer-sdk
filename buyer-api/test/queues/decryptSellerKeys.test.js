@@ -3,7 +3,7 @@ import {
   prepareTests,
   fakeQueue,
   notarizations,
-  dataOrdersByDxId,
+  dataOrders,
   job,
   fakeOrderUUID,
   getData,
@@ -31,7 +31,7 @@ it('decryptSellersKeysJobListener works as expected', async (t) => {
   t.true(notarizations.fetch.calledOnceWithExactly(job.data.notarizationId));
   // eslint-disable-next-line max-len
   const { orderId } = fakeNotarization.request;
-  t.true(dataOrdersByDxId.fetch.calledOnceWithExactly(orderId));
+  t.true(dataOrders.fetchByDxId.calledOnceWithExactly(orderId));
   t.deepEqual(getData.firstCall.args, [fakeOrderUUID, fakeNotarization.result.sellers[0].address]);
   t.true(getData.calledOnceWithExactly(fakeOrderUUID, fakeNotarization.result.sellers[0].address));
   t.true(safeGetRawOrderData.calledOnceWithExactly(fakeOrderUUID));
