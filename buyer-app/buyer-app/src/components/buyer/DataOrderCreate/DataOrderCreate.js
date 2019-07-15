@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 
+import R from "ramda";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
@@ -8,6 +9,8 @@ import { default as ReactSelect } from 'react-select';
 import * as OntologySelectors from "base-app-src/state/ontologies/selectors";
 
 import * as NotariesSelectors from "state/entities/notaries/selectors";
+
+import AudiencePicker from "./AudiencePicker";
 
 import * as DataOrdersActions from "state/entities/createDataOrder/actions";
 import * as DataOrdersSelectors from "state/entities/createDataOrder/selectors";
@@ -39,7 +42,7 @@ class DataOrderCreate extends Component {
     this.state = {
       buyerInfos: [],
       selectedBuyer: undefined,
-      audience: { "age": 20 }, // Hardcoded value for audience
+      audience: [],
       requestedData: [],
       requestedNotaries: [],
       errors: {},
@@ -90,8 +93,16 @@ class DataOrderCreate extends Component {
       selectedBuyer
     } = this.state;
 
+    // Mongo notation, so far we use literal values to do 'eq' or '$in' when
+    // it's an array of possible values
+    const byVariable = ({variable})=>variable
+    const concatenateValues = (acc,{value})=>acc.concat(value)
+    const audienceFilters = R.reduceBy(concatenateValues, [], byVariable, audience)
+    const buildQuery = aud => aud.length > 1 ? ({$in:aud}) : aud[0]
+    const audienceQueryOperator = R.map(buildQuery, audienceFilters)
+
     this.props.createDataOrder(
-      audience,
+      audienceQueryOperator,
       requestedData.map(d => d.value),
       requestedNotaries.map(n => n.value),
       price,
@@ -112,7 +123,7 @@ class DataOrderCreate extends Component {
   }
 
   renderCreateForm() {
-    const { dataOntology, availableNotaries } = this.props;
+    const { dataOntology, availableNotaries, audienceOntology } = this.props;
     return (
       <Form>
         <FormSection>
@@ -125,6 +136,15 @@ class DataOrderCreate extends Component {
               onChange={selectedBuyer => this.setState({ selectedBuyer })}
             />
           </InfoItem>
+        </FormSection>
+        <FormSection>
+          <Subtitle>Audience</Subtitle>
+          <AudiencePicker
+            requestableAudience={audienceOntology.filters}
+            audience={this.state.audience}
+            onChange={this.handleOnAudienceChange}
+            errors={this.state.errors.audience}
+          />
         </FormSection>
         <FormSection>
           <Subtitle>Orders settings</Subtitle>

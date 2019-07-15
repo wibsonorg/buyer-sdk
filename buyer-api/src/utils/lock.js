@@ -15,7 +15,11 @@ const locks = [];
  * @returns {T} The result of fn
  * @template T
  */
-export async function lock(requests, fn) {
+export async function lock(requests, fn = requests) {
+  if (!(Array.isArray(requests) && Array.isArray(requests[0]))) {
+    // eslint-disable-next-line no-param-reassign
+    requests = [[requests]];
+  }
   const locksPromises = locks
     .filter(l => requests.some(req =>
       l[0] == req[0] && (

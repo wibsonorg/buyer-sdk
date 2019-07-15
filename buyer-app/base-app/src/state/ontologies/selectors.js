@@ -21,7 +21,7 @@ const dataOntology = {
       label: "Google Profile"
     },
     {
-      value: "linkedin",
+      value: "linkedIn",
       label: "Linkedin"
     },
     {
@@ -100,6 +100,28 @@ const audienceOntology = {
         {
           value: "100_k_plus",
           label: "$100,001+"
+        }
+      ]
+    },
+    {
+      value: "country",
+      label: "Country",
+      categories: [
+        {
+          value: "ar",
+          label: "Argentina"
+        },
+        {
+          value: "uy",
+          label: "Uruguay"
+        },
+        {
+          value: "es",
+          label: "Spain"
+        },
+        {
+          value: "uk",
+          label: "United Kingdom"
         }
       ]
     }
