@@ -41,6 +41,7 @@ export async function createDataOrder(dataOrder) {
     dataResponsesUrl,
     termsAndConditionsHash,
     notariesAddresses,
+    createdAt: Date.now() / 1000,
   });
   await addTransactionJob('CreateDataOrder', {
     price: fromWib(dataOrder.price),
