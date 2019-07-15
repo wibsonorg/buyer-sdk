@@ -2,6 +2,7 @@ import { put, takeLatest, all, call } from "redux-saga/effects";
 
 import * as Actions from "./actions";
 
+import * as DataOrdersAddressesActions from "state/entities/dataOrdersAddresses/actions";
 import * as NotificationsActions from "state/entities/notifications/actions";
 
 import * as DataOrdersHelpers from "lib/protocol-helpers/data-orders";
@@ -48,6 +49,8 @@ function* createDataOrderSaga(action) {
         status: "ok"
       })
     );
+
+    yield put(DataOrdersAddressesActions.fetchDataOrdersAddresses());
   } catch (error) {
     yield put(Actions.createDataOrderFailed(error));
     // TODO: rollback transaction somehow if local storage failed.
