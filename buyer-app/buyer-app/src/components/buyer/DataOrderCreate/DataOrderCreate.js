@@ -95,13 +95,11 @@ class DataOrderCreate extends Component {
 
     // Mongo notation, so far we use literal values to do 'eq' or '$in' when
     // it's an array of possible values
-    const audienceQueryOperator = R.map(
-      aud => aud.length > 1 ? ({$in:aud}) : aud[0],
-      R.reduceBy(
-        (acc,{value})=>acc.concat(value),
-        [],
-        ({variable})=>variable,audience)
-      )
+    const byVariable = ({variable})=>variable
+    const concatenateValues = (acc,{value})=>acc.concat(value)
+    const audienceFilters = R.reduceBy(concatenateValues, [], byVariable, audience)
+    const buildQuery = aud => aud.length > 1 ? ({$in:aud}) : aud[0]
+    const audienceQueryOperator = R.map(buildQuery, audienceFilters)
 
     this.props.createDataOrder(
       audienceQueryOperator,
