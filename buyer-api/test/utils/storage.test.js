@@ -34,7 +34,7 @@ it('uses the correct directory on level', (assert) => {
 it('parses on fetch', async (assert) => {
   const store = createLevelStore('someNamespace');
   const value = await store.fetch('{"a":333}');
-  assert.deepEqual(value, { a: 333 });
+  assert.deepEqual(value, { id: '{"a":333}', a: 333 });
 });
 
 it('stringifies on store', async (assert) => {

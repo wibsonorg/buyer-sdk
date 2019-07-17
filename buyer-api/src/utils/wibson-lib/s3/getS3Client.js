@@ -13,8 +13,8 @@ class AWSWrapper {
   }
 
   getObject(key) {
-    return this.promisify('getObject', { Key: key.toLowerCase() }).catch(() =>
-      this.promisify('getObject', { Key: key })); // making it retrocompatible
+    return this.promisify('getObject', { Key: key.toLowerCase() })
+      .catch(() => this.promisify('getObject', { Key: key })); // making it retrocompatible
   }
 
   putObject(key, obj) {
@@ -40,20 +40,12 @@ class AWSWrapper {
   }
 }
 
-const getS3Client = (uri, region, bucket, accessKeyId, secretAccessKey) => {
-  if (!uri) throw new Error('A URI is required');
-  if (!region) throw new Error('A Region is required');
-  if (!bucket) throw new Error('A Bucket is required');
-
-  return new AWSWrapper(
-    bucket,
-    new aws.S3({
-      accessKeyId,
-      secretAccessKey,
-      region,
-      s3ForcePathStyle: true,
-    }),
-  );
-};
-
-export default getS3Client;
+export const getS3Client = storage => new AWSWrapper(
+  storage.bucket,
+  new aws.S3({
+    region: storage.region,
+    accessKeyId: storage.user,
+    secretAccessKey: storage.password,
+    s3ForcePathStyle: true,
+  }),
+);

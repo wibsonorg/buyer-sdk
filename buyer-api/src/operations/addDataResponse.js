@@ -62,7 +62,7 @@ export const addDataResponse = async (dataOrder, dataResponse) => {
   //   potentially increase the response time.
   // * it's weak: if communication with S3 fails for any reason, user will be
   //   forced to "try again later".
-  const s3 = putData(orderId, sellerAddress, encryptedData);
+  const s3 = putData(dataOrder.id, sellerAddress, encryptedData);
 
   const db = dataResponses.store(id, {
     orderId,

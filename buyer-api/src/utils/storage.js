@@ -40,7 +40,9 @@ export const createLevelStore = (dir) => {
   });
   store.fetch = async (id) => {
     try {
-      return JSON.parse(await store.get(id));
+      const value = JSON.parse(await store.get(id));
+      return !Array.isArray(value) && typeof value === 'object'
+        ? { id, ...value } : value;
     } catch (e) {
       throw new Error(`${dir} :: ${e.message}`);
     }
