@@ -15,7 +15,7 @@ const { toBN } = web3.utils;
  * @param {Function} pauseQueue function that pauses the queue in which
  *    registerPayment is running
  */
-export const registerPayment = async (notarizationRequestId, pauseQueue) => {
+export const registerPayment = async (notarizationRequestId, pauseQueue, currentPayments) => {
   logger.info(`registerPayment :: Notarization Request ID ${notarizationRequestId}`);
   /**
    * 4.4 The registerPayment operation will receive the NotarizationResult,
@@ -36,6 +36,15 @@ export const registerPayment = async (notarizationRequestId, pauseQueue) => {
    * if account's balance in BatPay is less than the amount to pay, register payments queue will be
    * paused
    */
+  const pendingPaymentsAmount = await currentPayments
+    .reduce(async (accum, { notarizationRequestId: notarizationId }) => {
+      const { result: { notarizationFee: orderId, sellers } } =
+      await notarizations.fetch(notarizationId);
+      const { price } = await dataOrders.fetchByDxId(orderId);
+      const amount = toBN(fromWib(price)).muln(sellers.length);
+      return accum.add(amount);
+    }, toBN(0));
+
   // data payload
   const {
     result: {
@@ -45,7 +54,7 @@ export const registerPayment = async (notarizationRequestId, pauseQueue) => {
 
   const { transactionHash, price } = await dataOrders.fetchByDxId(orderId);
   const amount = toBN(fromWib(price)).muln(sellers.length);
-  if (!(await hasEnoughBatPayBalance(batPayId, amount))) {
+  if (!(await hasEnoughBatPayBalance(batPayId, amount.add(pendingPaymentsAmount)))) {
     await pauseQueue("account's balance in BatPay is less than amount.");
     return false;
   }

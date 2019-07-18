@@ -10,8 +10,12 @@ const pauseQueue = id => async (reason) => {
 };
 
 const process = async ({ id, data: { notarizationRequestId } }) => {
+  const currentPayments = [].concat(
+    await queue.getDelayed(),
+    await queue.getWaiting(),
+  ).map(p => p.data);
   logger.info(`NR[${id}] :: Process :: ${notarizationRequestId}`);
-  return registerPayment(notarizationRequestId, pauseQueue(id));
+  return registerPayment(notarizationRequestId, pauseQueue(id), currentPayments);
 };
 
 queue.process(process);
