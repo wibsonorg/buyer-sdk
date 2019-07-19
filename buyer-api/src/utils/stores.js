@@ -131,5 +131,5 @@ export const orderStats = createLevelStore('order_stats');
 export const paymentsTransactionHashes = createLevelStore('payments_transaction_hashes');
 /** @type {LevelStore<string, string>} */
 export const notarizationsPerLockingKeyHash = createLevelStore('notarizations_per_locking_hash');
-/** @type {LevelStore<string, number>} */
+/** @type {LevelStore<string, string>} */
 export const currentPaymentsAmount = createLevelStore('current_payment_amount');

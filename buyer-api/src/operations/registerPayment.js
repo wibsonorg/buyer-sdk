@@ -68,7 +68,7 @@ export const registerPayment = async (notarizationRequestId, pauseQueue) => {
 
   await addTransactionJob('RegisterPayment', payload);
 
-  await currentPaymentsAmount.update('current_amount', currentAmount => toBN(currentAmount).add(amount), 0);
+  await currentPaymentsAmount.update('current_amount', currentAmount => toBN(currentAmount).add(amount).toString(), 0);
 
   return payload;
 };

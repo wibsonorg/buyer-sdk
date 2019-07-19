@@ -39,7 +39,7 @@ export const updateBuyerStats = async (
 export const updateCurrentPaymentsAmount = async ({ totalNumberOfPayees, amount, from }) => {
   if (batPayId !== Number(from)) return; // We didn't perform this payment
   const spent = toBN(Number(totalNumberOfPayees) * Number(amount));
-  await currentPaymentsAmount.update('current_amount', currentAmount => toBN(currentAmount).sub(spent));
+  await currentPaymentsAmount.update('current_amount', currentAmount => toBN(currentAmount).sub(spent).toString());
 };
 
 /**
