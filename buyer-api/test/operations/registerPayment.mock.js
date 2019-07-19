@@ -22,7 +22,12 @@ export const dataOrders = {
     price: 6000,
   }),
 };
-td.replace('../../src/utils/stores', { dataOrders, notarizations });
+
+export const currentPaymentsAmount = {
+  safeFetch: sinon.stub(),
+  update: sinon.stub(),
+};
+td.replace('../../src/utils/stores', { dataOrders, notarizations, currentPaymentsAmount });
 
 export const packPayData = sinon.stub().returns('0xff04+SomePayDataPack');
 td.replace('../../src/blockchain/batPay', { packPayData });
