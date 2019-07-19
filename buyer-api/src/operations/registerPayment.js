@@ -14,7 +14,6 @@ const { toBN } = web3.utils;
  *    filtered results from notary
  * @param {Function} pauseQueue function that pauses the queue in which
  *    registerPayment is running
- * @param {Object[]} currentPayments array of objects that contain the
  *    notarizationRequestId of each pending or ongoing payment
  */
 export const registerPayment = async (notarizationRequestId, pauseQueue) => {
