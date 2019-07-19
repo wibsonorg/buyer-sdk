@@ -3,7 +3,7 @@ import { addTransactionJob, hasEnoughBatPayBalance, fakePauseQueue } from './reg
 import { registerPayment } from '../../src/operations/registerPayment';
 
 it('adds a transaction job', async (assert) => {
-  await registerPayment('not-req-id', null);
+  await registerPayment('not-req-id');
   assert.snapshot(addTransactionJob.lastCall.args, { id: 'addTransactionJob().args' });
 });
 
