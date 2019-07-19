@@ -1,5 +1,5 @@
 import { addTransactionJob } from '../queues/transactionQueue';
-import { notarizations, dataOrders } from '../utils/stores';
+import { notarizations, dataOrders, currentPaymentsAmount } from '../utils/stores';
 import { packPayData } from '../blockchain/batPay';
 import { hasEnoughBatPayBalance } from '../blockchain/balance';
 import { web3, logger } from '../utils';
@@ -17,7 +17,7 @@ const { toBN } = web3.utils;
  * @param {Object[]} currentPayments array of objects that contain the
  *    notarizationRequestId of each pending or ongoing payment
  */
-export const registerPayment = async (notarizationRequestId, pauseQueue, currentPayments) => {
+export const registerPayment = async (notarizationRequestId, pauseQueue) => {
   logger.info(`registerPayment :: Notarization Request ID ${notarizationRequestId}`);
   /**
    * 4.4 The registerPayment operation will receive the NotarizationResult,
@@ -38,14 +38,8 @@ export const registerPayment = async (notarizationRequestId, pauseQueue, current
    * if account's balance in BatPay is less than the amount to pay, register payments queue will be
    * paused
    */
-  const pendingPaymentsAmount = await currentPayments
-    .reduce(async (accum, { notarizationRequestId: notarizationId }) => {
-      const { result: { notarizationFee: orderId, sellers } } =
-      await notarizations.fetch(notarizationId);
-      const { price } = await dataOrders.fetchByDxId(orderId);
-      const amount = toBN(fromWib(price)).muln(sellers.length);
-      return accum.add(amount);
-    }, toBN(0));
+
+  const pendingPaymentsAmount = toBN(await currentPaymentsAmount.safeFetch('current_amount', 0));
 
   // data payload
   const {
@@ -73,6 +67,8 @@ export const registerPayment = async (notarizationRequestId, pauseQueue, current
   };
 
   await addTransactionJob('RegisterPayment', payload);
+
+  await currentPaymentsAmount.update('current_amount', currentAmount => toBN(currentAmount).add(amount), 0);
 
   return payload;
 };

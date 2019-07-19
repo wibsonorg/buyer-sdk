@@ -6,8 +6,11 @@ import {
   paymentsTransactionHashes,
   notarizationsPerLockingKeyHash,
   notarizations,
+  currentPaymentsAmount,
 } from '../../utils/stores';
 import { addDecryptJob } from '../../queues/decryptSellerKeys';
+
+const { toBN } = web3.utils;
 
 const { batPayId } = config;
 
@@ -31,6 +34,12 @@ export const updateBuyerStats = async (
     }),
     { ethSpent: 0, amountOfPayees: 0, paymentsRegistered: 0 },
   );
+};
+
+export const updateCurrentPaymentsAmount = async ({ totalNumberOfPayees, amount, from }) => {
+  if (batPayId !== Number(from)) return; // We didn't perform this payment
+  const spent = toBN(Number(totalNumberOfPayees) * Number(amount));
+  await currentPaymentsAmount.update('current_amount', currentAmount => toBN(currentAmount).sub(spent));
 };
 
 /**
