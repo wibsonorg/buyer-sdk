@@ -25,7 +25,7 @@ export const getOrderData = async (dataOrder) => {
     return { error: NOT_IMPLEMENTED };
   }
 
-  const data = await getRawOrderData(dataOrder.dxId);
+  const data = await getRawOrderData(dataOrder.id);
 
   if (!data) {
     return { error: ODER_DATA_NOT_FOUND };
