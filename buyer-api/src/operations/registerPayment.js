@@ -1,5 +1,5 @@
 import { addTransactionJob } from '../queues/transactionQueue';
-import { notarizations, dataOrders } from '../utils/stores';
+import { notarizations, dataOrders, currentPaymentsAmount } from '../utils/stores';
 import { packPayData } from '../blockchain/batPay';
 import { hasEnoughBatPayBalance } from '../blockchain/balance';
 import { web3, logger } from '../utils';
@@ -36,6 +36,9 @@ export const registerPayment = async (notarizationRequestId, pauseQueue) => {
    * if account's balance in BatPay is less than the amount to pay, register payments queue will be
    * paused
    */
+
+  const pendingPaymentsAmount = toBN(await currentPaymentsAmount.safeFetch('current_amount', 0));
+
   // data payload
   const {
     result: {
@@ -45,7 +48,7 @@ export const registerPayment = async (notarizationRequestId, pauseQueue) => {
 
   const { transactionHash, price } = await dataOrders.fetchByDxId(orderId);
   const amount = toBN(fromWib(price)).muln(sellers.length);
-  if (!(await hasEnoughBatPayBalance(batPayId, amount))) {
+  if (!(await hasEnoughBatPayBalance(batPayId, amount.add(pendingPaymentsAmount)))) {
     await pauseQueue("account's balance in BatPay is less than amount.");
     return false;
   }
@@ -62,6 +65,8 @@ export const registerPayment = async (notarizationRequestId, pauseQueue) => {
   };
 
   await addTransactionJob('RegisterPayment', payload);
+
+  await currentPaymentsAmount.update('current_amount', currentAmount => toBN(currentAmount).add(amount).toString(), 0);
 
   return payload;
 };
