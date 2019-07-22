@@ -84,6 +84,7 @@
     "build": "npm run build-bda && npm run build-jampp",
     "build-bda": "NODE_ENV=production DEPLOY_ENVIRONMENT=production-bda node scripts/build.js && mv build build-bda",
     "build-jampp": "NODE_ENV=production DEPLOY_ENVIRONMENT=production-jampp node scripts/build.js && mv build build-jampp",
+    "build-staging": "NODE_ENV=production DEPLOY_ENVIRONMENT=staging node scripts/build.js && mv build build-staging",
     "build-develop": "NODE_ENV=development DEPLOY_ENVIRONMENT=development node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
     "test:coverage": "node scripts/test.js --coverage --env=jsdom",
