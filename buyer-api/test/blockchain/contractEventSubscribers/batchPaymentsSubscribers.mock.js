@@ -17,9 +17,14 @@ export const notarizationsPerLockingKeyHash = {
   fetch: sinon.spy(async () => Promise.resolve(notarizationId)),
 };
 export const notarizations = { update: sinon.spy() };
+export const currentPaymentsAmount = { update: sinon.spy() };
 
 td.replace('../../../src/utils/stores', {
-  orderStats, paymentsTransactionHashes, notarizationsPerLockingKeyHash, notarizations,
+  orderStats,
+  paymentsTransactionHashes,
+  notarizationsPerLockingKeyHash,
+  notarizations,
+  currentPaymentsAmount,
 });
 td.replace('../../../src/utils/jobify', { jobify: sinon.stub() });
 td.replace('../../../config', { batPayId: 16 });
@@ -47,7 +52,9 @@ export const web3 = {
     })),
     getTransactionReceipt: sinon.stub().resolves({ gasUsed: gasUsedTest, logs: 'some-logs' }),
   },
+  utils: { toBN: sinon.stub() },
 };
+
 td.replace('../../../src/utils/web3', web3);
 
 test.beforeEach(() => {
