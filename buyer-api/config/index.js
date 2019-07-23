@@ -48,11 +48,10 @@ const config = {
     jobs: { concurrency: env.REDIS_JOBS_CONCURRENCY },
   },
   storage: {
-    url: env.STORAGE_URL,
+    bucket: env.STORAGE_BUCKET,
     region: env.STORAGE_REGION,
     user: env.STORAGE_USER,
     password: env.STORAGE_PASSWORD,
-    bucket: env.STORAGE_BUCKET,
   },
   levelDirectory: env.LEVEL_DIRECTORY,
   jwt: JSON.parse(env.JWT_OPTIONS),
