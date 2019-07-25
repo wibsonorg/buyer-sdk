@@ -7,3 +7,4 @@ rm -rf artifacts
 mkdir artifacts
 tar -zcf artifacts/${package_name}-bda-v${package_version}.tar.gz -C build-bda .
 tar -zcf artifacts/${package_name}-jampp-v${package_version}.tar.gz -C build-jampp .
+tar -zcf artifacts/${package_name}-staging-v${package_version}.tar.gz -C build-staging .
