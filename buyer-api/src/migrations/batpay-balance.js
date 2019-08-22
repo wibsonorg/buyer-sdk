@@ -1,8 +1,8 @@
 const loadEnv = require('../utils/wibson-lib/loadEnv').default;
 
- loadEnv();
+loadEnv();
 
- const {
+const {
   // REMOVE
   //   notariesCache, // UNUSED
   //   notarizationRequests, // UNUSED
@@ -30,7 +30,7 @@ const loadEnv = require('../utils/wibson-lib/loadEnv').default;
 } = require('../utils/stores');
 const logger = require('../utils/logger');
 
- async function migrate() {
+async function migrate() {
   logger.info('UPDATE NOTARIZATIONS...');
   const updatedNotarizations = (await Promise.all((await notarizations.list())
     .filter(n => ['created', 'requested'].includes(n.status))
@@ -56,4 +56,4 @@ const logger = require('../utils/logger');
   logger.info('END.');
 }
 
- migrate().then(() => process.exit());
+migrate().then(() => process.exit());
