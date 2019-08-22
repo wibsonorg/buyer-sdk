@@ -1,3 +1,4 @@
+require('@babel/polyfill');
 const loadEnv = require('../utils/wibson-lib/loadEnv').default;
 
 loadEnv();
