@@ -14,6 +14,7 @@ const config = {
   env: env.NODE_ENV,
   port: env.PORT,
   host: env.HOST,
+  bodySizeLimit: env.BODY_SIZE_LIMIT,
   buyerPublicBaseUrl: env.BUYER_PUBLIC_BASE_URL,
   buyerSigningServiceUrl: env.BUYER_SIGNING_SERVICE_URL,
   contracts: {
