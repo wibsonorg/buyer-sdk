@@ -1,30 +1,30 @@
 dist: xenial
 language: node_js
-
+if: type = pull_request OR tag IS present
 node_js:
-- '8'
+  - "8"
 
 env:
-- WORKING_DIR=buyer-app/buyer-app SKIP_AUDIT=true SKIP_TESTS=true
-- WORKING_DIR=buyer-api SKIP_AUDIT=true SKIP_TESTS=true
-- WORKING_DIR=buyer-signing-service SKIP_AUDIT=true SKIP_TESTS=true
+  - WORKING_DIR=buyer-app/buyer-app SKIP_AUDIT=true SKIP_TESTS=true
+  - WORKING_DIR=buyer-api SKIP_AUDIT=true SKIP_TESTS=false
+  - WORKING_DIR=buyer-signing-service SKIP_AUDIT=true SKIP_TESTS=false
 
 cache:
   directories:
-  - "$WORKING_DIR/node_modules"
+    - "$WORKING_DIR/node_modules"
 
-before_install: npm i -g npm@6.1.0 codecov@3.1.0
+before_install: npm i -g npm@6.1.0
 
 install:
-- cd $WORKING_DIR
-- npm install
+  - cd $WORKING_DIR
+  - npm install
 
 before_script:
   - npm run lint
-  # TODO: Make these steps compulsive
-  - npm audit || $SKIP_AUDIT
-  - npm run test:coverage:ci || $SKIP_TESTS
-  - codecov || $SKIP_TESTS
+  # TODO: Make these steps compulsive for buyer app
+  - $SKIP_AUDIT || npm audit
+  - $SKIP_TESTS || npm run test:coverage
+  - $SKIP_TESTS || bash <(curl -s https://codecov.io/bash) -f coverage/lcov.info
 
 script: npm run build
 

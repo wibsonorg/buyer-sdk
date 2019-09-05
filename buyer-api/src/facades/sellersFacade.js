@@ -1,4 +1,4 @@
-import { dateOrNull, getElements } from './helpers';
+import { toDate, getElements } from '../blockchain/contracts';
 
 /**
  * @async
@@ -16,15 +16,15 @@ const getSellerInfo = async (web3, dataOrder, address) => {
     address: address.toLowerCase(),
     notaryAddress: (sellerInfo[1]).toLowerCase(),
     dataHash: sellerInfo[2],
-    createdAt: dateOrNull(sellerInfo[3]),
-    closedAt: dateOrNull(sellerInfo[4]),
+    createdAt: toDate(sellerInfo[3]),
+    closedAt: toDate(sellerInfo[4]),
     status: web3.utils.hexToUtf8(sellerInfo[5]),
   };
 };
 
 /**
  * @async
- * @function getNotariesInfo
+ * @function getSellersInfo
  * @param {Object} web3 the web3 object.
  * @param {Object} dataOrder instance of a DataOrder.
  * @param {Array} addresses specific sellers addresses to fetch.
@@ -36,10 +36,10 @@ const getSellersInfo = async (web3, dataOrder, addresses = []) => {
     ? addresses
     : await getElements(dataOrder, 'sellers');
 
-  const notaries = sellersAddresses.map(address =>
+  const sellerInfos = sellersAddresses.map(address =>
     getSellerInfo(web3, dataOrder, address));
 
-  return Promise.all(notaries);
+  return Promise.all(sellerInfos);
 };
 
 export { getSellerInfo, getSellersInfo };

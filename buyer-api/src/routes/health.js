@@ -1,10 +1,10 @@
-import express from 'express';
-import signingService from '../services/signingService';
-import { asyncError, cache } from '../utils';
+import Router from 'express-promise-router';
+import { getHealth } from '../services/signingService';
+import { cache } from '../utils';
 
 const NS_PER_SEC = 1e9;
 
-const router = express.Router();
+const router = Router();
 
 /**
  * @swagger
@@ -40,15 +40,15 @@ router.get('/cache', cache('1 minute'), (req, res) => {
  *       500:
  *         description: When the app or sub-systems are not responding
  */
-router.get('/ss', asyncError(async (_req, res) => {
+router.get('/ss', async (_req, res) => {
   const time = process.hrtime();
-  const response = await signingService.getHealth();
+  const response = await getHealth();
   const diff = process.hrtime(time);
 
   res.json({
-    ...response,
     ns: `Took ${(diff[0] * NS_PER_SEC) + diff[1]} nanoseconds`,
+    status: response.status,
   });
-}));
+});
 
 export default router;

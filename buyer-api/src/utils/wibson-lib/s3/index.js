@@ -1,75 +1,24 @@
-import getS3Client from './getS3Client';
+import { getS3Client } from './getS3Client';
 import config from '../../../../config';
 
 const prefix = 'buyer';
-const { storage } = config;
-const client = getS3Client(
-  storage.url,
-  storage.region,
-  storage.bucket,
-  storage.user,
-  storage.password,
-);
+const client = getS3Client(config.storage);
 
+const putS3Object = async (objectName, data) =>
+  client.putObject(objectName, JSON.stringify(data));
 const getS3Object = async (objectName) => {
   const obj = await client.getObject(objectName);
-  const data = obj.Body.toString();
-  return JSON.parse(data);
+  return JSON.parse(obj.Body.toString());
 };
 
-const getS3Objects = async (namespace, justSnippets = false) => {
-  const files = await client.listObjects(namespace);
-  const objectsPromises = files.map(async (file) => {
-    const fileName = file.Key;
-    const payload = await (justSnippets ? file : getS3Object(fileName));
+export const putRawOrderData = (order, data) =>
+  putS3Object(`${prefix}/${order}/rawData.json`, data);
+export const getRawOrderData = order =>
+  getS3Object(`${prefix}/${order}/rawData.json`);
+export const safeGetRawOrderData = (order, defaultValue = {}) =>
+  getRawOrderData(order).catch(() => defaultValue);
 
-    return {
-      fileName,
-      payload,
-    };
-  });
-
-  const objects = await Promise.all(objectsPromises);
-  return objects.filter(obj => obj.payload);
-};
-
-// //
-
-const countObjects = async (orderAddress, type) => {
-  const namespace = `${prefix}/${orderAddress}/${type}/`;
-  const objects = await getS3Objects(namespace, true);
-  return objects.length;
-};
-
-const listObjects = (orderAddress, type) => {
-  const namespace = `${prefix}/${orderAddress}/${type}/`;
-  return getS3Objects(namespace);
-};
-
-const getObject = (orderAddress, seller, type) => {
-  const name = `${prefix}/${orderAddress}/${type}/${seller}.json`;
-  return getS3Object(name);
-};
-
-// //
-
-const countDataResponses = orderAddress => countObjects(orderAddress, 'data-responses');
-
-const listDataResponses = orderAddress => listObjects(orderAddress, 'data-responses');
-
-const getDataResponse = (orderAddress, seller) => getObject(orderAddress, seller, 'data-responses');
-
-const countData = orderAddress => countObjects(orderAddress, 'data');
-
-const listData = orderAddress => listObjects(orderAddress, 'data');
-
-const getData = (orderAddress, seller) => getObject(orderAddress, seller, 'data');
-
-export {
-  countDataResponses,
-  listDataResponses,
-  getDataResponse,
-  countData,
-  listData,
-  getData,
-};
+export const putData = (order, seller, data) =>
+  putS3Object(`${prefix}/${order}/data/${seller}.json`, data);
+export const getData = (order, seller) =>
+  getS3Object(`${prefix}/${order}/data/${seller}.json`);

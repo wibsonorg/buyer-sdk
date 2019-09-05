@@ -1,22 +1,22 @@
-import express from 'express';
-import { closeDataOrderFacade } from '../../facades';
-import { validateAddress, asyncError } from '../../utils';
+import Router from 'express-promise-router';
+import fetchDataOrder from './middlewares/fetchDataOrder';
+import { closeDataOrder } from '../../operations/closeDataOrder';
 
-const router = express.Router();
+const router = Router();
 
 /**
  * @swagger
- * /orders/{orderAddress}/end:
+ * /orders/{id}/close:
  *   post:
  *     description: |
  *       # Wibson's Protocol final step
  *       ## The Buyer closes the DataOrder it had created on the first step.
  *     parameters:
- *       - in: params
- *         name: orderAddress
+ *       - in: path
+ *         name: id
  *         type: string
  *         required: true
- *         description: The order address that will be closed
+ *         description: uuid of the created DataOrder
  *     produces:
  *       - application/json
  *     responses:
@@ -36,22 +36,13 @@ const router = express.Router();
  *       500:
  *         description: Problem on our side
  */
-router.post(
-  '/:orderAddress/end',
-  validateAddress('orderAddress'),
-  asyncError(async (req, res) => {
-    const { orderAddress } = req.params;
-
-    const response = await closeDataOrderFacade(orderAddress);
-
-    if (response.success()) {
-      res.json(response.result);
-    } else {
-      res.boom.badData('Operation failed', {
-        errors: response.errors,
-      });
-    }
-  }),
-);
+router.post('/:id/close', fetchDataOrder, async (req, res) => {
+  if (req.dataOrder.status === 'created') {
+    const { status } = await closeDataOrder(req.params.id, req.dataOrder);
+    res.status(200).json({ status });
+  } else {
+    res.status(422).json({ message: 'The order can not be closed because it is still being created.' });
+  }
+});
 
 export default router;

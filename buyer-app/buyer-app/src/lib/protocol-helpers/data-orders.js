@@ -7,8 +7,8 @@ const apiUrl = Config.get('api.url');
  * TODO: Implement pagination
  * @return {[type]} [description]
  */
-async function listBuyerDataOrders(limit, offset) {
-  const res = await fetch(`${apiUrl}/orders?limit=${limit}&offset=${offset}`,
+async function listBuyerDataOrders() {
+  const res = await fetch(`${apiUrl}/orders`,
   {
     headers: {
       Authorization: authorization()
@@ -20,7 +20,14 @@ async function listBuyerDataOrders(limit, offset) {
 
   const orders = await res.json();
 
-  return orders;
+  return {orders};
+}
+
+async function getBuyerInfos(){
+  const res = await fetch(`${apiUrl}/infos`, {
+    headers: { Authorization: authorization() }
+  });
+  return await res.json();
 }
 
 async function getBuyerDataOrdersAmount() {
@@ -40,12 +47,10 @@ async function getBuyerDataOrdersAmount() {
 }
 
 async function createBuyerDataOrder(
-  filters,
-  dataRequest,
-  buyerURL,
+  audience,
+  requestedData,
   price,
-  initialBudgetForAudits,
-  notaries,
+  notariesAddresses,
   buyerInfoId,
 ) {
   const res = await fetch(`${apiUrl}/orders`, {
@@ -56,27 +61,39 @@ async function createBuyerDataOrder(
     },
     method: 'POST',
     body: JSON.stringify({
-      dataOrder: {
-        filters,
-        dataRequest,
-        buyerURL,
-        price,
-        initialBudgetForAudits,
-        notaries,
-        buyerInfoId,
-      },
+      audience,
+      price,
+      requestedData,
+      buyerInfoId,
+      notariesAddresses,
     }),
   });
 
   if (!res.ok) {
-    throw new Error('Could create data order');
+    throw new Error('Could not create data order');
   }
 
   return res.json();
 }
 
+const addNotariesToOrder = async (orderAddress, notariesAddresses) => {
+  const res = await fetch(`${apiUrl}/orders/${orderAddress}/notaries`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: authorization()
+    },
+    method: 'POST',
+    body: JSON.stringify({ notariesAddresses }),
+  });
+  if (!res.ok) {
+    throw new Error('Could not add notaries to order');
+  }
+  return res.json();
+};
+
 const closeOrder = async orderAddress => {
-  const res = await fetch(`${apiUrl}/orders/${orderAddress}/end`, {
+  const res = await fetch(`${apiUrl}/orders/${orderAddress}/close`, {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
@@ -85,7 +102,8 @@ const closeOrder = async orderAddress => {
     method: 'POST',
   });
   if (!res.ok) {
-    throw new Error('Could close data order');
+    const body = await res.json()
+    throw new Error(`${body && body.message ? body.message : "Could not close data order."}`);
   }
   return res.json();
 };
@@ -94,5 +112,7 @@ export {
   listBuyerDataOrders,
   createBuyerDataOrder,
   getBuyerDataOrdersAmount,
+  addNotariesToOrder,
   closeOrder,
+  getBuyerInfos,
 };

@@ -1,9 +1,10 @@
-import express from 'express';
-import { web3, cache, asyncError, wibcoin } from '../utils';
-import { coin } from '../utils/wibson-lib';
-import signingService from '../services/signingService';
+import Router from 'express-promise-router';
+import config from '../../config';
+import { cache } from '../utils';
+import { getAccount } from '../services/signingService';
+import { getBalance } from '../blockchain/balance';
 
-const router = express.Router();
+const router = Router();
 /**
  * @swagger
  * /account:
@@ -17,20 +18,10 @@ const router = express.Router();
  *       500:
  *         description: When the fetch failed.
  */
-router.get('/', cache('10 minutes'), asyncError(async (req, res) => {
-  const { address } = await signingService.getAccount();
-  const [balance, ethBalance] = await Promise.all([
-    wibcoin.methods.balanceOf(address).call(),
-    web3.eth.getBalance(address),
-  ]);
-  const ether = web3.utils.fromWei(ethBalance.toString(), 'ether');
-  const wib = coin.toWib(balance, { decimals: 2 });
-  res.json({
-    address,
-    balance: Number(balance),
-    ether: Number(ether),
-    wib,
-  });
-}));
+router.get('/', cache('10 minutes'), async (req, res) => {
+  const { address } = await getAccount();
+  const { batPayId } = config;
+  res.json(await getBalance(address, batPayId));
+});
 
 export default router;

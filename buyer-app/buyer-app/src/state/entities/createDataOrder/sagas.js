@@ -1,34 +1,28 @@
-import { put, takeLatest, all, call, select } from "redux-saga/effects";
+import { put, takeLatest, all, call } from "redux-saga/effects";
 
 import * as Actions from "./actions";
 
+import * as DataOrdersAddressesActions from "state/entities/dataOrdersAddresses/actions";
 import * as NotificationsActions from "state/entities/notifications/actions";
-import * as DataExchangeSelectors from "state/entities/dataExchange/selectors";
 
 import * as DataOrdersHelpers from "lib/protocol-helpers/data-orders";
-import formatDate from 'date-fns/format'
+import formatDate from "date-fns/format";
 
 function* createDataOrderSaga(action) {
   const {
     audience,
     requestedData,
     notaries,
-    publicURL,
     price,
     buyerId
   } = action.payload;
-
-  // we take the minimum of the market as the initial budget for the order
-  const initialBudgetForAudits = yield select(DataExchangeSelectors.getMinimumInitialBudgetForAudits);
 
   try {
     const { orderAddress } = yield call(
       DataOrdersHelpers.createBuyerDataOrder,
       audience,
       requestedData,
-      publicURL,
       price,
-      initialBudgetForAudits,
       notaries,
       buyerId
     );
@@ -38,9 +32,8 @@ function* createDataOrderSaga(action) {
         dataOrder: {
           orderAddress,
           audience,
-          requestedData: [requestedData], // It is an array of requested data, even if right now we only use one.
+          requestedData,
           notaries,
-          publicURL,
           createdAt: formatDate(Date.now()),
           transactionCompleted: false,
           price,
@@ -52,11 +45,12 @@ function* createDataOrderSaga(action) {
 
     yield put(
       NotificationsActions.createNotification({
-        message:
-          "Your order has been created. The Notary is going to be notified.",
+        message: "Order is being created",
         status: "ok"
       })
     );
+
+    yield put(DataOrdersAddressesActions.fetchDataOrdersAddresses());
   } catch (error) {
     yield put(Actions.createDataOrderFailed(error));
     // TODO: rollback transaction somehow if local storage failed.

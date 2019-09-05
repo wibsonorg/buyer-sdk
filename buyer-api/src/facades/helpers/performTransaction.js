@@ -1,25 +1,4 @@
-import { delay } from '../../utils';
-
-/**
- * Suggests if an operation should be retried or not after specified error.
- *
- * Operation after error `Transaction was not mined within 50 blocks...` occurs
- * should be retried.
- * Operation after error `known transaction` occurs should be retried
- * (e.g., for an increaseApproval).
- * Operation after error `replacement transaction underpriced` occurs should be
- * retried (multiple tx intents will have the same nonce).
- *
- * @param {Error} error to check
- * @returns {Boolean} true if error should be retried, false otherwise.
- */
-const retryAfterError = (error) => {
-  const { failed } = error;
-
-  const retry = !failed;
-
-  return retry;
-};
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 /**
  * @function getTransactionReceipt
@@ -28,7 +7,7 @@ const retryAfterError = (error) => {
  * @returns {Promise} promise that will resolve to the transaction object if
  *                    successful or reject with an Error in any other case.
  */
-const getTransactionReceipt = (web3, receipt) =>
+export const getTransactionReceipt = (web3, receipt) =>
   new Promise((resolve, reject) => {
     web3.eth.getTransactionReceipt(receipt, (err, result) => {
       if (err) {
@@ -54,26 +33,14 @@ const getTransactionReceipt = (web3, receipt) =>
     });
   });
 
-const sendSignedTransaction = (web3, signedTransaction) =>
-  new Promise((resolve, reject) => {
-    web3.eth.sendSignedTransaction(`0x${signedTransaction}`)
-      .on('error', (error) => {
-        reject(error);
-      })
-      .on('transactionHash', (hash) => {
-        if (!hash) reject(new Error('No tx hash'));
-        resolve(hash);
-      });
-  });
-
-/**
+  /**
  * @param {Object} web3 instance of Web3
  * @param {Sting} receipt transaction receipt
  * @returns {Promise} promise that resolves to the transaction object in any of
  *                    the following states: `pending`, `success` or `failure`.
  *                    Is reject if an error occurs.
  */
-const getTransaction = (web3, receipt) =>
+export const getTransaction = (web3, receipt) =>
   new Promise((resolve, reject) => {
     web3.eth.getTransactionReceipt(receipt, (err, result) => {
       if (err) {
@@ -94,7 +61,7 @@ const getTransaction = (web3, receipt) =>
  * @param {Object} opts
  * @throws {Error} when `getTransaction` is rejected
  */
-const waitForExecution = async (web3, receipt, opts = {}) => {
+export const waitForExecution = async (web3, receipt, opts = {}) => {
   const { maxIterations = 20, interval = 30 } = opts;
   let transaction = { status: 'pending' };
   let iteration = 0;
@@ -119,32 +86,21 @@ const waitForExecution = async (web3, receipt, opts = {}) => {
  * @param {Object} params data payload needed in the transaction
  * @returns {String} transaction receipt
  */
-const sendTransaction = async (
+export const sendTransaction = async (
   web3,
   address,
   signingFunc,
   params,
   gasPrice,
 ) => {
-  const nonce = await web3.eth.getTransactionCount(address);
-  const ethGasPrice = await web3.eth.getGasPrice();
-  const payload = {
-    nonce,
-    gasPrice: gasPrice || ethGasPrice.toString(),
+  const { signedTransaction } = await signingFunc({
+    nonce: await web3.eth.getTransactionCount(address),
+    gasPrice: gasPrice || (await web3.eth.getGasPrice()).toString(),
     params,
-  };
-
-  const { signedTransaction } = await signingFunc(payload);
-
-  const receipt = await sendSignedTransaction(web3, signedTransaction);
-
-  return receipt;
-};
-
-export {
-  sendTransaction,
-  getTransaction,
-  waitForExecution,
-  getTransactionReceipt,
-  retryAfterError,
+  });
+  return new Promise((res, rej) => {
+    web3.eth.sendSignedTransaction(`0x${signedTransaction}`)
+      .on('error', rej)
+      .on('transactionHash', hash => (hash ? res(hash) : rej(new Error('No tx hash'))));
+  });
 };

@@ -1,20 +1,12 @@
 const dataOntology = {
   options: [
     {
-      value: "browsing_history",
-      label: "Browsing History"
-    },
-    {
       value: "geolocation",
       label: "Geolocation"
     },
     {
       value: "facebook",
       label: "Facebook"
-    },
-    {
-      value: "bbva",
-      label: "BBVA Banking"
     },
     {
       value: "device-info",
@@ -25,15 +17,11 @@ const dataOntology = {
       label: "Google Fitness"
     },
     {
-      value: "google-plus",
-      label: "Google Plus"
-    },
-    {
       value: "google-profile",
       label: "Google Profile"
     },
     {
-      value: "linkedin",
+      value: "linkedIn",
       label: "Linkedin"
     },
     {
@@ -44,16 +32,29 @@ const dataOntology = {
 };
 
 const audienceOntology = {
-  options: [
+  filters: [    
     {
-      value: { users: "all" },
-      label: "All Users",
-    },
-    {
-      value: { users: "telefonica" },
-      label: "ONLY Telefónica Users",
-      notaries: [/(movistar)|(telef(ó|o)nica)/img]
-    },
+      value: "country",
+      label: "Country",
+      categories: [
+        {
+          value: "ar",
+          label: "Argentina"
+        },
+        {
+          value: "uy",
+          label: "Uruguay"
+        },
+        {
+          value: "es",
+          label: "Spain"
+        },
+        {
+          value: "uk",
+          label: "United Kingdom"
+        }
+      ]
+    }
   ]
 };
 

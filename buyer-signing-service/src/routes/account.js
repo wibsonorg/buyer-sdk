@@ -16,6 +16,7 @@ const router = express.Router();
  */
 router.get('/', async (_req, res) => {
   res.json({
+    role: 'buyer',
     address: buyer.getAddress(),
     publicKey: buyer.getPublicKey(),
   });

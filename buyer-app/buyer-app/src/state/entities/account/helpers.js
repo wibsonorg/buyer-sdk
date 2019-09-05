@@ -1,21 +1,16 @@
 import Config from "../../../config";
-import authorization from "../../../utils/headers"
+import authorization from "../../../utils/headers";
 
 const apiUrl = Config.get("api.url");
 
 const getAccount = async () => {
-  const res = await fetch(`${apiUrl}/account`,
-  {
+  const res = await fetch(`${apiUrl}/account`, {
     headers: {
       Authorization: authorization()
     }
   });
 
-  if (!res.ok) {
-    return res.json();
-  }
-
-  return await res.json();
+  return res.ok ? res.json() : res;
 };
 
 export { getAccount };

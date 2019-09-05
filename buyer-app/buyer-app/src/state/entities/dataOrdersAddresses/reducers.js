@@ -23,7 +23,8 @@ export default createReducer(
       fulfilled: false
     }),
     [Actions.fetchDataOrdersAddressesSucceed]: (state, { data }) => ({
-      data,
+      ...state,
+      data: { ...state.data, data },
       error: false,
       pending: false,
       fulfilled: true

@@ -14,11 +14,14 @@ const config = {
   env: env.NODE_ENV,
   port: env.PORT,
   host: env.HOST,
+  bodySizeLimit: env.BODY_SIZE_LIMIT,
+  buyerPublicBaseUrl: env.BUYER_PUBLIC_BASE_URL,
   buyerSigningServiceUrl: env.BUYER_SIGNING_SERVICE_URL,
   contracts: {
     addresses: {
       wibcoin: env.WIBCOIN_ADDRESS,
       dataExchange: env.DATA_EXCHANGE_ADDRESS,
+      batPay: env.BATPAY_ADDRESS,
     },
     gasPrice: {
       standard: env.GAS_PRICE_STANDARD,
@@ -26,12 +29,7 @@ const config = {
     },
     cache: {
       notaryTTL: env.CONTRACTS_CACHE_NOTARY_TTL,
-      ordersTTL: env.CONTRACTS_CACHE_ORDERS_TTL,
     },
-  },
-  notary: {
-    demandAuditsFrom: env.NOTARY_DEMAND_AUDITS_FROM,
-    freeRides: env.NOTARY_FREE_RIDES,
   },
   cache: {
     enabled: env.CACHE === 'enabled',
@@ -48,35 +46,40 @@ const config = {
   redis: {
     url: env.REDIS_URL,
     prefix: env.REDIS_PREFIX,
+    jobs: { concurrency: env.REDIS_JOBS_CONCURRENCY },
   },
   storage: {
-    url: env.STORAGE_URL,
+    bucket: env.STORAGE_BUCKET,
     region: env.STORAGE_REGION,
     user: env.STORAGE_USER,
     password: env.STORAGE_PASSWORD,
-    bucket: env.STORAGE_BUCKET,
   },
   levelDirectory: env.LEVEL_DIRECTORY,
   jwt: JSON.parse(env.JWT_OPTIONS),
   passphrase: env.PASSPHRASE,
-  eventSubscribers: {
-    interval: env.EVENT_SUBSCRIBERS_INTERVAL,
-    lastProcessedBlock: env.EVENT_SUBSCRIBERS_LAST_PROCESSED_BLOCK,
+  contractEventListener: {
+    interval: Number(env.CONTRACT_EVENT_LISTENER_INTERVAL),
+    lastProcessedBlock: Number(env.CONTRACT_EVENT_LISTENER_LAST_PROCESSED_BLOCK),
   },
-  allowance: {
-    interval: env.ALLOWANCE_INTERVAL,
-    minimumAllowance: env.ALLOWANCE_MINIMUM,
-    multiplier: env.ALLOWANCE_MULTIPLIER,
+  checkBatPayBalance: {
+    interval: Number(env.CHECK_BATPAY_BALANCE_INTERVAL),
+    multiplier: Number(env.CHECK_BATPAY_BALANCE_MULTIPLIER),
   },
   balance: {
-    minWib: env.BALANCE_MINIMUM_WIB,
     minWei: env.BALANCE_MINIMUM_WEI,
+    minWib: env.BALANCE_MINIMUM_WIB,
+    minBatPay: env.BALANCE_MINIMUM_BATPAY,
   },
   transactionQueue: {
     maxIterations: env.TRANSACTION_QUEUE_MAX_ITERATIONS,
     interval: env.TRANSACTION_QUEUE_INSPECTION_INTERVAL,
   },
+  dataResponseQueue: {
+    batchSize: Number(env.DATA_RESPONSE_QUEUE_MAX_BATCH_SIZE),
+  },
   allowedCountries: env.ALLOWED_COUNTRIES,
+  sendBatchPassphrase: env.SEND_BATCH_PASSPHRASE,
+  batPayId: Number(env.BATPAY_ID),
 };
 
 exports.default = config;

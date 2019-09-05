@@ -12,10 +12,10 @@ if (process.env.DEPLOY_ENVIRONMENT === "development") {
 } else if (process.env.DEPLOY_ENVIRONMENT === "production-jampp") {
   baseConf = { ...defaultConf, ...require("../../configuration/production-jampp.json")  };
 } else {
-  console.error("DEPLOY_ENVIRONMENT not recognized")
+  console.error("DEPLOY_ENVIRONMENT not recognized");
 }
 
-baseConf.env = process.env.NODE_ENV;
+baseConf.env = process.env.DEPLOY_ENVIRONMENT;
 
 const config = new Config(baseConf);
 export default config;

@@ -3,15 +3,7 @@ import cache from './cache';
 import logger from './logger';
 import fetchToken from './fetchToken';
 import checkAuthorization from './checkAuthorization';
-import delay from './delay';
+import * as stores from './stores';
 
-export { web3, cache, logger, fetchToken, checkAuthorization, delay };
-export {
-  createRedisStore,
-  createLevelStore,
-  listLevelPairs,
-  listLevelKeys,
-  listLevelValues,
-} from './storage';
-export { errorHandler, asyncError, validateAddress } from './routes';
-export { wibcoin, dataExchange, dataOrderAt } from './contracts';
+export { web3, stores, cache, logger, fetchToken, checkAuthorization };
+export { errorHandler, validateAddress, isValidAddress } from './routes';

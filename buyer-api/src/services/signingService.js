@@ -14,70 +14,30 @@ const url = config.buyerSigningServiceUrl;
  */
 const timeout = 5000;
 
-const getHealth = () => client.get(`${url}/health`, { json: true, timeout });
+export const getHealth = () => client.get(`${url}/health`, { json: true, timeout });
 
-const getAccount = () => client.get(`${url}/account`, {
-  json: true,
-  timeout,
-});
+/**
+ * @typedef BuyerAccount
+ * @property {string} address buyerId to get information of the buyer
+ * @property {string} publicKey buyerId to get information of the buyer
+ * @property {number} id buyerId to get information of the buyer
+ */
 
-const signNewOrder = payload => client.post(
-  `${url}/sign/new-order`,
-  {
-    json: payload,
+/**
+ * Buyer Account information from the signing service
+ * @type {BuyerAccount}
+ */
+export const getAccount = () =>
+  client.get(`${url}/account`, {
+    json: true,
     timeout,
-  },
-);
+  });
 
-const signAddNotaryToOrder = payload => client.post(
-  `${url}/sign/add-notary-to-order`,
-  {
-    json: payload,
-    timeout,
-  },
-);
+const createSigningMethod = endpoint => payload =>
+  client.post(`${url}${endpoint}`, { json: payload, timeout });
 
-const signIncreaseApproval = payload => client.post(
-  `${url}/sign/increase-approval`,
-  {
-    json: payload,
-    timeout,
-  },
-);
-
-const signAddDataResponse = payload => client.post(
-  `${url}/sign/add-data-response`,
-  {
-    json: payload,
-    timeout,
-  },
-);
-
-const signCloseDataResponse = payload => client.post(
-  `${url}/sign/close-data-response`,
-  {
-    json: payload,
-    timeout,
-  },
-);
-
-const signCloseOrder = payload => client.post(
-  `${url}/sign/close-order`,
-  {
-    json: payload,
-    timeout,
-  },
-);
-
-const signinService = {
-  getHealth,
-  getAccount,
-  signNewOrder,
-  signAddNotaryToOrder,
-  signIncreaseApproval,
-  signAddDataResponse,
-  signCloseDataResponse,
-  signCloseOrder,
-};
-
-export default signinService;
+export const signCreateDataOrder = createSigningMethod('/sign/create-data-order');
+export const signCloseDataOrder = createSigningMethod('/sign/close-data-order');
+export const signRegisterPayment = createSigningMethod('/sign/bat-pay/register-payment');
+export const signDeposit = createSigningMethod('/sign/bat-pay/deposit');
+export const signIncreaseApproval = createSigningMethod('/sign/token/increase-approval');
