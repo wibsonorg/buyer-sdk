@@ -78,7 +78,7 @@ export const processDataResponseJob = async (job) => {
   const dataResponse = await dataResponses.fetch(dataResponseId);
   const { status, notaryAddress } = dataResponse;
   if (status !== 'queued') {
-    logger.warn(`DR[${id}] :: Process :: Cant't process DataResponse (${status})`);
+    logger.warning(`DR[${id}] :: Process :: Cant't process DataResponse (${status})`);
     return dataResponse;
   }
 

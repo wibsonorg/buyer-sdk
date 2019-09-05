@@ -11,6 +11,11 @@ Object.defineProperty(exports, '__esModule', {
 const { env } = process;
 
 const config = {
+  app: {
+    name: env.npm_package_name,
+    version: env.npm_package_version,
+    repositoryUrl: env.npm_package_repository_url.replace(/(\.git|git\+)/g, ''),
+  },
   env: env.NODE_ENV,
   port: env.PORT,
   host: env.HOST,
@@ -39,6 +44,7 @@ const config = {
   log: {
     error: env.ERROR_LOG,
     combined: env.COMBINED_LOG,
+    slack: env.SLACK_LOG,
   },
   web3: {
     provider: env.WEB3_PROVIDER,

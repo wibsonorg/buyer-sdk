@@ -73,7 +73,7 @@ export const prepare = async ({ id, data: { batchId } }) => {
   } = await batches.fetch(batchId);
 
   if (status !== 'created') {
-    logger.warn(`N[${id}] :: Prepare :: Can't prepare notarization (${status})`);
+    logger.warning(`N[${id}] :: Prepare :: Can't prepare notarization (${status})`);
     return null;
   }
 
@@ -117,6 +117,10 @@ export const send = async ({ data: { notarizationRequestId } }) => {
 
 queue.process('prepare', prepare);
 queue.process('send', send);
-queue.on('failed', ({ id, name, failedReason }) => {
-  logger.error(`N[${id}] :: ${name} :: Error thrown: ${failedReason} (will be retried)`);
+queue.on('failed', ({ id, name, failedReason, data }) => {
+  logger.crit(
+    `NotarizationQueue :: Could not notarize\n` +
+    `Error on '${name}' processor: ${failedReason}\n` +
+    `Job ID: ${id} | Data: ${JSON.stringify(data)}`
+  );
 });
