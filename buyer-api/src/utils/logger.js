@@ -26,7 +26,7 @@ function addSlack() {
             {
               short: true,
               title: 'Version',
-              value: `<${repositoryUrl}/tree/v${version}|${version}>`
+              value: `<${repositoryUrl}/tree/v${version}|${version}>`,
             },
             { short: true, title: 'Environment', value: env },
           ],

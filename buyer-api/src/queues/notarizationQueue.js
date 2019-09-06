@@ -117,10 +117,10 @@ export const send = async ({ data: { notarizationRequestId } }) => {
 
 queue.process('prepare', prepare);
 queue.process('send', send);
-queue.on('failed', ({ id, name, failedReason, data }) => {
-  logger.crit(
-    `NotarizationQueue :: Could not notarize\n` +
+queue.on('failed', ({
+  id, name, failedReason, data,
+}) => {
+  logger.crit('NotarizationQueue :: Could not notarize\n' +
     `Error on '${name}' processor: ${failedReason}\n` +
-    `Job ID: ${id} | Data: ${JSON.stringify(data)}`
-  );
+    `Job ID: ${id} | Data: ${JSON.stringify(data)}`);
 });

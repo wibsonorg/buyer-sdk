@@ -2,8 +2,8 @@
   "name": "buyer-api",
   "version": "2.0.6",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/wibsonorg/buyer-sdk"
+    "type": "git",
+    "url": "https://github.com/wibsonorg/buyer-sdk"
   },
   "description": "Buyer API",
   "author": "Wibson Development Team",

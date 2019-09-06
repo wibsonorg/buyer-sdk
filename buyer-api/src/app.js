@@ -24,9 +24,9 @@ import { stream } from './utils/logger';
 
 const app = express();
 swagger.initializeMiddleware(schema, ({ swaggerMetadata, swaggerValidator, swaggerUi }) => {
-  app.use(boom());   // response helpers for errors
+  app.use(boom()); // response helpers for errors
   app.use(helmet()); // protection against common attacks
-  app.use(cors());   // control over which sites can make requests and what verbs
+  app.use(cors()); // control over which sites can make requests and what verbs
   // Parsers
   app.use(bodyParser.json({ limit: config.bodySizeLimit }));
   app.use(cookieParser());
