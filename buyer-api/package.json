@@ -64,7 +64,7 @@
     "uuid": "^3.3.2",
     "web3": "1.0.0-beta.33",
     "winston": "3.2.1",
-    "winston-slack-webhook-transport": "^1.1.0"
+    "winston-slack-webhook-transport": "1.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
