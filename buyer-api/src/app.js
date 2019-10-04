@@ -8,7 +8,6 @@ import swagger from 'swagger-tools';
 import cookieParser from 'cookie-parser';
 import config from '../config';
 import schema from './schema';
-import { logger, errorHandler } from './utils';
 import {
   auth,
   account,
@@ -20,21 +19,26 @@ import {
   batchDataResponse,
 } from './routes';
 import checkAuthorization from './utils/checkAuthorization';
+import { errorHandler } from './utils/routes';
+import { stream } from './utils/logger';
 
 const app = express();
 swagger.initializeMiddleware(schema, ({ swaggerMetadata, swaggerValidator, swaggerUi }) => {
-  app.use(boom());
-  app.use(swaggerMetadata());
-  app.use(helmet());
+  app.use(boom()); // response helpers for errors
+  app.use(helmet()); // protection against common attacks
+  app.use(cors()); // control over which sites can make requests and what verbs
+  // Parsers
+  app.use(bodyParser.json({ limit: config.bodySizeLimit }));
+  app.use(cookieParser());
+  // Access log
   app.use(morgan(config.logType || 'combined', {
-    stream: logger.stream,
+    stream,
     skip: () => config.env === 'test',
   }));
-  app.use(cors());
-  app.use(cookieParser());
+
+  app.use(swaggerMetadata());
   app.use(swaggerValidator());
   app.use(swaggerUi({ swaggerUi: '/api-docs', apiDocs: '/api-docs.json' }));
-  app.use(bodyParser.json({ limit: config.bodySizeLimit }));
   // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => { throw error; });
 

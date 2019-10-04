@@ -11,7 +11,7 @@ export function errorHandler(err, req, res, next) {
     }`);
   } else {
     res.boom.badImplementation();
-    logger.error(err.message, err.fileName, err.lineNumber);
+    logger.error(err.stack);
   }
 }
 
