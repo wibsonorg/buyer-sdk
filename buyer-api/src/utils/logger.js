@@ -71,10 +71,9 @@ switch (config.env) {
     break;
 }
 
-export const stream = {
+module.exports = logger;
+module.exports.stream = {
   write(message) {
     logger.info(message);
   },
 };
-
-export default logger;

@@ -10,6 +10,7 @@
   "main": "src/app.js",
   "scripts": {
     "build": "babel src -d dist",
+    "console": "babel-node src/console.js",
     "serve": "node dist/index.js",
     "start": "nodemon src/index.js",
     "e2e": "ava -t **/*.e2e.js | faucet",
@@ -20,10 +21,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "publish": "scripts/publish.sh $npm_package_name-v$npm_package_version",
-    "task:production": "node dist/tasks/index.js",
-    "task": "babel-node src/tasks/index.js",
-    "console": "babel-node src/console.js",
-    "migrate:batpay-balance": "node ./dist/migrations/batpay-balance.js"
+    "task:dev": "babel-node src/tasks/index.js",
+    "task": "node dist/tasks/index.js"
   },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
@@ -54,6 +53,7 @@
     "morgan": "1.9.1",
     "node-forge": "^0.7.5",
     "openpgp": "3.1.0",
+    "ramda": "0.26.1",
     "read": "1.0.7",
     "redis": "^2.8.0",
     "request": "^2.87.0",

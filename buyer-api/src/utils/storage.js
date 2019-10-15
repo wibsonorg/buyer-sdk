@@ -107,25 +107,43 @@ export const createLevelStore = (dir) => {
       throw e;
     }
   };
-  const createListFunction = mode => (group = {}) =>
-    new Promise((res, rej) => {
-      const result = [];
-      store
-        .createReadStream({
-          keys: mode !== 'values',
-          values: mode !== 'keys',
-          ...(typeof group === 'object' ? group : { gte: group, lte: `${group}∞` }),
-        })
-        .on('data', data => result.push(data))
-        .on('error', rej)
-        .on('end', () => res(result));
-    }).then((list) => {
-      switch (mode) {
-        case 'keys': return list;
-        case 'values': return list.map(value => JSON.parse(value));
-        default: return list.map(({ key, value }) => ({ id: key, ...JSON.parse(value) }));
+  const createListFunction = (mode) => {
+    let format;
+    switch (mode) {
+      case 'keys': format = k => k; break;
+      case 'values': format = v => JSON.parse(v); break;
+      default: format = d => ({ id: d.key, ...JSON.parse(d.value) }); break;
+    }
+    const initialQuery = { keys: mode !== 'values', values: mode !== 'keys' };
+    return (query, filter) => new Promise((resolve, reject) => {
+      let finalQuery;
+      switch (typeof query) {
+        case 'string': finalQuery = { ...initialQuery, gte: query, lte: `${query}∞` }; break;
+        case 'object': finalQuery = { ...initialQuery, ...query }; break;
+        case 'function': finalQuery = { ...initialQuery, filter: query }; break;
+        default: finalQuery = initialQuery; break;
       }
+      let filterFunction = filter || finalQuery.filter;
+      delete finalQuery.filter;
+      if (typeof filterFunction === 'object') {
+        const props = Object.entries(filterFunction);
+        filterFunction = d => props.every(([k, v]) => d[k] === v);
+      }
+      const list = [];
+      const selector = filterFunction
+        ? async (data) => {
+          const d = format(data);
+          if (filterFunction(d)) {
+            list.push(d);
+          }
+        } : data => list.push(format(data));
+      store
+        .createReadStream(finalQuery)
+        .on('data', selector)
+        .on('error', reject)
+        .on('end', () => resolve(list));
     });
+  };
   store.list = createListFunction('all');
   store.listKeys = createListFunction('keys');
   store.listValues = createListFunction('values');

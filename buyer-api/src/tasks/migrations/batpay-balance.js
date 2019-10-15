@@ -1,9 +1,4 @@
-require('@babel/polyfill');
-const loadEnv = require('../utils/wibson-lib/loadEnv').default;
-
-loadEnv();
-
-const {
+import {
   // REMOVE
   //   notariesCache, // UNUSED
   //   notarizationRequests, // UNUSED
@@ -28,10 +23,10 @@ const {
   currentPaymentsAmount, // new BatPay == no pending payments
   // UPDATE
   notarizations, // ['created', 'requested'].includes(n.status) -> { status: 'responded' }
-} = require('../utils/stores');
-const logger = require('../utils/logger');
+} from '../../utils/stores';
+import logger from '../../utils/logger';
 
-async function migrate() {
+export default async () => {
   logger.info('UPDATE NOTARIZATIONS...');
   const updatedNotarizations = (await Promise.all((await notarizations.list())
     .filter(n => ['created', 'requested'].includes(n.status))
@@ -55,6 +50,4 @@ async function migrate() {
   const clearCount = (await Promise.all(dbsToClear.map(isEmpty))).filter(x => x).length;
   logger.info(`DBS CLEARED: ${clearCount}/${dbsToClear.length}`);
   logger.info('END.');
-}
-
-migrate().then(() => process.exit());
+};
