@@ -2,51 +2,49 @@
 /* eslint-disable import/no-dynamic-require */
 import '@babel/polyfill';
 import glob from 'glob';
+import path from 'path';
 import loadEnv from '../utils/wibson-lib/loadEnv';
 
-const getTaskName = (path, captureName) => path.replace(captureName, '$1').replace(/\//g, ':');
+const taskPathReplacer = new RegExp(`^${__dirname}${path.sep}(.*)\\.js$`);
+const taskSepReplacer = new RegExp(`\\${path.sep}`, 'g');
+const getTasksList = () => glob
+  .sync(`${__dirname}/**/*.js`, { ignore: '**/index.js' })
+  .map(p => p
+    .replace(taskPathReplacer, '$1')
+    .replace(taskSepReplacer, ':'));
 
-const getPathTasks = (path, captureName) => {
-  const tasks = require(path).default;
-  if (typeof tasks === 'object') {
-    return tasks;
+function tryRequire(modulePath) {
+  try {
+    return require(modulePath);
+  } catch (_) {
+    return {};
   }
-  return {
-    [getTaskName(path, captureName)]: tasks,
-  };
-};
+}
 
-const getTasks = () => {
-  const paths = glob.sync(`${__dirname}/**/*.js`, { ignore: `${__dirname}/index.js` });
-  const captureName = new RegExp(`${__dirname}/(.*).js`);
-
-  return paths.reduce(
-    (accumulator, path) => ({
-      ...accumulator,
-      ...getPathTasks(path, captureName),
-    }),
-    {},
-  );
-};
-
-const init = async () => {
+async function execTask() {
   let logger;
   try {
     await loadEnv();
     logger = require('../utils/logger');
-    const tasks = getTasks();
-    const [taskName, ...args] = process.argv.slice(2);
-    const task = tasks[taskName];
-
-    if (task) {
-      logger.info(`Running task ${taskName}`);
-      await task(...args);
-      logger.info('Done');
-    } else if (!taskName) {
-      logger.info(`Available tasks:\n${Object.keys(tasks).join('\n')}`);
-    } else {
-      logger.info(`Task '${taskName}' does not exist.`);
+    const [taskPath, ...args] = process.argv.slice(2);
+    if (!taskPath) {
+      logger.info(`Available tasks:\n${getTasksList().join('\n')}`);
+      return;
     }
+    const taskDir = taskPath.split(':');
+    taskDir.unshift('.');
+    const taskName = taskDir.pop();
+    const modulePath = taskDir.join(path.sep);
+    const task =
+      tryRequire(modulePath + path.sep + taskName).default ||
+      tryRequire(modulePath)[taskName];
+    if (!task) {
+      logger.info(`Task '${taskPath}' does not exist.`);
+      return;
+    }
+    logger.info(`Running task ${taskPath}...`);
+    await task(...args);
+    logger.info('Done');
   } catch (error) {
     if (logger && logger.error) {
       logger.error(error);
@@ -54,8 +52,6 @@ const init = async () => {
       console.error(error); // eslint-disable-line no-console
     }
   }
+}
 
-  process.exit();
-};
-
-init();
+execTask().finally(() => process.exit());
