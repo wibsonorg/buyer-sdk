@@ -1,4 +1,4 @@
-import client from 'request-promise-native';
+import axios from 'axios';
 import config from '../../config';
 
 const https = require('https');
@@ -8,43 +8,24 @@ const httpsAgent = new https.Agent({
 });
 
 /**
- * Signing Service url.
- * @type {String}
- */
-const url = config.buyerSigningServiceUrl;
-
-/**
  * We are not going to wait the signing service to respond mora than `timeout`
  * milisseconds.
  * @type {Number}
  */
 const timeout = 5000;
+const url = path => new URL(`/${path}`, config.buyerSigningServiceUrl).toString();
 
-export const getHealth = () => client.get(`${url}/health`, { json: true, timeout, pool: httpsAgent });
+const createSignMethod = method => payload =>
+  axios.post(url(`sign/${method}`), { timeout, httpsAgent, ...payload }).then(res => res.data);
 
-/**
- * @typedef BuyerAccount
- * @property {string} address buyerId to get information of the buyer
- * @property {string} publicKey buyerId to get information of the buyer
- * @property {number} id buyerId to get information of the buyer
- */
+const createGetter = endpoint => () =>
+  axios.get(url(endpoint), { timeout, httpsAgent }).then(res => res.data);
 
-/**
- * Buyer Account information from the signing service
- * @type {BuyerAccount}
- */
-export const getAccount = () =>
-  client.get(`${url}/account`, {
-    json: true,
-    timeout,
-    pool: httpsAgent,
-  });
+export const getHealth = createGetter('health');
+export const getAccount = createGetter('account');
 
-const createSigningMethod = endpoint => payload =>
-  client.post(`${url}${endpoint}`, { json: payload, timeout, pool: httpsAgent });
-
-export const signCreateDataOrder = createSigningMethod('/sign/create-data-order');
-export const signCloseDataOrder = createSigningMethod('/sign/close-data-order');
-export const signRegisterPayment = createSigningMethod('/sign/bat-pay/register-payment');
-export const signDeposit = createSigningMethod('/sign/bat-pay/deposit');
-export const signIncreaseApproval = createSigningMethod('/sign/token/increase-approval');
+export const signCreateDataOrder = createSignMethod('create-data-order');
+export const signCloseDataOrder = createSignMethod('close-data-order');
+export const signRegisterPayment = createSignMethod('bat-pay/register-payment');
+export const signDeposit = createSignMethod('bat-pay/deposit');
+export const signIncreaseApproval = createSignMethod('token/increase-approval');
