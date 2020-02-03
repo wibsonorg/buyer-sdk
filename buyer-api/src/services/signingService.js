@@ -1,6 +1,12 @@
 import client from 'request-promise-native';
 import config from '../../config';
 
+const https = require('https');
+
+const httpsAgent = new https.Agent({
+  rejectUnauthorized: false,
+});
+
 /**
  * Signing Service url.
  * @type {String}
@@ -14,7 +20,7 @@ const url = config.buyerSigningServiceUrl;
  */
 const timeout = 5000;
 
-export const getHealth = () => client.get(`${url}/health`, { json: true, timeout });
+export const getHealth = () => client.get(`${url}/health`, { json: true, timeout, pool: httpsAgent });
 
 /**
  * @typedef BuyerAccount
@@ -31,10 +37,11 @@ export const getAccount = () =>
   client.get(`${url}/account`, {
     json: true,
     timeout,
+    pool: httpsAgent
   });
 
 const createSigningMethod = endpoint => payload =>
-  client.post(`${url}${endpoint}`, { json: payload, timeout });
+  client.post(`${url}${endpoint}`, { json: payload, timeout, pool: httpsAgent });
 
 export const signCreateDataOrder = createSigningMethod('/sign/create-data-order');
 export const signCloseDataOrder = createSigningMethod('/sign/close-data-order');
