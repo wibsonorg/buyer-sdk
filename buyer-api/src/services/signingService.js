@@ -37,7 +37,7 @@ export const getAccount = () =>
   client.get(`${url}/account`, {
     json: true,
     timeout,
-    pool: httpsAgent
+    pool: httpsAgent,
   });
 
 const createSigningMethod = endpoint => payload =>
