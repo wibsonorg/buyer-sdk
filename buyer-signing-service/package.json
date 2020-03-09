@@ -1,6 +1,6 @@
 {
   "name": "buyer-signing-service",
-  "version": "2.0.6",
+  "version": "2.0.8",
   "description": "Buyer Signing Service",
   "author": "Wibson Development Team",
   "main": "src/app.js",
@@ -46,7 +46,7 @@
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.3.4",
     "@babel/node": "^7.2.2",
-    "@babel/preset-env": "^7.3.4",
+    "@babel/preset-env": "7.3.4",
     "@babel/register": "^7.0.0",
     "chai": "^4.1.2",
     "eslint": "^4.19.1",

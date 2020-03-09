@@ -27,9 +27,11 @@ const checkConfig = (conf) => {
 
 const server = () => {
   checkConfig(config);
-  const { port, host, env } = config;
+  const {
+    app: { name }, port, host, env,
+  } = config;
   app.listen({ port, host }, () =>
-    logger.info(`Buyer API listening on port ${port} and host ${host} in ${env} mode`));
+    logger.info(`${name} listening on port ${port} and host ${host} in ${env} mode`));
   contractEventListener.listen();
 };
 

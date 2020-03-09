@@ -1,11 +1,16 @@
 {
   "name": "buyer-api",
-  "version": "2.0.6",
+  "version": "2.0.8",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wibsonorg/buyer-sdk"
+  },
   "description": "Buyer API",
   "author": "Wibson Development Team",
   "main": "src/app.js",
   "scripts": {
     "build": "babel src -d dist",
+    "console": "babel-node src/console.js",
     "serve": "node dist/index.js",
     "start": "nodemon src/index.js",
     "e2e": "ava -t **/*.e2e.js | faucet",
@@ -16,10 +21,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "publish": "scripts/publish.sh $npm_package_name-v$npm_package_version",
-    "task:production": "node dist/tasks/index.js",
-    "task": "babel-node src/tasks/index.js",
-    "console": "babel-node src/console.js",
-    "migrate:batpay-balance": "node ./dist/migrations/batpay-balance.js"
+    "task:dev": "babel-node src/tasks/index.js",
+    "task": "node dist/tasks/index.js"
   },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
@@ -27,7 +30,7 @@
     "apicache": "^1.2.3",
     "async-redis": "^1.1.4",
     "aws-sdk": "^2.188.0",
-    "axios": "0.18.0",
+    "axios": "0.18.1",
     "bignumber.js": "^7.2.1",
     "body-parser": "^1.18.3",
     "bull": "^3.4.4",
@@ -50,6 +53,7 @@
     "morgan": "1.9.1",
     "node-forge": "^0.7.5",
     "openpgp": "3.1.0",
+    "ramda": "0.26.1",
     "read": "1.0.7",
     "redis": "^2.8.0",
     "request": "^2.87.0",
@@ -59,7 +63,8 @@
     "truffle-contract": "3.0.6",
     "uuid": "^3.3.2",
     "web3": "1.0.0-beta.33",
-    "winston": "^3.0.0"
+    "winston": "3.2.1",
+    "winston-slack-webhook-transport": "1.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",

@@ -2,32 +2,56 @@
 /* eslint-disable import/no-dynamic-require */
 import '@babel/polyfill';
 import glob from 'glob';
+import path from 'path';
 import loadEnv from '../utils/wibson-lib/loadEnv';
 
-const init = async () => {
-  await loadEnv();
-  const logger = require('../utils/logger');
+const taskPathReplacer = new RegExp(`^${__dirname}${path.sep}(.*)\\.js$`);
+const taskSepReplacer = new RegExp(`\\${path.sep}`, 'g');
+const getTasksList = () => glob
+  .sync(`${__dirname}/**/*.js`, { ignore: '**/index.js' })
+  .map(p => p
+    .replace(taskPathReplacer, '$1')
+    .replace(taskSepReplacer, ':'));
 
-  const [taskName, ...args] = process.argv.slice(2);
-  const paths = glob.sync(`${__dirname}/*.js`, { ignore: `${__dirname}/index.js` });
-  const tasks = paths.reduce((accumulator, path) => ({
-    ...accumulator,
-    ...require(path).default,
-  }), {});
+function tryRequire(modulePath) {
+  try {
+    return require(modulePath);
+  } catch (_) {
+    return {};
+  }
+}
 
-  if (!taskName) {
-    logger.info(`Available tasks:\n${Object.keys(tasks).join('\n')}`);
-  } else {
-    const task = tasks[taskName];
+async function execTask() {
+  let logger;
+  try {
+    await loadEnv();
+    logger = require('../utils/logger');
+    const [taskPath, ...args] = process.argv.slice(2);
+    if (!taskPath) {
+      logger.info(`Available tasks:\n${getTasksList().join('\n')}`);
+      return;
+    }
+    const taskDir = taskPath.split(':');
+    taskDir.unshift('.');
+    const taskName = taskDir.pop();
+    const modulePath = taskDir.join(path.sep);
+    const task =
+      tryRequire(modulePath + path.sep + taskName).default ||
+      tryRequire(modulePath)[taskName];
     if (!task) {
-      logger.info(`Task does not exist '${taskName}'`);
+      logger.info(`Task '${taskPath}' does not exist.`);
+      return;
+    }
+    logger.info(`Running task ${taskPath}...`);
+    await task(...args);
+    logger.info('Done');
+  } catch (error) {
+    if (logger && logger.error) {
+      logger.error(error);
     } else {
-      logger.info(`Running task ${taskName}`);
-      await task(...args);
+      console.error(error); // eslint-disable-line no-console
     }
   }
+}
 
-  process.exit();
-};
-
-init();
+execTask().finally(() => process.exit());
