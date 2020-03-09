@@ -17,7 +17,7 @@ const timeout = 5000;
 const url = path => new URL(`/${path}`, config.buyerSigningServiceUrl).toString();
 
 const createSignMethod = method => payload =>
-  axios.post(url(`sign/${method}`), { timeout, httpsAgent, ...payload }).then(res => res.data);
+  axios.post(url(`sign/${method}`), payload, { timeout, httpsAgent }).then(res => res.data);
 
 const createGetter = endpoint => () =>
   axios.get(url(endpoint), { timeout, httpsAgent }).then(res => res.data);
