@@ -57,7 +57,7 @@
     "isarray": "^2.0.2",
     "js-base64": "^2.3.2",
     "memoizee": "^0.4.11",
-    "node-forge": "^0.7.1",
+    "node-forge": "^0.10.0",
     "ramda": "^0.24.1",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
